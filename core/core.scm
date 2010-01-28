@@ -36,21 +36,6 @@
     (multiplier f-32 five c*9)
     (divider c*9 nine c)))
 
-(interactive-example
-
-(initialize-scheduler)
-(define f (make-cell))
-(define c (make-cell))
-
-(fahrenheit->celsius f c)
-
-(add-content f 77)
-(run)
-(content c)
-=> 25
-)
-
-
 (define nothing #(*the-nothing*))
 
 (define (nothing? thing)
@@ -161,31 +146,7 @@
     (product f-32 five c*9)
     (product c nine c*9)))
 
-(interactive-example
 
-(initialize-scheduler)
-(define f (make-cell))
-(define c (make-cell))
-
-(fahrenheit-celsius f c)
-
-(add-content c 25)
-(run)
-(content f)
-=> 77
-
-(define (celsius-kelvin c k)
-  (let ((many (make-cell)))
-    ((constant 273.15) many)
-    (sum c many k)))
-
-(define k (make-cell))
-
-(celsius-kelvin c k)
-(run)
-(content k)
-=> 298.15
-)
 
 (process-examples)
 
@@ -200,18 +161,7 @@
     (product g t^2 gt^2)
     (product one-half gt^2 h)))
 
-(interactive-example
 
-(initialize-scheduler)
-(define fall-time (make-cell))
-(define building-height (make-cell))
-(fall-duration fall-time building-height)
-
-(add-content fall-time (make-interval 2.9 3.1))
-(run)
-(content building-height)
-=> #(interval 41.163 47.243)
-)
 
 
 (define (similar-triangles s-ba h-ba s h)
@@ -219,58 +169,7 @@
     (product s-ba ratio h-ba)
     (product s ratio h)))
 
-(interactive-example
 
-(initialize-scheduler)
-(define barometer-height (make-cell))
-(define barometer-shadow (make-cell))
-(define building-height (make-cell))
-(define building-shadow (make-cell))
-(similar-triangles barometer-shadow barometer-height
-                   building-shadow building-height)
-
-(add-content building-shadow (make-interval 54.9 55.1))
-(add-content barometer-height (make-interval 0.3 0.32))
-(add-content barometer-shadow (make-interval 0.36 0.37))
-(run)
-(content building-height)
-=> #(interval 44.514 48.978)
-
-(define fall-time (make-cell))
-(fall-duration fall-time building-height)
-
-(add-content fall-time (make-interval 2.9 3.1))
-(run)
-(content building-height)
-=> #(interval 44.514 47.243)
-
-#;
-(intersect-intervals
- (similar-triangles ...)
- (fall-time ...))
-
-(content barometer-height)
-=> #(interval .3 .31839)
-;; Refining the (make-interval 0.3 0.32) we put in originally
-
-(content fall-time)
-=> #(interval 3.0091 3.1)
-;; Refining (make-interval 2.9 3.1)
-
-(add-content building-height (make-interval 45 45))
-(run)
-(content barometer-height)
-=> #(interval .3 .30328)
-
-(content barometer-shadow)
-=> #(interval .366 .37)
-
-(content building-shadow)
-=> #(interval 54.9 55.1)
-
-(content fall-time)
-=> #(interval 3.0255 3.0322)
-)
 
 
 (define (mul-interval x y)
@@ -466,23 +365,6 @@
 
 (load-compiled "generic-definitions")
 (load-compiled "intervals")
-(interactive-example
 
-(initialize-scheduler)
-(define fall-time (make-cell))
-(define building-height (make-cell))
-(fall-duration fall-time building-height)
-
-(add-content fall-time (make-interval 2.9 3.1))
-(run)
-(content building-height)
-=> #(interval 41.163 47.243)
-
-(add-content building-height 45)
-
-(run)
-(content fall-time)
-=> #(interval 3.0255 3.0322)
-)
 
 (process-examples)

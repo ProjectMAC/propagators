@@ -41,4 +41,49 @@
    ;; propagator watching), but can probably afford to get rid of the
    ;; 4:fred inside, because if the pair is believed, then george is,
    ;; so fred isn't.
-))
+   )
+
+ (define-test ()
+
+   (interaction
+    (initialize-scheduler)
+    (define x (make-cell))
+    (define y (make-cell))
+    (define pair (make-cell))
+    (conser x y pair)
+
+    (run)
+    (content pair)
+    (produces '( #(*the-nothing*) . #(*the-nothing*) ))
+
+    (define control (make-cell))
+    (define switched-pair (make-cell))
+    (switch control pair switched-pair)
+
+    (add-content control (make-tms (supported #t '(joe))))
+    (run)
+    (content switched-pair)
+    (produces #(tms (#(supported ( #(*the-nothing*) . #(*the-nothing*) ) (joe)))))
+
+    (define x-again (make-cell))
+    (carer switched-pair x-again)
+
+    (run)
+    (content x-again)
+    (produces #(*the-nothing*))
+
+    (add-content x (make-tms (supported 4 '(harry))))
+
+    (run)
+    (content pair)
+    (produces '( #(tms (#(supported 4 (harry)))) . #(*the-nothing*) ))
+
+    (content switched-pair)
+    (produces #(tms (#(supported ( #(tms (#(supported 4 (harry)))) . #(*the-nothing*) )
+				 (joe)))))
+
+    (content x-again)
+    (produces #(tms (#(supported 4 (harry joe)))))
+    ))
+
+ )

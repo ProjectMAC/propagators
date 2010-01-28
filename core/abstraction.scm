@@ -52,23 +52,6 @@
         ((constant 2) two)
         (divider g+x/g two h)))))
 
-(interactive-example
-
-(initialize-scheduler)
-(define x (make-cell))
-(define guess (make-cell))
-(define better-guess (make-cell))
-
-(heron-step x guess better-guess)
-
-(add-content x 2)
-(add-content guess 1.4)
-(run)
-(content better-guess)
-=> 1.4142857142857141
-)
-
-
 (define (sqrt-iter x g answer)
   (compound-propagator (list x g)
     (lambda ()
@@ -105,19 +88,6 @@
         (absolute-value x-g^2 ax-g^2)
         (<? ax-g^2 eps done)))))
 
-(interactive-example
-
-(initialize-scheduler)
-(define x (make-cell))
-(define answer (make-cell))
-
-(sqrt-network x answer)
-
-(add-content x 2)
-(run)
-(content answer)
-=> 1.4142135623746899
-)
 
 (process-examples)
 (process-examples)

@@ -109,5 +109,24 @@
     (switching-function (supported #t '(bob))
 			(make-tms (list (supported 4 '(harry))
 					(supported 4 '(fred))))))
-))
+   )
+
+ (define-test ()
+
+   (interaction
+    (initialize-scheduler)
+    (define input (make-cell))
+    (define control (make-cell))
+    (define output (make-cell))
+    (switch control input output)
+
+    (add-content input 4)
+    (add-content control (supported #t '(fred)))
+    (run)
+    (content output)
+    (produces #(supported 4 (fred)))
+    ))
+
+ 
+)
 

@@ -48,21 +48,6 @@
   (function->propagator-constructor
    (nary-unpacking switch-function)))
 
-(interactive-example
-
-(initialize-scheduler)
-(define input (make-cell))
-(define control (make-cell))
-(define output (make-cell))
-(switch control input output)
-
-(add-content input 4)
-(add-content control (supported #t '(fred)))
-(run)
-(content output)
-=> #(supported 4 (fred))
-)
-
 
 (define (conditional control if-true if-false output)
   (let ((not-control (make-cell)))

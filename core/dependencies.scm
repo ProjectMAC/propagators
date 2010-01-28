@@ -23,62 +23,7 @@
 
 (process-examples)
 
-(interactive-example
 
-(initialize-scheduler)
-(define barometer-height (make-cell))
-(define barometer-shadow (make-cell))
-(define building-height (make-cell))
-(define building-shadow (make-cell))
-(similar-triangles barometer-shadow barometer-height
-                   building-shadow building-height)
-
-(add-content building-shadow
- (supported (make-interval 54.9 55.1) '(shadows)))
-(add-content barometer-height
- (supported (make-interval 0.3 0.32) '(shadows)))
-(add-content barometer-shadow
- (supported (make-interval 0.36 0.37) '(shadows)))
-(run)
-(content building-height)
-=> #(supported #(interval 44.514 48.978) (shadows))
-
-(define fall-time (make-cell))
-(fall-duration fall-time building-height)
-
-(add-content fall-time
- (supported (make-interval 2.9 3.3) '(lousy-fall-time)))
-(run)
-(content building-height)
-=> #(supported #(interval 44.514 48.978) (shadows))
-
-(add-content fall-time
- (supported (make-interval 2.9 3.1) '(better-fall-time)))
-(run)
-(content building-height)
-=> #(supported #(interval 44.514 47.243)
-            (better-fall-time shadows))
-
-(add-content building-height (supported 45 '(superintendent)))
-(run)
-(content building-height)
-=> #(supported 45 (superintendent))
-
-(content barometer-height)
-=> #(supported #(interval .3 .30328)
-            (superintendent better-fall-time shadows))
-
-(content barometer-shadow)
-=> #(supported #(interval .366 .37)
-            (better-fall-time superintendent shadows))
-
-(content building-shadow)
-=> #(supported #(interval 54.9 55.1) (shadows))
-
-(content fall-time)
-=> #(supported #(interval 3.0255 3.0322)
-            (shadows superintendent))
-)
 
 
 (define (v&s-merge v&s1 v&s2)
@@ -112,115 +57,7 @@
 
 (load-compiled "supported-values")(process-examples)
 
-(interactive-example
 
-(initialize-scheduler)
-(define barometer-height (make-cell))
-(define barometer-shadow (make-cell))
-(define building-height (make-cell))
-(define building-shadow (make-cell))
-(similar-triangles barometer-shadow barometer-height
-                   building-shadow building-height)
-
-(add-content building-shadow
- (make-tms (supported (make-interval 54.9 55.1) '(shadows))))
-(add-content barometer-height
- (make-tms (supported (make-interval 0.3 0.32) '(shadows))))
-(add-content barometer-shadow
- (make-tms (supported (make-interval 0.36 0.37) '(shadows))))
-(run)
-(content building-height)
-=> #(tms (#(supported #(interval 44.514 48.978) (shadows))))
-
-(define fall-time (make-cell))
-(fall-duration fall-time building-height)
-
-(add-content fall-time
- (make-tms (supported (make-interval 2.9 3.1) '(fall-time))))
-(run)
-(content building-height)
-=> #(tms (#(supported #(interval 44.514 47.243)
-                   (shadows fall-time))
-       #(supported #(interval 44.514 48.978)
-                   (shadows))))
-
-(tms-query (content building-height))
-=> #(supported #(interval 44.514 47.243) (shadows fall-time))
-
-(kick-out! 'fall-time)
-(run)
-(tms-query (content building-height))
-=> #(supported #(interval 44.514 48.978) (shadows))
-
-(kick-out! 'shadows)
-(run)
-(tms-query (content building-height))
-=> #(*the-nothing*)
-
-(bring-in! 'fall-time)
-(run)
-(tms-query (content building-height))
-=> #(supported #(interval 41.163 47.243) (fall-time))
-
-(content building-height)
-=> #(tms (#(supported #(interval 41.163 47.243)
-                   (fall-time))
-       #(supported #(interval 44.514 47.243)
-                   (shadows fall-time))
-       #(supported #(interval 44.514 48.978)
-                   (shadows))))
-
-(add-content building-height (supported 45 '(superintendent)))
-
-(run)
-(content building-height)
-=> #(tms (#(supported 45 (superintendent))
-       #(supported #(interval 41.163 47.243)
-                   (fall-time))
-       #(supported #(interval 44.514 47.243)
-                   (shadows fall-time))
-       #(supported #(interval 44.514 48.978)
-                   (shadows))))
-
-(tms-query (content building-height))
-=> #(supported 45 (superintendent))
-
-(bring-in! 'shadows)
-(run)
-(tms-query (content building-height))
-=> #(supported 45 (superintendent))
-
-(content barometer-height)
-=> #(tms (#(supported #(interval .3 .30328)
-                   (fall-time superintendent shadows))
-       #(supported #(interval .29401 .30328)
-                   (superintendent shadows))
-       #(supported #(interval .3 .31839)
-                   (fall-time shadows))
-       #(supported #(interval .3 .32) (shadows))))
-
-
-(tms-query (content barometer-height))
-=> #(supported #(interval .3 .30328)
-            (fall-time superintendent shadows))
-
-(kick-out! 'fall-time)
-(run)
-(tms-query (content barometer-height))
-=> #(supported #(interval .3 .30328) (superintendent shadows))
-
-(bring-in! 'fall-time)
-(run)
-(tms-query (content barometer-height))
-=> #(supported #(interval .3 .30328) (superintendent shadows))
-
-(content barometer-height)
-=> #(tms (#(supported #(interval .3 .30328)
-                   (superintendent shadows))
-       #(supported #(interval .3 .31839)
-                   (fall-time shadows))
-       #(supported #(interval .3 .32) (shadows))))
-)
 
 
 (define (tms-merge tms1 tms2)
@@ -286,83 +123,7 @@
 
 (load-compiled "truth-maintenance")(process-examples)
 
-(interactive-example
 
-;;; Restore the state we had in the preceding example
-(initialize-scheduler)
-(define barometer-height (make-cell))
-(define barometer-shadow (make-cell))
-(define building-height (make-cell))
-(define building-shadow (make-cell))
-(similar-triangles barometer-shadow barometer-height
-                   building-shadow building-height)
-
-(add-content building-shadow
- (make-tms (supported (make-interval 54.9 55.1) '(shadows))))
-(add-content barometer-height
- (make-tms (supported (make-interval 0.3 0.32) '(shadows))))
-(add-content barometer-shadow
- (make-tms (supported (make-interval 0.36 0.37) '(shadows))))
-
-(define fall-time (make-cell))
-(fall-duration fall-time building-height)
-
-(add-content fall-time
- (make-tms (supported (make-interval 2.9 3.1) '(fall-time))))
-(run)
-(tms-query (content building-height))
-
-(kick-out! 'fall-time)
-(run)
-(tms-query (content building-height))
-
-(bring-in! 'fall-time)
-(kick-out! 'shadows)
-(run)
-(tms-query (content building-height))
-
-(add-content building-height (supported 45 '(superintendent)))
-(run)
-(bring-in! 'shadows)
-(run)
-(tms-query (content building-height))
-
-(tms-query (content barometer-height))
-(kick-out! 'fall-time)
-(run)
-(tms-query (content barometer-height))
-(bring-in! 'fall-time)
-(run)
-(tms-query (content barometer-height))
-;;; That was a long story!
-(add-content building-height
-  (supported (make-interval 46. 50.) '(pressure)))
-(run)
-=> (contradiction (superintendent pressure))
-
-(tms-query (content building-height))
-=> #(supported #(*the-contradiction*) (superintendent pressure))
-
-(tms-query (content barometer-height))
-=> #(supported #(interval .3 .30328) (superintendent shadows))
-
-(kick-out! 'superintendent)
-(run)
-(tms-query (content building-height))
-=> #(supported #(interval 46. 47.243) (fall-time pressure))
-
-(tms-query (content barometer-height))
-=> #(supported #(interval .30054 .31839)
-            (pressure fall-time shadows))
-
-(bring-in! 'superintendent)
-(kick-out! 'pressure)
-(run)
-(tms-query (content building-height))
-=> #(supported 45 (superintendent))
-(tms-query (content barometer-height))
-=> #(supported #(interval .3 .30328) (superintendent shadows))
-)
 
 
 (define (tms-merge tms1 tms2)
@@ -392,47 +153,7 @@
   (abort-process `(contradiction ,nogood)))
 (process-examples)
 
-(interactive-example
 
-(define (multiple-dwelling)
-  (let ((baker    (make-cell))  (cooper (make-cell))
-        (fletcher (make-cell))  (miller (make-cell))
-        (smith    (make-cell))  (floors '(1 2 3 4 5)))
-    (one-of floors baker)       (one-of floors cooper)
-    (one-of floors fletcher)    (one-of floors miller)
-    (one-of floors smith)
-    (require-distinct
-     (list baker cooper fletcher miller smith))
-    (let ((b=5  (make-cell))    (c=1 (make-cell))
-          (f=5  (make-cell))    (f=1 (make-cell))
-          (m>c  (make-cell))    (sf  (make-cell))
-          (fc   (make-cell))    (one (make-cell))
-          (five (make-cell))    (s-f (make-cell))
-          (as-f (make-cell))    (f-c (make-cell))
-          (af-c (make-cell)))
-      ((constant 1) one)        ((constant 5) five)
-      (=? five baker b=5)       (forbid b=5)
-      (=? one cooper c=1)       (forbid c=1)
-      (=? five fletcher f=5)    (forbid f=5)
-      (=? one fletcher f=1)     (forbid f=1)
-      (>? miller cooper m>c)    (require m>c)
-      (subtractor smith fletcher s-f)
-      (absolute-value s-f as-f)
-      (=? one as-f sf)          (forbid sf)
-      (subtractor fletcher cooper f-c)
-      (absolute-value f-c af-c)
-      (=? one af-c fc)          (forbid fc)
-      (list baker cooper fletcher miller smith))))
-
-(initialize-scheduler)
-(define answers (multiple-dwelling))
-(run)
-(map v&s-value (map tms-query (map content answers)))
-=> (3 2 4 5 1)
-
-*number-of-calls-to-fail*
-=> 63
-)
 
 
 (define (binary-amb cell)
