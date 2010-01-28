@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd core
+./run-tests
+
+cd ../extensions
+exec ./run-tests
