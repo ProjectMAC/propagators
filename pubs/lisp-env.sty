@@ -1,0 +1,299 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                  %%%
+%%% Stolen from mbook.cls, the SICM class file -- axch 08 Dec 08     %%%
+%%%                                                                  %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% The theft was piecemeal and indiscriminate.  I make no promises
+%% about how much of this stuff actually works.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                    %%
+%%                            FONT STUFF                              %%
+%%                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Stolen from custom-fonts.sty; needed to make the lisp environment
+%% below work
+
+%%  These are the sizes for lisp code environments in various
+%%  contexts.  The names are self-explanatory, except for
+%%  \exercisecodesize, which would be more logically called
+%%  \smallcodesize, since it's used whenever \small is in effect. --
+%%  dmj, 2/22/96
+
+\def\normalcodesize{\fontsize{9.8}{11pt}\selectfont}
+
+\def\exercisecodesize{\fontsize{9}{10pt}\selectfont}
+
+\def\figurecodesize{\fontsize{8.7}{10pt}\selectfont}
+
+\def\footnotecodesize{\fontsize{8}{9pt}\selectfont}
+
+\newcommand{\@tt}{}
+\let\@tt\tt
+
+%%  \ltt is for use within lisp environments, where spaces are active
+%%  and therefore not automatically skipped in contexts such as
+%%  "{\tt foo}".  The \@gobble will eat the (single) space after the
+%%  \tt.  It could be made to gobble up arbitrarily many spaces, but
+%%  it's probably not worth the effort.  \tt will automatically be
+%%  redefined to be equivalent to \ltt inside the lisp and smalllisp
+%%  environments.
+
+\def\ltt{\@tt\@gobble}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                    %%
+%%                        LIST ENVIRONMENTS                           %%
+%%                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%  \shrinksurroundingspace takes a <dimen> as an argument and
+%%  shrinks the vertical space before and after the next list
+%%  environment by the amount (a negative argument will increase the
+%%  space).  It should only ever be inserted directly before the list
+%%  environment to which you want it to apply.  Example:
+%%  
+%%      last line of paragraph preceding code.
+%%      \shrinksurroundingspace{2pt}
+%%      \begin{lisp}
+%%      <code>
+%%      \end{lisp}
+%%      First line of paragraph after code....
+%%
+%%  will result in that particular lisp environment having 2pt less
+%%  space above and below it than normal. -- dmj, 3/15/96
+
+\newdimen\@shrinkamount
+
+\def\shrinksurroundingspace#1{%
+    \global\@shrinkamount#1%
+}
+
+\def\shrinkitemspace#1{%
+    \advance\itemsep-#1\relax
+}
+
+\let\@@@trivlist\@trivlist
+
+\def\@trivlist{%
+    \advance\topsep-\@shrinkamount
+    \global\@shrinkamount\z@
+    \@@@trivlist
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                    %%
+%%                     THE EPIGRAPH ENVIRONMENT                       %%
+%%                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\attribution}[1]{%
+    \addvspace{5pt}%
+    \begingroup
+        \parindent\z@
+        \linepenalty9000
+        #1\par
+    \endgroup
+    \addvspace{1pc}%
+}
+
+\newenvironment{epigraph}{%
+    \addvspace{1pc}%
+    \raggedleft
+    \begin{minipage}[t]{3.1in}%
+    \small\raggedright
+}{%
+    \end{minipage}%
+    \par
+    \addvspace{3.5pc}%determines space below epigraph
+    \global\@ignoretrue
+    \aftergroup\@afterindentfalse
+    \aftergroup\@afterheading
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                    %%
+%%                        LISP ENVIRONMENTS                           %%
+%%                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%  Redefined lisp environment, essentially by copying verbatim
+%%  environment and making a few changes -- dmj, 1/14/96
+
+%%  Tweaked lisp environment again.  Moved line breaking parameters
+%%  inside the trivlist and after the \@@par and rewrote \par. -- dmj,
+%%  2/20/96
+
+\let\@lispcodesize\normalcodesize
+
+\newenvironment{lisp}{%
+    \let\tt\ltt
+%%  
+%%  This definition of \\ should be completely unnecessary, but it's
+%%  too late in the game to take any chances. -- dmj, 4/9/96
+%%  
+    \def\\{\newline\null}%
+%%    \advance\topsep-\@shrinkamount
+%%    \global\@shrinkamount\z@
+    \trivlist\item\relax
+            \@@par
+            \parskip\z@skip
+            \parindent\z@
+            \interlinepenalty\@Mi
+            \@tempswafalse
+            \def\par{%
+                \if@tempswa
+%%  
+%%  Some delicate tweaking here.  In the standard verbatim
+%%  environment, \leavevmode and \null are unconditionally called
+%%  here.  This has the effect of retaining blank lines at the top of
+%%  a page after an \allowbreak, which is undesirable.  Instead, we
+%%  check to see whether we're still in vertical mode.  If so, it
+%%  means that the current line is empty, and we just stick in a
+%%  vertical skip of \baselineskip.  Since \vskip's at the top of
+%%  pages are swallowed by TeX, this has the desired effect of
+%%  suppressing the extraneous blank line. If we're not in vertical
+%%  mode, we call \@@par to end the current line, as usual.  The
+%%  \leavevmode and \null are no longer necessary.  In either case, we
+%%  still need to put in the \interlinepenalty.
+%%  
+%%  That's the theory.  Hopefully it will work. -- dmj, 2/20/96
+%%  
+                    \ifvmode
+                        \vskip\baselineskip
+                    \else
+%%                          \leavevmode \null
+                        \@@par
+                    \fi
+                    \penalty\interlinepenalty
+                \else
+                    \@tempswatrue
+                    \ifhmode\@@par\penalty\interlinepenalty\fi
+                \fi
+            }%
+        \obeylines \frenchspacing\@vobeyspaces \@lispcodesize \tt \@noligs
+        \everypar \expandafter{\the\everypar \unpenalty}%
+}{%
+    \endtrivlist
+}
+
+%%  lisp* is identical to lisp, except that it changes
+%%  \@beginparpenalty and \@endparpenalty to 10001, thus (hopefully)
+%%  preventing breaks before or after the environment.  (If necessary,
+%%  an \allowbreak can be used immediately before or after the lisp*
+%%  to allow a break there.) -- dmj, 3/13/96
+
+%%  Obviously, this could be integrated better with the lisp
+%%  environment by having the two environments share all of the
+%%  common code, but by implementing it this way, we avoided any
+%%  possible problems that might have ensued if we had changed the
+%%  lisp environment.  -- dmj, 4/9/96
+
+\newenvironment{lisp*}{%
+    \let\tt\ltt
+    \def\\{\newline\null}%
+    \trivlist
+        \@beginparpenalty\@Mi
+        \@endparpenalty\@Mi
+        \interlinepenalty\@Mi
+        \item\relax
+            \@@par
+            \parskip\z@skip
+            \parindent\z@
+            \@tempswafalse
+            \def\par{%
+                \if@tempswa
+                    \ifvmode
+                        \vskip\baselineskip
+                    \else
+                        \@@par
+                    \fi
+                    \penalty\interlinepenalty
+                \else
+                    \@tempswatrue
+                    \ifhmode\@@par\penalty\interlinepenalty\fi
+                \fi
+            }%
+        \obeylines \frenchspacing\@vobeyspaces \@lispcodesize \tt \@noligs
+        \everypar \expandafter{\the\everypar \unpenalty}%
+        \penalty\interlinepenalty
+}{%
+    \endtrivlist
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                    %%
+%%                            FOOTNOTES                               %%
+%%                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \def\footnoterule{%
+%     \kern-3\p@ 
+%     \hrule width\textwidth height\hruleheight   % .1pt
+%     \kern 2.6\p@
+% }
+
+\@addtoreset{footnote}{chapter} 
+
+%%  Modification of \footnote to allow catcode changes inside
+%%  footnotes, so things like \verb and the lisp enveironment work
+%%  (cf. plain.tex)
+
+\def\@footnotetext{%
+    \insert\footins\bgroup
+        \reset@font\footnotesize
+        \interlinepenalty\interfootnotelinepenalty
+        \splittopskip\footnotesep
+        \splitmaxdepth \dp\strutbox
+        \floatingpenalty \@MM
+        \hsize\columnwidth
+        \@parboxrestore
+        \protected@edef\@currentlabel{%
+            \csname p@footnote\endcsname\@thefnmark
+        }%
+        \color@begingroup
+            \let\idx@extra\ftn@idxnum
+            \@makefntext
+            \rule\z@\footnotesep\ignorespaces
+            \bgroup\aftergroup\@foot\let\next
+}
+
+\def\@foot{%
+            \@finalstrut\strutbox
+        \color@endgroup
+    \egroup
+}
+
+%%  Here is the par indentation for multiple-par footnotes
+
+\long\def\@makefntext{%
+    \parindent 1em
+    \noindent\@makefnmark
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                    %%
+%%                            SECTIONING                              %%
+%%                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\@startsection#1#2#3#4#5#6{\if@noskipsec \leavevmode \fi
+   \par \@tempskipa #4\relax
+   \@afterindentfalse%% << ah, was true
+   \ifdim \@tempskipa <\z@ \@tempskipa -\@tempskipa \@afterindentfalse\fi
+   \if@nobreak \everypar{}\else
+     \addpenalty\@secpenalty\addvspace\@tempskipa\fi \@ifstar
+     {\@ssect{#3}{#4}{#5}{#6}}{\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+
+\def\paragraph{%
+    \@startsection{paragraph}{5}{\z@}{16pt}{1sp}{\normalsize\bit}%
+}
+
+\def\subparagraph{%
+    \@startsection{subparagraph}{0pt}{16pt}{-1em}{\normalsize\bit}%
+}

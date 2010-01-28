@@ -1,0 +1,68 @@
+
+def pdflatex filename
+  desc "LaTeX #{filename}.tex to a PDF"
+  file "#{filename}.pdf" => ["#{filename}.tex", :pictures] do
+    sh "pdflatex #{filename}.tex"
+  end
+  task :pdflatex => "#{filename}.pdf"
+end
+
+def fig_to_dev filename
+  desc "fig2dev #{filename}.fig to a PDF"
+  file "#{filename}.pdf" => "#{filename}.fig" do
+    sh "fig2dev -L pdf #{filename}.fig #{filename}.pdf"
+  end
+  task :pictures => "#{filename}.pdf"
+end
+
+def layered_fig_to_dev(input, output, layers)
+  desc "fig2dev layers #{layers} from #{input}.fig to #{output}.pdf"
+  file "#{output}.pdf" => "#{input}.fig" do
+    sh "fig2dev -L pdf -K -D #{layers} #{input}.fig #{output}.pdf"
+  end
+  task :pictures => "#{output}.pdf"
+end
+
+def fig_to_layered_animation(input, layers_list)
+  layers_list.each_index do |i|
+    layered_fig_to_dev input, "#{input}-#{i}", layers_list[i]
+  end
+end
+
+pdflatex "fpl-slides"
+
+fig_to_layered_animation("chaos", %w(
++50
++50,60
++50,60,69,70
++50,60,70
++50,60,70,79,80
++50,60,70,80
++50,60,70,80,89,90
++50,60,70,80,90
++50,60,70,80,90,99,100
++50,60,70,80,90,100
++50,60,70,80,90,100,109,110
++50,60,70,80,90,100,110
++50,60,70,80,90,100,110,119,120
++50,60,70,80,90,100,110,120
++50,60,70,80,90,100,110,120,69,130
++50,60,70,80,90,100,110,120,130
++50,60,70,80,90,100,110,120,130,139,140
++50,60,70,80,90,100,110,120,130,140
+))
+
+fig_to_layered_animation("layers", %w(+50, +50,60))
+fig_to_layered_animation("parallel", %w(+500))
+
+desc "fig2dev all pictures"
+task :pictures
+
+desc "LaTeX all PDFs"
+task :pdflatex
+
+file "fpl-notes.ps" => "fpl-notes.txt" do
+  sh "enscript -r -f Courier-Bold20 -o fpl-notes.ps -M letter fpl-notes.txt"
+end
+
+task :default => [:pdflatex, "fpl-notes.ps"]

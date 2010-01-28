@@ -1,0 +1,60 @@
+#+STARTUP: odd
+#+STARTUP: hidestars
+
+Speculations on Propagation in Next-Generation Programming Languages
+
+Programming languages can be classified as to what they make explicit
+and what they leave implicit.  Many of the great ideas that improve
+the expressiveness of programming languages do so by allowing one or
+another detail of the operation of the computer to remain implicit, so
+that the writers and readers of programs can focus on that which
+matters to them.  The propagation idea, together with the accumulating
+information idea, allow control flow to remain implicit.  Implicit
+control flow offers a unifying framework for many of the
+implicitizations that have been worked out in the past, and
+tantalizing hints about implicitizations that remain to be worked out
+in the future.  I will describe the former and bounce off the latter
+to speculate on desiderata for a next-generation programming language
+and the role propagation can play in it.
+
+* Principles
+*** Expressiveness
+*** Security implications(?)
+* Expressiveness
+These I do not interfere with:
+- Imperative
+- Functional
+  - Funargs/closures
+  - Aggregate operations
+  - Laziness
+- Object-oriented
+  - Generic dispatch
+  - Abstract data types
+- Meta- (eval, macros, class definition time)
+
+These I enable:
+- Nondeterministic
+- Probabilistic
+- Logic 
+- Constraint
+- Reactive (functional or otherwise)
+- Concurrent (in a sense, this is a kind of nondeterminism)
+  - Interrupt conditions
+- Type-system (Verified?)
+- Reflective
+- Layered (aspect-oriented?)
+
+These are separate:
+- Domain-specific languages
+  - (make some manipulations standard in the domain implicit)
+- Pattern matching (functional, logic)
+- Interesting datastructures
+- Assertions
+* Substrate
+merging; propagation
+When to merge what and when to rerun what are implicit
+* Future work
+*** Garbage collection
+*** Abstraction
+*** Scheduling by informativeness?
+*** Actual language structure

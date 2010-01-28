@@ -1,0 +1,84 @@
+\documentclass[12pt]{article}
+
+% \usepackage{lisp-env}
+\input{preamble.tex}
+\usepackage{url}
+
+\title{On Propagation Networks as a Substrate for Artificial Intelligence Programming}
+\author{Alexey Radul}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Modern programming languages are woefully inadequate for the needs of
+the artificial intelligence field.
+
+% AI and PL both aim at the language of thought
+Both the fields of artificial intelligence and programming languages
+aim for the language of thought.  Artificial intelligence is always on
+a quest for better representations of knowledge---what better
+representation for procedural knowledge than a program?  But in what
+language should that program be expressed?  That language will be the
+language of thought for the system that represents its knowledge in
+it!
+
+Programming language research is always on a quest for precise
+languages with which to describe processes and computations.  One of
+the great goals of this quest is to find languages that better match
+how people think about the world, so that programs will be more
+natural, more understandable, and therefore easier to think about and
+debug.  The holy grail is again the same: to find the language in
+which we think.
+
+% rant about backchannels not being thick enough
+
+% multidirectionality of thought
+Multidirectionality is a particular feature of thought that is visibly
+lacking from modern programming languages.  When we think about
+something, we can pull information and deductions about it from many
+mental sources.  A chair is an object, so it will fall if I drop it.
+A chair is a built artifact with a purpose, and its purpose is to
+support people sitting on it.  Two completely different bits of
+knowledge, from reasoning processes in two different domains, and yet
+they apply to the same chair.  And they interact: if I drop the chair
+from high enough, it may break, and become unservicable for its
+intended purpose---people who sit on it thereafter may themselves
+fall.  It also doesn't matter much in what order those two
+observations came in.  In either case, I have the same resulting set
+of ideas about the chair.
+
+Standard programming languages, in contrast, are singularly
+unidirectional.  The time in a computation flows inexhorably in one
+direction.  The successful
+evaluation of an individual expression, or, equivalently, the successful
+production of an individual value, inescapably marks a point in time.  The work
+done to produce that value came \emph{before}; the work that will be
+done using that value comes \emph{after}.
+That inevitable limitation manifests as the sequencing of operations
+by the evaluator.  Since the evaluator works by structural recursion
+on the expressions that comprise a program, the structure of the
+program text constrains the flow of time through that program.
+Thus, while a program must serve as the description of
+\emph{what} we want accomplished, its shape excessively constrains the
+process, and therefore \emph{how} the computer accomplishes it.
+
+
+\section{Propagation Networks}
+
+% multidirectionality; merging
+
+\section{Applicability of Propagation to Artificial Intelligence}
+
+% multidirectionality
+% filling in details
+% compatible with probabilistic approaches
+% thought vs action
+% propagators as critics and selectors
+% multidirectionality and concurrency enables self-observation and self-awareness
+
+% the cells are topic-specific blackboards
+
+\end{document}

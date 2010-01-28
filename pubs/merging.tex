@@ -1,0 +1,269 @@
+\documentclass[12pt]{article}
+
+\usepackage{lisp-env}
+\input{preamble.tex}
+\usepackage{url}
+
+\title{Cumulative Programming}
+\author{Alexey Radul}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We introduce \emph{cumulative programming}---a programming style
+founded on the idea that it can often be fruitful to replace the
+notion of a ``value'' with the notion of a repository of all available
+information about that value.  Each such repository accepts
+information from a variety of sources, and is equipped with a merging
+operation that combines the information already in the repository with
+the new information tendered.  This allows incremental refinement of
+the value in question as more information becomes available; several
+such repositories can interact to mutually refine as a natural part
+of the operation of a program.
+
+Cumulative programming with sufficiently well-behaved merge operations
+lends itself to concurrent semantics and execution.  The accumulation
+repositories are the locus of synchronisation (locking), and are
+fundamentally local, so they do not create serious contention.
+Furthermore, if the merge operations are commutative, then writer-writer
+race conditions become unimportant, and if they are monotonic and
+idempotent, then reader-writer race conditions also become
+unimportant.
+
+We illustrate the cumulative programming style with two examples:
+inferences a (toy!) compiler might perform about values in a program being
+compiled, and enforcement of arc consistency in a constraint network a
+la Waltz~\cite{?}.
+\end{abstract}
+
+\section{Introduction}
+
+Sometimes a program needs to accumulate information about something
+over the course of several perhaps complex operations.  A reporting
+application needs to collate the results of multiple database queries
+to produce an answer.  An optimizing compiler needs to learn how
+variables may be used, or where functions may be called.  Sometimes
+new knowledge gleaned about one thing helps learn about another, and
+sometimes two things may mutually inform each other; perhaps a long
+back-and-forth is needed until they converge.  In any compiler, data
+flow analysis learns from control flow analysis; and in a compiler for
+a higher-order language, control flow analysis learns from data flow
+analysis (where a data object representing a procedure might flow
+affects whence control might flow into that procedure)
+\cite{shivers-1991-taming-lambda}.
+
+Sometimes, different methods need to be tried, and it may not be
+possible to predict which one, or what combination, will work, until
+they are tried, and until they report either new discoveries or lack
+thereof.  A symbolic integrator can try many particular integration
+patterns, but each one will only work on some kinds of inputs.  An
+input range may be given by both endpoints, or by one end and a
+length.  Sometimes, it may be well to try different methods
+concurrently, and perhaps stop one if it enters a long (or infinite)
+computation that another method makes unnecessary.  A finite list is easy
+to search, but otherwise-expensive breadcrumbs to remember where one
+has been may save one from running down a circular list forever.
+
+These patterns are so pervasive that perhaps we don't think about
+them; and yet there is a common thread that bears further examination,
+and explicit acknowledgement and support.  All these cases, whether as
+complicated as lofty interwoven compiler analyses or as simple as the
+lowly range bar that accepts two different forms of input look, from
+the right angle, like systems of accumulators.  It doesn't matter in
+what order a compiler analysis discovers what it does about the uses
+of some procedure, as long as it can maintain an accurate summary of
+the whole.  It doesn't matter if two different integration methods
+yield results in different forms, as long as they can be reconciled
+and the best form chosen for subsequent efforts.
+
+There are three properties we mentally associate with the idea of an
+accumulator, all of which are independently useful.  One is
+\emph{commutativity}: it doesn't matter in what order one add information to
+an accumulator, because the end result is the same.  This is very
+useful because we then don't need to choreograph the order in which
+information is discovered: we can try whatever methods look plausible
+willy-nilly (perhaps even concurrently), and have the accumulation
+take care of making sure the answer available at the end is coherent.
+Another is \emph{monotonicity}: an accumulator, by definition, accumulates
+everything added to it, and never forgets anything that might be
+valuable.  This means we don't need to worry about reading the state
+of some accumulator before it is overwritten, because of course it
+will not be overwritten---only added to.  Anything there is to be had
+by looking at it will still be there later, so we can allow other
+writers to proceed before readers do.  Finally the third common
+property is \emph{idempotence}: if one tells an accumulator the same piece of
+information twice, it should not double-count.  This property is
+valuable because it allows us not to worry about reading our
+accumulators too early: If it later learns something new, we can just
+read it again, and repeating our conclusions to the next accumulator
+down the line won't cause any trouble, because it will be able to
+recognize and ignore any redundnacy such a repetition may introduce.
+These three ideas together form the essence of cumulative programming.
+As with object-oriented programming, these ideas can be built into the
+core of a programming system, as in \cite{art-thesis}, or used as a
+% TODO I want to suggest that the former is a good thing, not a crazy
+% extremist goose chase.
+design pattern to simplify tasks in existing environments.
+
+\section{Example: Shortest Paths}
+
+One simple example of cumulative programming is finding
+(single-source) shortest paths in graphs.  As a reminder, the problem
+is this: given a (directed) graph $G$ with weighted edges, and a
+distingushed source vertex $s$, find the shortest (least total weight)
+paths from $s$ to all other vertices (or to a distinguished sink
+vertex $t$).  The traditional form in which the answer is expected is
+an association that maps each vertex to the length of the shortest
+path from the source to that vertex, and the vertex's predecessor in
+that path.
+
+The textbook exposition of how to solve this problem is an exercise in
+cumulative programming.  For every vertex of the input graph, let
+there be an accumulator tracking two things: the length of the
+shortest known path from the source to this vertex, and this vertex's
+predecessor along that path.  Each (directed) edge of the input graph
+allows us to deduce a proposition for the head vertex from the state
+of the accumulator for the tail.  Each accumulator knows whether to
+accept or reject such propositions, based on whether the proposed new
+length is more or less than the best length that accumulator has seen
+so far.  Therefore, to solve the shortest paths problem, it suffices
+to walk over said edges deducing said propositions until no
+improvements remain to be deduced.
+
+Both of the standard shortest-paths algorithms refine this base with a
+prescription for how to walk the edges of the graph.  The Bellman-Ford
+algorithm says to go through all edges $|V|-1$ times (where $|V|$ is
+the number of vertices of the graph), and promises that if the graph
+has no negative-weight cycles, $|V|-1$ times around is enough to
+deduce all possible improvements.  Dijkstra's algorithm requires the
+absence of negative-weight edges, and promises that if each time one
+processes all the edges leaving the closest-to-the-source vertex whose
+edges have not yet been processed, one will only need to process each
+vertex and each edge once.
+
+Let us examine this situation from the cumulative programming
+perspective.  We notice a separation between the maintenance of the
+information we are trying to compute and the schedule of our
+computations.  Our accumulators are completely self-contained
+entities: each receives assertions of the form ``if vertex X were your
+predecessor, you could have a path as short as Y,'' from any source,
+and remembers from these assertions the best offered length, and the
+associated predecessor.  The order in which we compute these
+assertions is independent of their treatment by the
+accumulators---there is a separation of concerns.
+
+How does this structure rate on the cumulative programming triumvirate
+of commutativity, idempotence, and monotonicity?  The accumulation is
+commutative: if a shorter and a longer path are presented, the shorter
+will be chosen, regardless of which was presented first.  Therefore,
+we are free to compute and present possible paths to a particular
+vertex in any order we choose---the accumulator will sort out the best
+one.  The accumulation is monotonic, in the sense that the quality of
+the best path always improves (or stays the same, but never worsens):
+if a longer path is offered when a shorter is already present, the
+longer will just be rejected.  Therefore, we are free to wait, as
+Dijkstra's algorithm does, to collect all the data about short paths
+to a vertex before we start computing paths from that vertex---the
+intermediate possibilities are of no concern for the problem at hand.
+The accumulation is idempotent: if a path that was presented before is
+presented again, it will have no effect, because the best path will
+necessarily be no worse.  Therefore, we are free, per the Bellman-Ford
+algorithm, not to wait to be sure we know the shortest path to a
+vertex before computing paths through it, because the worst that can
+happen is that we will need to redo work we have already done if we
+discover some new, shorter path; and on the other hand, having to wait
+for that would lead to paralysis in the presence of negative-weight
+edges.
+
+The Bellman-Ford shortest paths algorithm particularly makes an
+excellent showcase of the general advantages of cumulative
+programming.  When it starts, we don't know the exact shortest path to
+any vertex except the source; and we don't have enough information to
+deduce any exact shortest paths to any vertex, because negative-weight
+edges elsewhere in the graph can always produce a surprisingly short
+path.  There is no way to construct any more of the final answer
+irreversibly.  So we start making progress with tentative deductions:
+there is a path to vertex $v$ of length foo (so the shortest cannot be
+any longer than that); therefore, there is a path to vertex $w$ of
+length bar; etc.  Each of these things is true and correct, though it
+remains to be seen whether it will prove to be the last word.  If we
+find a shorter path to an old vertex, we will have to redo the
+deductions we made about paths through that vertex in the past, but
+that's OK.  We are continually learning; accumulating information
+about the problem we are trying to solve.  When there is no more
+information to be accumulated, the problem is solved; and in the case
+of shortest paths through graphs, it is even known that if paths keep
+getting shorter for too long, the graph has a negative-weight cycle
+and the shortest-paths problem has no solution.
+
+% Waltz
+% Compiler analysis
+
+\bibliographystyle{plain}
+\bibliography{merging-auto}
+
+\end{document}
+
+N.B. I can even write all the examples in three different languages
+for three different audiences.
+
+If merge is commutative, you don't have writer-writer race conditions,
+If it's monotonic, you don't need to worry about reading too late
+It it's idempotent, you don't need to worry about reading too early,
+  because you can always reread and recompute
+
+Do I want the ``people think multidirectionally'' story?
+
+Just how much does this story help you avoid locks?  Certainly a
+writer must lock the cell being written to, at least for a moment; but
+are there any other problems of this sort?  How much do monotonicity
+and idempotence help you not need transactions?
+
+Examples:
+
+Know/don't know (maybe ``I've tried X Y and Z and I still don't know yet'')
+bounds (the improving values paper, Dijkstra's algorithm, etc)
+numeric ranges for dealing with measurements
+pointwise bounds on vectors?
+dependency tracking as an information-type transform
+Waltz-style restriction of possibilities
+Type information (or flows-to lists, etc) for program analysis
+Logical statements
+Gerry says: build-system dependency lists
+
+
+Implementational notes:
+
+N.B. The partial information structure itself wants to be immutable, so
+that all changes to it travel through the cell interface.
+(n.b. Immutability allows structure sharing.)  But it may want to
+contain other cells (and maybe even propagate change notices).  (Does
+immutability and structure sharing require garbage collection?)
+
+N.B. ``More informative'' has no reason to mean ``takes more memory''
+(e.g. [5,8] is more informative than [2,10])
+
+N.B. If you're going to have observers, the observers should only be
+notified when *stored information changes*, not when *new increments
+arrive* (because they may be redundant).
+
+
+The lowly counter:
+
+Read-Modify-Write loses.
+If incrementation can be captured as an operation, then said incrementation
+commutes with itself: this is commutativity of merging
+Next level is to replace the counter by a set whose size the counter
+is, and add elements with identities to it.  This gives commutativity
+and idempotence, albeit at an exponential cost in memory.  That memory
+cost can be mitigated by garbage collection: have the set hold its
+elements weakly, and add a GC hook that converts dead weak links into
+a count of how many of them there were.  In effect, this is the same
+counter again, but it now maintains a weak cache of the identities
+that have been added to it.  One nice thing about idempotence is that
+you can send an idempotent message out of a transaction immediately,
+without having to wait for the transaction to commit, and just resend
+the message if you need to retry the transaction (but you lose if the
+transaction fails).

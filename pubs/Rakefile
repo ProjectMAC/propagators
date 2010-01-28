@@ -1,0 +1,6 @@
+require File.dirname(__FILE__) + "/rake-latex.rb"
+
+latex "merging"
+pdflatex "merging"
+
+autobib "merging"
