@@ -28,7 +28,8 @@
 		    (if predicate consequent nothing))))
 
 (for-each load-relative
-  '("profiler-test"
+  '("test-support"
+    "profiler-test"
     "partial-compounds-test"
     "switches-test"
     "compound-merges-test"

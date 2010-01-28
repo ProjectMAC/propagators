@@ -1,0 +1,7 @@
+def scheme command
+  sh "mit-scheme --compiler -heap 6000 --batch-mode --no-init-file --eval '(set! load/suppress-loading-message? #t)' --eval '(begin #{command} (%exit 0))'"
+end
+
+task "multiple-dwelling.dot" do
+  scheme "(load \"load\") (load \"multiple-dwelling\") (prop:dot:write-graph-to-file (multiple-dwelling) \"multiple-dwelling.dot\")"
+end
