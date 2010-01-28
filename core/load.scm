@@ -45,7 +45,7 @@
 (load-relative-compiled "generic-system")
 (load-relative-compiled "scheduler")
 (load-relative-compiled "data-structure-definitions")
-(load-relative "test/test-support")
+(load-relative-compiled "test-support")
 
 ;; System definition
 (load-relative-compiled "core")

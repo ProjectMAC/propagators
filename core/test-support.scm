@@ -1,3 +1,5 @@
+(declare (usual-integrations))
+
 (define (->significant-figures places number)
   (define (round-down? digit-trail)
     (or (null? digit-trail)
