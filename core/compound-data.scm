@@ -21,23 +21,7 @@
 
 (declare (usual-integrations make-cell))
 
-(process-examples)
-
-(define generic-cons (make-generic-operator 2 'cons cons))
-(define conser
-  (function->propagator-constructor (nary-unpacking generic-cons)))
-
-;; This was just an illustration in the text, I don't actually want to
-;; run it.
-#;
-(if (foo?)
-    (cons 1 2)
-    (cons 3 4))
-(process-examples)
-
 (define conser (function->propagator-constructor cons))
-
-(define carer (function->propagator-constructor car))
 
 (define carer (function->propagator-constructor (nary-unpacking car)))
 
@@ -54,8 +38,6 @@
            (cons car-answer cdr-answer)))))
 
 (defhandler merge pair-merge pair? pair?)
-
-(process-examples)
 
 ;;; This strategy is presented in the text as an alternative to the
 ;;; preceding.  I choose not to enable it by default.
@@ -102,5 +84,4 @@
    (v&s-value v&s)
    (lset-union eq? (v&s-support v&s) more-support)))
 
-|#(process-examples)
-(process-examples)
+|#

@@ -21,8 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-(process-examples)
-
 (define (fahrenheit->celsius f c)
   (let ((thirty-two (make-cell))
         (f-32 (make-cell))
@@ -49,28 +47,6 @@
 
 (define (new-neighbor! cell neighbor)
   ((cell 'new-neighbor!) neighbor))
-
-(define (make-cell)
-  (let ((neighbors '()) (content nothing))
-    (define (add-content increment)
-      (cond ((nothing? increment) 'ok)
-            ((nothing? content)
-             (set! content increment)
-             (alert-propagators neighbors))
-            (else
-             (if (not (default-equal? content increment))
-                 (error "Ack! Inconsistency!")))))
-    (define (new-neighbor! new-neighbor)
-      (if (not (memq new-neighbor neighbors))
-          (begin
-            (set! neighbors (cons new-neighbor neighbors))
-            (alert-propagator new-neighbor))))
-    (define (me message)
-      (cond ((eq? message 'content) content)
-            ((eq? message 'add-content) add-content)
-            ((eq? message 'new-neighbor!) new-neighbor!)
-            (else (error "Unknown message" message))))
-    me))
 
 (define (propagator neighbors to-do)
   (for-each (lambda (cell)
@@ -115,7 +91,6 @@
   (function->propagator-constructor
     (eq-label! (lambda () value) 'name `(const ,value)) #;
     (lambda () value)))
-(process-examples)
 
 (define (sum x y total)
   (adder x y total)
@@ -146,10 +121,6 @@
     (product f-32 five c*9)
     (product c nine c*9)))
 
-
-
-(process-examples)
-
 (define (fall-duration t h)
   (let ((g (make-cell))
         (one-half (make-cell))
@@ -161,16 +132,10 @@
     (product g t^2 gt^2)
     (product one-half gt^2 h)))
 
-
-
-
 (define (similar-triangles s-ba h-ba s h)
   (let ((ratio (make-cell)))
     (product s-ba ratio h-ba)
     (product s ratio h)))
-
-
-
 
 (define (mul-interval x y)
   (make-interval (* (interval-low x) (interval-low y))
@@ -207,37 +172,6 @@
 
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
-    (define (add-content increment)
-      (cond ((nothing? increment) 'ok)
-            ((nothing? content)
-             (set! content increment)
-             (alert-propagators neighbors))
-            (else                       ; **
-             (let ((new-range
-                    (intersect-intervals content
-                                         increment)))
-               (cond ((equal? new-range content) 'ok)
-                     ((empty-interval? new-range)
-                      (error "Ack! Inconsistency!"))
-                     (else (set! content new-range)
-                           (alert-propagators neighbors)))))))
-    ;; ... the definitions of new-neighbor! and me are unchanged
-    (define (new-neighbor! new-neighbor)
-      (if (not (memq new-neighbor neighbors))
-          (begin
-            (set! neighbors (cons new-neighbor neighbors))
-            (alert-propagators new-neighbor))))
-    (define (me message)
-      (cond ((eq? message 'new-neighbor!) new-neighbor!)
-            ((eq? message 'add-content) add-content)
-            ((eq? message 'content) content)
-            (else (error "Unknown message" message))))
-    me
-  ))
-(process-examples)
-
-(define (make-cell)
-  (let ((neighbors '()) (content nothing))
     (define (add-content increment)     ; ***
       (let ((new-content (merge content increment)))
         (cond ((eq? new-content content) 'ok)
@@ -260,8 +194,10 @@
     (eq-put! me 'cell #t)
     me
   ))
+
 (define (neighbors cell) (cell 'neighbors))
 (define (cell? thing) (eq-get thing 'cell))
+
 (define-syntax define-cell
   (syntax-rules ()
     ((define-cell symbol)
@@ -365,6 +301,3 @@
 
 (load-compiled "generic-definitions")
 (load-compiled "intervals")
-
-
-(process-examples)

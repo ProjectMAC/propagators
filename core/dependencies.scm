@@ -21,11 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-(process-examples)
-
-
-
-
 (define (v&s-merge v&s1 v&s2)
   (let* ((v&s1-value (v&s-value v&s1))
          (v&s2-value (v&s-value v&s2))
@@ -55,21 +50,7 @@
  (lambda (v&s) (contradictory? (v&s-value v&s)))
  v&s?)
 
-(load-compiled "supported-values")(process-examples)
-
-
-
-
-(define (tms-merge tms1 tms2)
-  (let ((candidate (tms-assimilate tms1 tms2)))
-    (let ((consequence (strongest-consequence candidate)))
-      (tms-assimilate candidate consequence))))
-
-;; Not quite this, because we will redefine tms-merge
-;; in the next section.  See generic-primitives-3.scm
-;; for the real story.
-#;
-(defhandler merge tms-merge tms? tms?)
+(load-compiled "supported-values")
 
 (define (tms-assimilate tms stuff)
   (cond ((nothing? stuff) tms)
@@ -121,10 +102,7 @@
   (if (not (premise-in? premise)) (alert-all-propagators!))
   (mark-premise-in! premise))
 
-(load-compiled "truth-maintenance")(process-examples)
-
-
-
+(load-compiled "truth-maintenance")
 
 (define (tms-merge tms1 tms2)
   (let ((candidate (tms-assimilate tms1 tms2)))
@@ -151,10 +129,6 @@
 
 (define (process-nogood! nogood)
   (abort-process `(contradiction ,nogood)))
-(process-examples)
-
-
-
 
 (define (binary-amb cell)
   (let ((true-premise (make-hypothetical))
@@ -264,18 +238,3 @@
         (else
          (error "Inadequate choices for one-of-the-cells"
                 input-cells output-cell))))
-
-;;; This is a forward reference to conditionals.scm, but it is more
-;;; convenient to copy the code than to load that file here.  These
-;;; definitions are needed to execute the example in this section.
-(define switch
-  (function->propagator-constructor
-   (nary-unpacking
-    (lambda (predicate consequent)
-      (if predicate consequent nothing)))))
-
-(define (conditional p if-true if-false output)
-  (let ((not-p (make-cell)))
-    (inverter p not-p)
-    (switch p if-true output)
-    (switch not-p if-false output)))(process-examples)

@@ -25,12 +25,7 @@
 
 (define (load-relative-compiled filename)
   (self-relatively (lambda () (load-compiled filename))))
-
-(define-syntax interactive-example
-  (syntax-rules ()
-    ((_ form ...)
-     (begin))))
-
+#;
 (define-syntax process-examples
   (syntax-rules ()
     ((_ form ...)

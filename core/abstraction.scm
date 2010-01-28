@@ -21,15 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-(process-examples)
-(process-examples)
-
-(define (sum a b total)
-  (adder a b total)                     ; a + b -> total
-  (subtractor total a b)                ; total - a -> b
-  (subtractor total b a))               ; total - b -> a
-(process-examples)
-
 (define (compound-propagator neighbors to-build)
   (let ((done? #f) (neighbors (listify neighbors)))
     (define (test)
@@ -88,17 +79,3 @@
         (absolute-value x-g^2 ax-g^2)
         (<? ax-g^2 eps done)))))
 
-
-(process-examples)
-(process-examples)
-
-(define (compound-propagator neighbors to-build)
-  (let ((done? #f) (neighbors (listify neighbors)))
-    (define (test)
-      (if done?
-          'ok
-          (if (every nothing? (map content neighbors))
-              'ok
-              (begin (set! done? #t)
-                     (to-build)))))
-    (propagator neighbors test)))

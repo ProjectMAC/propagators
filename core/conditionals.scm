@@ -21,33 +21,13 @@
 
 (declare (usual-integrations make-cell))
 
-(process-examples)
-
-(define switch
-  (function->propagator-constructor
-   (lambda (control input)
-     (if (nothing? control)
-         nothing
-         (if control input nothing)))))
-
-(define switch
-  (function->propagator-constructor
-   (handling-nothings
-    (lambda (control input)
-      (if control input nothing)))))
-
-(define switch
-  (function->propagator-constructor
-   (nary-unpacking
-    (lambda (control input)
-      (if control input nothing)))))
-;;; But I want a name for the function that does the switch job
+;;; I want a name for the function that does the switch job
 (define (switch-function control input)
   (if control input nothing))
+
 (define switch
   (function->propagator-constructor
    (nary-unpacking switch-function)))
-
 
 (define (conditional control if-true if-false output)
   (let ((not-control (make-cell)))
