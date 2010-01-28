@@ -29,10 +29,7 @@
 (define (load-relative-compiled filename)
   (self-relatively (lambda () (load-compiled filename))))
 
-(load-relative "../testing/load")
-
 (load-relative "../extensions/load.scm")
-(clear-registered-tests!)
 
 (for-each 
  load-relative

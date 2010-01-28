@@ -29,10 +29,7 @@
 (define (load-relative-compiled filename)
   (self-relatively (lambda () (load-compiled filename))))
 
-(load-relative "../testing/load")
-
 (load-relative "../core/load.scm")
-(clear-registered-tests!)
 
 (for-each load-relative-compiled
  '(; "eq-properties" ; Already loaded in ../core/load.scm
@@ -50,4 +47,3 @@
    "graph-drawing"
    "prop-dot"))
 
-(load-relative "test/load")

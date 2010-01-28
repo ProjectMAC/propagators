@@ -35,10 +35,9 @@
   (syntax-rules ()
     ((_ form ...)
      (begin))))
-#;
-(for-each
- load-relative-compiled
- '("../testing/load"))
+
+(load-relative-compiled "../testing/load")
+(load-relative-compiled "../profiler")
 
 ;; Support structures
 (load-relative-compiled "eq-properties")
@@ -46,6 +45,7 @@
 (load-relative-compiled "generic-system")
 (load-relative-compiled "scheduler")
 (load-relative-compiled "data-structure-definitions")
+(load-relative "test/test-support")
 
 ;; System definition
 (load-relative-compiled "core")
