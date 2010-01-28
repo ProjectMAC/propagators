@@ -1,0 +1,488 @@
+;;; ----------------------------------------------------------------------
+;;; Copyright 2009 Massachusetts Institute of Technology.
+;;; ----------------------------------------------------------------------
+;;; This file is part of Propagator Network Prototype.
+;;; 
+;;; Propagator Network Prototype is free software; you can
+;;; redistribute it and/or modify it under the terms of the GNU
+;;; General Public License as published by the Free Software
+;;; Foundation, either version 3 of the License, or (at your option)
+;;; any later version.
+;;; 
+;;; Propagator Network Prototype is distributed in the hope that it
+;;; will be useful, but WITHOUT ANY WARRANTY; without even the implied
+;;; warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;;; See the GNU General Public License for more details.
+;;; 
+;;; You should have received a copy of the GNU General Public License
+;;; along with Propagator Network Prototype.  If not, see
+;;; <http://www.gnu.org/licenses/>.
+;;; ----------------------------------------------------------------------
+
+(declare (usual-integrations make-cell))
+
+(process-examples)
+
+(define (fahrenheit->celsius f c)
+  (let ((thirty-two (make-cell))
+        (f-32 (make-cell))
+        (five (make-cell))
+        (c*9 (make-cell))
+        (nine (make-cell)))
+    ((constant 32) thirty-two)
+    ((constant 5) five)
+    ((constant 9) nine)
+    (subtractor f thirty-two f-32)
+    (multiplier f-32 five c*9)
+    (divider c*9 nine c)))
+
+(interactive-example
+
+(initialize-scheduler)
+(define f (make-cell))
+(define c (make-cell))
+
+(fahrenheit->celsius f c)
+
+(add-content f 77)
+(run)
+(content c)
+=> 25
+)
+
+
+(define nothing #(*the-nothing*))
+
+(define (nothing? thing)
+  (eq? thing nothing))
+
+(define (content cell)
+  (cell 'content))
+
+(define (add-content cell increment)
+  ((cell 'add-content) increment))
+
+(define (new-neighbor! cell neighbor)
+  ((cell 'new-neighbor!) neighbor))
+
+(define (make-cell)
+  (let ((neighbors '()) (content nothing))
+    (define (add-content increment)
+      (cond ((nothing? increment) 'ok)
+            ((nothing? content)
+             (set! content increment)
+             (alert-propagators neighbors))
+            (else
+             (if (not (default-equal? content increment))
+                 (error "Ack! Inconsistency!")))))
+    (define (new-neighbor! new-neighbor)
+      (if (not (memq new-neighbor neighbors))
+          (begin
+            (set! neighbors (cons new-neighbor neighbors))
+            (alert-propagator new-neighbor))))
+    (define (me message)
+      (cond ((eq? message 'content) content)
+            ((eq? message 'add-content) add-content)
+            ((eq? message 'new-neighbor!) new-neighbor!)
+            (else (error "Unknown message" message))))
+    me))
+
+(define (propagator neighbors to-do)
+  (for-each (lambda (cell)
+              (new-neighbor! cell to-do))
+            (listify neighbors))
+  (alert-propagator to-do))
+
+(define (function->propagator-constructor f)
+  (lambda cells
+    (let ((output (car (last-pair cells)))
+          (inputs (except-last-pair cells)))
+      (propagator inputs                ; The output isn't a neighbor!\footnote{Because the function's activities do not depend upon changes in the content of the output cell.
+        (lambda ()
+          (add-content output
+            (apply f (map content inputs))))))))
+;;; Add the metadata
+(define (function->propagator-constructor f)
+  (lambda cells
+    (let ((output (car (last-pair cells)))
+          (inputs (except-last-pair cells)))
+      (let ((the-propagator
+             (lambda ()
+               (add-content output (apply f (map content inputs))))))
+        (eq-adjoin! output 'shadow-connections the-propagator)
+        (eq-label! the-propagator 'name f 'inputs inputs 'outputs (list output))
+        (propagator inputs the-propagator)))))
+
+(define (handling-nothings f)
+  (lambda args
+    (if (any nothing? args)
+        nothing
+        (apply f args))))
+
+(define adder (function->propagator-constructor (handling-nothings +)))
+(define subtractor (function->propagator-constructor (handling-nothings -)))
+(define multiplier (function->propagator-constructor (handling-nothings *)))
+(define divider (function->propagator-constructor (handling-nothings /)))
+;;; ... for more primitives see Appendix~\ref{sec:primitives-for-section-propagators
+
+(load-compiled "naive-primitives")
+(define (constant value)
+  (function->propagator-constructor
+    (eq-label! (lambda () value) 'name `(const ,value)) #;
+    (lambda () value)))
+(process-examples)
+
+(define (sum x y total)
+  (adder x y total)
+  (subtractor total x y)
+  (subtractor total y x))
+
+(define (product x y total)
+  (multiplier x y total)
+  (divider total x y)
+  (divider total y x))
+
+(define (quadratic x x^2)
+  (squarer x x^2)
+  (sqrter x^2 x))
+
+;;; ...
+
+(define (fahrenheit-celsius f c)
+  (let ((thirty-two (make-cell))
+        (f-32 (make-cell))
+        (five (make-cell))
+        (c*9 (make-cell))
+        (nine (make-cell)))
+    ((constant 32) thirty-two)
+    ((constant 5) five)
+    ((constant 9) nine)
+    (sum thirty-two f-32 f)
+    (product f-32 five c*9)
+    (product c nine c*9)))
+
+(interactive-example
+
+(initialize-scheduler)
+(define f (make-cell))
+(define c (make-cell))
+
+(fahrenheit-celsius f c)
+
+(add-content c 25)
+(run)
+(content f)
+=> 77
+
+(define (celsius-kelvin c k)
+  (let ((many (make-cell)))
+    ((constant 273.15) many)
+    (sum c many k)))
+
+(define k (make-cell))
+
+(celsius-kelvin c k)
+(run)
+(content k)
+=> 298.15
+)
+
+(process-examples)
+
+(define (fall-duration t h)
+  (let ((g (make-cell))
+        (one-half (make-cell))
+        (t^2 (make-cell))
+        (gt^2 (make-cell)))
+    ((constant (make-interval 9.789 9.832)) g)
+    ((constant (make-interval 1/2 1/2)) one-half)
+    (quadratic t t^2)
+    (product g t^2 gt^2)
+    (product one-half gt^2 h)))
+
+(interactive-example
+
+(initialize-scheduler)
+(define fall-time (make-cell))
+(define building-height (make-cell))
+(fall-duration fall-time building-height)
+
+(add-content fall-time (make-interval 2.9 3.1))
+(run)
+(content building-height)
+=> #(interval 41.163 47.243)
+)
+
+
+(define (similar-triangles s-ba h-ba s h)
+  (let ((ratio (make-cell)))
+    (product s-ba ratio h-ba)
+    (product s ratio h)))
+
+(interactive-example
+
+(initialize-scheduler)
+(define barometer-height (make-cell))
+(define barometer-shadow (make-cell))
+(define building-height (make-cell))
+(define building-shadow (make-cell))
+(similar-triangles barometer-shadow barometer-height
+                   building-shadow building-height)
+
+(add-content building-shadow (make-interval 54.9 55.1))
+(add-content barometer-height (make-interval 0.3 0.32))
+(add-content barometer-shadow (make-interval 0.36 0.37))
+(run)
+(content building-height)
+=> #(interval 44.514 48.978)
+
+(define fall-time (make-cell))
+(fall-duration fall-time building-height)
+
+(add-content fall-time (make-interval 2.9 3.1))
+(run)
+(content building-height)
+=> #(interval 44.514 47.243)
+
+#;
+(intersect-intervals
+ (similar-triangles ...)
+ (fall-time ...))
+
+(content barometer-height)
+=> #(interval .3 .31839)
+;; Refining the (make-interval 0.3 0.32) we put in originally
+
+(content fall-time)
+=> #(interval 3.0091 3.1)
+;; Refining (make-interval 2.9 3.1)
+
+(add-content building-height (make-interval 45 45))
+(run)
+(content barometer-height)
+=> #(interval .3 .30328)
+
+(content barometer-shadow)
+=> #(interval .366 .37)
+
+(content building-shadow)
+=> #(interval 54.9 55.1)
+
+(content fall-time)
+=> #(interval 3.0255 3.0322)
+)
+
+
+(define (mul-interval x y)
+  (make-interval (* (interval-low x) (interval-low y))
+                 (* (interval-high x) (interval-high y))))
+
+(define (div-interval x y)
+  (mul-interval x (make-interval (/ 1.0 (interval-high y))
+                                 (/ 1.0 (interval-low y)))))
+
+(define (square-interval x)
+  (make-interval (square (interval-low x))
+                 (square (interval-high x))))
+
+(define (sqrt-interval x)
+  (make-interval (sqrt (interval-low x))
+                 (sqrt (interval-high x))))
+
+(define (empty-interval? x)
+  (> (interval-low x) (interval-high x)))
+
+(define (intersect-intervals x y)
+  (make-interval
+   (max (interval-low x) (interval-low y))
+   (min (interval-high x) (interval-high y))))
+
+(define multiplier
+  (function->propagator-constructor (handling-nothings mul-interval)))
+(define divider
+  (function->propagator-constructor (handling-nothings div-interval)))
+(define squarer
+  (function->propagator-constructor (handling-nothings square-interval)))
+(define sqrter
+  (function->propagator-constructor (handling-nothings sqrt-interval)))
+
+(define (make-cell)
+  (let ((neighbors '()) (content nothing))
+    (define (add-content increment)
+      (cond ((nothing? increment) 'ok)
+            ((nothing? content)
+             (set! content increment)
+             (alert-propagators neighbors))
+            (else                       ; **
+             (let ((new-range
+                    (intersect-intervals content
+                                         increment)))
+               (cond ((equal? new-range content) 'ok)
+                     ((empty-interval? new-range)
+                      (error "Ack! Inconsistency!"))
+                     (else (set! content new-range)
+                           (alert-propagators neighbors)))))))
+    ;; ... the definitions of new-neighbor! and me are unchanged
+    (define (new-neighbor! new-neighbor)
+      (if (not (memq new-neighbor neighbors))
+          (begin
+            (set! neighbors (cons new-neighbor neighbors))
+            (alert-propagators new-neighbor))))
+    (define (me message)
+      (cond ((eq? message 'new-neighbor!) new-neighbor!)
+            ((eq? message 'add-content) add-content)
+            ((eq? message 'content) content)
+            (else (error "Unknown message" message))))
+    me
+  ))
+(process-examples)
+
+(define (make-cell)
+  (let ((neighbors '()) (content nothing))
+    (define (add-content increment)     ; ***
+      (let ((new-content (merge content increment)))
+        (cond ((eq? new-content content) 'ok)
+              ((contradictory? new-content)
+               (error "Ack! Inconsistency!"))
+              (else (set! content new-content)
+                    (alert-propagators neighbors)))))
+    ;; ... new-neighbor! and me are still the same
+    (define (new-neighbor! new-neighbor)
+      (if (not (memq new-neighbor neighbors))
+          (begin
+            (set! neighbors (cons new-neighbor neighbors))
+            (alert-propagators new-neighbor))))
+    (define (me message)
+      (cond ((eq? message 'new-neighbor!) new-neighbor!)
+            ((eq? message 'add-content) add-content)
+            ((eq? message 'content) content)
+            ((eq? message 'neighbors) neighbors)
+            (else (error "Unknown message" message))))
+    (eq-put! me 'cell #t)
+    me
+  ))
+(define (neighbors cell) (cell 'neighbors))
+(define (cell? thing) (eq-get thing 'cell))
+(define-syntax define-cell
+  (syntax-rules ()
+    ((define-cell symbol)
+     (define symbol (make-named-cell 'symbol)))))
+
+(define (make-named-cell name)
+  (eq-put! (make-cell) 'name name))
+
+(define-syntax let-cells
+  (syntax-rules ()
+    ((let-cell (cell-name ...) form ...)
+     (let ((cell-name (make-named-cell 'cell-name))...)
+       form ...))))
+
+(define (propagator? thing)
+  (or (eq-get thing 'propagator?)
+      (not (cell? thing))))
+
+(define merge
+  (make-generic-operator 2 'merge
+   (lambda (content increment)
+     (if (default-equal? content increment)
+         content
+         the-contradiction))))
+
+(define the-contradiction #(*the-contradiction*))
+
+(define contradictory?
+  (make-generic-operator 1 'contradictory?
+   (lambda (thing) (eq? thing the-contradiction))))
+
+(defhandler merge
+ (lambda (content increment) content)
+ any? nothing?)
+
+(defhandler merge
+ (lambda (content increment) increment)
+ nothing? any?)
+
+(defhandler merge
+ (lambda (content increment)
+   (let ((new-range (intersect-intervals content increment)))
+     (cond ((interval-equal? new-range content) content)
+           ((interval-equal? new-range increment) increment)
+           ((empty-interval? new-range) the-contradiction)
+           (else new-range))))
+ interval? interval?)
+
+(define (ensure-inside interval number)
+  (if (<= (interval-low interval) number (interval-high interval))
+      number
+      the-contradiction))
+
+(defhandler merge
+ (lambda (content increment)
+   (ensure-inside increment content))
+ number? interval?)
+
+(defhandler merge
+ (lambda (content increment)
+   (ensure-inside content increment))
+ interval? number?)
+
+(define multiplier
+  (function->propagator-constructor (handling-nothings *)))
+
+(define multiplier
+  (function->propagator-constructor (handling-nothings mul-interval)))
+
+(define generic-+ (make-generic-operator 2 '+ +))
+(define generic-- (make-generic-operator 2 '- -))
+(define generic-* (make-generic-operator 2 '* *))
+(define generic-/ (make-generic-operator 2 '/ /))
+(define generic-square (make-generic-operator 1 'square square))
+(define generic-sqrt (make-generic-operator 1 'sqrt sqrt))
+;;; ... for more generic primitives see Appendix~\ref{sec:definitions
+
+;; A placeholder to avoid unbound variable errors.
+;; This will all get clobbered by loading the right answer
+;; from the appendix anyway.
+(define nary-unpacking identity)
+(define adder
+  (function->propagator-constructor (nary-unpacking generic-+)))
+(define subtractor
+  (function->propagator-constructor (nary-unpacking generic--)))
+(define multiplier
+  (function->propagator-constructor (nary-unpacking generic-*)))
+(define divider
+  (function->propagator-constructor (nary-unpacking generic-/)))
+(define squarer
+  (function->propagator-constructor (nary-unpacking generic-square)))
+(define sqrter
+  (function->propagator-constructor (nary-unpacking generic-sqrt)))
+;;; ... remainder and details in Appendix~\ref{sec:definitions
+
+(defhandler generic-* mul-interval interval? interval?)
+(defhandler generic-/ div-interval interval? interval?)
+(defhandler generic-square square-interval interval?)
+(defhandler generic-sqrt sqrt-interval interval?)
+;;; ... for the other interval methods, see Appendix~\ref{sec:intervals
+
+(load-compiled "generic-definitions")
+(load-compiled "intervals")
+(interactive-example
+
+(initialize-scheduler)
+(define fall-time (make-cell))
+(define building-height (make-cell))
+(fall-duration fall-time building-height)
+
+(add-content fall-time (make-interval 2.9 3.1))
+(run)
+(content building-height)
+=> #(interval 41.163 47.243)
+
+(add-content building-height 45)
+
+(run)
+(content fall-time)
+=> #(interval 3.0255 3.0322)
+)
+
+(process-examples)

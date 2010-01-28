@@ -1,0 +1,91 @@
+;;; ----------------------------------------------------------------------
+;;; Copyright 2009 Massachusetts Institute of Technology.
+;;; ----------------------------------------------------------------------
+;;; This file is part of Propagator Network Prototype.
+;;; 
+;;; Propagator Network Prototype is free software; you can
+;;; redistribute it and/or modify it under the terms of the GNU
+;;; General Public License as published by the Free Software
+;;; Foundation, either version 3 of the License, or (at your option)
+;;; any later version.
+;;; 
+;;; Propagator Network Prototype is distributed in the hope that it
+;;; will be useful, but WITHOUT ANY WARRANTY; without even the implied
+;;; warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;;; See the GNU General Public License for more details.
+;;; 
+;;; You should have received a copy of the GNU General Public License
+;;; along with Propagator Network Prototype.  If not, see
+;;; <http://www.gnu.org/licenses/>.
+;;; ----------------------------------------------------------------------
+
+(declare (usual-integrations make-cell))
+
+
+(define-structure
+ (interval
+  (type vector) (named 'interval) (print-procedure #f) (safe-accessors #t))
+ low high)
+
+(define interval-equal? equal?)
+
+(define-structure
+ (v&s (named 'supported) (type vector)
+      (constructor supported) (print-procedure #f)
+      (safe-accessors #t))
+ value support)
+
+(define (more-informative-support? v&s1 v&s2)
+  (and (not (lset= eq? (v&s-support v&s1) (v&s-support v&s2)))
+       (lset<= eq? (v&s-support v&s1) (v&s-support v&s2))))
+
+(define (merge-supports . v&ss)
+  (apply lset-union eq? (map v&s-support v&ss)))
+
+(define-structure
+  (tms (type vector) (named 'tms)
+       (constructor %make-tms) (print-procedure #f)
+       (safe-accessors #t))
+  values)
+
+(define (make-tms arg)
+  (%make-tms (listify arg)))
+
+(define-structure
+  (hypothetical (type vector) (named 'hypothetical)
+                (print-procedure #f) (safe-accessors #t)))
+
+(define *premise-outness* (make-eq-hash-table))
+
+(define (premise-in? premise)
+  (not (hash-table/get *premise-outness* premise #f)))
+
+(define (mark-premise-in! premise)
+  (hash-table/remove! *premise-outness* premise))
+
+(define (mark-premise-out! premise)
+  (hash-table/put! *premise-outness* premise #t))
+
+(define *premise-nogoods* (make-eq-hash-table))
+
+(define (premise-nogoods premise)
+  (hash-table/get *premise-nogoods* premise '()))
+
+(define (set-premise-nogoods! premise nogoods)
+  (hash-table/put! *premise-nogoods* premise nogoods))
+
+(define (reset-premise-info!)
+  (set! *premise-outness* (make-eq-hash-table))
+  (set! *premise-nogoods* (make-eq-hash-table)))
+
+;;; We also need to arrange for the premise states to be reset for
+;;; every new example.  Better creativity having failed me, I will
+;;; hang that action onto the initialize-scheduler procedure.
+;;; TODO Can one do better?
+(define initialize-scheduler
+  (let ((initialize-scheduler initialize-scheduler))
+    (lambda ()
+      (initialize-scheduler)
+      (reset-premise-info!))))
+
+(define *number-of-calls-to-fail* 0)
