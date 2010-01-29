@@ -32,8 +32,7 @@
 (load-relative "../core/load.scm")
 
 (for-each load-relative-compiled
- '(; "eq-properties" ; Already loaded in ../core/load.scm
-   "art-expression-language"
+ '("art-expression-language"
    "constraints"
    "electric-parts"
    "solve"
