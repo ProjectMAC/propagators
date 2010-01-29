@@ -80,13 +80,8 @@
         nothing
         (apply f args))))
 
-(define adder (function->propagator-constructor (handling-nothings +)))
-(define subtractor (function->propagator-constructor (handling-nothings -)))
-(define multiplier (function->propagator-constructor (handling-nothings *)))
-(define divider (function->propagator-constructor (handling-nothings /)))
-;;; ... for more primitives see Appendix~\ref{sec:primitives-for-section-propagators
-
 (load-compiled "naive-primitives")
+
 (define (constant value)
   (function->propagator-constructor
     (eq-label! (lambda () value) 'name `(const ,value)) #;
@@ -160,15 +155,6 @@
   (make-interval
    (max (interval-low x) (interval-low y))
    (min (interval-high x) (interval-high y))))
-
-(define multiplier
-  (function->propagator-constructor (handling-nothings mul-interval)))
-(define divider
-  (function->propagator-constructor (handling-nothings div-interval)))
-(define squarer
-  (function->propagator-constructor (handling-nothings square-interval)))
-(define sqrter
-  (function->propagator-constructor (handling-nothings sqrt-interval)))
 
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
@@ -260,44 +246,6 @@
  (lambda (content increment)
    (ensure-inside content increment))
  interval? number?)
-
-(define multiplier
-  (function->propagator-constructor (handling-nothings *)))
-
-(define multiplier
-  (function->propagator-constructor (handling-nothings mul-interval)))
-
-(define generic-+ (make-generic-operator 2 '+ +))
-(define generic-- (make-generic-operator 2 '- -))
-(define generic-* (make-generic-operator 2 '* *))
-(define generic-/ (make-generic-operator 2 '/ /))
-(define generic-square (make-generic-operator 1 'square square))
-(define generic-sqrt (make-generic-operator 1 'sqrt sqrt))
-;;; ... for more generic primitives see Appendix~\ref{sec:definitions
-
-;; A placeholder to avoid unbound variable errors.
-;; This will all get clobbered by loading the right answer
-;; from the appendix anyway.
-(define nary-unpacking identity)
-(define adder
-  (function->propagator-constructor (nary-unpacking generic-+)))
-(define subtractor
-  (function->propagator-constructor (nary-unpacking generic--)))
-(define multiplier
-  (function->propagator-constructor (nary-unpacking generic-*)))
-(define divider
-  (function->propagator-constructor (nary-unpacking generic-/)))
-(define squarer
-  (function->propagator-constructor (nary-unpacking generic-square)))
-(define sqrter
-  (function->propagator-constructor (nary-unpacking generic-sqrt)))
-;;; ... remainder and details in Appendix~\ref{sec:definitions
-
-(defhandler generic-* mul-interval interval? interval?)
-(defhandler generic-/ div-interval interval? interval?)
-(defhandler generic-square square-interval interval?)
-(defhandler generic-sqrt sqrt-interval interval?)
-;;; ... for the other interval methods, see Appendix~\ref{sec:intervals
 
 (load-compiled "generic-definitions")
 (load-compiled "intervals")
