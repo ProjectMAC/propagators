@@ -21,10 +21,29 @@
 
 (declare (usual-integrations make-cell))
 
-(define nothing #(*the-nothing*))
-
-(define (nothing? thing)
-  (eq? thing nothing))
+(define (make-cell)
+  (let ((neighbors '()) (content nothing))
+    (define (add-content increment)     ; ***
+      (let ((new-content (merge content increment)))
+        (cond ((eq? new-content content) 'ok)
+              ((contradictory? new-content)
+               (error "Ack! Inconsistency!"))
+              (else (set! content new-content)
+                    (alert-propagators neighbors)))))
+    (define (new-neighbor! new-neighbor)
+      (if (not (memq new-neighbor neighbors))
+          (begin
+            (set! neighbors (cons new-neighbor neighbors))
+            (alert-propagators new-neighbor))))
+    (define (me message)
+      (cond ((eq? message 'content) content)
+            ((eq? message 'add-content) add-content)
+            ((eq? message 'neighbors) neighbors)
+            ((eq? message 'new-neighbor!) new-neighbor!)
+            (else (error "Unknown message" message))))
+    (eq-put! me 'cell #t)
+    me
+  ))
 
 (define (content cell)
   (cell 'content))
@@ -32,9 +51,29 @@
 (define (add-content cell increment)
   ((cell 'add-content) increment))
 
+(define (neighbors cell)
+  (cell 'neighbors))
+
 (define (new-neighbor! cell neighbor)
   ((cell 'new-neighbor!) neighbor))
 
+(define (cell? thing)
+  (eq-get thing 'cell))
+
+(define-syntax define-cell
+  (syntax-rules ()
+    ((define-cell symbol)
+     (define symbol (make-named-cell 'symbol)))))
+
+(define (make-named-cell name)
+  (eq-put! (make-cell) 'name name))
+
+(define-syntax let-cells
+  (syntax-rules ()
+    ((let-cell (cell-name ...) form ...)
+     (let ((cell-name (make-named-cell 'cell-name))...)
+       form ...))))
+
 (define (propagator neighbors to-do)
   (for-each (lambda (cell)
               (new-neighbor! cell to-do))
@@ -66,57 +105,21 @@
     (eq-label! (lambda () value) 'name `(const ,value)) #;
     (lambda () value)))
 
-(define (make-cell)
-  (let ((neighbors '()) (content nothing))
-    (define (add-content increment)     ; ***
-      (let ((new-content (merge content increment)))
-        (cond ((eq? new-content content) 'ok)
-              ((contradictory? new-content)
-               (error "Ack! Inconsistency!"))
-              (else (set! content new-content)
-                    (alert-propagators neighbors)))))
-    (define (new-neighbor! new-neighbor)
-      (if (not (memq new-neighbor neighbors))
-          (begin
-            (set! neighbors (cons new-neighbor neighbors))
-            (alert-propagators new-neighbor))))
-    (define (me message)
-      (cond ((eq? message 'new-neighbor!) new-neighbor!)
-            ((eq? message 'add-content) add-content)
-            ((eq? message 'content) content)
-            ((eq? message 'neighbors) neighbors)
-            (else (error "Unknown message" message))))
-    (eq-put! me 'cell #t)
-    me
-  ))
-
-(define (neighbors cell) (cell 'neighbors))
-(define (cell? thing) (eq-get thing 'cell))
-
-(define-syntax define-cell
-  (syntax-rules ()
-    ((define-cell symbol)
-     (define symbol (make-named-cell 'symbol)))))
-
-(define (make-named-cell name)
-  (eq-put! (make-cell) 'name name))
-
-(define-syntax let-cells
-  (syntax-rules ()
-    ((let-cell (cell-name ...) form ...)
-     (let ((cell-name (make-named-cell 'cell-name))...)
-       form ...))))
-
 (define (propagator? thing)
   (or (eq-get thing 'propagator?)
       (not (cell? thing))))
-
+
 (define merge
   (make-generic-operator 2 'merge
    (lambda (content increment)
      (if (default-equal? content increment)
          content
          the-contradiction))))
+
+(define nothing #(*the-nothing*))
+
+(define (nothing? thing)
+  (eq? thing nothing))
 
 (define the-contradiction #(*the-contradiction*))
 
