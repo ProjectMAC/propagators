@@ -21,6 +21,29 @@
 
 (declare (usual-integrations make-cell))
 
+(define (mul-interval x y)
+  (make-interval (* (interval-low x) (interval-low y))
+                 (* (interval-high x) (interval-high y))))
+
+(define (div-interval x y)
+  (mul-interval x (make-interval (/ 1.0 (interval-high y))
+                                 (/ 1.0 (interval-low y)))))
+
+(define (square-interval x)
+  (make-interval (square (interval-low x))
+                 (square (interval-high x))))
+
+(define (sqrt-interval x)
+  (make-interval (sqrt (interval-low x))
+                 (sqrt (interval-high x))))
+
+(define (empty-interval? x)
+  (> (interval-low x) (interval-high x)))
+
+(define (intersect-intervals x y)
+  (make-interval
+   (max (interval-low x) (interval-low y))
+   (min (interval-high x) (interval-high y))))
 
 (defhandler generic-* mul-interval interval? interval?)
 (defhandler generic-/ div-interval interval? interval?)
@@ -40,3 +63,27 @@
 (defhandler generic-* (coercing ->interval mul-interval) interval? number?)
 (defhandler generic-/ (coercing ->interval div-interval) number? interval?)
 (defhandler generic-/ (coercing ->interval div-interval) interval? number?)
+
+(defhandler merge
+ (lambda (content increment)
+   (let ((new-range (intersect-intervals content increment)))
+     (cond ((interval-equal? new-range content) content)
+           ((interval-equal? new-range increment) increment)
+           ((empty-interval? new-range) the-contradiction)
+           (else new-range))))
+ interval? interval?)
+
+(define (ensure-inside interval number)
+  (if (<= (interval-low interval) number (interval-high interval))
+      number
+      the-contradiction))
+
+(defhandler merge
+ (lambda (content increment)
+   (ensure-inside increment content))
+ number? interval?)
+
+(defhandler merge
+ (lambda (content increment)
+   (ensure-inside content increment))
+ interval? number?)
