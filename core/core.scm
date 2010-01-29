@@ -74,14 +74,6 @@
         (eq-label! the-propagator 'name f 'inputs inputs 'outputs (list output))
         (propagator inputs the-propagator)))))
 
-(define (handling-nothings f)
-  (lambda args
-    (if (any nothing? args)
-        nothing
-        (apply f args))))
-
-(load-compiled "naive-primitives")
-
 (define (constant value)
   (function->propagator-constructor
     (eq-label! (lambda () value) 'name `(const ,value)) #;
