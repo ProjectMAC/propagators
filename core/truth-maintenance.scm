@@ -21,6 +21,15 @@
 
 (declare (usual-integrations make-cell))
 
+(define-structure
+  (tms (type vector) (named 'tms)
+       (constructor %make-tms) (print-procedure #f)
+       (safe-accessors #t))
+  values)
+
+(define (make-tms arg)
+  (%make-tms (listify arg)))
+
 ;; Will be replaced by tms-merge in contradictions.scm
 (define (tms-merge tms1 tms2)
   (let ((candidate (tms-assimilate tms1 tms2)))

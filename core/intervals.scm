@@ -21,6 +21,13 @@
 
 (declare (usual-integrations make-cell))
 
+(define-structure
+ (interval
+  (type vector) (named 'interval) (print-procedure #f) (safe-accessors #t))
+ low high)
+
+(define interval-equal? equal?)
+
 (define (mul-interval x y)
   (make-interval (* (interval-low x) (interval-low y))
                  (* (interval-high x) (interval-high y))))

@@ -21,6 +21,19 @@
 
 (declare (usual-integrations make-cell))
 
+(define-structure
+ (v&s (named 'supported) (type vector)
+      (constructor supported) (print-procedure #f)
+      (safe-accessors #t))
+ value support)
+
+(define (more-informative-support? v&s1 v&s2)
+  (and (not (lset= eq? (v&s-support v&s1) (v&s-support v&s2)))
+       (lset<= eq? (v&s-support v&s1) (v&s-support v&s2))))
+
+(define (merge-supports . v&ss)
+  (apply lset-union eq? (map v&s-support v&ss)))
+
 (define (v&s-merge v&s1 v&s2)
   (let* ((v&s1-value (v&s-value v&s1))
          (v&s2-value (v&s-value v&s2))

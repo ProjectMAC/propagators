@@ -23,35 +23,6 @@
 
 
 (define-structure
- (interval
-  (type vector) (named 'interval) (print-procedure #f) (safe-accessors #t))
- low high)
-
-(define interval-equal? equal?)
-
-(define-structure
- (v&s (named 'supported) (type vector)
-      (constructor supported) (print-procedure #f)
-      (safe-accessors #t))
- value support)
-
-(define (more-informative-support? v&s1 v&s2)
-  (and (not (lset= eq? (v&s-support v&s1) (v&s-support v&s2)))
-       (lset<= eq? (v&s-support v&s1) (v&s-support v&s2))))
-
-(define (merge-supports . v&ss)
-  (apply lset-union eq? (map v&s-support v&ss)))
-
-(define-structure
-  (tms (type vector) (named 'tms)
-       (constructor %make-tms) (print-procedure #f)
-       (safe-accessors #t))
-  values)
-
-(define (make-tms arg)
-  (%make-tms (listify arg)))
-
-(define-structure
   (hypothetical (type vector) (named 'hypothetical)
                 (print-procedure #f) (safe-accessors #t)))
 
