@@ -238,6 +238,3 @@
  (lambda (content increment)
    (ensure-inside content increment))
  interval? number?)
-
-(load-compiled "generic-definitions")
-(load-compiled "intervals")

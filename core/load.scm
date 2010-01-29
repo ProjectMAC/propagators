@@ -44,6 +44,8 @@
 
 ;; System definition
 (load-relative-compiled "core")
+(load-relative-compiled "generic-definitions")
+(load-relative-compiled "intervals")
 (load-relative-compiled "dependencies")
 (load-relative-compiled "conditionals")
 (load-relative-compiled "abstraction")
