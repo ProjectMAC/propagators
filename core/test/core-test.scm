@@ -30,11 +30,6 @@
     (content f)
     (produces 77)
 
-    (define (celsius-kelvin c k)
-      (let ((many (make-cell)))
-	((constant 273.15) many)
-	(sum c many k)))
-
     (define k (make-cell))
 
     (celsius-kelvin c k)

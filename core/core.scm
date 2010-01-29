@@ -21,19 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-(define (fahrenheit->celsius f c)
-  (let ((thirty-two (make-cell))
-        (f-32 (make-cell))
-        (five (make-cell))
-        (c*9 (make-cell))
-        (nine (make-cell)))
-    ((constant 32) thirty-two)
-    ((constant 5) five)
-    ((constant 9) nine)
-    (subtractor f thirty-two f-32)
-    (multiplier f-32 five c*9)
-    (divider c*9 nine c)))
-
 (define nothing #(*the-nothing*))
 
 (define (nothing? thing)
@@ -78,51 +65,6 @@
   (function->propagator-constructor
     (eq-label! (lambda () value) 'name `(const ,value)) #;
     (lambda () value)))
-
-(define (sum x y total)
-  (adder x y total)
-  (subtractor total x y)
-  (subtractor total y x))
-
-(define (product x y total)
-  (multiplier x y total)
-  (divider total x y)
-  (divider total y x))
-
-(define (quadratic x x^2)
-  (squarer x x^2)
-  (sqrter x^2 x))
-
-;;; ...
-
-(define (fahrenheit-celsius f c)
-  (let ((thirty-two (make-cell))
-        (f-32 (make-cell))
-        (five (make-cell))
-        (c*9 (make-cell))
-        (nine (make-cell)))
-    ((constant 32) thirty-two)
-    ((constant 5) five)
-    ((constant 9) nine)
-    (sum thirty-two f-32 f)
-    (product f-32 five c*9)
-    (product c nine c*9)))
-
-(define (fall-duration t h)
-  (let ((g (make-cell))
-        (one-half (make-cell))
-        (t^2 (make-cell))
-        (gt^2 (make-cell)))
-    ((constant (make-interval 9.789 9.832)) g)
-    ((constant (make-interval 1/2 1/2)) one-half)
-    (quadratic t t^2)
-    (product g t^2 gt^2)
-    (product one-half gt^2 h)))
-
-(define (similar-triangles s-ba h-ba s h)
-  (let ((ratio (make-cell)))
-    (product s-ba ratio h-ba)
-    (product s ratio h)))
 
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
