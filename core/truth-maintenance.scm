@@ -21,7 +21,63 @@
 
 (declare (usual-integrations make-cell))
 
+;; Will be replaced by tms-merge in contradictions.scm
+(define (tms-merge tms1 tms2)
+  (let ((candidate (tms-assimilate tms1 tms2)))
+    (let ((consequence (strongest-consequence candidate)))
+      (tms-assimilate candidate consequence))))
 
+(define (tms-assimilate tms stuff)
+  (cond ((nothing? stuff) tms)
+        ((v&s? stuff) (tms-assimilate-one tms stuff))
+        ((tms? stuff)
+         (fold-left tms-assimilate-one
+                    tms
+                    (tms-values stuff)))
+        (else (error "This should never happen"))))
+
+(define (subsumes? v&s1 v&s2)
+  (and (implies? (v&s-value v&s1) (v&s-value v&s2))
+       (lset<= eq? (v&s-support v&s1) (v&s-support v&s2))))
+
+(define (tms-assimilate-one tms v&s)
+  (if (any (lambda (old-v&s) (subsumes? old-v&s v&s))
+           (tms-values tms))
+      tms
+      (let ((subsumed
+             (filter (lambda (old-v&s) (subsumes? v&s old-v&s))
+                     (tms-values tms))))
+        (make-tms
+         (lset-adjoin eq?
+           (lset-difference eq? (tms-values tms) subsumed)
+           v&s)))))
+
+(define (strongest-consequence tms)
+  (let ((relevant-v&ss
+         (filter v&s-believed? (tms-values tms))))
+    (fold-left merge nothing relevant-v&ss)))
+
+(define (v&s-believed? v&s)
+  (all-premises-in? (v&s-support v&s)))
+
+(define (all-premises-in? premise-list)
+   (every premise-in? premise-list))
+
+;; Will be replaced by tms-query in contradictions.scm
+(define (tms-query tms)
+  (let ((answer (strongest-consequence tms)))
+    (let ((better-tms (tms-assimilate tms answer)))
+      (if (not (eq? tms better-tms))
+          (set-tms-values! tms (tms-values better-tms)))
+      answer)))
+
+(define (kick-out! premise)
+  (if (premise-in? premise) (alert-all-propagators!))
+  (mark-premise-out! premise))
+(define (bring-in! premise)
+  (if (not (premise-in? premise)) (alert-all-propagators!))
+  (mark-premise-in! premise))
+
 (defhandler generic-unpack
   (lambda (tms function)
     (let ((relevant-information (tms-query tms)))

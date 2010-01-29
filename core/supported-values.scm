@@ -21,7 +21,35 @@
 
 (declare (usual-integrations make-cell))
 
+(define (v&s-merge v&s1 v&s2)
+  (let* ((v&s1-value (v&s-value v&s1))
+         (v&s2-value (v&s-value v&s2))
+         (value-merge (merge v&s1-value v&s2-value)))
+    (cond ((eq? value-merge v&s1-value)
+           (if (implies? v&s2-value value-merge)
+               ;; Confirmation of existing information
+               (if (more-informative-support? v&s2 v&s1)
+                   v&s2
+                   v&s1)
+               ;; New information is not interesting
+               v&s1))
+          ((eq? value-merge v&s2-value)
+           ;; New information overrides old information
+           v&s2)
+          (else
+           ;; Interesting merge, need both provenances
+           (supported value-merge
+                      (merge-supports v&s1 v&s2))))))
 
+(defhandler merge v&s-merge v&s? v&s?)
+
+(define (implies? v1 v2)
+  (eq? v1 (merge v1 v2)))
+
+(defhandler contradictory?
+ (lambda (v&s) (contradictory? (v&s-value v&s)))
+ v&s?)
+
 (defhandler generic-unpack
   (lambda (v&s function)
     (supported
