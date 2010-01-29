@@ -86,6 +86,8 @@
             (lset-adjoin eq?
               (lset-difference eq? set subsumed) item))))))
 
+(define *number-of-calls-to-fail* 0)
+
 (define (process-nogood! nogood)
   (set! *number-of-calls-to-fail*
         (+ *number-of-calls-to-fail* 1))

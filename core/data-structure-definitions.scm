@@ -21,7 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-
 (define-structure
   (hypothetical (type vector) (named 'hypothetical)
                 (print-procedure #f) (safe-accessors #t)))
@@ -58,5 +57,3 @@
     (lambda ()
       (initialize-scheduler)
       (reset-premise-info!))))
-
-(define *number-of-calls-to-fail* 0)
