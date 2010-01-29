@@ -54,6 +54,3 @@
 (load-relative-compiled "conditionals")
 (load-relative-compiled "abstraction")
 (load-relative-compiled "compound-data")
-
-;; Extended example
-(load-relative-compiled "masyu")

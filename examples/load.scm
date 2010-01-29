@@ -31,8 +31,10 @@
 
 (load-relative "../extensions/load.scm")
 
+(load-relative-compiled "masyu")
+
 (for-each 
  load-relative
- '("masyu"
+ '("masyu-puzzles"
    "riddle-of-the-knights"
    ))
