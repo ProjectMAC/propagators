@@ -39,13 +39,13 @@
 (load-relative-compiled "utils")
 (load-relative-compiled "generic-system")
 (load-relative-compiled "scheduler")
-(load-relative-compiled "data-structure-definitions")
 (load-relative-compiled "test-support")
 
 ;; System definition
 (load-relative-compiled "core")
 (load-relative-compiled "generic-definitions")
 (load-relative-compiled "intervals")
+(load-relative-compiled "premises")
 (load-relative-compiled "supported-values")
 (load-relative-compiled "truth-maintenance")
 (load-relative-compiled "contradictions")
