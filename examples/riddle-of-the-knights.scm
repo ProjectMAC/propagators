@@ -19,6 +19,8 @@
     control))
 
 (define (quadratic-guess-bijection cells1 cells2)
+  (define (not-all-off . cells)
+    (require (reduce p:or #f cells)))
   (let ((controls
 	 (map (lambda (cell1)
 		(map (lambda (cell2)
@@ -32,9 +34,6 @@
 		(apply not-all-off cell1-controls))
 	      controls)
     (apply for-each not-all-off controls)))
-
-(define (not-all-off . cells)
-  (require (reduce p:or #f cells)))
 
 (define (quadratic-extend-bijection cell-alist cells1 cells2)
   (for-each (lambda (cell-pair)

@@ -35,7 +35,6 @@
 
 (for-each 
  load-relative
- '("masyu-puzzles"
-   "riddle-of-the-knights"
+ '("riddle-of-the-knights"
    "albatross-conundrum"
    ))
