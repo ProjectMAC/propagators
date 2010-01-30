@@ -9,7 +9,7 @@
 		   (deck-supply deck))))))
   name commander treasure supply)
 
-(define names '(poop quarter main gun lower))
+(define deck-names '(poop quarter main gun lower))
 (define commanders '(draconio bosun scurvy kraken windlass))
 (define treasures
   '(casket-of-magenta tamarind-jewels galliard-lute calypso-figure goldenhall-talisman))
@@ -51,11 +51,11 @@
 		     (contradictory? (deck-supply deck))))
   deck?)
 
-(define (build-network)
+(define (build-albatross-network)
   (let* ((deck-cells
 	  (map (lambda (name)
 		 (p:make-deck name nothing nothing nothing))
-	       names))
+	       deck-names))
 	 (deck-commander-cells
 	  (map (lambda (commander)
 		 (p:make-deck nothing commander nothing nothing))
@@ -70,7 +70,7 @@
 	       supplies))
 	 (cell-table
 	  (append
-	   (map cons names deck-cells)
+	   (map cons deck-names deck-cells)
 	   (map cons commanders deck-commander-cells)
 	   (map cons treasures deck-treasure-cells)
 	   (map cons supplies deck-supply-cells)))
@@ -119,9 +119,9 @@
 
     deck-cells))
 
-(define (find-solution)
+(define (find-albatross-solution)
   (initialize-scheduler)
-  (let ((decks (build-network)))
+  (let ((decks (build-albatross-network)))
     (run)
     (map content decks)))
 
@@ -141,4 +141,4 @@
       #(deck main draconio calypso-figure firearms)
       #(deck gun scurvy casket-of-magenta ropes)
       #(deck lower kraken goldenhall-talisman spare-sails))
-    (map v&s-value (map tms-query (show-time find-solution))))))
+    (map v&s-value (map tms-query (show-time find-albatross-solution))))))

@@ -37,4 +37,5 @@
  load-relative
  '("masyu-puzzles"
    "riddle-of-the-knights"
+   "albatross-conundrum"
    ))
