@@ -4,6 +4,8 @@
 \newcommand{\pictureslide}[2][]{\begin{frame}\begin{center}\includegraphics[width=300pt]{{#2}}\\ \huge {{#1}}\end{center}\end{frame}}
 \newcommand{\tallpictureslide}[2][]{\begin{frame}\begin{center}\includegraphics[height=180pt]{{#2}}\\ \huge {{#1}}\end{center}\end{frame}}
 
+\newcommand{\stress}[1]{{\color{red}{{#1}}}}
+
 \newenvironment{codeslide}[1]{\begin{frame}[containsverbatim]%
 \begin{center}
 \huge {{#1}}
@@ -22,10 +24,10 @@
 \begin{frame}
 \begin{center}\Huge Vision\end{center}
 \begin{itemize}
-\item Maximally expressive probabilistic models
+\item \stress{Maximally expressive} probabilistic models
 \pause
-\item by embedding probabilistic reasoning into a maximally expressive general
-programming language
+\item by probabilistic reasoning over an \stress{expressive}
+  programming language
 \end{itemize}
 \end{frame}
 
@@ -137,3 +139,6 @@ Avi Pfeffer.
 \end{frame}
 
 \end{document}
+
+Ideas:
+Describe briefly what each system would do with a fixed example?
