@@ -69,22 +69,42 @@ Avi Pfeffer.
 \end{frame}
 
 \begin{frame}
-\begin{center}\Huge What are they doing?\end{center}
+\begin{center}\Huge Probabilistic Scheme\end{center}
 \begin{itemize}
-\item Probabilistic Scheme Embedded in Scheme
-\item Church standalone, pure, Lisp family
-\item IBAL standalone, pure?, ML family
-\item Oleg and Ken Shan embedded in OCaml
+\item Embedded
+\item in Scheme
+\item with continuation capture
+\item inferring by depth-first search
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\begin{center}\Huge How are they doing it?\end{center}
+\begin{center}\Huge Kiselyov and Shan's System\end{center}
 \begin{itemize}
-\item Probabilistic Scheme continuation capture and search
-\item Church Metropolis-Hastings over execution traces
-\item IBAL something exact, essentially over execution paths
-\item Oleg and Ken Shan continuation capture and search
+\item Embedded
+\item in OCaml
+\item with delimited continuations
+\item inferring by search or sampling
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{center}\Huge Church\end{center}
+\begin{itemize}
+\item Standalone
+\item pure functional
+\item in the Lisp family
+\item inferring by Metropolis-Hastings over execution traces
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{center}\Huge IBAL\end{center}
+\begin{itemize}
+\item Standalone
+\item pure functional
+\item in the ML family
+\item inferring by compilation to a micro-factor graph
 \end{itemize}
 \end{frame}
 
