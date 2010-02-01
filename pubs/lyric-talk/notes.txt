@@ -1,0 +1,46 @@
+Vision: Expressiveness!
+
+Programming language captures all possible regularity and structure
+
+Probability is easy, programming is hard.  So probability should be
+subservient.
+- I want inference in my toolkit alongside everything else
+
+Scheme
+
+Parens matter!
+prefix notation
++ is just a procedure
+define, lambda
+let, cons, car, cdr
+
+Demo
+
+Flippin' some coins
+
+Bayes on coin fairness
+
+Hierarchical Bayes for contents of bags
+
+(N.B. All discrete)
+
+Evaluating up to 24
+
+These are the efforts I am most familiar with
+
+Ken Shan at Rutgers and Oleg Kiselyov at Fleet Numerical Meteorology
+and Oceanography Center in Monterey, CA
+
+Noah Goodman and company at Brain and Cognitive Sciences at MIT
+
+Avi Pfeffer at Harvard
+
+What else to say about "who is doing it"?
+
+What to say about the individual systems?
+
+Dilemma
+
+Propagators!
+
+Contributions
