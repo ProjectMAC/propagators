@@ -1,0 +1,41 @@
+\documentclass{beamer}
+
+\newcommand{\wordslide}[1]{\begin{frame}\begin{center}\Huge {#1}\end{center}\end{frame}}
+\newcommand{\pictureslide}[2][]{\begin{frame}\begin{center}\includegraphics[width=300pt]{{#2}}\\ \huge {{#1}}\end{center}\end{frame}}
+\newcommand{\tallpictureslide}[2][]{\begin{frame}\begin{center}\includegraphics[height=180pt]{{#2}}\\ \huge {{#1}}\end{center}\end{frame}}
+
+\newenvironment{codeslide}[1]{\begin{frame}[containsverbatim]%
+\begin{center}
+\huge {{#1}}
+\end{center} }{\end{frame}}
+
+\title[Probabilistic Programming]{Probabilistic Programming}
+\author{Alexey Radul}
+\date{February 3rd, 2010, Lyric Semiconductor}
+
+\begin{document}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}
+\begin{center}\Huge Vision\end{center}
+\begin{itemize}
+\item Maximally expressive probabilistic models
+\pause
+\item by embedding probabilistic reasoning into a maximally expressive general
+programming language
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{center}\Huge Contributions\end{center}
+\begin{itemize}
+\item Embedding of probabilistic reasoning into Scheme
+\item Propagator network infrastructure for efficient non-sequential
+  computing, including inference
+\end{itemize}
+\end{frame}
+
+\end{document}
