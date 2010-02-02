@@ -2,33 +2,35 @@ digraph G {
   ratio=fill;
   "(variable) 11" [label="baker", shape="ellipse", rank="people" ];
   "(propagator) 12" [label="=", shape="box" ];
-   { rank=same; "(variable) 238"; "(variable) 241" }; 
+   { rank=same; "(propagator) 12"; "(propagator) 14"; "(propagator) 18"; "(propagator) 43"; "(propagator) 34"; "(propagator) 37"; "(propagator) 147" };
+   { rank=same; "(variable) 130"; "(variable) 131"; "(variable) 238"; "(variable) 241" }; 
+   { rank=same; "(propagator) 240"; "(propagator) 241"; "(propagator) 401"; "(propagator) 402"; "(propagator) 403"; "(propagator) 404"; };
 
   "(propagator) 240" [label="5", shape="box" ];
-  "(propagator) 240" -> "(variable) 130" [label="" ];
+  "(variable) 130" -> "(propagator) 240" [label="", dir=back, ];
   "(variable) 130" [label="five", shape="ellipse" ];
   "(propagator) 241" [label="5", shape="box" ];
-  "(propagator) 241" -> "(variable) 131" [label="" ];
+  "(variable) 131" -> "(propagator) 241" [label="", dir=back, ];
   "(variable) 131" [label="five", shape="ellipse" ];
 
   "(variable) 130" -> "(propagator) 12" [label=0 ];
   "(variable) 131" -> "(propagator) 14" [label=0 ];
 
   "(propagator) 14" [label="=", shape="box" ];
-  "(variable) 15" -> "(propagator) 14" [label=1 ];
+  "(variable) 15" -> "(propagator) 14" [label="" ];
   "(variable) 15" [label="fletcher", shape="ellipse", rank="people" ];
   "(propagator) 16" [label="-", shape="box" ];
-  "(variable) 15" -> "(propagator) 16" [label=0 ];
-  "(variable) 17" -> "(propagator) 16" [label=1 ];
+  "(variable) 15" -> "(propagator) 16" [label="" ];
+  "(variable) 17" -> "(propagator) 16" [label="" ];
   "(variable) 17" [label="cooper", shape="ellipse", rank="people" ];
   "(propagator) 18" [label=">", shape="box" ];
-  "(variable) 19" -> "(propagator) 18" [label=0 ];
+  "(variable) 19" -> "(propagator) 18" [label="" ];
   "(variable) 19" [label="miller", shape="ellipse", rank="people" ];
   "(variable) 21" [label="smith", shape="ellipse", rank="people" ];
    { rank=same; "(variable) 11"; "(variable) 15"; "(variable) 17"; "(variable) 19"; "(variable) 21" }; 
   "(propagator) 22" [label="-", shape="box" ];
-  "(variable) 21" -> "(propagator) 22" [label=0 ];
-  "(variable) 15" -> "(propagator) 22" [label=1 ];
+  "(variable) 21" -> "(propagator) 22" [label="" ];
+  "(variable) 15" -> "(propagator) 22" [label="" ];
   "(propagator) 22" -> "(variable) 23" [label="" ];
   "(variable) 23" [label="btwn S and F", shape="ellipse" ];
   "(propagator) 24" [label="absolute value", shape="box" ];
@@ -36,8 +38,8 @@ digraph G {
   "(propagator) 24" -> "(variable) 25" [label="" ];
   "(variable) 25" [label="btwn S & F (unsgn)", shape="ellipse" ];
   "(propagator) 26" [label="=", shape="box" ];
-  "(variable) 207" -> "(propagator) 26" [label=0 ];
-   { rank=same; "(variable) 35"; "(variable) 38" }; 
+  "(variable) 207" -> "(propagator) 26" [label="" ];
+   { rank=same; "(variable) 209"; "(variable) 210"; "(variable) 35"; "(variable) 38" }; 
 
   "(propagator) 400" [label="1", shape="box" ];
   "(propagator) 400" -> "(variable) 207" [label="" ];
@@ -53,8 +55,8 @@ digraph G {
   "(variable) 210" [label="one", shape="ellipse" ];
 
   "(propagator) 28" [label="=", shape="box" ];
-  "(variable) 208" -> "(propagator) 28" [label=0 ];
-  "(variable) 29" -> "(propagator) 28" [label=1 ];
+  "(variable) 208" -> "(propagator) 28" [label="" ];
+  "(variable) 29" -> "(propagator) 28" [label="" ];
   "(variable) 29" [label="btwn F and C (unsgn)", shape="ellipse" ];
   "(propagator) 30" [label="abs", shape="box" ];
   "(variable) 31" -> "(propagator) 30" [label="" ];
@@ -66,20 +68,20 @@ digraph G {
   "(propagator) 33" [label="Forbid!", shape="box", rank="forbid" ];
   "(propagator) 33" -> "(variable) 32" [label="" ];
   "(propagator) 34" [label="=", shape="box" ];
-  "(variable) 209" -> "(propagator) 34" [label=0 ];
-  "(variable) 15" -> "(propagator) 34" [label=1 ];
+  "(variable) 209" -> "(propagator) 34" [label="" ];
+  "(variable) 15" -> "(propagator) 34" [label="" ];
   "(propagator) 34" -> "(variable) 35" [label="" ];
   "(variable) 35" [label="f=1", shape="ellipse" ];
   "(propagator) 36" [label="Forbid!", shape="box", rank="forbid" ];
   "(propagator) 36" -> "(variable) 35" [label="" ];
   "(propagator) 37" [label="=", shape="box" ];
-  "(variable) 210" -> "(propagator) 37" [label=0 ];
-  "(variable) 17" -> "(propagator) 37" [label=1 ];
+  "(variable) 210" -> "(propagator) 37" [label="" ];
+  "(variable) 17" -> "(propagator) 37" [label="" ];
   "(propagator) 37" -> "(variable) 38" [label="" ];
   "(variable) 38" [label="c=1", shape="ellipse" ];
   "(propagator) 39" [label="Forbid!", shape="box", rank="forbid" ];
   "(propagator) 39" -> "(variable) 38" [label="" ];
-  "(variable) 25" -> "(propagator) 26" [label=1 ];
+  "(variable) 25" -> "(propagator) 26" [label="" ];
   "(propagator) 26" -> "(variable) 41" [label="" ];
   "(variable) 41" [label="sf", shape="ellipse" ];
   "(propagator) 42" [label="Forbid!", shape="box", rank="forbid" ];
