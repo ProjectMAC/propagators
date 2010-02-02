@@ -19,18 +19,6 @@
      (discrete-select
       ('fair 1/3) ('heads-biased 1/3) ('tails-biased 1/3)))))
 
-(define (coin-weight type)
-  (case type
-    ((fair) 1/2)
-    ((heads-biased) 9/10)
-    ((tails-biased) 1/10)
-    (else
-     (error "Bogus coin type" type))))
-
-(define (coin weight)
-  (lambda ()
-    (discrete-select ('heads weight) ('tails (- 1 weight)))))
-
 (define (draw-coin bag-type)
   (let ((coin-type (coin-in-bag-prior bag-type)))
     (coin (coin-weight coin-type))))
@@ -44,15 +32,6 @@
 			    coin-data)))
 	      data)
     bag-type))
-
-(define (experiment-result data)
-  (map (lambda (pair)
-	 (cons (car pair)
-	       (exact->inexact (cdr pair))))
-       (distribution->alist
-	(stochastic-thunk->distribution
-	 (lambda ()
-	   (experiment data))))))
 
 (define (integrate-out thunk)
   (distribution-splice

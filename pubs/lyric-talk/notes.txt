@@ -34,12 +34,14 @@ Rollin' some dice: rolling-dice.scm
 - discrete-select is part of Probabilistic Scheme (actually a macro)
 - roll-two-dice is a procedure
 - we can make a distribution out of it
-  - and operate on that distribution (sample; determine)
+  - and operate on that distribution (sample; convert to association list)
 - Note the aliasing effect!
 
 Bayes on coin fairness: one-coin.scm
 
 Hierarchical Bayes for contents of bags: hierarchical-bayes.scm
+- Note reuse of previous coin model
+- And redefining the experiment changes the experiment-result function
 
 (N.B. All discrete)
 
