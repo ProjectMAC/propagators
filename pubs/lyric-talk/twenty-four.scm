@@ -16,6 +16,7 @@
 #;
     (pp expression)
     (observe! (equal? 24 (eval expression (nearest-repl/environment))))
+    (pp expression)
     expression))
 
 (define (find-new-possibility! distribution)
@@ -27,13 +28,6 @@
        (> (distribution/determined-density distribution)
 	  starting-determined-density)))))
 
-(define (distribution->current-min-mass-alist distribution)
-  (map (lambda (datum-density)
-	 (cons (car datum-density)
-	       (distribution/density->min-mass 
-		distribution (cdr datum-density))))
-       (distribution->current-density-alist distribution)))
-
 (define the-distribution
   (stochastic-thunk->distribution expression-24 make-breadth-first-schedule))
 
@@ -41,5 +35,5 @@
   (find-new-possibility! the-distribution)
   (pp (map (lambda (pair)
 	     (cons (car pair)
-		   (exact->inexact (cdr pair))))
-	   (distribution->current-min-mass-alist the-distribution))))
+		   (map exact->inexact (cdr pair))))
+	   (distribution->current-bounds-alist the-distribution))))
