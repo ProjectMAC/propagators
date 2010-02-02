@@ -1,9 +1,13 @@
-(fset 'grab-next-sexp
-   (lambda (&optional arg)
-     "Keyboard macro C-x o C-SPC M-C-f M-w <right> C-x o C-y"
-     (interactive "p")
-     (kmacro-exec-ring-item
-      (quote ([24 111 67108896 134217734 134217847 right 24 111 25] 0 "%d"))
-      arg)))
+(defun grab-next-sexp-other-buffer ()
+  (interactive)
+  (switch-to-buffer "*scheme*")
+  (end-of-buffer)
+  (set-buffer (other-buffer (current-buffer)))
+  (let ((beginning (point)))
+    (forward-sexp)
+    (copy-region-as-kill beginning (point))
+    (forward-char))
+  (switch-to-buffer "*scheme*")
+  (yank))
 
-(define-key global-map [f1] 'grab-next-sexp)
+(define-key global-map [f1] 'grab-next-sexp-other-buffer)
