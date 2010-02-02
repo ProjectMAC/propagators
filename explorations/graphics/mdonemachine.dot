@@ -4,7 +4,7 @@ digraph G {
   "(propagator) 12" [label="=", shape="box" ];
    { rank=same; "(propagator) 12"; "(propagator) 14"; "(propagator) 18"; "(propagator) 43"; "(propagator) 34"; "(propagator) 37"; "(propagator) 147" };
    { rank=same; "(variable) 130"; "(variable) 131"; "(variable) 238"; "(variable) 241" }; 
-   { rank=same; "(propagator) 240"; "(propagator) 241"; "(propagator) 401"; "(propagator) 402"; "(propagator) 403"; "(propagator) 404"; };
+   { rank=same; "(propagator) 240"; "(propagator) 241"; "(propagator) 401"; "(propagator) 402"; "(propagator) 403"; };
 
   "(propagator) 240" [label="5", shape="box" ];
   "(variable) 130" -> "(propagator) 240" [label="", dir=back, ];
@@ -48,17 +48,17 @@ digraph G {
   "(propagator) 401" -> "(variable) 208" [label="" ];
   "(variable) 208" [label="one", shape="ellipse" ];
   "(propagator) 402" [label="1", shape="box" ];
-  "(propagator) 402" -> "(variable) 209" [label="" ];
+   "(variable) 209" -> "(propagator) 402" [label="", dir=back, ];
   "(variable) 209" [label="one", shape="ellipse" ];
   "(propagator) 403" [label="1", shape="box" ];
-  "(propagator) 403" -> "(variable) 210" [label="" ];
+  "(variable) 210" -> "(propagator) 403"  [label="", dir=back ];
   "(variable) 210" [label="one", shape="ellipse" ];
 
   "(propagator) 28" [label="=", shape="box" ];
   "(variable) 208" -> "(propagator) 28" [label="" ];
   "(variable) 29" -> "(propagator) 28" [label="" ];
-  "(variable) 29" [label="btwn F and C (unsgn)", shape="ellipse" ];
-  "(propagator) 30" [label="abs", shape="box" ];
+  "(variable) 29" [label="btwn F & C (unsgn)", shape="ellipse" ];
+  "(propagator) 30" [label="absolute value", shape="box" ];
   "(variable) 31" -> "(propagator) 30" [label="" ];
   "(variable) 31" [label="between F and C", shape="ellipse" ];
   "(propagator) 30" -> "(variable) 29" [label="" ];
