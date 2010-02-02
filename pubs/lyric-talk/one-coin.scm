@@ -1,3 +1,4 @@
+
 (define (coin-prior)
   (discrete-select ('fair 98/100)
 		   ('heads-biased 1/100)
@@ -29,13 +30,11 @@
     (stochastic-thunk->distribution
      (lambda ()
        (experiment data))))))
-
-
 (pp (experiment-result '()))
 (pp (experiment-result '(heads)))
 (pp (experiment-result '(heads heads)))
 (pp (experiment-result '(heads heads heads)))
 (pp (experiment-result '(heads heads heads heads)))
 (pp (experiment-result (make-list 10 'heads)))
-(pp (experiment-result (make-list 100 'heads)))
+(pp (experiment-result (make-list 20 'heads)))
 

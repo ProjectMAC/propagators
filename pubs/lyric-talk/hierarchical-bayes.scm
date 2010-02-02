@@ -1,3 +1,4 @@
+
 (define (bag-prior)
   (discrete-select ('fair 1/4)
 		   ('heads-biased 1/4)
@@ -33,7 +34,6 @@
 		   coin-data)))
      data)
     bag-type))
-
 (pp (experiment-result '()))
 (pp (experiment-result '((heads))))
 (pp (experiment-result '((heads heads))))

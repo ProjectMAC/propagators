@@ -40,6 +40,7 @@ Rollin' some dice: rolling-dice.scm
 - Note the aliasing effect!
 
 Bayes on coin fairness: one-coin.scm
+- draw the graphical model
 - case is part of Scheme
 - the coin procedure returns a procedure
 - the data is a list of observed coin flips
@@ -47,6 +48,7 @@ Bayes on coin fairness: one-coin.scm
 - for-each runs the given procedure on every item in the given list
 
 Hierarchical Bayes for contents of bags: hierarchical-bayes.scm
+- draw the graphical model
 - Note reuse of previous coin model
 - The data are a list of lists of coin-flip results
   - so we know how many coins we drew, and which flips were which
