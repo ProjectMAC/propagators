@@ -1,15 +1,15 @@
 digraph G {
   ratio=fill;
   "(variable) 11" [label="baker", shape="ellipse", rank="people" ];
+  "(variable) 17" [label="cooper", shape="ellipse", rank="people" ];
   "(variable) 15" [label="fletcher", shape="ellipse", rank="people" ];
   "(variable) 21" [label="smith", shape="ellipse", rank="people" ];
   "(variable) 19" [label="miller", shape="ellipse", rank="people" ];
-  "(variable) 17" [label="cooper", shape="ellipse", rank="people" ];
-
 
   "(propagator) 12" [label="=", shape="box" ];
-   { rank=same; "(propagator) 12"; "(propagator) 14"; "(propagator) 18"; "(propagator) 34"; "(propagator) 37"; "(propagator) 16";  };
+   { rank=same; "(propagator) 12"; "(propagator) 14"; "(propagator) 16"; "(propagator) 34"; "(propagator) 37"; "(propagator) 18";  };
    { rank=same; "(variable) 130"; "(variable) 131"; "(variable) 238"; "(variable) 241" }; 
+
    { rank=same; "(propagator) 240"; "(propagator) 241"; "(propagator) 401"; "(propagator) 402"; "(propagator) 403"; };
 
   "(propagator) 240" [label="5", shape="box" ];
