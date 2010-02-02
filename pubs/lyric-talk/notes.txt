@@ -14,6 +14,7 @@ prefix notation
 define, lambda
 let, cons, car, cdr
 quote, for-each
+hyphens and other punctuation are ok in symbols (?, ! convention)
 
 Demo
 
