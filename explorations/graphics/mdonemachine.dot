@@ -1,8 +1,10 @@
 digraph G {
   ratio=fill;
   "(variable) 11" [label="baker", shape="ellipse", rank="people" ];
+  "(variable) 19" -> "(propagator) 18" [label="" ];
+  "(variable) 19" [label="miller", shape="ellipse", rank="people" ];
   "(propagator) 12" [label="=", shape="box" ];
-   { rank=same; "(propagator) 12"; "(propagator) 14"; "(propagator) 18"; "(propagator) 34"; "(propagator) 37"; };
+   { rank=same; "(propagator) 12"; "(propagator) 34"; "(propagator) 37"; "(propagator) 14"; "(propagator) 18";  };
    { rank=same; "(variable) 130"; "(variable) 131"; "(variable) 238"; "(variable) 241" }; 
    { rank=same; "(propagator) 240"; "(propagator) 241"; "(propagator) 401"; "(propagator) 402"; "(propagator) 403"; };
 
@@ -24,8 +26,6 @@ digraph G {
   "(variable) 17" -> "(propagator) 16" [label="" ];
   "(variable) 17" [label="cooper", shape="ellipse", rank="people" ];
   "(propagator) 18" [label=">", shape="box" ];
-  "(variable) 19" -> "(propagator) 18" [label="" ];
-  "(variable) 19" [label="miller", shape="ellipse", rank="people" ];
   "(variable) 21" [label="smith", shape="ellipse", rank="people" ];
    { rank=same; "(variable) 11"; "(variable) 15"; "(variable) 17"; "(variable) 19"; "(variable) 21" }; 
   "(propagator) 22" [label="-", shape="box" ];
@@ -67,14 +67,18 @@ digraph G {
    { rank=max; "(propagator) 33"; "(propagator) 36"; "(propagator) 39"; "(propagator) 42"; "(propagator) 146"; "(propagator) 239"; "(propagator) 242" };
   "(propagator) 33" [label="Forbid!", shape="box", rank="forbid" ];
   "(propagator) 33" -> "(variable) 32" [label="" ];
+  "(variable) 15" -> "(propagator) 34" [label="" ];
+
+subgraph cluster_0 {
+                label = "f_one";	
   "(propagator) 34" [label="=", shape="box" ];
   "(variable) 209" -> "(propagator) 34" [label="" ];
-  "(variable) 15" -> "(propagator) 34" [label="" ];
   "(propagator) 34" -> "(variable) 35" [label="" ];
   "(variable) 35" [label="f=1", shape="ellipse" ];
   "(propagator) 36" [label="Forbid!", shape="box", rank="forbid" ];
   "(propagator) 36" -> "(variable) 35" [label="" ];
   "(propagator) 37" [label="=", shape="box" ];
+	}
   "(variable) 210" -> "(propagator) 37" [label="" ];
   "(variable) 17" -> "(propagator) 37" [label="" ];
   "(propagator) 37" -> "(variable) 38" [label="" ];
