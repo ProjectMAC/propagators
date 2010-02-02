@@ -2,7 +2,7 @@ digraph G {
   ratio=fill;
   "(variable) 11" [label="baker", shape="ellipse", rank="people" ];
   "(propagator) 12" [label="=", shape="box" ];
-   { rank=same; "(variable) 130"; "(variable) 131"; "(variable) 238"; "(variable) 241" }; 
+   { rank=same; "(variable) 238"; "(variable) 241" }; 
 
   "(propagator) 240" [label="5", shape="box" ];
   "(propagator) 240" -> "(variable) 130" [label="" ];
@@ -24,9 +24,6 @@ digraph G {
   "(propagator) 18" [label=">", shape="box" ];
   "(variable) 19" -> "(propagator) 18" [label=0 ];
   "(variable) 19" [label="miller", shape="ellipse", rank="people" ];
-  "(propagator) 20" [label="=", shape="box" ];
-  "(variable) 19" -> "(propagator) 20" [label=0 ];
-  "(variable) 21" -> "(propagator) 20" [label=1 ];
   "(variable) 21" [label="smith", shape="ellipse", rank="people" ];
    { rank=same; "(variable) 11"; "(variable) 15"; "(variable) 17"; "(variable) 19"; "(variable) 21" }; 
   "(propagator) 22" [label="-", shape="box" ];
@@ -40,7 +37,7 @@ digraph G {
   "(variable) 25" [label="btwn S & F (unsgn)", shape="ellipse" ];
   "(propagator) 26" [label="=", shape="box" ];
   "(variable) 207" -> "(propagator) 26" [label=0 ];
-   { rank=same; "(variable) 209"; "(variable) 210"; "(variable) 35"; "(variable) 38" }; 
+   { rank=same; "(variable) 35"; "(variable) 38" }; 
 
   "(propagator) 400" [label="1", shape="box" ];
   "(propagator) 400" -> "(variable) 207" [label="" ];
