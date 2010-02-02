@@ -12,12 +12,14 @@ roll-two-dice
 (sample (stochastic-thunk->distribution roll-two-dice))
 
 (pp
- (distribution->alist
-  (stochastic-thunk->distribution roll-two-dice)))
+ (sort-alist
+  (distribution->alist
+   (stochastic-thunk->distribution roll-two-dice))))
 
 (pp
- (distribution->alist
-  (stochastic-thunk->distribution
-   (lambda ()
-     (let ((face (roll-die)))
-       (+ face face))))))
+ (sort-alist
+  (distribution->alist
+   (stochastic-thunk->distribution
+    (lambda ()
+      (let ((face (roll-die)))
+	(+ face face)))))))

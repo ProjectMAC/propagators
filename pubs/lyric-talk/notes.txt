@@ -9,6 +9,7 @@ subservient.
 Scheme scheme.scm
 
 Parens matter!
+- but don't count close parens
 prefix notation
 - precedence is a consequence
 define
@@ -35,15 +36,24 @@ Rollin' some dice: rolling-dice.scm
 - roll-two-dice is a procedure
 - we can make a distribution out of it
   - and operate on that distribution (sample; convert to association list)
+- pp is a Scheme procedure that pretty-prints
 - Note the aliasing effect!
 
 Bayes on coin fairness: one-coin.scm
+- case is part of Scheme
+- the coin procedure returns a procedure
+- the data is a list of observed coin flips
+- observe! is how you signal observations in Probabilistic Scheme
+- for-each runs the given procedure on every item in the given list
 
 Hierarchical Bayes for contents of bags: hierarchical-bayes.scm
 - Note reuse of previous coin model
+- The data are a list of lists of coin-flip results
+  - so we know how many coins we drew, and which flips were which
 - And redefining the experiment changes the experiment-result function
-
-(N.B. All discrete)
+- Note the difference between flipping one coin many times and
+  flipping many coins once
+- Note everything is discrete
 
 Evaluating up to 24: twenty-four.scm
 
