@@ -56,6 +56,8 @@ Hierarchical Bayes for contents of bags: hierarchical-bayes.scm
 - Note everything is discrete
 
 Evaluating up to 24: twenty-four.scm
+- Look how easy the generative grammar is to write
+- Need breadth-first search for this one!
 
 These are the efforts I am most familiar with
 

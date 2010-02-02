@@ -1,3 +1,4 @@
+
 (define (number)
   (uniform-select '(1 2 3 4 5 6 7 8 9)))
 
@@ -7,9 +8,9 @@
 (define (expression)
   (discrete-select
    ((number)
-    3/4)
+    .75)
    ((list (operator) (expression) (expression))
-    1/4)))
+    .25)))
 
 (define (expression-24)
   (let ((expression (expression)))
@@ -33,7 +34,4 @@
 
 (define (poke!)
   (find-new-possibility! the-distribution)
-  (pp (map (lambda (pair)
-	     (cons (car pair)
-		   (map exact->inexact (cdr pair))))
-	   (distribution->current-bounds-alist the-distribution))))
+  (pp (sort-alist (distribution->current-bounds-alist the-distribution))))
