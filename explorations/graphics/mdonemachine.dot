@@ -1,9 +1,9 @@
 digraph G {
   ratio=fill;
-  "(variable) 11" [label="baker", shape="ellipse", rank="people" ];
-  "(variable) 21" [label="smith", shape="ellipse", rank="people" ];
-  "(variable) 19" [label="miller", shape="ellipse", rank="people" ];
   "(variable) 15" [label="fletcher", shape="ellipse", rank="people" ];
+  "(variable) 21" [label="smith", shape="ellipse", rank="people" ];
+  "(variable) 11" [label="baker", shape="ellipse", rank="people" ];
+  "(variable) 19" [label="miller", shape="ellipse", rank="people" ];
   "(variable) 17" [label="cooper", shape="ellipse", rank="people" ];
 
 
@@ -22,13 +22,21 @@ digraph G {
   "(variable) 130" -> "(propagator) 12" [label=0 ];
   "(variable) 131" -> "(propagator) 14" [label=0 ];
 
+  "(propagator) 18" [label=">", shape="box" ];
+  "(variable) 19" -> "(propagator) 18" [label="" ];
+  "(variable) 17" -> "(propagator) 18" [label=1 ];
+  "(propagator) 18" -> "(variable) 145" [label="" ];
+  "(variable) 145" [label="miller > cooper", shape="ellipse" ];
+  "(propagator) 146" [label="Require!", shape="box" ];
+  "(propagator) 146" -> "(variable) 145" [label="" ];
+
+
+
   "(propagator) 14" [label="=", shape="box" ];
   "(variable) 15" -> "(propagator) 14" [label="" ];
   "(propagator) 16" [label="-", shape="box" ];
   "(variable) 15" -> "(propagator) 16" [label="" ];
   "(variable) 17" -> "(propagator) 16" [label="" ];
-  "(propagator) 18" [label=">", shape="box" ];
-  "(variable) 19" -> "(propagator) 18" [label="" ];
    { rank=same; "(variable) 11"; "(variable) 15"; "(variable) 17"; "(variable) 19"; "(variable) 21" }; 
   "(propagator) 22" [label="-", shape="box" ];
   "(variable) 21" -> "(propagator) 22" [label="" ];
@@ -79,8 +87,8 @@ subgraph cluster_0 {
   "(variable) 35" [label="f=1", shape="ellipse" ];
   "(propagator) 36" [label="Forbid!", shape="box", rank="forbid" ];
   "(propagator) 36" -> "(variable) 35" [label="" ];
-  "(propagator) 37" [label="=", shape="box" ];
 	}
+  "(propagator) 37" [label="=", shape="box" ];
   "(variable) 210" -> "(propagator) 37" [label="" ];
   "(variable) 17" -> "(propagator) 37" [label="" ];
   "(propagator) 37" -> "(variable) 38" [label="" ];
@@ -100,12 +108,6 @@ subgraph cluster_0 {
   "(propagator) 57" -> "(variable) 15" [label="" ];
   "(propagator) 57" -> "(variable) 11" [label="" ];
 
-
-  "(variable) 17" -> "(propagator) 18" [label=1 ];
-  "(propagator) 18" -> "(variable) 145" [label="" ];
-  "(variable) 145" [label="miller > cooper", shape="ellipse" ];
-  "(propagator) 146" [label="Require!", shape="box" ];
-  "(propagator) 146" -> "(variable) 145" [label="" ];
   "(propagator) 16" -> "(variable) 31" [label="" ];
   "(propagator) 14" -> "(variable) 238" [label="" ];
   "(variable) 238" [label="f=5", shape="ellipse" ];
