@@ -6,15 +6,24 @@ Probability is easy, programming is hard.  So probability should be
 subservient.
 - I want inference in my toolkit alongside everything else
 
-Scheme
+Scheme scheme.scm
 
 Parens matter!
 prefix notation
+- precedence is a consequence
+define
+- lexical scope
+let
+return last form; tail recursion
+
+procedures are values too
 + is just a procedure
-define, lambda
-let, cons, car, cdr
-quote, for-each
+lambda
+closures
 hyphens and other punctuation are ok in symbols (?, ! convention)
+
+cons, car, cdr
+quote, for-each
 
 Demo
 
@@ -22,15 +31,19 @@ mit-scheme
 (load "~/probscheme/load-probscheme")
 
 Rollin' some dice: rolling-dice.scm
+- discrete-select is part of Probabilistic Scheme (actually a macro)
+- roll-two-dice is a procedure
+- we can make a distribution out of it
+  - and operate on that distribution (sample; determine)
 - Note the aliasing effect!
 
 Bayes on coin fairness: one-coin.scm
 
-Hierarchical Bayes for contents of bags
+Hierarchical Bayes for contents of bags: hierarchical-bayes.scm
 
 (N.B. All discrete)
 
-Evaluating up to 24
+Evaluating up to 24: twenty-four.scm
 
 These are the efforts I am most familiar with
 
