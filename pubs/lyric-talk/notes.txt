@@ -13,12 +13,17 @@ prefix notation
 + is just a procedure
 define, lambda
 let, cons, car, cdr
+quote, for-each
 
 Demo
 
-Flippin' some coins
+mit-scheme
+(load "~/probscheme/load-probscheme")
 
-Bayes on coin fairness
+Rollin' some dice: rolling-dice.scm
+- Note the aliasing effect!
+
+Bayes on coin fairness: one-coin.scm
 
 Hierarchical Bayes for contents of bags
 
