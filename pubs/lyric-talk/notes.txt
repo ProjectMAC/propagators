@@ -64,7 +64,7 @@ Evaluating up to 24: twenty-four.scm
 - Easy to write the generative grammar
 - Need breadth-first search for this one!
 
-These are the efforts I am most familiar with
+Many efforts -- these are familiar
 
 Ken Shan at Rutgers and Oleg Kiselyov at Fleet
 Numerical Meteorology and Oceanography Center in
@@ -75,12 +75,74 @@ Sciences at MIT
 
 Avi Pfeffer at Harvard
 
-What else to say about "who is doing it"?
+All different
 
-What to say about the individual systems?
+Probabilistic Scheme
+
+Embedded => gets libraries, compiler, gc
+
+Needs call-with-current-continuation
+- not that easy to get!
+
+Kiselyov and Shan
+
+Also embedded - same benefits and challenges
+
+The program being inferred is a black box:
+The inference can't see its structure
+- only "choose this", "reject that"
+- "tree"
+
+Oops
+
+Stupid over-search
+
+This particular one is easy to fix, but point
+remains.
+
+I know no way to win in Scheme.
+Laziness helps, but maybe not enough.
+
+Standalone systems can solve this problem
+
+Church
+
+Sampler
+- (*still* muttering about exact inference)
+
+Standalone => full access to running program
+Possible execution traces => "graph"
+
+M-H can be arranged to take only direct
+consequences into account
+- but walks over all steps in the program;
+  big trouble in deterministic chunks
+
+TODO Is there a picture I can draw?
+
+IBAL
+
+Also standalone
+
+Exact
+Custom idea of micro-factors
+Variable Elimination
+"Graph"!
+
+Produces factors even for deterministic pieces
+
+TODO Is there a picture I can draw?
 
 Dilemma
+
+Efficient tree or Slow graph?
 
 Propagators!
+
+My main research goal at MIT
+
+Deal with graphs once --- lots of stuff embeds
+
+Not the focus of this talk
 
 Contributions

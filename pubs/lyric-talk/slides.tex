@@ -75,7 +75,7 @@ Avi Pfeffer.
 \item Embedded
 \item in Scheme
 \item with continuation capture
-\item inferring by depth-first search
+\item inferring by anytime \stress{depth-first} search
 \end{itemize}
 \end{frame}
 
@@ -85,9 +85,18 @@ Avi Pfeffer.
 \item Embedded
 \item in OCaml
 \item with delimited continuations
-\item inferring by search or sampling
+\item inferring by \stress{depth-first} search or importance sampling
 \end{itemize}
 \end{frame}
+
+\begin{codeslide}{Oops}
+\begin{verbatim}
+(let ((x (roll-die)))
+  (let ((y (roll-die)))
+    (observe! (= x 3))
+    (+ x y))))
+\end{verbatim}
+\end{codeslide}
 
 \begin{frame}
 \begin{center}\Huge Church\end{center}
@@ -95,7 +104,7 @@ Avi Pfeffer.
 \item Standalone
 \item pure functional
 \item in the Lisp family
-\item inferring by Metropolis-Hastings over execution traces
+\item inferring by Metropolis-Hastings over execution trace \stress{graph}
 \end{itemize}
 \end{frame}
 
@@ -105,26 +114,30 @@ Avi Pfeffer.
 \item Standalone
 \item pure functional
 \item in the ML family
-\item inferring by compilation to a micro-factor graph
+\item inferring by compilation to a micro-factor \stress{graph}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \begin{center}\Huge Dilemma\end{center}
-\begin{itemize}
-\item Embedded languages get a high-quality implementation of the
-  deterministic parts for free % Say ``tree''
-\item Standalone languages get inspection into the structure of the
-  model, which helps inference % Say ``graph'' TODO Example!
-\end{itemize}
+Embedded $\Rightarrow$ free high-quality
+  deterministic parts of search \stress{tree} \\
+\begin{center}vs\end{center}
+Standalone $\Rightarrow$ see the \stress{graph} structure of the
+  model \\
 \end{frame}
 
 \begin{frame}
-\begin{center}\Huge My Research\end{center}
+\begin{center}\Huge Enter Propagator Networks\end{center}
 \begin{itemize}
-\item New computation model based on propagation of information around a graph
+\item New computation model based on propagation of information around a \stress{graph}
 \item General enough to support embedded probabilistic inference that
   can use the graph structure of a program
+\pause
+\item Also constraint propagation
+\item dependency-directed search
+\item reactive programming
+\item ...
 \end{itemize}
 \end{frame}
 
