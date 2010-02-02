@@ -1,10 +1,11 @@
 Vision: Expressiveness!
 
-Programming language captures all possible regularity and structure
+Programming language captures all possible
+regularity and structure
 
-Probability is easy, programming is hard.  So probability should be
-subservient.
-- I want inference in my toolkit alongside everything else
+Probability is easy, programming is hard.
+- probability should be subservient
+- inference in my toolkit, with everything else
 
 Scheme scheme.scm
 
@@ -21,52 +22,56 @@ procedures are values too
 + is just a procedure
 lambda
 closures
-hyphens and other punctuation are ok in symbols (?, ! convention)
+hyphens and other punctuation are ok in symbols
+(?, ! convention)
 
 cons, car, cdr
 quote, for-each
 
-Demo
-
-mit-scheme
-(load "~/probscheme/load-probscheme")
-
 Rollin' some dice: rolling-dice.scm
-- discrete-select is part of Probabilistic Scheme (actually a macro)
+- discrete-select is part of Probabilistic Scheme
+  - (actually a macro, to not over-evaluate)
 - roll-two-dice is a procedure
 - we can make a distribution out of it
-  - and operate on that distribution (sample; convert to association list)
+  - and operate on that distribution
+  - sample; convert to association list
 - pp is a Scheme procedure that pretty-prints
-- Note the aliasing effect!
 
+Note the aliasing effect!
+
 Bayes on coin fairness: one-coin.scm
 - draw the graphical model
 - case is part of Scheme
 - the coin procedure returns a procedure
 - the data is a list of observed coin flips
-- observe! is how you signal observations in Probabilistic Scheme
-- for-each runs the given procedure on every item in the given list
-
-Hierarchical Bayes for contents of bags: hierarchical-bayes.scm
+- observe! introduces evidence in Prob Scheme
+- for-each runs the given procedure on every
+  item in the given list
+
+hierarchical-bayes.scm for contents of bags
 - draw the graphical model
 - Note reuse of previous coin model
-- The data are a list of lists of coin-flip results
-  - so we know how many coins we drew, and which flips were which
-- And redefining the experiment changes the experiment-result function
-- Note the difference between flipping one coin many times and
-  flipping many coins once
+- The data are a list of lists of coin-flips
+  - so we know how many coins we drew, and which
+    flips were which coins
+- And redefining the experiment changes the
+  experiment-result function
+- Note the difference between flipping one coin
+  many times and flipping many coins once
 - Note everything is discrete
-
+
 Evaluating up to 24: twenty-four.scm
-- Look how easy the generative grammar is to write
+- Easy to write the generative grammar
 - Need breadth-first search for this one!
 
 These are the efforts I am most familiar with
 
-Ken Shan at Rutgers and Oleg Kiselyov at Fleet Numerical Meteorology
-and Oceanography Center in Monterey, CA
+Ken Shan at Rutgers and Oleg Kiselyov at Fleet
+Numerical Meteorology and Oceanography Center in
+Monterey, CA
 
-Noah Goodman and company at Brain and Cognitive Sciences at MIT
+Noah Goodman and company at Brain and Cognitive
+Sciences at MIT
 
 Avi Pfeffer at Harvard
 

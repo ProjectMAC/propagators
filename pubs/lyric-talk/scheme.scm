@@ -37,3 +37,4 @@ x
 (define add8 (addx 8))
 (add8 7)
 (add8 3)
+(load "~/probscheme/load-probscheme")
