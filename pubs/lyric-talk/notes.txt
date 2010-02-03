@@ -1,4 +1,9 @@
+** demo.el, font size **
+
 Vision: Expressiveness!
+
+We already have good ways to talk about the
+world.  They're called programming languages.
 
 Programming language captures all possible
 regularity and structure
@@ -7,16 +12,25 @@ Probability is easy, programming is hard.
 - probability should be subservient
 - inference in my toolkit, with everything else
 
+Overview
+
+The "what" is the bulk of the prepared talk
+
+Please ask questions, esp about concepts
+
+Will defer technical details to the second hour
+
 Scheme scheme.scm
 
+The Repl
 Parens matter!
 - but don't count close parens
 prefix notation
 - precedence is a consequence
 define
 - lexical scope
+- return last form; tail recursion
 let
-return last form; tail recursion
 
 More Scheme
 
@@ -36,7 +50,7 @@ Rollin' some dice: rolling-dice.scm
 - roll-two-dice is a procedure
 - we can make a distribution out of it
   - and operate on that distribution
-  - sample; convert to association list
+  - sample; compute
 - pp is a Scheme procedure that pretty-prints
 
 Note the aliasing effect!
@@ -44,6 +58,7 @@ Note the aliasing effect!
 Bayes on coin fairness: one-coin.scm
 - draw the graphical model
 - case is part of Scheme
+- quote means make a symbol
 - the coin procedure returns a procedure
 - the data is a list of observed coin flips
 - observe! introduces evidence in Prob Scheme
@@ -87,6 +102,12 @@ Embedded => gets libraries, compiler, gc
 
 Needs call-with-current-continuation
 - not that easy to get!
+
+Good with deterministic chunks
+
+As long as you're not making new choices or
+presenting new evidence, your code just whizzes
+along (e.g. the eval in twenty-four.scm)
 
 Kiselyov and Shan
 
@@ -109,7 +130,7 @@ Laziness helps, but maybe not enough.
 
 Standalone systems can solve this problem
 
-Church
+Church (after Alonzo)
 
 Sampler
 - (*still* muttering about exact inference)
@@ -124,7 +145,7 @@ consequences into account
 
 TODO Is there a picture I can draw?
 
-IBAL
+IBAL (Integrated Bayesian Agent Language)
 
 Also standalone
 
@@ -148,5 +169,3 @@ My main research goal at MIT
 Deal with graphs once --- lots of stuff embeds
 
 Not the focus of this talk
-
-Contributions
