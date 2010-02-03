@@ -1,0 +1,989 @@
+MIT/GNU Scheme running under GNU/Linux
+Type `^C' (control-C) followed by `H' to obtain information about interrupts.
+
+Copyright (C) 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
+    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
+    2006, 2007 Massachusetts Institute of Technology
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Image saved on Wednesday May 9, 2007 at 11:01:27 AM
+  Release 7.7.90.+ || Microcode 14.18 || Runtime 15.7 || SF 4.41 || LIAR 4.118
+  Edwin 3.116
+;Loading "/home/axch/.scheme.init"... 
+;  Loading "/home/axch/lib/require-ideas.scm"... done
+;... done
+
+1 ]=> (load "hidden")
+
+;Loading "hidden.scm"... done
+;Value: repeat
+
+1 ]=> 5
+
+;Value: 5
+
+1 ]=> (+ 1 1)
+
+;Value: 2
+
+1 ]=> (* 4 3)
+
+;Value: 12
+
+1 ]=> (* (+ 2 3) (- 3 2))
+
+;Value: 5
+
+1 ]=> (define x 4)
+
+;Value: x
+
+1 ]=> (+ x x)
+
+;Value: 8
+
+1 ]=> 
+(define (add4 x)
+  (+ x 4))
+
+;Value: add4
+
+1 ]=> add4
+
+;Value 11: #[compound-procedure 11 add4]
+
+1 ]=> (add4 7)
+
+;Value: 11
+
+1 ]=> x
+
+;Value: 4
+
+1 ]=> 
+(let ((x (* 3 4)))
+  (+ x (- x 7)))
+
+;Value: 17
+
+1 ]=> x
+
+;Value: 4
+
+1 ]=> 
+let ((x (* 3 4)))
+  (+ x (- x 7))
+
+;Syntactic keyword may not be used as an expression: #f
+;To continue, call RESTART with an option number:
+; (RESTART 1) => Return to read-eval-print level 1.
+
+2 error> 
+;The object 4 is not applicable.
+;To continue, call RESTART with an option number:
+; (RESTART 3) => Specify a procedure to use in its place.
+; (RESTART 2) => Return to read-eval-print level 2.
+; (RESTART 1) => Return to read-eval-print level 1.
+
+3 error> 
+;Value: 1
+
+3 error> 8
+
+;Value: 8
+
+3 error> (debug)
+
+There are 14 subproblems on the stack.
+
+Subproblem level: 0 (this is the lowest subproblem level)
+Expression (from stack):
+    (4 12)
+There is no current environment.
+The execution history for this subproblem contains 1 reduction.
+You are now in the debugger.  Type q to quit, ? for commands.
+
+4 debug> h
+h
+SL#  Procedure-name          Expression
+
+0                            (4 12)
+1                            ;undefined expression
+2    %repl-eval              (let ((value (hook/repl-eval s-expression envi ...
+3    %repl-eval/write        (hook/repl-write (%repl-eval s-expression envi ...
+4                            (begin (if (queue-empty? queue) (let ((environ ...
+5                            (loop (bind-abort-restart cmdl (lambda () (der ...
+6    map-1                   (cons (procedure (car l)) (quote ()))
+7                            (output/top-level-sequence (map declaration-it ...
+8                            (output/post-process-expression (if (syntactic ...
+9    default/repl-eval       (%repl-scode-eval (syntax s-expression environ ...
+10   %repl-eval              (let ((value (hook/repl-eval s-expression envi ...
+11   %repl-eval/write        (hook/repl-write (%repl-eval s-expression envi ...
+12                           (begin (if (queue-empty? queue) (let ((environ ...
+13                           (loop (bind-abort-restart cmdl (lambda () (der ...
+
+4 debug>   C-c C-c
+;Quit!
+
+1 ]=> (4 (* 2 4))
+
+;The object 4 is not applicable.
+;To continue, call RESTART with an option number:
+; (RESTART 2) => Specify a procedure to use in its place.
+; (RESTART 1) => Return to read-eval-print level 1.
+
+2 error>   C-c C-c
+;Quit!
+
+1 ]=> +
+
+;Value 12: #[arity-dispatched-procedure 12]
+
+1 ]=> (define myplus +)
+
+;Value: myplus
+
+1 ]=> (myplus 3 4)
+
+;Value: 7
+
+1 ]=> (define + list)
+
+;Value: +
+
+1 ]=> (+ 4 5)
+
+;Value 13: (4 5)
+
+1 ]=> myplus
+
+;Value 12: #[arity-dispatched-procedure 12]
+
+1 ]=> (define + myplus)
+
+;Value: +
+
+1 ]=> (+ "foo" 4)
+
+;The object "foo", passed as the first argument to integer-add, is not the correct type.
+;To continue, call RESTART with an option number:
+; (RESTART 2) => Specify an argument to use in its place.
+; (RESTART 1) => Return to read-eval-print level 1.
+
+2 error> (string? "foo")
+
+;Value: #t
+
+2 error> (string? 4)
+
+;Value: #f
+
+2 error> (string? "4")
+
+;Value: #t
+
+2 error> (integer? 4)
+
+;Value: #t
+
+2 error> (integer? "foo")
+
+;Value: #f
+
+2 error> (real? 4)
+
+;Value: #t
+
+2 error>   C-c C-c
+;Quit!
+
+1 ]=> 
+(lambda (x)
+  (+ 5 x))
+
+;Value 14: #[compound-procedure 14]
+
+1 ]=> 
+(define add5
+  (lambda (x)
+    (+ 5 x)))
+
+;Value: add5
+
+1 ]=> (add5 9)
+
+;Value: 14
+
+1 ]=> (define (add5 x) (+ 5 x))
+
+;Value: add5
+
+1 ]=> (procedure? (lambda (x) (+ 5 x)))
+
+;Value: #t
+
+1 ]=> (procedure? 4)
+
+;Value: #f
+
+1 ]=> square
+
+;Value 15: #[compiled-procedure 15 ("arith" #xf8) #xf #x1388b7]
+
+1 ]=> (square 5)
+
+;Value: 25
+
+1 ]=> '(1 2 3 4 5 6 7 8 9 10)
+
+;Value 16: (1 2 3 4 5 6 7 8 9 10)
+
+1 ]=> (map square '(1 2 3 4 5 6 7 8 9 10))
+
+;Value 17: (1 4 9 16 25 36 49 64 81 100)
+
+1 ]=> map
+
+;Value 18: #[compiled-procedure 18 (map "list" #x63) #xf #x206d57]
+
+1 ]=> for-each
+
+;Value 19: #[compiled-procedure 19 ("list" #x65) #xf #x2073a3]
+
+1 ]=> (map for-each (list square (lambda (x) (* 2 x))) (list (list 1 2) (list 3 4)))
+
+;Value 20: (#!unspecific #!unspecific)
+
+1 ]=> (map map (list square (lambda (x) (* 2 x))) (list (list 1 2) (list 3 4)))
+
+;Value 21: ((1 4) (6 8))
+
+1 ]=> '((1 2) (3 4))
+
+;Value 22: ((1 2) (3 4))
+
+1 ]=> 'square
+
+;Value: square
+
+1 ]=> '(square)
+
+;Value 23: (square)
+
+1 ]=> (list square)
+
+;Value 24: (#[compiled-procedure 15 ("arith" #xf8) #xf #x1388b7])
+
+1 ]=> (procedure? list)
+
+;Value: #t
+
+1 ]=> 
+(define count
+  (let ((counter 0))
+    (lambda ()
+      (set! counter (+ counter 1))
+      counter)))
+
+;Value: count
+
+1 ]=> (let ((x 5) (y x)) (list x y))
+
+;Value 25: (5 4)
+
+1 ]=> (let* ((x 5) (y x)) (list x y))
+
+;Value 26: (5 5)
+
+1 ]=> (count)
+
+;Value: 1
+
+1 ]=> (count)
+
+;Value: 2
+
+1 ]=> 
+(define count2
+  (let ((counter 0))
+    (lambda ()
+      (set! counter (+ counter 1))
+      counter)))
+
+;Value: count2
+
+1 ]=> (count2)
+
+;Value: 1
+
+1 ]=> (count)
+
+;Value: 3
+
+1 ]=> x
+
+;Value: 4
+
+1 ]=> (set! x (+ x 1))
+
+;Value: 4
+
+1 ]=> x
+
+;Value: 5
+
+1 ]=> (count)
+
+;Value: 4
+
+1 ]=> count
+
+;Value 27: #[compound-procedure 27]
+
+1 ]=> (define (hairy-stuff x y) ..... (let ((counter 0)) (lambda () (set! counter ....))) ....)(count)
+
+;Value: hairy-stuff
+
+1 ]=> 
+;Value: 5
+
+1 ]=> 
+(define (addx x)
+  (lambda (y)
+    (+ x y)))
+
+;Value: addx
+
+1 ]=> (define add8 (addx 8))
+
+;Value: add8
+
+1 ]=> (add8 7)(add8 3)
+
+;Value: 15
+
+1 ]=> 
+;Value: 11
+
+1 ]=> (load "~/probscheme/load-probscheme")
+
+;Loading "/home/axch/probscheme/load-probscheme.scm"... 
+;  Loading "shift-reset.scm"... done
+;  Loading "lazy.scm"... 
+;    Loading "srfi-45.scm"... done
+;  ... done
+;  Loading "stack.scm"... done
+;  Loading "queue.scm"... done
+;  Loading "priority-queue.scm"... done
+;  Loading "possibility.scm"... done
+;  Loading "distribution.scm"... done
+;  Loading "implicit.scm"... done
+;  Loading "test-helper.scm"... done
+;... done
+;Value: assert-fully-forced
+
+1 ]=> 
+(define (roll-die)
+  (discrete-select (1 1/6) (2 1/6) (3 1/6)
+		   (4 1/6) (5 1/6) (6 1/6)))
+
+;Value: roll-die
+
+1 ]=> 
+(define (roll-two-dice)
+  (+ (roll-die) (roll-die)))
+
+;Value: roll-two-dice
+
+1 ]=> roll-two-dice
+
+;Value 28: #[compound-procedure 28 roll-two-dice]
+
+1 ]=> (stochastic-thunk->distribution roll-two-dice)
+
+;Value 29: #[distribution 29]
+
+1 ]=> (sample (stochastic-thunk->distribution roll-two-dice))
+
+;Value: 8
+
+1 ]=> (sample (stochastic-thunk->distribution roll-two-dice))
+
+;Value: 7
+
+1 ]=> (sample (stochastic-thunk->distribution roll-two-dice))
+
+;Value: 3
+
+1 ]=> (sample (stochastic-thunk->distribution roll-two-dice))
+
+;Value: 9
+
+1 ]=> (sample (stochastic-thunk->distribution roll-two-dice))
+
+;Value: 7
+
+1 ]=> 
+(pp
+ (sort-alist
+  (distribution->alist
+   (stochastic-thunk->distribution roll-two-dice))))
+((2 . 1/36) (3 . 1/18)
+            (4 . 1/12)
+            (5 . 1/9)
+            (6 . 5/36)
+            (7 . 1/6)
+            (8 . 5/36)
+            (9 . 1/9)
+            (10 . 1/12)
+            (11 . 1/18)
+            (12 . 1/36))
+;Unspecified return value
+
+1 ]=> 
+(pp
+ (sort-alist
+  (distribution->alist
+   (stochastic-thunk->distribution
+    (lambda ()
+      (let ((face (roll-die)))
+	(+ face face)))))))
+((2 . 1/6) (4 . 1/6) (6 . 1/6) (8 . 1/6) (10 . 1/6) (12 . 1/6))
+;Unspecified return value
+
+1 ]=> (stochastic-thunk->distribution roll-two-dice)
+
+;Value 30: #[distribution 30]
+
+1 ]=> 
+(define (roll-two-dice)
+  (+ (roll-die) (roll-die)))
+
+;Value: roll-two-dice
+
+1 ]=> 
+(define (roll-two-dice2)
+  (* (roll-die) (roll-die)))
+
+;Value: roll-two-dice2
+
+1 ]=> 
+(pp
+ (sort-alist
+  (distribution->alist
+   (stochastic-thunk->distribution roll-two-dice2))))
+((1 . 1/36) (2 . 1/18)
+            (3 . 1/18)
+            (4 . 1/12)
+            (5 . 1/18)
+            (6 . 1/9)
+            (8 . 1/18)
+            (9 . 1/36)
+            (10 . 1/18)
+            (12 . 1/9)
+            (15 . 1/18)
+            (16 . 1/36)
+            (18 . 1/18)
+            (20 . 1/18)
+            (24 . 1/18)
+            (25 . 1/36)
+            (30 . 1/18)
+            (36 . 1/36))
+;Unspecified return value
+
+1 ]=> 
+(define (roll-two-dice3)
+  (list (roll-die) (roll-die)))
+
+;Value: roll-two-dice3
+
+1 ]=> 
+(pp
+ (sort-alist
+  (distribution->alist
+   (stochastic-thunk->distribution roll-two-dice3))))
+(((1 1) . 1/36) ((1 2) . 1/36)
+                ((1 3) . 1/36)
+                ((1 4) . 1/36)
+                ((1 5) . 1/36)
+                ((1 6) . 1/36)
+                ((2 1) . 1/36)
+                ((2 2) . 1/36)
+                ((2 3) . 1/36)
+                ((2 4) . 1/36)
+                ((2 5) . 1/36)
+                ((2 6) . 1/36)
+                ((3 1) . 1/36)
+                ((3 2) . 1/36)
+                ((3 3) . 1/36)
+                ((3 4) . 1/36)
+                ((3 5) . 1/36)
+                ((3 6) . 1/36)
+                ((4 1) . 1/36)
+                ((4 2) . 1/36)
+                ((4 3) . 1/36)
+                ((4 4) . 1/36)
+                ((4 5) . 1/36)
+                ((4 6) . 1/36)
+                ((5 1) . 1/36)
+                ((5 2) . 1/36)
+                ((5 3) . 1/36)
+                ((5 4) . 1/36)
+                ((5 5) . 1/36)
+                ((5 6) . 1/36)
+                ((6 1) . 1/36)
+                ((6 2) . 1/36)
+                ((6 3) . 1/36)
+                ((6 4) . 1/36)
+                ((6 5) . 1/36)
+                ((6 6) . 1/36))
+;Unspecified return value
+
+1 ]=> 
+(define (coin-prior)
+  (discrete-select ('fair 98/100)
+		   ('heads-biased 1/100)
+		   ('tails-biased 1/100)))
+
+;Value: coin-prior
+
+1 ]=> 
+(define (coin-weight type)
+  (case type
+    ((fair) .5)
+    ((heads-biased) .9)
+    ((tails-biased) .1)
+    (else
+     (error "Bogus coin type" type))))
+
+;Value: coin-weight
+
+1 ]=> 
+(define (coin weight)
+  (lambda ()
+    (discrete-select ('heads weight) ('tails (- 1 weight)))))
+
+;Value: coin
+
+1 ]=> 
+(define (experiment-result data)
+  (sort-alist
+   (distribution->alist
+    (stochastic-thunk->distribution
+     (lambda ()
+       (experiment data))))))
+
+;Value: experiment-result
+
+1 ]=> 
+(define (experiment data)
+  (let ((hypothesis (coin-prior)))
+    (let ((flip-the-coin (coin (coin-weight hypothesis))))
+      (for-each (lambda (datum)
+		  (observe! (equal? (flip-the-coin) datum)))
+		data)
+      hypothesis)))
+
+;Value: experiment
+
+1 ]=> (coin .7)
+
+;Value 31: #[compound-procedure 31]
+
+1 ]=> (pp (experiment-result '(head head)))
+()
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '(heads heads)))
+((fair . .9676145339652449) (heads-biased . .03199052132701422)
+                            (tails-biased . 3.949447077409163e-4))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '(heads heads heads)))
+((fair . .943759630200308) (heads-biased . 5.6163328197226504e-2)
+                           (tails-biased . 7.704160246533127e-5))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '(heads heads heads)))
+((fair . .943759630200308) (heads-biased . 5.6163328197226504e-2)
+                           (tails-biased . 7.704160246533127e-5))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result (make-list 10 'heads)))
+((fair . .21536250037043483) (heads-biased . .7846374994045276)
+                             (tails-biased . 2.2503183712176062e-10))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result (make-list 20 'heads)))
+((fair . 7.681432968035632e-4) (heads-biased . .999231856703375)
+                               (tails-biased . 8.218945159072389e-20))
+;Unspecified return value
+
+1 ]=> 
+(define (bag-prior)
+  (discrete-select ('fair 1/4)
+		   ('heads-biased 1/4)
+		   ('tails-biased 1/4)
+		   ('chaos 1/4)))
+
+;Value: bag-prior
+
+1 ]=> 
+(define (coin-in-bag-prior bag-type)
+  (case bag-type
+    ((fair)
+     (discrete-select
+      ('fair 98/100) ('heads-biased 1/100) ('tails-biased 1/100)))
+    ((heads-biased)
+     (discrete-select
+      ('fair 1/100) ('heads-biased 98/100) ('tails-biased 1/100)))
+    ((tails-biased)
+     (discrete-select
+      ('fair 1/100) ('heads-biased 1/100) ('tails-biased 98/100)))
+    ((chaos)
+     (discrete-select
+      ('fair 1/3) ('heads-biased 1/3) ('tails-biased 1/3)))))
+
+;Value: coin-in-bag-prior
+
+1 ]=> 
+(define (draw-coin bag-type)
+  (let ((coin-type (coin-in-bag-prior bag-type)))
+    (coin (coin-weight coin-type))))
+
+;Value: draw-coin
+
+1 ]=> 
+(define (experiment data)
+  (let ((bag-type (bag-prior)))
+    (for-each
+     (lambda (coin-data)
+       (let ((flip-this-coin (draw-coin bag-type)))
+	 (for-each (lambda (coin-datum)
+		     (observe! (equal? (flip-this-coin) coin-datum)))
+		   coin-data)))
+     data)
+    bag-type))
+
+;Value: experiment
+
+1 ]=> (pp (experiment-result '((heads heads))))
+((chaos . .24999999999999983) (fair . .17747663551401854)
+                              (heads-biased . .5582242990654201)
+                              (tails-biased . 1.4299065420560739e-2))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '((heads) (heads))))
+((chaos . .19214688014953626) (fair . .19214688014953624)
+                              (heads-biased . .6060650778425438)
+                              (tails-biased . 9.641161858383132e-3))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '((heads heads heads))))
+((chaos . .2499999999999998) (fair . .11385964912280691)
+                             (heads-biased . .62778947368421)
+                             (tails-biased . 8.350877192982449e-3))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '((heads heads heads heads))))
+((chaos . .2499999999999999) (fair . .07076527062752187)
+                             (heads-biased . .6716335049394737)
+                             (tails-biased . 7.601224433004032e-3))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result (list (make-list 20 'heads))))
+((chaos . .24999999999999772) (fair . 7.505706627026798e-3)
+                              (heads-biased . .7349942933729666)
+                              (tails-biased . 7.499999999999936e-3))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '((heads) (heads) (heads))))
+((chaos . .13135329623215652) (fair . .13135329623215647)
+                              (heads-biased . .7358170721455326)
+                              (tails-biased . .00147633539015081))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '((heads) (heads) (heads) (tails)))
+)
+((chaos . .3053651312972112) (fair . .30536513129721077)
+                             (heads-biased . .38317427774822144)
+                             (tails-biased . 6.095459657385884e-3))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '((heads heads) (tails tails))))
+((chaos . .5683775069573479) (fair . .28644367668332177)
+                             (heads-biased . .07258940817966347)
+                             (tails-biased . .07258940817966349))
+;Unspecified return value
+
+1 ]=> (pp (experiment-result '((heads heads heads) (tails tails tails))))
+((chaos . .727173681085908) (fair . .1508335028117281)
+                            (heads-biased . .0609964080511842)
+                            (tails-biased . .0609964080511842))
+;Unspecified return value
+
+1 ]=> 
+(define (expression)
+  (discrete-select
+   ((number)
+    .75)
+   ((list (operator) (expression) (expression))
+    .25)))
+
+;Value: expression
+
+1 ]=> 
+(define (number)
+  (uniform-select '(1 2 3 4 5 6 7 8 9)))
+
+;Value: number
+
+1 ]=> 
+(define (operator)
+  (uniform-select '(+ - *)))
+
+;Value: operator
+
+1 ]=> 
+(define (expression-24)
+  (let ((expression (expression)))
+    (observe! (equal? 24 (eval expression (nearest-repl/environment))))
+    expression))
+
+;Value: expression-24
+
+1 ]=> 
+(define the-distribution
+  (stochastic-thunk->distribution expression-24 make-breadth-first-schedule))
+
+;Value: the-distribution
+
+1 ]=> 
+(define (poke!)
+  (find-new-possibility! the-distribution)
+  (pp (sort-alist (distribution->current-bounds-alist the-distribution))))
+
+;Value: poke!
+
+1 ]=> (poke!)
+(((* 3 8) 2.583979328165383e-3 .9999999999999999))
+;Unspecified return value
+
+1 ]=> (poke!)
+(((* 3 8) 2.9673590504451274e-3 .9970326409495547)
+ ((* 4 6) 2.9673590504451274e-3 .9970326409495547))
+;Unspecified return value
+
+1 ]=> (pp (sort-alist (distribution->current-bounds-alist the-distribution)))
+(((* 3 8) 2.9673590504451274e-3 .9970326409495547)
+ ((* 4 6) 2.9673590504451274e-3 .9970326409495547))
+;Unspecified return value
+
+1 ]=> (poke!)
+(((* 3 8) 3.448275862069013e-3 .9931034482758616)
+ ((* 4 6) 3.448275862069013e-3 .9931034482758616)
+ ((* 6 4) 3.448275862069013e-3 .9931034482758616))
+;Unspecified return value
+
+1 ]=> (poke!)
+(((* 3 8) 3.7037037037037667e-3 .9888888888888889)
+ ((* 4 6) 3.7037037037037667e-3 .9888888888888889)
+ ((* 6 4) 3.7037037037037667e-3 .9888888888888889)
+ ((* 8 3) 3.7037037037037667e-3 .9888888888888889))
+;Unspecified return value
+
+1 ]=> (poke!)
+(((* 3 8) 5.187880534640158e-3 .9844003314479224)
+ ((* 4 6) 5.187880534640158e-3 .9844003314479224)
+ ((* 6 4) 5.187880534640158e-3 .9844003314479224)
+ ((* 8 3) 5.187880534640158e-3 .9844003314479224)
+ ((+ (+ 6 9) 9) 3.602694815722332e-5 .9792484778614394))
+;Unspecified return value
+
+1 ]=> (poke!)
+(((* 3 8) 5.2011847142964165e-3 .984324207180523)
+ ((* 4 6) 5.2011847142964165e-3 .984324207180523)
+ ((* 6 4) 5.2011847142964165e-3 .984324207180523)
+ ((* 8 3) 5.2011847142964165e-3 .984324207180523)
+ ((+ (+ 6 9) 9) 3.6119338293725116e-5 .9791591418045202)
+ ((+ (+ 7 8) 9) 3.6119338293725116e-5 .9791591418045202))
+;Unspecified return value
+
+1 ]=> (repeat 10 poke!)
+(((* 3 8) 5.214557305812577e-3 .9842476914720248)
+ ((* 4 6) 5.214557305812577e-3 .9842476914720248)
+ ((* 6 4) 5.214557305812577e-3 .9842476914720248)
+ ((* 8 3) 5.214557305812577e-3 .9842476914720248)
+ ((+ (+ 6 9) 9) 3.621220351258734e-5 .9790693463697249)
+ ((+ (+ 7 8) 9) 3.621220351258734e-5 .9790693463697249)
+ ((+ (+ 8 7) 9) 3.621220351258734e-5 .9790693463697249))
+(((* 3 8) 5.227998838223137e-3 .9841707812953799)
+ ((* 4 6) 5.227998838223137e-3 .9841707812953799)
+ ((* 6 4) 5.227998838223137e-3 .9841707812953799)
+ ((* 8 3) 5.227998838223137e-3 .9841707812953799)
+ ((+ (+ 6 9) 9) 3.630554748766067e-5 .9789790880046444)
+ ((+ (+ 7 8) 9) 3.630554748766067e-5 .9789790880046444)
+ ((+ (+ 8 7) 9) 3.630554748766067e-5 .9789790880046444)
+ ((+ (+ 9 6) 9) 3.630554748766067e-5 .9789790880046444))
+(((* 3 8) 5.252407353371203e-3 .9840604026845606)
+ ((* 4 6) 5.252407353371203e-3 .9840604026845606)
+ ((* 6 4) 5.252407353371203e-3 .9840604026845606)
+ ((* 8 3) 5.252407353371203e-3 .9840604026845606)
+ ((+ (* 3 5) 9) 3.647505106507779e-5 .9788444703822544)
+ ((+ (+ 6 9) 9) 3.647505106507779e-5 .9788444703822544)
+ ((+ (+ 7 8) 9) 3.647505106507779e-5 .9788444703822544)
+ ((+ (+ 8 7) 9) 3.647505106507779e-5 .9788444703822544)
+ ((+ (+ 9 6) 9) 3.647505106507779e-5 .9788444703822544))
+(((* 3 8) 5.279947200529189e-3 .9839401605983906)
+ ((* 4 6) 5.279947200529189e-3 .9839401605983906)
+ ((* 6 4) 5.279947200529189e-3 .9839401605983906)
+ ((* 8 3) 5.279947200529189e-3 .9839401605983906)
+ ((+ (* 3 5) 9) 3.666630000367492e-5 .9786968796978651)
+ ((+ (* 5 3) 9) 3.666630000367492e-5 .9786968796978651)
+ ((+ (+ 6 9) 9) 3.666630000367492e-5 .9786968796978651)
+ ((+ (+ 7 8) 9) 3.666630000367492e-5 .9786968796978651)
+ ((+ (+ 8 7) 9) 3.666630000367492e-5 .9786968796978651)
+ ((+ (+ 9 6) 9) 3.666630000367492e-5 .9786968796978651))
+(((* 3 8) 5.324853011871653e-3 .9837665939429745)
+ ((* 4 6) 5.324853011871653e-3 .9837665939429745)
+ ((* 6 4) 5.324853011871653e-3 .9837665939429745)
+ ((* 8 3) 5.324853011871653e-3 .9837665939429745)
+ ((+ (* 3 5) 9) 3.6978145915775364e-5 .9784787190770186)
+ ((+ (* 5 3) 9) 3.6978145915775364e-5 .9784787190770186)
+ ((+ (+ 6 9) 9) 3.6978145915775364e-5 .9784787190770186)
+ ((+ (+ 7 8) 9) 3.6978145915775364e-5 .9784787190770186)
+ ((+ (+ 7 9) 8) 3.6978145915775364e-5 .9784787190770186)
+ ((+ (+ 8 7) 9) 3.6978145915775364e-5 .9784787190770186)
+ ((+ (+ 9 6) 9) 3.6978145915775364e-5 .9784787190770186))
+(((* 3 8) 5.338869939198021e-3 .9836867862968954)
+ ((* 4 6) 5.338869939198021e-3 .9836867862968954)
+ ((* 6 4) 5.338869939198021e-3 .9836867862968954)
+ ((* 8 3) 5.338869939198021e-3 .9836867862968954)
+ ((+ (* 3 5) 9) 3.707548568887514e-5 .9783849918433863)
+ ((+ (* 5 3) 9) 3.707548568887514e-5 .9783849918433863)
+ ((+ (+ 6 9) 9) 3.707548568887514e-5 .9783849918433863)
+ ((+ (+ 7 8) 9) 3.707548568887514e-5 .9783849918433863)
+ ((+ (+ 7 9) 8) 3.707548568887514e-5 .9783849918433863)
+ ((+ (+ 8 7) 9) 3.707548568887514e-5 .9783849918433863)
+ ((+ (+ 8 8) 8) 3.707548568887514e-5 .9783849918433863)
+ ((+ (+ 9 6) 9) 3.707548568887514e-5 .9783849918433863))
+(((* 3 8) 5.344418052258409e-3 .9836327197149588)
+ ((* 4 6) 5.344418052258409e-3 .9836327197149588)
+ ((* 6 4) 5.344418052258409e-3 .9836327197149588)
+ ((* 8 3) 5.344418052258409e-3 .9836327197149588)
+ ((+ (* 3 5) 9) 3.71140142517945e-5 .9783254156769522)
+ ((+ (* 5 3) 9) 3.71140142517945e-5 .9783254156769522)
+ ((+ (+ 6 9) 9) 3.71140142517945e-5 .9783254156769522)
+ ((+ (+ 7 8) 9) 3.71140142517945e-5 .9783254156769522)
+ ((+ (+ 7 9) 8) 3.71140142517945e-5 .9783254156769522)
+ ((+ (+ 8 7) 9) 3.71140142517945e-5 .9783254156769522)
+ ((+ (+ 8 8) 8) 3.71140142517945e-5 .9783254156769522)
+ ((+ (+ 9 6) 9) 3.71140142517945e-5 .9783254156769522)
+ ((- (* 4 8) 8) 3.71140142517945e-5 .9783254156769522))
+(((* 3 8) 5.3479907895733324e-3 .9835846393820039)
+ ((* 4 6) 5.3479907895733324e-3 .9835846393820039)
+ ((* 6 4) 5.3479907895733324e-3 .9835846393820039)
+ ((* 8 3) 5.3479907895733324e-3 .9835846393820039)
+ ((+ (* 2 8) 8) 3.713882492759259e-5 .9782737874173582)
+ ((+ (* 3 5) 9) 3.713882492759259e-5 .9782737874173582)
+ ((+ (* 5 3) 9) 3.713882492759259e-5 .9782737874173582)
+ ((+ (+ 6 9) 9) 3.713882492759259e-5 .9782737874173582)
+ ((+ (+ 7 8) 9) 3.713882492759259e-5 .9782737874173582)
+ ((+ (+ 7 9) 8) 3.713882492759259e-5 .9782737874173582)
+ ((+ (+ 8 7) 9) 3.713882492759259e-5 .9782737874173582)
+ ((+ (+ 8 8) 8) 3.713882492759259e-5 .9782737874173582)
+ ((+ (+ 9 6) 9) 3.713882492759259e-5 .9782737874173582)
+ ((- (* 4 8) 8) 3.713882492759259e-5 .9782737874173582))
+(((* 3 8) 5.352562911201458e-3 .9835334349329016)
+ ((* 4 6) 5.352562911201458e-3 .9835334349329016)
+ ((* 6 4) 5.352562911201458e-3 .9835334349329016)
+ ((* 8 3) 5.352562911201458e-3 .9835334349329016)
+ ((+ (* 2 8) 8) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (* 3 5) 9) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (* 5 3) 9) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (+ 6 9) 9) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (+ 7 8) 9) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (+ 7 9) 8) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (+ 8 7) 9) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (+ 8 8) 8) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (+ 9 6) 9) 3.7170575772232346e-5 .9782180425974722)
+ ((+ (+ 9 7) 8) 3.7170575772232346e-5 .9782180425974722)
+ ((- (* 4 8) 8) 3.7170575772232346e-5 .9782180425974722))
+(((* 3 8) 5.367526464889556e-3 .9834501267332573)
+ ((* 4 6) 5.367526464889556e-3 .9834501267332573)
+ ((* 6 4) 5.367526464889556e-3 .9834501267332573)
+ ((* 8 3) 5.367526464889556e-3 .9834501267332573)
+ ((* (- 9 6) 8) 3.72744893395108e-5 .9781198747577072)
+ ((+ (* 2 8) 8) 3.72744893395108e-5 .9781198747577072)
+ ((+ (* 3 5) 9) 3.72744893395108e-5 .9781198747577072)
+ ((+ (* 5 3) 9) 3.72744893395108e-5 .9781198747577072)
+ ((+ (+ 6 9) 9) 3.72744893395108e-5 .9781198747577072)
+ ((+ (+ 7 8) 9) 3.72744893395108e-5 .9781198747577072)
+ ((+ (+ 7 9) 8) 3.72744893395108e-5 .9781198747577072)
+ ((+ (+ 8 7) 9) 3.72744893395108e-5 .9781198747577072)
+ ((+ (+ 8 8) 8) 3.72744893395108e-5 .9781198747577072)
+ ((+ (+ 9 6) 9) 3.72744893395108e-5 .9781198747577072)
+ ((+ (+ 9 7) 8) 3.72744893395108e-5 .9781198747577072)
+ ((- (* 4 8) 8) 3.72744893395108e-5 .9781198747577072))
+;Unspecified return value
+
+1 ]=> 
+(define (oops)
+  (let ((x (roll-die)))
+    (let ((y (roll-die)))
+      (pp (list x y))
+      (observe! (= x 3))
+      (list x y))))
+
+;Value: oops
+
+1 ]=> 
+(pp
+ (sort-alist
+  (distribution->alist
+   (stochastic-thunk->distribution oops))))
+(1 1)
+(1 2)
+(1 3)
+(1 4)
+(1 5)
+(1 6)
+(2 1)
+(2 2)
+(2 3)
+(2 4)
+(2 5)
+(2 6)
+(3 1)
+(3 2)
+(3 3)
+(3 4)
+(3 5)
+(3 6)
+(4 1)
+(4 2)
+(4 3)
+(4 4)
+(4 5)
+(4 6)
+(5 1)
+(5 2)
+(5 3)
+(5 4)
+(5 5)
+(5 6)
+(6 1)
+(6 2)
+(6 3)
+(6 4)
+(6 5)
+(6 6)
+(((3 1) . 1/6) ((3 2) . 1/6)
+               ((3 3) . 1/6)
+               ((3 4) . 1/6)
+               ((3 5) . 1/6)
+               ((3 6) . 1/6))
+;Unspecified return value
+
+1 ]=> 
