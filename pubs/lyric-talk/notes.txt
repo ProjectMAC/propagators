@@ -1,4 +1,4 @@
-** demo.el, font size **
+** demo.el, font size, hidden.scm **
 
 Vision: Expressiveness!
 
