@@ -34,13 +34,11 @@
 		   coin-data)))
      data)
     bag-type))
-(pp (experiment-result '()))
-(pp (experiment-result '((heads))))
 (pp (experiment-result '((heads heads))))
+(pp (experiment-result '((heads) (heads))))
 (pp (experiment-result '((heads heads heads))))
 (pp (experiment-result '((heads heads heads heads))))
 (pp (experiment-result (list (make-list 20 'heads))))
-(pp (experiment-result '((heads) (heads))))
 (pp (experiment-result '((heads) (heads) (heads))))
 (pp (experiment-result '((heads) (heads) (heads) (heads))))
 

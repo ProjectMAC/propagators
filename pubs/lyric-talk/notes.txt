@@ -17,6 +17,8 @@ define
 - lexical scope
 let
 return last form; tail recursion
+
+More Scheme
 
 procedures are values too
 + is just a procedure
@@ -63,6 +65,8 @@ hierarchical-bayes.scm for contents of bags
 Evaluating up to 24: twenty-four.scm
 - Easy to write the generative grammar
 - Need breadth-first search for this one!
+- See why discrete-select had to be a macro
+- The search is anytime; restartable
 
 Many efforts -- these are familiar
 

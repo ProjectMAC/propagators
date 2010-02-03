@@ -4,7 +4,7 @@
     (let ((y (roll-die)))
       (pp (list x y))
       (observe! (= x 3))
-      (+ x y))))
+      (list x y))))
 
 (pp
  (sort-alist
