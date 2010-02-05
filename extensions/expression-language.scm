@@ -64,10 +64,4 @@
   (functionalize (function->propagator-constructor (nary-unpacking f))))
 
 (define p:eq? (flat-function->propagator-expression eq?))
-
-(define (pass-through in out)
-  (propagator (list in)
-    (lambda ()
-      (add-content out (content in)))))
-
 (define p:expt (flat-function->propagator-expression expt))
