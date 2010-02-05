@@ -21,9 +21,10 @@
 
 (declare (usual-integrations make-cell))
 
+;;; Propagator cells, in message-accepter style
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
-    (define (add-content increment)     ; ***
+    (define (add-content increment)
       (let ((new-content (merge content increment)))
         (cond ((eq? new-content content) 'ok)
               ((contradictory? new-content)
@@ -42,8 +43,7 @@
             ((eq? message 'new-neighbor!) new-neighbor!)
             (else (error "Unknown message" message))))
     (eq-put! me 'cell #t)
-    me
-  ))
+    me))
 
 (define (content cell)
   (cell 'content))
@@ -60,6 +60,7 @@
 (define (cell? thing)
   (eq-get thing 'cell))
 
+;;; Convenience macros for defining new cells.
 (define-syntax define-cell
   (syntax-rules ()
     ((define-cell symbol)
@@ -74,21 +75,31 @@
      (let ((cell-name (make-named-cell 'cell-name))...)
        form ...))))
 
+;;; Propagators
+
 (define (propagator neighbors to-do)
   (for-each (lambda (cell)
               (new-neighbor! cell to-do))
             (listify neighbors))
+  (eq-put! to-do 'propagator #t)
   (alert-propagator to-do))
+
+(define (propagator? thing)
+  (or (eq-get thing 'propagator)
+      ;; TODO Do I still need this fallback?
+      (not (cell? thing))))
 
 (define (function->propagator-constructor f)
   (lambda cells
     (let ((output (car (last-pair cells)))
           (inputs (except-last-pair cells)))
-      (propagator inputs                ; The output isn't a neighbor!\footnote{Because the function's activities do not depend upon changes in the content of the output cell.
+      (propagator inputs                ; The output isn't a neighbor!
         (lambda ()
           (add-content output
             (apply f (map content inputs))))))))
-;;; Add the metadata
+
+;;; This version has additional metadata to allow the propagator
+;;; network to be effectively traversed (see extensions/prop-dot.scm)
 (define (function->propagator-constructor f)
   (lambda cells
     (let ((output (car (last-pair cells)))
@@ -102,13 +113,11 @@
 
 (define (constant value)
   (function->propagator-constructor
-    (eq-label! (lambda () value) 'name `(const ,value)) #;
-    (lambda () value)))
-
-(define (propagator? thing)
-  (or (eq-get thing 'propagator?)
-      (not (cell? thing))))
+   #; (lambda () value)
+   (eq-label! (lambda () value) 'name `(const ,value))))
 
+;;; Merging, and the basic data types.
+
 (define merge
   (make-generic-operator 2 'merge
    (lambda (content increment)

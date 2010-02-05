@@ -25,11 +25,6 @@
 
 (define (load-relative-compiled filename)
   (self-relatively (lambda () (load-compiled filename))))
-#;
-(define-syntax process-examples
-  (syntax-rules ()
-    ((_ form ...)
-     (begin))))
 
 (load-relative-compiled "../testing/load")
 (load-relative-compiled "../profiler")

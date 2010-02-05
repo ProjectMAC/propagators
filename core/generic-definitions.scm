@@ -21,6 +21,7 @@
 
 (declare (usual-integrations make-cell))
 
+;;; Base (generic) functions for standard propagators
 
 (define generic-+   (make-generic-operator 2 '+   +))
 (define generic--   (make-generic-operator 2 '-   -))
@@ -37,6 +38,8 @@
 (define generic-not (make-generic-operator 1 'not not))
 (define generic-and (make-generic-operator 2 'and boolean/and))
 (define generic-or  (make-generic-operator 2 'or  boolean/or))
+
+;;; General generic-monadic machinery
 
 (define (generic-bind thing function)
   (generic-flatten (generic-unpack thing function)))
@@ -61,11 +64,24 @@
              (loop (cdr args)
                    (lambda remaining-args
                      (apply function (cons arg remaining-args))))))))))
-;;; Also attach the name information
+
+;; This version also attaches the name information, for debugging and
+;; drawing networks.
 (define nary-unpacking
   (let ((nary-unpacking nary-unpacking))
     (lambda (function)
       (eq-label! (nary-unpacking function) 'name function))))
+
+(defhandler generic-unpack
+  (lambda (object function) nothing)
+  nothing? any?)
+
+;;; This handler is redundant but harmless
+(defhandler generic-flatten
+  (lambda (thing) nothing)
+  nothing?)
+
+;;; Standard propagators
 
 (define adder
   (function->propagator-constructor (nary-unpacking generic-+)))
@@ -95,12 +111,3 @@
   (function->propagator-constructor (nary-unpacking generic-and)))
 (define disjoiner
   (function->propagator-constructor (nary-unpacking generic-or)))
-
-(defhandler generic-unpack
-  (lambda (object function) nothing)
-  nothing? any?)
-
-;;; This handler is redundant but harmless
-(defhandler generic-flatten
-  (lambda (thing) nothing)
-  nothing?)
