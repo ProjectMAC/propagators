@@ -2,32 +2,6 @@
 ;;; with all the metadata necessary to draw a (somewhat) decent
 ;;; picture of their graph with prop:dot:show-graph
 
-(define (one-of values output-cell)
-  (let ((cells
-         (map (lambda (value)
-                (let-cells (cell)
-                  ((constant value) cell)
-                  cell))
-              values)))
-    (one-of-the-cells cells output-cell)))
-
-(define (one-of-the-cells input-cells output-cell)
-  (cond ((= (length input-cells) 2)
-         (let-cells (p)
-           (conditional p
-             (car input-cells) (cadr input-cells)
-             output-cell)
-           (binary-amb p)))
-        ((> (length input-cells) 2)
-         (let-cells (link p)
-           (one-of-the-cells (cdr input-cells) link)
-           (conditional
-            p (car input-cells) link output-cell)
-           (binary-amb p)))
-        (else
-         (error "Inadequate choices for one-of-the-cells"
-                input-cells output-cell))))
-
 (define (multiple-dwelling)
   (let ((floors '(1 2 3 4 5)))
     (let-cells (baker cooper fletcher miller smith

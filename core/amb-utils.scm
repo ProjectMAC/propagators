@@ -21,7 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-
 (define (require cell)
   ((constant #t) cell))
 
@@ -31,14 +30,15 @@
 (define (require-distinct cells)
   (for-each-distinct-pair
    (lambda (c1 c2)
-     (let-cells (p) (=? c1 c2 p) (forbid p)) #;
-     (let ((p (make-cell))) (=? c1 c2 p) (forbid p)))
+     (let-cells (p)
+       (=? c1 c2 p)
+       (forbid p)))
    cells))
 
 (define (one-of values output-cell)
   (let ((cells
          (map (lambda (value)
-                (let ((cell (make-cell)))
+                (let-cells (cell)
                   ((constant value) cell)
                   cell))
               values)))
@@ -46,13 +46,13 @@
 
 (define (one-of-the-cells input-cells output-cell)
   (cond ((= (length input-cells) 2)
-         (let ((p (make-cell)))
+         (let-cells (p)
            (conditional p
              (car input-cells) (cadr input-cells)
              output-cell)
            (binary-amb p)))
         ((> (length input-cells) 2)
-         (let ((link (make-cell)) (p (make-cell)))
+         (let-cells (link p)
            (one-of-the-cells (cdr input-cells) link)
            (conditional
             p (car input-cells) link output-cell)
