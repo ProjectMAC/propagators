@@ -47,3 +47,4 @@
 (load-relative-compiled "search")
 (load-relative-compiled "amb-utils")
 (load-relative-compiled "compound-data")
+(load-relative-compiled "example-networks")
