@@ -1,21 +1,11 @@
-(declare (usual-integrations make-cell))
-
-(define make-cell
-  (let ((make-cell make-cell))
-    (lambda ()
-      (let ((answer (make-cell)))
-	(eq-put! answer 'art-cell #t)
-	answer))))
-
-(define (art-cell? thing)
-  (eq-get thing 'art-cell))
+(declare (usual-integrations make-cell cell?))
 
 (define %% (list 'the-implicit-cell))
 (define (implicit-cell? thing)
   (eq? thing 'the-implicit-cell))
 
 (define (->cell thing)
-  (if (or (implicit-cell? thing) (art-cell? thing))
+  (if (or (implicit-cell? thing) (cell? thing))
       thing
       (p:const thing)))
 
