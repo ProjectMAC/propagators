@@ -60,15 +60,25 @@
 (define (cell? thing)
   (eq-get thing 'cell))
 
+(define (make-named-cell name)
+  (eq-put! (make-cell) 'name name))
+
 ;;; Convenience macros for defining new cells.
+
+;; (define-cell foo) exands into
+;; (define foo (make-named-cell 'foo))
 (define-syntax define-cell
   (syntax-rules ()
     ((define-cell symbol)
      (define symbol (make-named-cell 'symbol)))))
 
-(define (make-named-cell name)
-  (eq-put! (make-cell) 'name name))
-
+;; (let-cells (foo bar baz)
+;;   stuff)
+;; expands into
+;; (let ((foo (make-cell-named 'foo))
+;;       (bar (make-cell-named 'bar))
+;;       (baz (make-cell-named 'baz)))
+;;   stuff)
 (define-syntax let-cells
   (syntax-rules ()
     ((let-cell (cell-name ...) form ...)
