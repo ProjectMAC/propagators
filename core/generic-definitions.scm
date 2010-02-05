@@ -117,3 +117,18 @@
 
 (define switch
   (function->propagator-constructor (nary-unpacking switch-function)))
+
+;;; Standard "propagator macros"
+
+(define (conditional control if-true if-false output)
+  (let-cells (not-control)
+    (inverter control not-control)
+    (switch control if-true output)
+    (switch not-control if-false output)))
+
+(define (conditional-writer control input if-true if-false)
+  (let-cells (not-control)
+    (inverter control not-control)
+    (switch control input if-true)
+    (switch not-control input if-false)))
+

@@ -46,6 +46,5 @@
 (load-relative-compiled "contradictions")
 (load-relative-compiled "search")
 (load-relative-compiled "amb-utils")
-(load-relative-compiled "conditionals")
 (load-relative-compiled "abstraction")
 (load-relative-compiled "compound-data")
