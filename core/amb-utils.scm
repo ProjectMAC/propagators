@@ -30,23 +30,23 @@
 (define (require-distinct cells)
   (for-each-distinct-pair
    (lambda (c1 c2)
-     (let-cells (p)
-       (=? c1 c2 p)
-       (forbid p)))
+     (define-cell p)
+     (=? c1 c2 p)
+     (forbid p))
    cells))
 
 (define (one-of values output-cell)
   (let ((cells
          (map (lambda (value)
-                (let-cells (cell)
-                  ((constant value) cell)
-                  cell))
+                (define-cell cell)
+		((constant value) cell)
+		cell)
               values)))
     (one-of-the-cells cells output-cell)))
 
 (define (one-of-the-cells input-cells output-cell)
   (cond ((= (length input-cells) 2)
-         (let-cells (p)
+         (let-cell p
            (conditional p
              (car input-cells) (cadr input-cells)
              output-cell)

@@ -42,7 +42,7 @@
     (product-constraint c nine c*9)))
 
 (define (celsius-kelvin c k)
-  (let-cells (many)
+  (let-cell many
     ((constant 273.15) many)
     (sum-constraint c many k)))
 
@@ -55,7 +55,7 @@
     (product-constraint one-half gt^2 h)))
 
 (define (similar-triangles s-ba h-ba s h)
-  (let-cells (ratio)
+  (let-cell ratio
     (product-constraint s-ba ratio h-ba)
     (product-constraint s ratio h)))
 
@@ -83,7 +83,7 @@
 (define (sqrt-network x answer)
   (compound-propagator x
     (lambda ()
-      (let-cells (one)
+      (let-cell one
         ((constant 1.0) one)
         (sqrt-iter x one answer)))))
 
