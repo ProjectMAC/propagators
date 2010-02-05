@@ -32,7 +32,7 @@
 (load-relative "../core/load.scm")
 
 (for-each load-relative-compiled
- '("art-expression-language"
+ '("expression-language"
    "constraints"
    "electric-parts"
    "solve"
