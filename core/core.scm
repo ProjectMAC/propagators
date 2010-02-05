@@ -81,8 +81,25 @@
 ;;   stuff)
 (define-syntax let-cells
   (syntax-rules ()
-    ((let-cell (cell-name ...) form ...)
+    ((let-cells (cell-name ...)
+       form ...)
      (let ((cell-name (make-named-cell 'cell-name))...)
+       form ...))))
+
+;; This version is a grammatical convenience if there is only one
+;; cell.  The name either may or may not be enclosed in parens.
+;; (let-cell (foo) stuff) and (let-cell foo stuff) are both ok and
+;; equivalent to (let-cells (foo) stuff), which reads a bit more
+;; awkwardly.
+(define-syntax let-cell
+  (syntax-rules ()
+    ((let-cell (cell-name)
+       form ...)
+     (let-cells (cell-name)
+       form ...))
+    ((let-cell cell-name
+       form ...)
+     (let-cells (cell-name)
        form ...))))
 
 ;;; Propagators
