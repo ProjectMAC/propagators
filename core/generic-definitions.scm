@@ -38,6 +38,9 @@
 (define generic-not (make-generic-operator 1 'not not))
 (define generic-and (make-generic-operator 2 'and boolean/and))
 (define generic-or  (make-generic-operator 2 'or  boolean/or))
+;; I want a name for the function that does the switch job
+(define (switch-function control input)
+  (if control input nothing))
 
 ;;; General generic-monadic machinery
 
@@ -81,7 +84,7 @@
   (lambda (thing) nothing)
   nothing?)
 
-;;; Standard propagators
+;;; Standard primitive propagators
 
 (define adder
   (function->propagator-constructor (nary-unpacking generic-+)))
@@ -111,3 +114,6 @@
   (function->propagator-constructor (nary-unpacking generic-and)))
 (define disjoiner
   (function->propagator-constructor (nary-unpacking generic-or)))
+
+(define switch
+  (function->propagator-constructor (nary-unpacking switch-function)))

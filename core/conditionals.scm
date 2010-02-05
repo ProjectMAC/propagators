@@ -21,14 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-;;; I want a name for the function that does the switch job
-(define (switch-function control input)
-  (if control input nothing))
-
-(define switch
-  (function->propagator-constructor
-   (nary-unpacking switch-function)))
-
 (define (conditional control if-true if-false output)
   (let ((not-control (make-cell)))
     (inverter control not-control)
