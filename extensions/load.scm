@@ -33,7 +33,6 @@
 
 (for-each load-relative-compiled
  '("expression-language"
-   "constraints"
    "electric-parts"
    "solve"
    "inequalities"

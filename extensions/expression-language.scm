@@ -65,3 +65,17 @@
 
 (define p:eq? (flat-function->propagator-expression eq?))
 (define p:expt (flat-function->propagator-expression expt))
+
+(define c:+ (functionalize sum-constraint))
+(define c:* (functionalize product-constraint))
+(define c:not (functionalize not-constraint))
+(define c:and (functionalize and-constraint))
+(define c:or (functionalize or-constraint))
+(define c:identity (functionalize identity-constraint))
+
+(define (c:== . args)
+  (let ((lead (car args)))
+    (for-each (lambda (arg)
+		(identity-constraint lead arg))
+	      (cdr args))
+    lead))
