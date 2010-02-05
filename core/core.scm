@@ -115,6 +115,19 @@
   (function->propagator-constructor
    #; (lambda () value)
    (eq-label! (lambda () value) 'name `(const ,value))))
+
+;;; Propagators that defer the construction of their bodies, as one
+;;; mechanism of abstraction.
+(define (compound-propagator neighbors to-build)
+  (let ((done? #f) (neighbors (listify neighbors)))
+    (define (test)
+      (if done?
+          'ok
+          (if (every nothing? (map content neighbors))
+              'ok
+              (begin (set! done? #t)
+                     (to-build)))))
+    (propagator neighbors test)))
 
 ;;; Merging, and the basic data types.
 

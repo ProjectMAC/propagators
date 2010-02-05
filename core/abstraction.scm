@@ -21,17 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-(define (compound-propagator neighbors to-build)
-  (let ((done? #f) (neighbors (listify neighbors)))
-    (define (test)
-      (if done?
-          'ok
-          (if (every nothing? (map content neighbors))
-              'ok
-              (begin (set! done? #t)
-                     (to-build)))))
-    (propagator neighbors test)))
-
 (define (heron-step x g h)
   (compound-propagator (list x g)       ; inputs
     (lambda ()                          ; how to build
