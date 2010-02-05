@@ -159,10 +159,13 @@
   (pass-through c1 c2)
   (pass-through c2 c1))
 
+;; TODO rconjoiner and rdisjoiner got lost in the interminable shuffles,
+;; so these don't work any more.
+#;
 (define (and-constraint p1 p2 conjunction)
   (conjoiner p1 p2 conjunction)
   (rconjoiner conjunction p1 p2))
-
+#;
 (define (or-constraint p1 p2 disjunction)
   (disjoiner p1 p2 disjunction)
   (rdisjoiner disjunction p1 p2))

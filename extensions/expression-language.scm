@@ -69,9 +69,9 @@
 (define c:+ (functionalize sum-constraint))
 (define c:* (functionalize product-constraint))
 (define c:not (functionalize not-constraint))
-(define c:and (functionalize and-constraint))
-(define c:or (functionalize or-constraint))
 (define c:identity (functionalize identity-constraint))
+; (define c:and (functionalize and-constraint))
+; (define c:or (functionalize or-constraint))
 
 (define (c:== . args)
   (let ((lead (car args)))
