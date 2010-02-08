@@ -28,7 +28,6 @@
 
 (load-relative-compiled "../support/load")
 
-;; System definition
 (load-relative-compiled "scheduler")
 (load-relative-compiled "core")
 (load-relative-compiled "generic-definitions")
