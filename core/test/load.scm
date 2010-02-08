@@ -22,8 +22,6 @@
     ((_ premise body ...)
      (disbelieving-func premise (lambda () body ...)))))
 
-(define caring-function (nary-unpacking car))
-
 (for-each load-relative
   '("core-test"
     "dependencies-test"

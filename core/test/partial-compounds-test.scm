@@ -1,6 +1,8 @@
 (in-test-group
  partial-compounds
 
+ (define caring-function (nary-unpacking car))
+
  (define-each-check
    (initialize-scheduler) ;; Why I need this is a mystery to me
    (equal? nothing (caring-function nothing))
