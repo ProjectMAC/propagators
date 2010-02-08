@@ -1,7 +1,12 @@
+(define (self-relatively thunk)
+  (if (current-eval-unit #f)
+      (with-working-directory-pathname
+       (directory-namestring (current-load-pathname))
+       thunk)
+      (thunk)))
+
 (define (load-relative filename)
-  (with-working-directory-pathname 
-   (directory-namestring (current-load-pathname))
-   (lambda () (load filename))))
+  (self-relatively (lambda () (load filename))))
 
 (define-method generic-match ((pattern <vector>) (object :symb-ineq))
   (generic-match
