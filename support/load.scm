@@ -26,6 +26,8 @@
 (define (load-relative-compiled filename)
   (self-relatively (lambda () (load-compiled filename))))
 
+(load-relative-compiled "../testing/load")
+
 (load-relative-compiled "profiler")
 (load-relative-compiled "eq-properties")
 (load-relative-compiled "utils")
