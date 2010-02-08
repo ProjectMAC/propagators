@@ -1,9 +1,7 @@
 (in-test-group
  abstraction
 
- 
- (define-test ()
-
+ (define-test (one-heron-step)
   (interaction
    (initialize-scheduler)
    (define-cell x)
@@ -19,9 +17,7 @@
    (produces 1.4142857142857141)
    ))
 
- 
- (define-test ()
-
+ (define-test (sqrt)
   (interaction
    (initialize-scheduler)
    (define-cell x)
@@ -33,4 +29,6 @@
    (run)
    (content answer)
    (produces 1.4142135623746899)
-   )))
+   ))
+
+ )

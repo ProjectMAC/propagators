@@ -325,7 +325,7 @@
 
 (in-test-group
  riddle-of-the-knights
- (define-test
+ (define-test (correct-solution)
    (assert-matches
     `(#(knight sir-sigismund ,s1 ,h4)
       #(knight sir-gerard    ,s2 ,h3)

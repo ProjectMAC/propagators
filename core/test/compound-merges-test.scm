@@ -43,7 +43,7 @@
    ;; so fred isn't.
    )
 
- (define-test ()
+ (define-test (example)
 
    (interaction
     (initialize-scheduler)

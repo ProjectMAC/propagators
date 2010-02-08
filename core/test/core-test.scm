@@ -1,8 +1,7 @@
 (in-test-group
  core
 
- (define-test ()
-
+ (define-test (temperature1)
    (interaction
     (initialize-scheduler)
     (define-cell f)
@@ -16,8 +15,7 @@
     (produces 25)
     ))
 
- (define-test ()
-
+ (define-test (temperature2)
    (interaction
     (initialize-scheduler)
     (define-cell f)
@@ -38,8 +36,7 @@
     (produces 298.15)
     ))
 
- (define-test ()
-
+ (define-test (barometer-fall-time)
    (interaction
     (initialize-scheduler)
     (define-cell fall-time)
@@ -52,8 +49,7 @@
     (produces #(interval 41.163 47.243))
     ))
 
- (define-test ()
-
+ (define-test (barometer)
    (interaction
     (initialize-scheduler)
     (define-cell barometer-height)
@@ -101,24 +97,23 @@
     (produces #(interval 3.0255 3.0322))
     ))
 
-   (define-test ()
+ (define-test (barometer-reverse-fall-time)
+   (interaction
+    (initialize-scheduler)
+    (define-cell fall-time)
+    (define-cell building-height)
+    (fall-duration fall-time building-height)
 
-     (interaction
-      (initialize-scheduler)
-      (define-cell fall-time)
-      (define-cell building-height)
-      (fall-duration fall-time building-height)
+    (add-content fall-time (make-interval 2.9 3.1))
+    (run)
+    (content building-height)
+    (produces #(interval 41.163 47.243))
 
-      (add-content fall-time (make-interval 2.9 3.1))
-      (run)
-      (content building-height)
-      (produces #(interval 41.163 47.243))
+    (add-content building-height 45)
 
-      (add-content building-height 45)
+    (run)
+    (content fall-time)
+    (produces #(interval 3.0255 3.0322))
+    ))
 
-      (run)
-      (content fall-time)
-      (produces #(interval 3.0255 3.0322))
-      ))
-
-   )
+ )

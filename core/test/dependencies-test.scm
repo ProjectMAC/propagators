@@ -1,7 +1,7 @@
 (in-test-group
  dependencies
 
- (define-test ()
+ (define-test (supported-barometer)
    (interaction
     (initialize-scheduler)
     (define-cell barometer-height)
@@ -58,8 +58,7 @@
 			  (shadows superintendent)))
     ))
 
- (define-test ()
-
+ (define-test (tms-barometer)
    (interaction
     (initialize-scheduler)
     (define-cell barometer-height)
@@ -169,10 +168,9 @@
 		     #(supported #(interval .3 .32) (shadows)))))
     ))
 
- (define-test ()
-
-;;; Restore the state we had in the preceding example
+ (define-test (contradictory-barometer)
    (interaction
+    ;; Restore the state we had in the preceding example
     (initialize-scheduler)
     (define-cell barometer-height)
     (define-cell barometer-shadow)
@@ -218,7 +216,8 @@
     (bring-in! 'fall-time)
     (run)
     (tms-query (content barometer-height))
-;;; That was a long story!
+    ;; That was a long story!
+
     (add-content building-height
 		 (supported (make-interval 46. 50.) '(pressure)))
     (run)
@@ -248,7 +247,7 @@
     (produces #(supported #(interval .3 .30328) (superintendent shadows)))
     ))
 
- (define-test ()
+ (define-test (multiple-dwelling)
    (interaction
     (initialize-scheduler)
     (define answers (multiple-dwelling))

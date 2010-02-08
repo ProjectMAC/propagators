@@ -111,8 +111,7 @@
 					(supported 4 '(fred))))))
    )
 
- (define-test ()
-
+ (define-test (propagator)
    (interaction
     (initialize-scheduler)
     (define-cell input)
@@ -126,7 +125,6 @@
     (content output)
     (produces #(supported 4 (fred)))
     ))
-
  
-)
+ )
 

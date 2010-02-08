@@ -134,7 +134,7 @@
 
 (in-test-group
  albatross-conundrum
- (define-test
+ (define-test (correct-solution)
    (assert-matches
     '(#(deck poop windlass galliard-lute rum)
       #(deck quarter bosun tamarind-jewels biscuits)
