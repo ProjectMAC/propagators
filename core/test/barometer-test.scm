@@ -2,10 +2,10 @@
  (define-test (barometer-example)
    (interaction
     (initialize-scheduler)
-    (define barometer-height (make-cell))
-    (define barometer-shadow (make-cell))
-    (define building-height (make-cell))
-    (define building-shadow (make-cell))
+    (define-cell barometer-height)
+    (define-cell barometer-shadow)
+    (define-cell building-height)
+    (define-cell building-shadow)
     (similar-triangles
      barometer-shadow barometer-height building-shadow building-height)
     (add-content building-shadow (make-interval 54.9 55.1))
@@ -16,7 +16,7 @@
     (content building-height)
     (produces #(interval 44.51351351351351 48.977777777777774))
 
-    (define fall-time (make-cell))
+    (define-cell fall-time)
     (fall-duration fall-time building-height)
     (add-content fall-time (make-interval 2.9 3.1))
     (run)

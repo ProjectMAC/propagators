@@ -5,8 +5,8 @@
 
    (interaction
     (initialize-scheduler)
-    (define f (make-cell))
-    (define c (make-cell))
+    (define-cell f)
+    (define-cell c)
 
     (fahrenheit->celsius f c)
 
@@ -20,8 +20,8 @@
 
    (interaction
     (initialize-scheduler)
-    (define f (make-cell))
-    (define c (make-cell))
+    (define-cell f)
+    (define-cell c)
 
     (fahrenheit-celsius f c)
 
@@ -30,7 +30,7 @@
     (content f)
     (produces 77)
 
-    (define k (make-cell))
+    (define-cell k)
 
     (celsius-kelvin c k)
     (run)
@@ -42,8 +42,8 @@
 
    (interaction
     (initialize-scheduler)
-    (define fall-time (make-cell))
-    (define building-height (make-cell))
+    (define-cell fall-time)
+    (define-cell building-height)
     (fall-duration fall-time building-height)
 
     (add-content fall-time (make-interval 2.9 3.1))
@@ -56,10 +56,10 @@
 
    (interaction
     (initialize-scheduler)
-    (define barometer-height (make-cell))
-    (define barometer-shadow (make-cell))
-    (define building-height (make-cell))
-    (define building-shadow (make-cell))
+    (define-cell barometer-height)
+    (define-cell barometer-shadow)
+    (define-cell building-height)
+    (define-cell building-shadow)
     (similar-triangles barometer-shadow barometer-height
 		       building-shadow building-height)
 
@@ -70,7 +70,7 @@
     (content building-height)
     (produces #(interval 44.514 48.978))
 
-    (define fall-time (make-cell))
+    (define-cell fall-time)
     (fall-duration fall-time building-height)
 
     (add-content fall-time (make-interval 2.9 3.1))
@@ -105,8 +105,8 @@
 
      (interaction
       (initialize-scheduler)
-      (define fall-time (make-cell))
-      (define building-height (make-cell))
+      (define-cell fall-time)
+      (define-cell building-height)
       (fall-duration fall-time building-height)
 
       (add-content fall-time (make-interval 2.9 3.1))

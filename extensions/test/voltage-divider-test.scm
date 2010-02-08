@@ -120,7 +120,7 @@
 
    (define n0t2* (clone-terminal n0t2))
 
-   (define R1+R2 (make-cell))
+   (define-cell R1+R2)
 
    (sum-constraint R1 R2 R1+R2)
 

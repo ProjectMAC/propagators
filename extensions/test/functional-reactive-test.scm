@@ -6,9 +6,9 @@
 
  (define-test (glitch)
    (initialize-scheduler)
-   (define one (make-cell))
-   (define seconds (make-cell))
-   (define seconds+one (make-cell))
+   (define-cell one)
+   (define-cell seconds)
+   (define-cell seconds+one)
    (adder one seconds seconds+one)
    (add-content one 1)
    (add-content seconds (make-frs 0 (make-frpremise 'seconds 0)))
@@ -17,8 +17,8 @@
     #(frs 1 (#(frp seconds 0)))
     (content seconds+one))
 
-   (define seconds+one-again (make-cell))
-   (define glitchable (make-cell))
+   (define-cell seconds+one-again)
+   (define-cell glitchable)
    (<? seconds seconds+one-again glitchable)
    (add-content seconds+one-again (content seconds+one))
    (run)

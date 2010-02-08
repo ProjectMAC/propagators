@@ -246,9 +246,9 @@
 
  (define-test (ineq-enforcer-smoke)
    (initialize-scheduler)
-   (define five (make-cell))
+   (define-cell five)
    ((constant (make-tms (supported 5 '(joe)))) five)
-   (define victim (make-cell))
+   (define-cell victim)
    ((ineq-enforcer '<) five victim)
    ((ineq-enforcer '<) victim five)
    ;; Doesn't detect the contradiction without a plunk
@@ -259,10 +259,10 @@
 
  (define-test (ineq-constraint-smoke)
    (initialize-scheduler)
-   (define four (make-cell))
+   (define-cell four)
    ((constant 4) four)
-   (define ctl (make-cell))
-   (define victim (make-cell))
+   (define-cell ctl)
+   (define-cell victim)
    (>-constraint ctl four victim)
    ((constant #t) ctl)
    (run)
@@ -272,10 +272,10 @@
 
  (define-test (more-ineq-constraint-smoke)
    (initialize-scheduler)
-   (define three (make-cell))
+   (define-cell three)
    ((constant (make-tms (supported 3 '(joe)))) three)
-   (define victim (make-cell))
-   (define ctl (make-cell))
+   (define-cell victim)
+   (define-cell ctl)
    (<-constraint ctl three victim)
    (>=-constraint ctl three victim)
    ;; Doesn't detect the contradiction without a boolean plunk on the
@@ -287,14 +287,14 @@
 
  (define-test (even-more-ineq-constraint-smoke)
    (initialize-scheduler)
-   (define three (make-cell))
+   (define-cell three)
    ((constant (make-tms (supported 3 '(joe)))) three)
-   (define victim1 (make-cell))
-   (define victim2 (make-cell))
-   (define ctl (make-cell))
+   (define-cell victim1)
+   (define-cell victim2)
+   (define-cell ctl)
    (<-constraint ctl three victim1)
    (>=-constraint ctl three victim2)
-   (define zero (make-cell))
+   (define-cell zero)
    ((constant 0) zero)
    (sum-constraint zero victim1 victim2)
    ;; Doesn't detect the contradiction without a boolean plunk on the
@@ -311,14 +311,14 @@
 
  (define-test (even-more-more-ineq-constraint-smoke)
    (initialize-scheduler)
-   (define three (make-cell))
+   (define-cell three)
    ((constant (make-tms (supported 3 '(joe)))) three)
-   (define victim1 (make-cell))
-   (define victim2 (make-cell))
-   (define ctl (make-cell))
+   (define-cell victim1)
+   (define-cell victim2)
+   (define-cell ctl)
    (<-constraint ctl three victim1)
    (>=-constraint ctl three victim2)
-   (define zero (make-cell))
+   (define-cell zero)
    ((constant 0) zero)
    (sum-constraint zero victim1 victim2)
    ;; Doesn't detect the contradiction without a boolean plunk on the
@@ -329,9 +329,9 @@
    ;; Doesn't detect the contradiction without a variable plunk, either 
    (assert-equal 'done (run))
 
-   (define four (make-cell))
+   (define-cell four)
    ((constant 4) four)
-   (define x (make-cell))
+   (define-cell x)
    (plunker x)
    (multiplier four x victim1)
 

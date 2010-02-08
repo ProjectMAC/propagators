@@ -3,7 +3,7 @@
 
  (define-test (consistent-state-test)
    (initialize-scheduler)
-   (define victim (make-cell))
+   (define-cell victim)
    (binary-amb victim)
    (assert-equal
     '(#t #f)
@@ -37,11 +37,11 @@
    (define n4t2 (cadr n4))
    (define n4t3 (caddr n4))
 
-   (define strength-Vs (make-cell))
+   (define-cell strength-Vs)
    (define Vs (voltage-source strength-Vs))
    (add-content strength-Vs 6)
 
-   (define resistance-R1 (make-cell))
+   (define-cell resistance-R1)
    (define R1 (linear-resistor resistance-R1))
    ((constant 3) resistance-R1)
 
@@ -64,11 +64,11 @@
 
    (ground n4)
 
-   (define P (make-cell))
-   (define P12 (make-cell))
-   (define P34 (make-cell))
-   (define P56 (make-cell))
-   (define P1234 (make-cell))
+   (define-cell P)
+   (define-cell P12)
+   (define-cell P34)
+   (define-cell P56)
+   (define-cell P1234)
 
    (sum-constraint P1 P2 P12)
    (sum-constraint P3 P4 P34)

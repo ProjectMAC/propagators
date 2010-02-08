@@ -6,9 +6,9 @@
 
   (interaction
    (initialize-scheduler)
-   (define x (make-cell))
-   (define guess (make-cell))
-   (define better-guess (make-cell))
+   (define-cell x)
+   (define-cell guess)
+   (define-cell better-guess)
 
    (heron-step x guess better-guess)
 
@@ -24,8 +24,8 @@
 
   (interaction
    (initialize-scheduler)
-   (define x (make-cell))
-   (define answer (make-cell))
+   (define-cell x)
+   (define-cell answer)
 
    (sqrt-network x answer)
 

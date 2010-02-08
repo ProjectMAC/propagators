@@ -115,9 +115,9 @@
 
    (interaction
     (initialize-scheduler)
-    (define input (make-cell))
-    (define control (make-cell))
-    (define output (make-cell))
+    (define-cell input)
+    (define-cell control)
+    (define-cell output)
     (switch control input output)
 
     (add-content input 4)

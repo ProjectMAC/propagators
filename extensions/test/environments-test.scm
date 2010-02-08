@@ -75,9 +75,9 @@
 
  (define-test (interior-propagator-smoke)
    (initialize-scheduler)
-   (define four (make-cell))
-   (define zero (make-cell))
-   (define same (make-cell))
+   (define-cell four)
+   (define-cell zero)
+   (define-cell same)
    (vc:=? four zero same)
 
    (define repl-frame (make-frame '()))
@@ -91,13 +91,13 @@
 
  (define-test (call-site-smoke)
    (initialize-scheduler)
-   (define in-squaree  (make-cell))
-   (define in-square   (make-cell))
+   (define-cell in-squaree)
+   (define-cell in-square)
    (vc:squarer in-squaree in-square)
 
    (define repl-frame  (make-frame '()))
-   (define out-squaree (make-cell))
-   (define out-square  (make-cell))
+   (define-cell out-squaree)
+   (define-cell out-square)
    (call-site (list out-squaree out-square)
 	      (make-closure (list in-squaree in-square) '() '()))
    (add-content out-squaree
@@ -112,17 +112,17 @@
    (initialize-scheduler)
 
    ;; Definition of factorial
-   (define in-n (make-cell))
-   (define in-n! (make-cell))
+   (define-cell in-n)
+   (define-cell in-n!)
 
-   (define zero (make-cell))
-   (define control (make-cell))
-   (define not-control (make-cell))
-   (define one (make-cell))
-   (define n-again (make-cell))
-   (define n-1 (make-cell))
-   (define n-1! (make-cell))
-   (define empty (make-cell))
+   (define-cell zero)
+   (define-cell control)
+   (define-cell not-control)
+   (define-cell one)
+   (define-cell n-again)
+   (define-cell n-1)
+   (define-cell n-1!)
+   (define-cell empty)
 
    (define fact
      (make-closure
@@ -142,8 +142,8 @@
 
    ;; Use
    (define repl-frame  (make-frame '()))
-   (define out-n (make-cell))
-   (define out-n! (make-cell))
+   (define-cell out-n)
+   (define-cell out-n!)
    (call-site (list out-n out-n!) fact)
    (add-content out-n  (alist->virtual-copies `((,repl-frame . 4))))
    (add-content out-n! (alist->virtual-copies `((,repl-frame . ,nothing))))
@@ -161,18 +161,18 @@
    (initialize-scheduler)
 
    ;; Definition of iterative factorial loop
-   (define in-accum (make-cell))
-   (define in-n (make-cell))
-   (define out (make-cell))
+   (define-cell in-accum)
+   (define-cell in-n)
+   (define-cell out)
 
-   (define one (make-cell))
-   (define done (make-cell))
-   (define not-done (make-cell))
-   (define recur-accum (make-cell))
-   (define accum-again (make-cell))
-   (define n-again (make-cell))
-   (define out-again (make-cell))
-   (define n-1 (make-cell))
+   (define-cell one)
+   (define-cell done)
+   (define-cell not-done)
+   (define-cell recur-accum)
+   (define-cell accum-again)
+   (define-cell n-again)
+   (define-cell out-again)
+   (define-cell n-1)
 
    (define fact-iter-loop
      (make-closure
@@ -192,9 +192,9 @@
    (call-site (list recur-accum n-1 out-again) fact-iter-loop)
 
    ;; Definition of iterative factorial start
-   (define n (make-cell))
-   (define n! (make-cell))
-   (define init-accum (make-cell))
+   (define-cell n)
+   (define-cell n!)
+   (define-cell init-accum)
    (define fact-start
      (make-closure (list n n!) (list init-accum) '()))
 
@@ -203,8 +203,8 @@
 
    ;; Use
    (define repl-frame (make-frame '()))
-   (define my-n (make-cell))
-   (define my-n! (make-cell))
+   (define-cell my-n)
+   (define-cell my-n!)
    (call-site (list my-n my-n!) fact-start)
    (add-content my-n  (alist->virtual-copies `((,repl-frame . 5))))
    (add-content my-n! (alist->virtual-copies `((,repl-frame . ,nothing))))

@@ -47,17 +47,17 @@
 
    (interaction
     (initialize-scheduler)
-    (define x (make-cell))
-    (define y (make-cell))
-    (define pair (make-cell))
+    (define-cell x)
+    (define-cell y)
+    (define-cell pair)
     (conser x y pair)
 
     (run)
     (content pair)
     (produces '( #(*the-nothing*) . #(*the-nothing*) ))
 
-    (define control (make-cell))
-    (define switched-pair (make-cell))
+    (define-cell control)
+    (define-cell switched-pair)
     (switch control pair switched-pair)
 
     (add-content control (make-tms (supported #t '(joe))))
@@ -65,7 +65,7 @@
     (content switched-pair)
     (produces #(tms (#(supported ( #(*the-nothing*) . #(*the-nothing*) ) (joe)))))
 
-    (define x-again (make-cell))
+    (define-cell x-again)
     (carer switched-pair x-again)
 
     (run)

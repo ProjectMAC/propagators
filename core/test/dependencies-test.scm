@@ -4,10 +4,10 @@
  (define-test ()
    (interaction
     (initialize-scheduler)
-    (define barometer-height (make-cell))
-    (define barometer-shadow (make-cell))
-    (define building-height (make-cell))
-    (define building-shadow (make-cell))
+    (define-cell barometer-height)
+    (define-cell barometer-shadow)
+    (define-cell building-height)
+    (define-cell building-shadow)
     (similar-triangles barometer-shadow barometer-height
 		       building-shadow building-height)
 
@@ -21,7 +21,7 @@
     (content building-height)
     (produces #(supported #(interval 44.514 48.978) (shadows)))
 
-    (define fall-time (make-cell))
+    (define-cell fall-time)
     (fall-duration fall-time building-height)
 
     (add-content fall-time
@@ -62,10 +62,10 @@
 
    (interaction
     (initialize-scheduler)
-    (define barometer-height (make-cell))
-    (define barometer-shadow (make-cell))
-    (define building-height (make-cell))
-    (define building-shadow (make-cell))
+    (define-cell barometer-height)
+    (define-cell barometer-shadow)
+    (define-cell building-height)
+    (define-cell building-shadow)
     (similar-triangles barometer-shadow barometer-height
 		       building-shadow building-height)
 
@@ -79,7 +79,7 @@
     (content building-height)
     (produces #(tms (#(supported #(interval 44.514 48.978) (shadows)))))
 
-    (define fall-time (make-cell))
+    (define-cell fall-time)
     (fall-duration fall-time building-height)
 
     (add-content fall-time
@@ -174,10 +174,10 @@
 ;;; Restore the state we had in the preceding example
    (interaction
     (initialize-scheduler)
-    (define barometer-height (make-cell))
-    (define barometer-shadow (make-cell))
-    (define building-height (make-cell))
-    (define building-shadow (make-cell))
+    (define-cell barometer-height)
+    (define-cell barometer-shadow)
+    (define-cell building-height)
+    (define-cell building-shadow)
     (similar-triangles barometer-shadow barometer-height
 		       building-shadow building-height)
 
@@ -188,7 +188,7 @@
     (add-content barometer-shadow
 		 (make-tms (supported (make-interval 0.36 0.37) '(shadows))))
 
-    (define fall-time (make-cell))
+    (define-cell fall-time)
     (fall-duration fall-time building-height)
 
     (add-content fall-time
