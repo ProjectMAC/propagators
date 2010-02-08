@@ -27,3 +27,7 @@
   (self-relatively (lambda () (load-compiled filename))))
 
 (load-relative-compiled "profiler")
+(load-relative-compiled "eq-properties")
+(load-relative-compiled "utils")
+(load-relative-compiled "generic-system")
+(load-relative-compiled "test-support")

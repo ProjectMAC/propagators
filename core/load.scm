@@ -29,14 +29,8 @@
 (load-relative-compiled "../testing/load")
 (load-relative-compiled "../support/load")
 
-;; Support structures
-(load-relative-compiled "eq-properties")
-(load-relative-compiled "utils")
-(load-relative-compiled "generic-system")
-(load-relative-compiled "scheduler")
-(load-relative-compiled "test-support")
-
 ;; System definition
+(load-relative-compiled "scheduler")
 (load-relative-compiled "core")
 (load-relative-compiled "generic-definitions")
 (load-relative-compiled "intervals")
