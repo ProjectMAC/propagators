@@ -9,8 +9,7 @@
   (self-relatively (lambda () (load filename))))
 
 (for-each load-relative
-  '("test-utils"
-    "core-test"
+  '("core-test"
     "dependencies-test"
     "profiler-test"
     "partial-compounds-test"

@@ -39,7 +39,7 @@
    pattern (vector 'frp (frpremise-identity object)
 		   (frpremise-timestamp object))))
 
-(load-relative "../../core/test/test-utils")
+(load-relative "test-utils")
 (load-relative "inequality-test")
 (load-relative "symbolics-test")
 (load-relative "symbolics-ineq-test")
