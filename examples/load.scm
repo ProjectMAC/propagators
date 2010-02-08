@@ -34,7 +34,7 @@
 (load-relative-compiled "masyu")
 
 (for-each 
- load-relative
+ load-relative-compiled
  '("riddle-of-the-knights"
    "albatross-conundrum"
    ))

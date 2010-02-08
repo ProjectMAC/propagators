@@ -1,3 +1,5 @@
+(declare (usual-integrations make-cell))
+
 (define-structure
   (deck
    (print-procedure
@@ -135,10 +137,11 @@
 (in-test-group
  albatross-conundrum
  (define-test (correct-solution)
-   (assert-matches
-    '(#(deck poop windlass galliard-lute rum)
-      #(deck quarter bosun tamarind-jewels biscuits)
-      #(deck main draconio calypso-figure firearms)
-      #(deck gun scurvy casket-of-magenta ropes)
-      #(deck lower kraken goldenhall-talisman spare-sails))
-    (map v&s-value (map tms-query (show-time find-albatross-solution))))))
+   (check
+    (generic-match
+     '(#(deck poop windlass galliard-lute rum)
+       #(deck quarter bosun tamarind-jewels biscuits)
+       #(deck main draconio calypso-figure firearms)
+       #(deck gun scurvy casket-of-magenta ropes)
+       #(deck lower kraken goldenhall-talisman spare-sails))
+     (map v&s-value (map tms-query (show-time find-albatross-solution)))))))
