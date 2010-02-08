@@ -26,25 +26,4 @@
 (define (load-relative-compiled filename)
   (self-relatively (lambda () (load-compiled filename))))
 
-(load-relative-compiled "../testing/load")
-(load-relative-compiled "../support/load")
-
-;; Support structures
-(load-relative-compiled "eq-properties")
-(load-relative-compiled "utils")
-(load-relative-compiled "generic-system")
-(load-relative-compiled "scheduler")
-(load-relative-compiled "test-support")
-
-;; System definition
-(load-relative-compiled "core")
-(load-relative-compiled "generic-definitions")
-(load-relative-compiled "intervals")
-(load-relative-compiled "premises")
-(load-relative-compiled "supported-values")
-(load-relative-compiled "truth-maintenance")
-(load-relative-compiled "contradictions")
-(load-relative-compiled "search")
-(load-relative-compiled "amb-utils")
-(load-relative-compiled "compound-data")
-(load-relative-compiled "example-networks")
+(load-relative-compiled "profiler")
