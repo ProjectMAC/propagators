@@ -1,0 +1,49 @@
+Random facts about this software:
+
+The core/ directory implements Axch's thesis, much sanitized and
+somewhat extended and updated.
+- core/example-networks.scm contains the example networks used in the
+  thesis
+
+The extensions/ directory adds (or attempts to add) various additional
+features and ideas.  The rest of the software relies on the extensions
+in extensions/ as well as the core in core/.
+
+Every directory has its own run-tests script that
+runs the unit tests for that directory.
+
+There is a toplevel run-tests script that runs all
+the unit tests.
+
+The examples directory is an exception: its tests take a very long
+time; but you can run them manually if you want to.
+
+Unit tests are in test/ subdirectories of their respective
+directories.
+- test/directories and foo-test.scm files do not export useful
+  definitions
+
+The testing/ directory is the unit testing framework this project
+uses; it is a separate entity (that axch also happens to maintain).
+
+The support/ directory contains supporting stuff that isn't really
+about propagators at all, but just facilities I happen to like.
+- eq-properties
+- generic operations
+- a profiler
+- miscellaneous utilities
+
+Every directory (including the test/ directories) contains a load.scm
+file whose job is to collect all the goodies in that directory.
+- How much of an exception is the examples/ directory to this?
+
+The stuff in explorations/ is exploratory --- it may not work, it may
+be out of date, etc.  Do not use it as an example of good style :)
+
+The pubs/ directory is for publications.  There are currently no
+finished publications there.
+
+Some of the extensions rely on the symbolic algebra subsystems in
+Scmutils.  You can get Scmutils from TODO.  The mechanics script tries
+to find your Scmutils install, and exits politely if it cannot find
+one.
