@@ -47,17 +47,6 @@
 	  (fail-all cells)
 	  (loop (run))))))
 
-(define (walker->mapper walker)
-  (lambda (proc . rest)
-    (let ((result '()))
-      (apply
-       walker
-       (lambda args
-	 (let ((value (apply proc args)))
-	   (set! result (cons value result))))
-       rest)
-      (reverse result))))
-
 (define map-consistent-states (walker->mapper for-each-consistent-state))
 
 (load-relative "inequality-test")

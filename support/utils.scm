@@ -44,6 +44,17 @@
         ((pair? object) object)
         (else (list object))))
 
+(define (walker->mapper walker)
+  (lambda (proc . rest)
+    (let ((result '()))
+      (apply
+       walker
+       (lambda args
+	 (let ((value (apply proc args)))
+	   (set! result (cons value result))))
+       rest)
+      (reverse result))))
+
 (define (identity x) x)
 
 (define (ignore-first x y) y)
