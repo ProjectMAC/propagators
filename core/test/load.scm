@@ -23,9 +23,6 @@
      (disbelieving-func premise (lambda () body ...)))))
 
 (define caring-function (nary-unpacking car))
-(define switching-function
-  (nary-unpacking (lambda (predicate consequent)
-		    (if predicate consequent nothing))))
 
 (for-each load-relative
   '("core-test"
