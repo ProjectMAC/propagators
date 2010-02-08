@@ -10,14 +10,14 @@
 
 ;; This assumes that the input is more than 1
 (define (sqrt-network input-cell answer-cell)
-  (let ((one (make-cell)))
+  (let-cell one
     ((constant 1) one)
     (interval-maker one input-cell answer-cell)
     (heron-step input-cell answer-cell answer-cell)))
 
-(define x (make-cell))
+(define-cell x)
 (add-content x 2)
-(define sqrt-x (make-cell))
+(define-cell sqrt-x)
 (sqrt-network x sqrt-x)
 (run)
 ;; Oops: raw interval arithmetic loses here:

@@ -30,6 +30,6 @@
       (generic-+ tail-distance length)))))
 
 (define (edge-propagator-2 length tail-cell head-cell)
-  (let ((length-cell (make-cell)))
+  (let-cell length-cell
     ((constant length) length-cell)
     (adder length-cell tail-cell head-cell)))

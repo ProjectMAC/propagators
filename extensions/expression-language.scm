@@ -16,7 +16,7 @@
     (define inputs (map ->cell args))
     (define outputs '())
     (define (manufacture-cell)
-      (let ((cell (make-cell)))
+      (let-cell cell
 	(set! outputs (cons cell outputs))
 	cell))
     (define implicit-cells-present? (any implicit-cell? inputs))
@@ -36,7 +36,7 @@
 	(apply values outputs))))
 
 (define (p:const value)
-  (let ((answer (make-cell)))
+  (let-cell answer
     ((constant value) answer)
     answer))
 (define p:+ (functionalize adder))
@@ -56,7 +56,7 @@
 (define p:or (functionalize disjoiner))
 (define p:switch (functionalize switch))
 (define (p:amb)
-  (let ((answer (make-cell)))
+  (let-cell answer
     (binary-amb answer)
     answer))
 

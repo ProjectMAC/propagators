@@ -15,9 +15,7 @@
 and the current is measured as flowing into t1."
   (let ((i1 (current t1)) (e1 (potential t1))
 	(i2 (current t2)) (e2 (potential t2)))
-    (let ((v (make-cell))
-	  (P (make-cell))
-	  (zero (make-cell)))
+    (let-cells (v P zero)
       ((constant 0) zero)
       (sum-constraint v e2 e1)
       (sum-constraint i1 i2 zero)
@@ -52,12 +50,10 @@ and the current is measured as flowing into t1."
 	(is
 	 (let lp ((n n))
 	   (cond ((= n 1)
-		  (let ((i (make-cell)))
+		  (let-cell i
 		    (list i i)))
 		 ((= n 2)
-		  (let ((i1 (make-cell))
-			(i2 (make-cell))
-			(i (make-cell)))
+		  (let-cells (i1 i2 i)
 		    (sum-constraint i1 i2 i)
 		    (list i i1 i2)))
  		 ((even? n)
@@ -88,14 +84,8 @@ and the current is measured as flowing into t1."
 (define (ideal-diode)
   (2-terminal-device
    (lambda (v i)
-     (let ((zero-volts (make-cell))
-	   (zero-amps (make-cell))
-	   (if>=0 (make-cell))
-	   (vreverse (make-cell))
-	   (vr<=0 (make-cell))
-	   (iforward (make-cell))
-	   (conducting (make-cell))
-	   (-conducting (make-cell)))
+     (let-cells (zero-volts zero-amps if>=0 vreverse
+		 vr<=0 iforward conducting -conducting)
        ((constant 0) zero-volts)
        ((constant 0) zero-amps)
        ;;#t=>conducting; #f=>not conducting
