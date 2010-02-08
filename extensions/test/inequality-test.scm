@@ -1,8 +1,8 @@
-(define (test-try-ineq ineq)
-  (try-inequality ineq (lambda (x) x) (lambda () 'failed)))
-
 (in-test-group
  inequalities
+
+ (define (test-try-ineq ineq)
+   (try-inequality ineq (lambda (x) x) (lambda () 'failed)))
 
  (define-each-check
    (tautological-ineq? (make-tautological-ineq))
