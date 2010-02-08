@@ -1,9 +1,7 @@
 (in-test-group
  switches
 
- (define switching-function
-  (nary-unpacking (lambda (predicate consequent)
-		    (if predicate consequent nothing))))
+ (define switching-function (nary-unpacking switch-function))
 
  (define-each-check
    (generic-match nothing (switching-function nothing nothing))
