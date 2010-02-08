@@ -1,8 +1,8 @@
 (in-test-group
  functional-reactive
 
- (define-each-test
-   (assert-matches #(frp seconds 0) (make-frpremise 'seconds 0)))
+ (define-each-check
+   (generic-match #(frp seconds 0) (make-frpremise 'seconds 0)))
 
  (define-test (glitch)
    (initialize-scheduler)

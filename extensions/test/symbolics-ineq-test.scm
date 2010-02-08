@@ -1,8 +1,8 @@
 (in-test-group
  symbolics-ineq
 
- (define-each-test
-   (assert-matches
+ (define-each-check
+   (generic-match
     (vector 'symb-ineq nothing '((< me 5 (me)) (> me 4 (me))) '())
     (real-symb-ineq-merge
      (make-symb-ineq
@@ -15,7 +15,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     (vector 'symb-ineq nothing '((< me 5 (me)) (> me 4 (me))) '())
     (merge
      (make-symb-ineq
@@ -28,7 +28,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     the-contradiction
     (merge
      (make-symb-ineq
@@ -41,7 +41,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     #(symb-ineq #(symbolic 4 #(metadata () () ())) () ())
     (merge
      (make-symb-ineq
@@ -54,7 +54,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     the-contradiction
     (merge
      (make-symb-ineq
@@ -67,7 +67,7 @@
       (list (%make-inequality '> 'x 6)))
      ))
 
-   (assert-matches
+   (generic-match
     the-contradiction
     (merge
      (make-symb-ineq
@@ -80,7 +80,7 @@
       (list (%make-inequality '> 'x 6)))
      ))
 
-   (assert-matches
+   (generic-match
     #(symb-ineq #(symbolic 4 #(metadata () () ()))
 		()
 		((< x 5 (x))))
@@ -95,7 +95,7 @@
       '())
      ))
    
-   (assert-matches
+   (generic-match
     the-contradiction
     (merge
      (make-symb-ineq
@@ -104,7 +104,7 @@
       (make-symbolic 5 (empty-metadata)) '() '())
      ))
 
-   (assert-matches
+   (generic-match
     #(symb-ineq #(symbolic v #(metadata (v) () ()))
 		()
 		((< v 5 (v))))
@@ -119,7 +119,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     #(symb-ineq #(symbolic v #(metadata (v) () ()))
 		()
 		((> v 0 (v))))
@@ -134,7 +134,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     the-contradiction
     (merge
      (make-symb-ineq
@@ -147,7 +147,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     #(symb-ineq #(*the-nothing*)
 		((> me v (me v))
 		 (< me 2 (me)))
@@ -163,7 +163,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     #(symb-ineq #(symbolic w #(metadata (v w) (((= v (* 4 w)) ())) ()))
 		()
 		((> w 0 (w))
@@ -184,7 +184,7 @@
       (list (%make-inequality '< 'v '2)))
      ))
 
-   (assert-matches
+   (generic-match
     #(symb-ineq #(symbolic w #(metadata (v w) (((= v (* 4 w)) ())) ()))
 		()
 		((> w 0 (w))))
@@ -204,7 +204,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     the-contradiction
     (merge
      (make-symb-ineq
@@ -222,7 +222,7 @@
       '())
      ))
 
-   (assert-matches
+   (generic-match
     #(symb-ineq #(symbolic w #(metadata (v w) (((= v (* 4 w)) ())) ()))
 		()
 		((< w 0 (w))))
