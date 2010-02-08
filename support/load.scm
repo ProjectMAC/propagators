@@ -32,4 +32,4 @@
 (load-relative-compiled "eq-properties")
 (load-relative-compiled "utils")
 (load-relative-compiled "generic-system")
-(load-relative-compiled "test-support")
+(load-relative-compiled "test-utils")
