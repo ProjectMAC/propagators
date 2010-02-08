@@ -3,5 +3,5 @@ def scheme command
 end
 
 task "multiple-dwelling.dot" do
-  scheme "(load \"load\") (load \"multiple-dwelling\") (prop:dot:write-graph-to-file (multiple-dwelling) \"multiple-dwelling.dot\")"
+  scheme "(load \"load\") (initialize-scheduler) (prop:dot:write-graph-to-file (multiple-dwelling) \"multiple-dwelling.dot\")"
 end
