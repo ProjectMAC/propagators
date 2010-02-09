@@ -1,11 +1,9 @@
 (declare (usual-integrations))
 
-(define-record-type :symbolic-metadata
-  (make-symbolic-metadata variable-order substitutions residual-equations)
-  symbolic-metadata?
-  (variable-order symbolic-variable-order)
-  (substitutions symbolic-substitutions)
-  (residual-equations symbolic-residual-equations))
+(define-structure (symbolic-metadata (conc-name symbolic-))
+  variable-order
+  substitutions
+  residual-equations)
 
 (define (empty-metadata)
   (make-symbolic-metadata '() '() '()))

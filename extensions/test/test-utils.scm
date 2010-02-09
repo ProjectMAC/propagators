@@ -24,7 +24,7 @@
    pattern (vector 'symbolic (symbolic-expression object)
 		   (symbolic-metadata object))))
 
-(define-method generic-match ((pattern <vector>) (object :symbolic-metadata))
+(define-method generic-match ((pattern <vector>) (object rtd:symbolic-metadata))
   (generic-match
    pattern (vector 'metadata (symbolic-variable-order object)
 		   (symbolic-substitutions object)
