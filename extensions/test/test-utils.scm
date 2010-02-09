@@ -13,22 +13,22 @@
 
 (define map-consistent-states (walker->mapper for-each-consistent-state))
 
-(define-method generic-match ((pattern <vector>) (object rtd:symb-ineq))
+(define-method generic-match ((pattern <vector>) (object rtd:symbolic-metadata))
   (generic-match
-   pattern (vector 'symb-ineq (symb-ineq-expression object)
-		   (symb-ineq-local object)
-		   (symb-ineq-global object))))
+   pattern (vector 'metadata (symbolic-variable-order object)
+		   (symbolic-substitutions object)
+		   (symbolic-residual-equations object))))
 
 (define-method generic-match ((pattern <vector>) (object rtd:symbolic))
   (generic-match
    pattern (vector 'symbolic (symbolic-expression object)
 		   (symbolic-metadata object))))
 
-(define-method generic-match ((pattern <vector>) (object rtd:symbolic-metadata))
+(define-method generic-match ((pattern <vector>) (object rtd:symb-ineq))
   (generic-match
-   pattern (vector 'metadata (symbolic-variable-order object)
-		   (symbolic-substitutions object)
-		   (symbolic-residual-equations object))))
+   pattern (vector 'symb-ineq (symb-ineq-expression object)
+		   (symb-ineq-local object)
+		   (symb-ineq-global object))))
 
 (define-method generic-match ((pattern <vector>) (object rtd:frs))
   (if (stale-frs? object)
