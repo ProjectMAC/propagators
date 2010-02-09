@@ -56,3 +56,5 @@ one.
 ! test group mumble is in the test file mumble-test.scm
 ? there are a couple of tests here and there in the toplevel test group
 ! test suites are runnable from the REPL
+
+? support/, core/, extensions/, and examples/* are the entry points.
