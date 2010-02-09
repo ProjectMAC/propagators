@@ -1,3 +1,13 @@
+(define (self-relatively thunk)
+  (if (current-eval-unit #f)
+      (with-working-directory-pathname
+       (directory-namestring (current-load-pathname))
+       thunk)
+      (thunk)))
+
+(define (load-relative filename)
+  (self-relatively (lambda () (load filename))))
+
 (define (compiled-code-type)
   ;; Trying to support the C backend
   (if (lexical-unbound?
@@ -16,17 +26,10 @@
   (cf-conditionally filename)
   (load filename))
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
-
 (define (load-relative-compiled filename)
   (self-relatively (lambda () (load-compiled filename))))
 
-(load-relative-compiled "../testing/load")
+(load-relative "../testing/load")
 
 (load-relative-compiled "profiler")
 (load-relative-compiled "eq-properties")
