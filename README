@@ -59,6 +59,23 @@ The testing/ directory
   testing/ is a separate entity and not part of the propagator project
   at all; but it so happens that Alexey also maintains it.
 
+ORGANIZATION:
+
+run-tests scripts run the unit tests for the portion of system in that
+directory.  The toplevel run-tests runs all the unit tests.
+- Exception: examples/run-tests exercises all the extended examples.
+  This takes several minutes, so is not considered part of the
+  normal test suite.
+
+Unit tests are in test/ subdirectories of their respective
+directories.  The test suites are independent of each other,
+and nothing depends on them.
+
+The unit tests are organized into test groups.  Test groups are named
+after the test files they are in.
+
+
+Files called load.scm load the contents of their directories
 
 Random facts about this software:
 
@@ -66,20 +83,6 @@ Random facts about this software:
 ? means descriptive, currently true, but may cease to be true
 
 The invariants do not apply to testing/.
-
-support/, core/ and extensions/ have their own run-tests scripts that
-runs the unit tests for that directory.
-
-There is a toplevel run-tests script that runs all
-the unit tests.
-
-The examples directory is an exception: its tests take a very long
-time; but you can run them manually if you want to.
-
-Unit tests are in test/ subdirectories of their respective
-directories.
-- test/ directories and foo-test.scm files do not export useful
-  definitions
 
 Every directory (including the test/ directories) contains a load.scm
 file whose job is to collect all the goodies in that directory (first
