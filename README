@@ -17,19 +17,55 @@ You should have received a copy of the GNU General Public License
 along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------
 
+CONTENT:
+
+The doc/ directory
+  contains documents about the whole system, and aspects of it.  The
+  main attractions as of this writing are the Propagator Networks
+  thesis and the Art of the Propagator paper.
+
+The core/ directory
+  implements Alexey's thesis, much sanitized and somewhat extended and
+  updated.
+  - core/example-networks.scm contains the example networks used in
+    the thesis
+
+The extensions/ directory
+  adds (or attempts to add) various additional features and ideas.
+  The rest of the software relies on the extensions in extensions/ as
+  well as the core in core/.
+
+The examples/ directory
+  contains extended examples of uses of propagator networks.  This
+  code is not in any sense part of the system, but is a series of
+  clients.
+
+The support/ directory
+  contains supporting stuff that isn't about propagators at all; just
+  useful helpers and langauge facilities.
+  - eq-properties
+  - generic operations
+  - a profiler
+  - miscellaneous utilities
+
+The testing/ directory
+  is the unit testing framework this project uses.  As software,
+  testing/ is a separate entity and not part of the propagator project
+  at all; but it so happens that Alexey also maintains it.
+
+The explorations/ directory
+  is exploratory --- trying to understand the (propagation) universe
+  by writing code.  It should be considered fully unsupported: it may
+  not work, it may be out of date, it may contain good ideas whose
+  time has not yet come, etc.
+
+
 Random facts about this software:
 
 ! means normative but false
 ? means descriptive, currently true, but may cease to be true
 
-The core/ directory implements Axch's thesis, much sanitized and
-somewhat extended and updated.
-? core/example-networks.scm contains the example networks used in the
-  thesis
-
-The extensions/ directory adds (or attempts to add) various additional
-features and ideas.  The rest of the software relies on the extensions
-in extensions/ as well as the core in core/.
+The invariants do not apply to testing/.
 
 support/, core/ and extensions/ have their own run-tests scripts that
 runs the unit tests for that directory.
@@ -45,25 +81,11 @@ directories.
 - test/ directories and foo-test.scm files do not export useful
   definitions
 
-The testing/ directory is the unit testing framework this project
-uses; it is a separate entity (that axch also happens to maintain).
-- The other invariants do not apply to it.
-
-The support/ directory contains supporting stuff that isn't really
-about propagators at all, but just facilities I happen to like.
-- eq-properties
-- generic operations
-- a profiler
-- miscellaneous utilities
-
 Every directory (including the test/ directories) contains a load.scm
 file whose job is to collect all the goodies in that directory (first
 invoking the load files of any directories that one depends upon).
 ? How much of an exception are the examples/ and explorations/
   directories to this?
-
-The stuff in explorations/ is exploratory --- it may not work, it may
-be out of date, etc.  Do not use it as an example of good style :)
 
 ? Some of the extensions rely on the symbolic algebra subsystems in
 Scmutils.  You can get Scmutils from TODO.  The mechanics script tries
