@@ -93,7 +93,7 @@
 		   ((same-symbolic? symb2 answer) symb2)
 		   (else answer)))))))
 
-(assign-operation 'merge symbolic-merge symbolic? symbolic?)
+(defhandler 'merge symbolic-merge symbolic? symbolic?)
 
 ;;; Two ways to add symbolic expressions as a partial information type.
 ;;; One way is to use the nary-unpacking machinery:
@@ -154,11 +154,11 @@
 (define (coerce-symbolic operator)
   (case (operator-arity operator)
     ((1)
-     (assign-operation operator (symbolic-unpacking operator) symbolic?))
+     (defhandler operator (symbolic-unpacking operator) symbolic?))
     ((2)
-     (assign-operation operator (symbolic-unpacking operator) symbolic? symbolic?)
-     (assign-operation operator (coercing ->symbolic operator) symbolic? symbolizable?)
-     (assign-operation operator (coercing ->symbolic operator) symbolizable? symbolic?))))
+     (defhandler operator (symbolic-unpacking operator) symbolic? symbolic?)
+     (defhandler operator (coercing ->symbolic operator) symbolic? symbolizable?)
+     (defhandler operator (coercing ->symbolic operator) symbolizable? symbolic?))))
 #;
 (for-each coerce-symbolic
  (list generic-+ generic-- generic-* generic-/
@@ -202,8 +202,8 @@
 
 (specify-flat symbolic?)
 
-(assign-operation 'merge (coercing ->symbolic symbolic-merge) symbolic? symbolizable?)
-(assign-operation 'merge (coercing ->symbolic symbolic-merge) symbolizable? symbolic?)
+(defhandler 'merge (coercing ->symbolic symbolic-merge) symbolic? symbolizable?)
+(defhandler 'merge (coercing ->symbolic symbolic-merge) symbolizable? symbolic?)
 
 (define (make-variable)
   (generate-uninterned-symbol 'x))
