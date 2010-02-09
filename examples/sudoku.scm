@@ -148,7 +148,6 @@
 ;; This test takes too long to run
 #;
 (define-test (solve)
-  (set! *number-of-calls-to-fail* 0)
   (check (equal?
 	  (string-append
 	   "327194658\n"
