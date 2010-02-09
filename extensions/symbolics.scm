@@ -47,11 +47,9 @@
 (define (list-unify-metadata metadatas)
   (reduce unify-metadata (empty-metadata) metadatas))
 
-(define-record-type :symbolic
-  (%make-symbolic expression metadata)
-  symbolic?
-  (expression symbolic-expression)
-  (metadata symbolic-metadata))
+(define-structure (symbolic (constructor %make-symbolic))
+  expression
+  metadata)
 
 (define (make-symbolic expression metadata)
   (%make-symbolic

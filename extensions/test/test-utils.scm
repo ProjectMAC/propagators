@@ -19,7 +19,7 @@
 		   (symb-ineq-local object)
 		   (symb-ineq-global object))))
 
-(define-method generic-match ((pattern <vector>) (object :symbolic))
+(define-method generic-match ((pattern <vector>) (object rtd:symbolic))
   (generic-match
    pattern (vector 'symbolic (symbolic-expression object)
 		   (symbolic-metadata object))))
