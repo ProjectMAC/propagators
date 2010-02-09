@@ -1,6 +1,9 @@
 #!/bin/bash
 
-cd core
+cd support
+./run-tests
+
+cd ../core
 ./run-tests
 
 cd ../extensions

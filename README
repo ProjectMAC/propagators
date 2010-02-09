@@ -1,15 +1,18 @@
 Random facts about this software:
 
+! means normative but false
+? means descriptive, currently true, but may cease to be true
+
 The core/ directory implements Axch's thesis, much sanitized and
 somewhat extended and updated.
-- core/example-networks.scm contains the example networks used in the
+? core/example-networks.scm contains the example networks used in the
   thesis
 
 The extensions/ directory adds (or attempts to add) various additional
 features and ideas.  The rest of the software relies on the extensions
 in extensions/ as well as the core in core/.
 
-Every directory has its own run-tests script that
+support/, core/ and extensions/ have their own run-tests scripts that
 runs the unit tests for that directory.
 
 There is a toplevel run-tests script that runs all
