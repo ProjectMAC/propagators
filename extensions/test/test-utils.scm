@@ -13,7 +13,7 @@
 
 (define map-consistent-states (walker->mapper for-each-consistent-state))
 
-(define-method generic-match ((pattern <vector>) (object :symb-ineq))
+(define-method generic-match ((pattern <vector>) (object rtd:symb-ineq))
   (generic-match
    pattern (vector 'symb-ineq (symb-ineq-expression object)
 		   (symb-ineq-local object)

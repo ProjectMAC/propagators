@@ -10,12 +10,10 @@
 
 (declare (usual-integrations))
 
-(define-record-type :symb-ineq
-  (make-symb-ineq expression local global)
-  symb-ineq?
-  (expression symb-ineq-expression)
-  (local symb-ineq-local)
-  (global symb-ineq-global))
+(define-structure symb-ineq
+  expression
+  local
+  global)
 
 (define (local->global-inequalities ineq-list)
   (let ((lower-bounds (filter lower-bound-ineq? ineq-list))
