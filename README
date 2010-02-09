@@ -23,7 +23,7 @@ time; but you can run them manually if you want to.
 
 Unit tests are in test/ subdirectories of their respective
 directories.
-- test/directories and foo-test.scm files do not export useful
+! test/ directories and foo-test.scm files do not export useful
   definitions
 
 The testing/ directory is the unit testing framework this project
@@ -37,8 +37,10 @@ about propagators at all, but just facilities I happen to like.
 - miscellaneous utilities
 
 Every directory (including the test/ directories) contains a load.scm
-file whose job is to collect all the goodies in that directory.
-- How much of an exception is the examples/ directory to this?
+file whose job is to collect all the goodies in that directory (first
+invoking the load files of any directories that one depends upon).
+? How much of an exception are the examples/ and explorations/
+  directories to this?
 
 The stuff in explorations/ is exploratory --- it may not work, it may
 be out of date, etc.  Do not use it as an example of good style :)
@@ -46,7 +48,11 @@ be out of date, etc.  Do not use it as an example of good style :)
 The pubs/ directory is for publications.  There are currently no
 finished publications there.
 
-Some of the extensions rely on the symbolic algebra subsystems in
+? Some of the extensions rely on the symbolic algebra subsystems in
 Scmutils.  You can get Scmutils from TODO.  The mechanics script tries
 to find your Scmutils install, and exits politely if it cannot find
 one.
+
+! test group mumble is in the test file mumble-test.scm
+? there are a couple of tests here and there in the toplevel test group
+! test suites are runnable from the REPL
