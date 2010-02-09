@@ -8,7 +8,6 @@
 (define (load-relative filename)
   (self-relatively (lambda () (load filename))))
 
-(load-relative "test-utils")
 (load-relative "inequality-test")
 (load-relative "symbolics-test")
 (load-relative "symbolics-ineq-test")

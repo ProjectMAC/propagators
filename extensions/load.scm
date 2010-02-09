@@ -38,7 +38,8 @@
    "inequalities"
    "symbolics"
    "symbolics-ineq"
-   "functional-reactivity"))
+   "functional-reactivity"
+   "test-utils"))
 
 (for-each load-relative
  '("environments"

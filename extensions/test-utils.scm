@@ -1,3 +1,5 @@
+(declare (usual-integrations make-cell))
+
 (define (fail-all cells)
   (process-one-contradiction
    (apply append (map v&s-support (filter v&s? (map tms-query (filter tms? (map content cells))))))))
