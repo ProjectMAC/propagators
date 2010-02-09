@@ -65,9 +65,6 @@ invoking the load files of any directories that one depends upon).
 The stuff in explorations/ is exploratory --- it may not work, it may
 be out of date, etc.  Do not use it as an example of good style :)
 
-The pubs/ directory is for publications.  There are currently no
-finished publications there.
-
 ? Some of the extensions rely on the symbolic algebra subsystems in
 Scmutils.  You can get Scmutils from TODO.  The mechanics script tries
 to find your Scmutils install, and exits politely if it cannot find
