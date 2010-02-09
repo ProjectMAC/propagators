@@ -1,44 +1,0 @@
-This is not about "a language" but about desiderata
-
-Disciple of the libertarian school of programming languages
-
-Goal is maximum expressiveness
-
-Expressiveness is the explicit -- what you *can* say
-and the implicit -- what you *don't have to* say
-
-Security implication is the ability to say that others must not be
-able to do something.  That, too, should be expressible.
-
-This is a partial list
-
-Many of the great advances have been about making details implicit.
-
-N.B. "combinators" means monads, too
-
-DSLs allow domain-specific implicitizations and explicitizations
-
-(These are the ones I do not impede)
-
-(These are the ones I enable)
-
-The idea of propagation is old
-
-The idea of merging is what makes it work
-
-Speculations: layers, aspects, maybe monads/transformers seem to be
-try to get at the same thing: implicit "shadow" computation
-
-Self-adaptive is trying to get at implicit management of redundancy &
-degeneracy
-
-----------------------------------------------------------------------
-
-Reifies the computational process in a new way
-
-Better tools for constructing security mechanisms
-than other models
-
-Degeneracy -> security
-
-Provenance; accountability; resilient trust
