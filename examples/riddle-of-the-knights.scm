@@ -155,9 +155,9 @@
 	  (else
 	   (make-knight name-answer shield-answer horse-answer)))))
 
-(defhandler 'merge knight-merge knight? knight?)
+(defhandler merge knight-merge knight? knight?)
 
-(defhandler 'contradictory?
+(defhandler contradictory?
   (lambda (knight) (or (contradictory? (knight-name knight))
 		       (contradictory? (knight-shield knight))
 		       (contradictory? (knight-horse knight))))

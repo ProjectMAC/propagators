@@ -44,9 +44,9 @@
 	  (else
 	   (make-deck name-answer commander-answer treasure-answer supply-answer)))))
 
-(defhandler 'merge deck-merge deck? deck?)
+(defhandler merge deck-merge deck? deck?)
 
-(defhandler 'contradictory?
+(defhandler contradictory?
   (lambda (deck) (or (contradictory? (deck-name deck))
 		     (contradictory? (deck-commander deck))
 		     (contradictory? (deck-treasure deck))
