@@ -107,17 +107,6 @@
 	    (sudoku-board-rows board))
   board)
 
-(define-test (parse-smoke)
-  (initialize-scheduler)
-  (check
-   (equal?
-    "????\n????\n????\n?3??\n"
-    (with-output-to-string
-      (lambda ()
-	(print-sudoku-board
-	 (parse-sudoku
-	  '((0 0 0 0) (0 0 0 0) (0 0 0 0) (0 3 0 0)))))))))
-
 (define (do-sudoku board-by-rows)
   (initialize-scheduler)
   (let ((board (parse-sudoku board-by-rows)))
@@ -149,14 +138,6 @@
 
 (define (one-choice thing)
   thing)
-
-(define-test (solve-smoke)
-  (check
-   (equal?
-    "3124\n2431\n1243\n4312\n"
-    (with-output-to-string
-      (lambda ()
-	(do-sudoku '((0 0 0 0) (0 0 0 0) (0 0 0 0) (0 3 0 0))))))))
 
 ;;; On a nontrivially loaded machine:
 ;;; process time: 184760 (169200 RUN + 15560 GC); real time: 255528
