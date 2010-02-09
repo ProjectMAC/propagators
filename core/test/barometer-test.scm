@@ -1,4 +1,6 @@
-(in-test-group barometer
+(in-test-group
+ barometer
+
  (define-test (barometer-example)
    (interaction
     (initialize-scheduler)

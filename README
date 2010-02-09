@@ -23,11 +23,12 @@ time; but you can run them manually if you want to.
 
 Unit tests are in test/ subdirectories of their respective
 directories.
-! test/ directories and foo-test.scm files do not export useful
+- test/ directories and foo-test.scm files do not export useful
   definitions
 
 The testing/ directory is the unit testing framework this project
 uses; it is a separate entity (that axch also happens to maintain).
+- The other invariants do not apply to it.
 
 The support/ directory contains supporting stuff that isn't really
 about propagators at all, but just facilities I happen to like.
@@ -53,8 +54,8 @@ Scmutils.  You can get Scmutils from TODO.  The mechanics script tries
 to find your Scmutils install, and exits politely if it cannot find
 one.
 
-! test group mumble is in the test file mumble-test.scm
+test group mumble is in the test file mumble-test.scm
 ? there are a couple of tests here and there in the toplevel test group
-! test suites are runnable from the REPL
+test suites are runnable from the REPL
 
 ? support/, core/, extensions/, and examples/* are the entry points.
