@@ -88,6 +88,13 @@
 
 (define *number-of-calls-to-fail* 0)
 
+;;; TODO Can one do better than this?
+(define initialize-scheduler
+  (let ((initialize-scheduler initialize-scheduler))
+    (lambda ()
+      (initialize-scheduler)
+      (set! *number-of-calls-to-fail* 0))))
+
 (define (process-nogood! nogood)
   (set! *number-of-calls-to-fail*
         (+ *number-of-calls-to-fail* 1))

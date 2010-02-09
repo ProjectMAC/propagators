@@ -256,7 +256,7 @@
     (produces '(3 2 4 5 1))
 
     *number-of-calls-to-fail*
-    (produces 66)
+    (produces 63)
     ))
 
  )
