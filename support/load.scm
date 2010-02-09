@@ -31,8 +31,9 @@
 
 (load-relative "../testing/load")
 
-(load-relative-compiled "profiler")
-(load-relative-compiled "eq-properties")
-(load-relative-compiled "utils")
-(load-relative-compiled "generic-system")
-(load-relative-compiled "test-utils")
+(for-each load-relative-compiled
+  '("profiler"
+    "eq-properties"
+    "utils"
+    "generic-system"
+    "test-utils"))
