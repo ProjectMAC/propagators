@@ -1,8 +1,9 @@
-(load-relative "inequality-test")
-(load-relative "symbolics-test")
-(load-relative "symbolics-ineq-test")
-(load-relative "voltage-divider-test")
-(load-relative "bridge-rectifier-test")
-(load-relative "functional-reactive-test")
-(load-relative "environments-test")
-(load-relative "graph-drawing-test")
+(for-each load-relative
+  '("inequality-test"
+    "symbolics-test"
+    "symbolics-ineq-test"
+    "voltage-divider-test"
+    "bridge-rectifier-test"
+    "functional-reactive-test"
+    "environments-test"
+    "graph-drawing-test"))
