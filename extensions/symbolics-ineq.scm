@@ -325,4 +325,4 @@
 ;;; TODO This feels like a hack...
 (defhandler generic-/ 
   (lambda (a b) nothing)
-  any? zero?)
+  any? (lambda (x) (and (number? x) (zero? x))))
