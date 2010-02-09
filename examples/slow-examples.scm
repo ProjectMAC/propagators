@@ -63,3 +63,32 @@
 "X   O X        X       X        OO  "
 " O X  OO  X     O  O     O   X      "
 "             X      X     X     O O "))
+
+(in-test-group
+ riddle-of-the-knights
+ (define-test (correct-solution)
+   (check
+    (generic-match
+     `(#(knight sir-sigismund ,s1 ,h4)
+       #(knight sir-gerard    ,s2 ,h3)
+       #(knight sir-fernando  ,s4 ,h6)
+       #(knight sir-harold    ,s7 ,h1)
+       #(knight sir-emilio    ,s5 ,h5)
+       #(knight sir-almeric   ,s0 ,h7)
+       #(knight sir-gawain    ,s3 ,h2)
+       #(knight sir-caspar    ,s6 ,h0)
+       #(knight sir-jules     ,s8 ,h8)
+       #(knight sir-balthus   ,s9 ,h9))
+     (map v&s-value (map tms-query (show-time find-solution)))))))
+
+(in-test-group
+ albatross-conundrum
+ (define-test (correct-solution)
+   (check
+    (generic-match
+     '(#(deck poop windlass galliard-lute rum)
+       #(deck quarter bosun tamarind-jewels biscuits)
+       #(deck main draconio calypso-figure firearms)
+       #(deck gun scurvy casket-of-magenta ropes)
+       #(deck lower kraken goldenhall-talisman spare-sails))
+     (map v&s-value (map tms-query (show-time find-albatross-solution)))))))

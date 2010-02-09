@@ -342,6 +342,7 @@
 		   (knight-shield object)
 		   (knight-horse object))))
 
+#;
 (in-test-group
  riddle-of-the-knights
  (define-test (correct-solution)

@@ -153,6 +153,7 @@
 		   (deck-treasure object)
 		   (deck-supply object))))
 
+#;
 (in-test-group
  albatross-conundrum
  (define-test (correct-solution)
