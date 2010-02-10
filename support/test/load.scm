@@ -18,4 +18,5 @@
 ;;; ----------------------------------------------------------------------
 
 (for-each load-relative
-  '("profiler-test"))
+  '("profiler-test"
+    "utils-test"))

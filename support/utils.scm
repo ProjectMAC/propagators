@@ -80,3 +80,18 @@
      (if (= 1.0 (+ e 1.0))
          (* 2 e)
          (loop (/ e 2)))))
+
+(define (string-replace string pattern replacement)
+  (let loop ((string string)
+	     (first-occurrence (string-search-forward pattern string)))
+    (if first-occurrence
+	(let ((next-string
+	       (string-append
+		(string-head string first-occurrence)
+		replacement
+		(string-tail string (+ first-occurrence (string-length pattern))))))
+	  (loop next-string
+		(substring-search-forward
+		 pattern next-string
+		 (+ first-occurrence (string-length replacement)) (string-length next-string))))
+	string)))
