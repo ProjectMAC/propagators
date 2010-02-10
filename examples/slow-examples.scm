@@ -92,3 +92,32 @@
        #(deck gun scurvy casket-of-magenta ropes)
        #(deck lower kraken goldenhall-talisman spare-sails))
      (map v&s-value (map tms-query (show-time find-albatross-solution)))))))
+
+;;; This one is too slow even for the slow-examples!
+#;
+(define-test (solve)
+  (check (equal?
+	  (string-append
+	   "327194658\n"
+	   "846325179\n"
+	   "519687243\n"
+	   "172563894\n"
+	   "653948721\n"
+	   "498712365\n"
+	   "764851932\n"
+	   "985236417\n"
+	   "231479586\n")
+	  (with-output-to-string
+	    (lambda ()
+	      (do-sudoku
+	       '((0 0 7 0 0 0 6 5 0)
+		 (8 4 6 0 0 5 1 0 9)
+		 (0 0 9 0 0 0 0 0 3)
+		 (1 0 0 5 6 0 0 9 4)
+		 (0 0 0 9 4 8 0 0 0)
+		 (4 9 0 0 1 2 0 0 5)
+		 (7 0 0 0 0 0 9 0 0)
+		 (9 0 5 2 0 0 4 1 7)
+		 (0 3 1 0 0 0 5 0 0)))))))
+  (check (= 629 *number-of-calls-to-fail*)))
+

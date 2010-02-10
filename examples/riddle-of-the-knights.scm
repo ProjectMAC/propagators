@@ -342,20 +342,17 @@
 		   (knight-shield object)
 		   (knight-horse object))))
 
-#;
-(in-test-group
- riddle-of-the-knights
- (define-test (correct-solution)
-   (check
-    (generic-match
-     `(#(knight sir-sigismund ,s1 ,h4)
-       #(knight sir-gerard    ,s2 ,h3)
-       #(knight sir-fernando  ,s4 ,h6)
-       #(knight sir-harold    ,s7 ,h1)
-       #(knight sir-emilio    ,s5 ,h5)
-       #(knight sir-almeric   ,s0 ,h7)
-       #(knight sir-gawain    ,s3 ,h2)
-       #(knight sir-caspar    ,s6 ,h0)
-       #(knight sir-jules     ,s8 ,h8)
-       #(knight sir-balthus   ,s9 ,h9))
-     (map v&s-value (map tms-query (show-time find-solution)))))))
+#|
+(map v&s-value (map tms-query (show-time find-solution)))
+(produces
+ `(#(knight sir-sigismund ,s1 ,h4)
+   #(knight sir-gerard    ,s2 ,h3)
+   #(knight sir-fernando  ,s4 ,h6)
+   #(knight sir-harold    ,s7 ,h1)
+   #(knight sir-emilio    ,s5 ,h5)
+   #(knight sir-almeric   ,s0 ,h7)
+   #(knight sir-gawain    ,s3 ,h2)
+   #(knight sir-caspar    ,s6 ,h0)
+   #(knight sir-jules     ,s8 ,h8)
+   #(knight sir-balthus   ,s9 ,h9)))
+|#
