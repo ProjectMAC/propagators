@@ -17,6 +17,24 @@ You should have received a copy of the GNU General Public License
 along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------
 
+
+INSTALLATION:
+
+Install MIT/GNU Scheme (required)
+  sudo aptitude install mit-scheme mit-scheme-doc mit-scheme-dbg or
+  http://www.gnu.org/software/mit-scheme/
+
+Install Mechanics Scmutils (optional)
+  http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm
+
+
+QUICK START:
+
+Execute ./run-tests in a shell to self-test
+
+Run (load "load") in Scheme grab everything and start playing with it
+
+
 CONTENT:
 
 The doc/ directory
@@ -59,44 +77,44 @@ The testing/ directory
   testing/ is a separate entity and not part of the propagator project
   at all; but it so happens that Alexey also maintains it.
 
-ORGANIZATION:
+
+LOADING CONVENTION:
+
+Loading is done through files called load.scm in every directory.
+They are responsible for collecting the contents of their own
+directory, and for their needed dependencies when appropriate.
+
+The toplevel load.scm is the main entry point.  extensions/load.scm,
+core/load.scm, and examples/load.scm serve as secondary entry points
+for those portions of the system.
+
+
+UNIT TESTING:
 
 run-tests scripts run the unit tests for the portion of system in that
 directory.  The toplevel run-tests runs all the unit tests.
-- Exception: examples/run-tests exercises all the extended examples.
-  This takes several minutes, so is not considered part of the
-  normal test suite.
 
 Unit tests are in test/ subdirectories of their respective
-directories.  The test suites are independent of each other,
-and nothing depends on them.
+directories.  The test suites are independent of each other, and
+nothing depends on them.
 
 The unit tests are organized into test groups.  Test groups are named
 after the test files they are in.
 
+Test suites can also be run from the REPL by loading the system,
+loading an appropriate test suite's test/load.scm file, and running
+(run-registered-tests).  This offers interactive debugging of the
+tests.
 
-Files called load.scm load the contents of their directories
+examples/run-examples exercises all the extended examples.  This takes
+several minutes, so is not considered part of the normal test suite.
 
-Random facts about this software:
+Some of the extensions rely on the symbolic algebra subsystems in
+Mechanics Scmutils.  The full system will load just fine into a normal
+MIT/GNU Scheme, but extensions that need symbolic algebra will not
+work.  The extensions/run-tests script will not run without a
+Mechanics install, and the extensions/test/load.scm test suite will
+fail if you run it from the REPL in MIT/GNU Scheme.
 
-! means normative but false
-? means descriptive, currently true, but may cease to be true
-
-The invariants do not apply to testing/.
-
-Every directory (including the test/ directories) contains a load.scm
-file whose job is to collect all the goodies in that directory (first
-invoking the load files of any directories that one depends upon).
-? How much of an exception are the examples/ and explorations/
-  directories to this?
-
-? Some of the extensions rely on the symbolic algebra subsystems in
-Scmutils.  You can get Scmutils from TODO.  The mechanics script tries
-to find your Scmutils install, and exits politely if it cannot find
-one.
-
-test group mumble is in the test file mumble-test.scm
-? there are a couple of tests here and there in the toplevel test group
-test suites are runnable from the REPL
-
-? support/, core/, extensions/, and examples/* are the entry points.
+None of this applies to the testing/ directory, since it is a separate
+software project that happens to be distributed here in source form.
