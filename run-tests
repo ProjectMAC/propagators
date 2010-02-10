@@ -7,4 +7,7 @@ cd ../core
 ./run-tests
 
 cd ../extensions
+./run-tests
+
+cd ../examples
 exec ./run-tests
