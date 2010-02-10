@@ -17,52 +17,105 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(do-puzzle '(
-"X O  OO   "
-"   O    OO"
-"X XO  O   "
-"   X XO   "
-"OOO  X OX "
-"      X X "
-" X  O    O"
-"     XO   "
-" OOO OXOO "
-"      O   "))
+(define-test (small-masyu)
+  (interaction
+   (do-puzzle
+    '("X O  OO   "
+      "   O    OO"
+      "X XO  O   "
+      "   X XO   "
+      "OOO  X OX "
+      "      X X "
+      " X  O    O"
+      "     XO   "
+      " OOO OXOO "
+      "      O   "))
+   (produces
+    (string-append
+     "+ + + + + + + + + + +\n"
+     " X---O-\ /-O-O-\ /-\ \n"
+     "+|+ + +|+|+ + +|+|+|+\n"
+     " |     O \-\ /-/ O O \n"
+     "+|+ + +|+ +|+|+ +|+|+\n"
+     " X---X O   | O   | | \n"
+     "+ + +|+|+ +|+|+ +|+|+\n"
+     " /-\ | X---X O   | | \n"
+     "+|+|+|+ + + +|+ +|+|+\n"
+     " O O O /---X \-O-X | \n"
+     "+|+|+|+|+ +|+ + + +|+\n"
+     " | | \-/   | X---X | \n"
+     "+|+|+ + + +|+|+ +|+|+\n"
+     " | X-----O-/ |   | O \n"
+     "+|+ + + + + +|+ +|+|+\n"
+     " | /-\ /---X O   \-/ \n"
+     "+|+|+|+|+ +|+|+ + + +\n"
+     " | O O O   O X-O-O-\ \n"
+     "+|+|+|+|+ +|+ + + +|+\n"
+     " \-/ \-/   \-O-----/ \n"
+     "+ + + + + + + + + + +\n"))))
 
-(do-puzzle '(
-"   X      O O    X"
-"    O   O   O   X "
-"O        O  O  X  "
-"OO  X XX   X      "
-"      XX  O       "
-"             O   X"
-"X  OOOOX   O   O  "
-"            X  O O"
-"X O O    X      OO"
-"       O    XX    "))
+(define-test (medium-masyu)
+  (interaction
+   (do-puzzle
+    '("   X      O O    X"
+      "    O   O   O   X "
+      "O        O  O  X  "
+      "OO  X XX   X      "
+      "      XX  O       "
+      "             O   X"
+      "X  OOOOX   O   O  "
+      "            X  O O"
+      "X O O    X      OO"
+      "       O    XX    "))
+   (produces
+    (string-append
+     "+ + + + + + + + + + + + + + + + + + +\n"
+     "   /---X /-------\ /-O---O-\ /-----X \n"
+     "+ +|+ +|+|+ + + +|+|+ + + +|+|+ + +|+\n"
+     " /-/   | O   /-\ O \-\ /-O-/ \---X | \n"
+     "+|+ + +|+|+ +|+|+|+ +|+|+ + + + +|+|+\n"
+     " O /-\ | |   | | \-O-/ \-O-----X | | \n"
+     "+|+|+|+|+|+ +|+|+ + + + + + + +|+|+|+\n"
+     " O O | | X---X X-----\ X-----\ | | | \n"
+     "+|+|+|+|+ + + + + + +|+|+ + +|+|+|+|+\n"
+     " \-/ | \-----X X---\ O |   /-/ \-/ | \n"
+     "+ + +|+ + + +|+|+ +|+|+|+ +|+ + + +|+\n"
+     "     \-\ /-\ | |   \-/ \-\ O /-----X \n"
+     "+ + + +|+|+|+|+|+ + + + +|+|+|+ + + +\n"
+     " X---\ O O O O X---\ /-O-/ | \-O---\ \n"
+     "+|+ +|+|+|+|+|+ + +|+|+ + +|+ + + +|+\n"
+     " |   \-/ | | \-\   | \---X | /-O-\ O \n"
+     "+|+ + + +|+|+ +|+ +|+ + +|+|+|+ +|+|+\n"
+     " X---O-\ O \-\ \---X     | | \-\ O O \n"
+     "+ + + +|+|+ +|+ + + + + +|+|+ +|+|+|+\n"
+     "       \-/   \-O---------X X---/ \-/ \n"
+     "+ + + + + + + + + + + + + + + + + + +\n"))))
 
 #;
-(do-puzzle '(
-"           OX O  OX    X  O    X    "
-"X   O X        X     X        O   X "
-"   X     X  O               X O     "
-"   X         X   X X    XX          "
-"  O    O  XX    X    O    O XX  O  X"
-" O   X       O         O        O  O"
-"          O    X  O     X X    O  O "
-"X   X   X   O O      X  X   X       "
-"        X  O       O XO   O     X X "
-"X  O   O      X O       O      O    "
-"    X    O       O   X        X X X "
-" X O       X  O X  O    OO     O    "
-"      X X O  XO X      X   OX O O   "
-" O X       O         X           X  "
-"  O   XX  X     OX X      X  OO  X  "
-"           O X        XX   O   X    "
-"        O         O  O     O       X"
-"X   O X        X       X        OO  "
-" O X  OO  X     O  O     O   X      "
-"             X      X     X     O O "))
+(define-test (large-masyu)
+  (interaction
+   (do-puzzle
+    '("           OX O  OX    X  O    X    "
+      "X   O X        X     X        O   X "
+      "   X     X  O               X O     "
+      "   X         X   X X    XX          "
+      "  O    O  XX    X    O    O XX  O  X"
+      " O   X       O         O        O  O"
+      "          O    X  O     X X    O  O "
+      "X   X   X   O O      X  X   X       "
+      "        X  O       O XO   O     X X "
+      "X  O   O      X O       O      O    "
+      "    X    O       O   X        X X X "
+      " X O       X  O X  O    OO     O    "
+      "      X X O  XO X      X   OX O O   "
+      " O X       O         X           X  "
+      "  O   XX  X     OX X      X  OO  X  "
+      "           O X        XX   O   X    "
+      "        O         O  O     O       X"
+      "X   O X        X       X        OO  "
+      " O X  OO  X     O  O     O   X      "
+      "             X      X     X     O O "))
+   (produces "???")))
 
 (in-test-group
  riddle-of-the-knights

@@ -449,3 +449,11 @@ network to solve it."
 		  (if (eq? (car chars) #\O)
 		      (white-circle base-board row column))
 		  (per-char (cdr chars) (+ column 2)))))))))
+
+(define-method generic-match ((pattern <string>) (object rtd:board))
+  (define (fix-masyu-string string)
+    (string-replace
+     (string-replace string "- " "-\\ ")
+     " -" " \\-"))
+  (equal? (fix-masyu-string pattern)
+	  (with-output-to-string (lambda () (print-board object)))))
