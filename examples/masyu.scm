@@ -33,29 +33,29 @@
 ;;; white circle) or a capital X (meaning black circle).  Load up the
 ;;; system and this file, and try it out with
 #|
-(do-puzzle '(
-"X O  OO   "
-"   O    OO"
-"X XO  O   "
-"   X XO   "
-"OOO  X OX "
-"      X X "
-" X  O    O"
-"     XO   "
-" OOO OXOO "
-"      O   "))
+ (do-puzzle '(
+ "X O  OO   "
+ "   O    OO"
+ "X XO  O   "
+ "   X XO   "
+ "OOO  X OX "
+ "      X X "
+ " X  O    O"
+ "     XO   "
+ " OOO OXOO "
+ "      O   "))
 
-(do-puzzle '(
-"   X      O O    X"
-"    O   O   O   X "
-"O        O  O  X  "
-"OO  X XX   X      "
-"      XX  O       "
-"             O   X"
-"X  OOOOX   O   O  "
-"            X  O O"
-"X O O    X      OO"
-"       O    XX    "))
+ (do-puzzle '(
+ "   X      O O    X"
+ "    O   O   O   X "
+ "O        O  O  X  "
+ "OO  X XX   X      "
+ "      XX  O       "
+ "             O   X"
+ "X  OOOOX   O   O  "
+ "            X  O O"
+ "X O O    X      OO"
+ "       O    XX    "))
 |#
 
 ;;; The internal representation of an m by n Masyu board is as an

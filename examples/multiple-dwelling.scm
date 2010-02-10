@@ -41,3 +41,14 @@
      (absolute-value f-c af-c)
      (=? one af-c fc)          (forbid fc)
      (list baker cooper fletcher miller smith))))
+
+#|
+ (initialize-scheduler)
+ (define answers (multiple-dwelling))
+ (run)
+ (map v&s-value (map tms-query (map content answers)))
+ ;Value: '(3 2 4 5 1)
+
+ *number-of-calls-to-fail*
+ ;Value: 63
+|#

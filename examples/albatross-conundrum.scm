@@ -154,11 +154,12 @@
 		   (deck-supply object))))
 
 #|
-(map v&s-value (map tms-query (show-time find-albatross-solution)))
-(produces
- '(#(deck poop windlass galliard-lute rum)
-   #(deck quarter bosun tamarind-jewels biscuits)
-   #(deck main draconio calypso-figure firearms)
-   #(deck gun scurvy casket-of-magenta ropes)
-   #(deck lower kraken goldenhall-talisman spare-sails)))
+ (define answer (show-time find-albatross-solution))
+ (map v&s-value (map tms-query answer))
+ (produces
+  '(#(deck poop windlass galliard-lute rum)
+    #(deck quarter bosun tamarind-jewels biscuits)
+    #(deck main draconio calypso-figure firearms)
+    #(deck gun scurvy casket-of-magenta ropes)
+    #(deck lower kraken goldenhall-talisman spare-sails)))
 |#

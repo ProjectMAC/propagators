@@ -57,3 +57,15 @@
         (absolute-value x-g^2 ax-g^2)
         (<? ax-g^2 eps done)))))
 
+#|
+ (initialize-scheduler)
+ (define-cell x)
+ (define-cell answer)
+
+ (sqrt-network x answer)
+
+ (add-content x 2)
+ (run)
+ (content answer)
+ ;Value: 1.4142135623746899
+|#
