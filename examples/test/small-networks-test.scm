@@ -20,6 +20,37 @@
 (in-test-group
  small-networks
 
+
+ (define-test (one-heron-step)
+   (interaction
+    (initialize-scheduler)
+    (define-cell x)
+    (define-cell guess)
+    (define-cell better-guess)
+
+    (heron-step x guess better-guess)
+
+    (add-content x 2)
+    (add-content guess 1.4)
+    (run)
+    (content better-guess)
+    (produces 1.4142857142857141)
+    ))
+
+ (define-test (sqrt)
+   (interaction
+    (initialize-scheduler)
+    (define-cell x)
+    (define-cell answer)
+
+    (sqrt-network x answer)
+
+    (add-content x 2)
+    (run)
+    (content answer)
+    (produces 1.4142135623746899)
+    ))
+
  (define-test (multiple-dwelling)
    (interaction
     (initialize-scheduler)
