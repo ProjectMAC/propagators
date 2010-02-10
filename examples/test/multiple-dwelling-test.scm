@@ -17,7 +17,17 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(for-each load-relative
-  '("multiple-dwelling-test"
-    "recursive-sqrt-test"
-    "sudoku-test"))
+(in-test-group
+ multiple-dwelling
+
+ (define-test (multiple-dwelling)
+   (interaction
+    (initialize-scheduler)
+    (define answers (multiple-dwelling))
+    (run)
+    (map v&s-value (map tms-query (map content answers)))
+    (produces '(3 2 4 5 1))
+
+    *number-of-calls-to-fail*
+    (produces 63)
+    )))

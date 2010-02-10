@@ -18,7 +18,7 @@
 ;;; ----------------------------------------------------------------------
 
 (in-test-group
- small-networks
+ recursive-sqrt
 
  (define-test (one-heron-step)
    (interaction
@@ -48,18 +48,6 @@
     (run)
     (content answer)
     (produces 1.4142135623746899)
-    ))
-
- (define-test (multiple-dwelling)
-   (interaction
-    (initialize-scheduler)
-    (define answers (multiple-dwelling))
-    (run)
-    (map v&s-value (map tms-query (map content answers)))
-    (produces '(3 2 4 5 1))
-
-    *number-of-calls-to-fail*
-    (produces 63)
     ))
  
  )
