@@ -17,49 +17,27 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(in-test-group
- small-networks
+(declare (usual-integrations make-cell))
 
- (define-test (one-heron-step)
-   (interaction
-    (initialize-scheduler)
-    (define-cell x)
-    (define-cell guess)
-    (define-cell better-guess)
-
-    (heron-step x guess better-guess)
-
-    (add-content x 2)
-    (add-content guess 1.4)
-    (run)
-    (content better-guess)
-    (produces 1.4142857142857141)
-    ))
-
- (define-test (sqrt)
-   (interaction
-    (initialize-scheduler)
-    (define-cell x)
-    (define-cell answer)
-
-    (sqrt-network x answer)
-
-    (add-content x 2)
-    (run)
-    (content answer)
-    (produces 1.4142135623746899)
-    ))
-
- (define-test (multiple-dwelling)
-   (interaction
-    (initialize-scheduler)
-    (define answers (multiple-dwelling))
-    (run)
-    (map v&s-value (map tms-query (map content answers)))
-    (produces '(3 2 4 5 1))
-
-    *number-of-calls-to-fail*
-    (produces 63)
-    ))
- 
- )
+(define (multiple-dwelling)
+  (let ((floors '(1 2 3 4 5)))
+    (let-cells (baker cooper fletcher miller smith
+		      b=5 c=1 f=5 f=1 m>c sf fc one five s-f as-f f-c af-c)
+     (one-of floors baker)       (one-of floors cooper)
+     (one-of floors fletcher)    (one-of floors miller)
+     (one-of floors smith)
+     (require-distinct
+      (list baker cooper fletcher miller smith))
+     ((constant 1) one)        ((constant 5) five)
+     (=? five baker b=5)       (forbid b=5)
+     (=? one cooper c=1)       (forbid c=1)
+     (=? five fletcher f=5)    (forbid f=5)
+     (=? one fletcher f=1)     (forbid f=1)
+     (>? miller cooper m>c)    (require m>c)
+     (subtractor smith fletcher s-f)
+     (absolute-value s-f as-f)
+     (=? one as-f sf)          (forbid sf)
+     (subtractor fletcher cooper f-c)
+     (absolute-value f-c af-c)
+     (=? one af-c fc)          (forbid fc)
+     (list baker cooper fletcher miller smith))))
