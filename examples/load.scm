@@ -31,8 +31,8 @@
 
 (for-each 
  load-relative-compiled
- '("small-networks"
-   "multiple-dwelling"
+ '("multiple-dwelling"
+   "recursive-sqrt"
    "masyu"
    "sudoku"
    "riddle-of-the-knights"
