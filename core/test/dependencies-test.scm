@@ -266,16 +266,4 @@
     (produces #(supported #(interval .3 .30328) (superintendent shadows)))
     ))
 
- (define-test (multiple-dwelling)
-   (interaction
-    (initialize-scheduler)
-    (define answers (multiple-dwelling))
-    (run)
-    (map v&s-value (map tms-query (map content answers)))
-    (produces '(3 2 4 5 1))
-
-    *number-of-calls-to-fail*
-    (produces 63)
-    ))
-
  )

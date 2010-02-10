@@ -18,4 +18,5 @@
 ;;; ----------------------------------------------------------------------
 
 (for-each load-relative
-  '("sudoku-test"))
+  '("small-networks-test"
+    "sudoku-test"))

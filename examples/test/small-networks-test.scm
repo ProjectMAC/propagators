@@ -17,23 +17,19 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
+(in-test-group
+ small-networks
 
-(define (load-relative filename)
-  (self-relatively (lambda () (load filename))))
+ (define-test (multiple-dwelling)
+   (interaction
+    (initialize-scheduler)
+    (define answers (multiple-dwelling))
+    (run)
+    (map v&s-value (map tms-query (map content answers)))
+    (produces '(3 2 4 5 1))
 
-(load-relative "../extensions/load.scm")
-
-(for-each 
- load-relative-compiled
- '("small-networks"
-   "masyu"
-   "sudoku"
-   "riddle-of-the-knights"
-   "albatross-conundrum"
-   ))
+    *number-of-calls-to-fail*
+    (produces 63)
+    ))
+ 
+ )

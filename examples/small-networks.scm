@@ -17,23 +17,27 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
+(declare (usual-integrations make-cell))
 
-(define (load-relative filename)
-  (self-relatively (lambda () (load filename))))
-
-(load-relative "../extensions/load.scm")
-
-(for-each 
- load-relative-compiled
- '("small-networks"
-   "masyu"
-   "sudoku"
-   "riddle-of-the-knights"
-   "albatross-conundrum"
-   ))
+(define (multiple-dwelling)
+  (let ((floors '(1 2 3 4 5)))
+    (let-cells (baker cooper fletcher miller smith
+		      b=5 c=1 f=5 f=1 m>c sf fc one five s-f as-f f-c af-c)
+     (one-of floors baker)       (one-of floors cooper)
+     (one-of floors fletcher)    (one-of floors miller)
+     (one-of floors smith)
+     (require-distinct
+      (list baker cooper fletcher miller smith))
+     ((constant 1) one)        ((constant 5) five)
+     (=? five baker b=5)       (forbid b=5)
+     (=? one cooper c=1)       (forbid c=1)
+     (=? five fletcher f=5)    (forbid f=5)
+     (=? one fletcher f=1)     (forbid f=1)
+     (>? miller cooper m>c)    (require m>c)
+     (subtractor smith fletcher s-f)
+     (absolute-value s-f as-f)
+     (=? one as-f sf)          (forbid sf)
+     (subtractor fletcher cooper f-c)
+     (absolute-value f-c af-c)
+     (=? one af-c fc)          (forbid fc)
+     (list baker cooper fletcher miller smith))))
