@@ -95,3 +95,10 @@
 		 pattern next-string
 		 (+ first-occurrence (string-length replacement)) (string-length next-string))))
 	string)))
+
+(define (maybe-warn-low-memory)
+  (let ((mem (gc-flip)))
+    (if (< mem 500000)
+	(begin (warn (string-append "The available heap looks kind of small at " (write-to-string mem) " words"))
+	       (warn "Are you running Scheme with the default heap size?")
+	       (warn "Try, say, --heap 6000 if you run out of memory")))))

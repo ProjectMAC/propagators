@@ -37,3 +37,5 @@
     "utils"
     "generic-system"
     "test-utils"))
+
+(maybe-warn-low-memory)

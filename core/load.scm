@@ -44,3 +44,5 @@
     "amb-utils"
     "compound-data"
     "example-networks"))
+
+(maybe-warn-low-memory)

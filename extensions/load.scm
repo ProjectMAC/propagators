@@ -44,3 +44,4 @@
    "graph-drawing"
    "prop-dot"))
 
+(maybe-warn-low-memory)

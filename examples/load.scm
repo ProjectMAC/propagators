@@ -38,3 +38,5 @@
    "riddle-of-the-knights"
    "albatross-conundrum"
    ))
+
+(maybe-warn-low-memory)
