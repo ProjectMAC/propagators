@@ -56,10 +56,14 @@
 
 (define (load-compiled filename)
   (if (compiler-available?)
-      (cf-conditionally filename)
+      (begin (cf-conditionally filename)
+	     (load filename))
       (if (compilation-seems-necessary? filename)
-	  (warn "The compiler does not seem to be loaded;\nSkipping compilation;\nAre you running Scheme with --compiler?")))
-  (load filename))
+	  (begin (warn "The compiler does not seem to be loaded")
+		 (warn "Are you running Scheme with --compiler?")
+		 (warn "Skipping compilation; loading source interpreted")
+		 (load (pathname-default-type filename "scm")))
+	  (load filename))))
 
 (define (load-relative-compiled filename)
   (self-relatively (lambda () (load-compiled filename))))
