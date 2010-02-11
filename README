@@ -47,8 +47,6 @@ The doc/ directory
 The core/ directory
   implements Alexey's thesis, much sanitized and somewhat extended and
   updated.
-  - core/example-networks.scm contains the example networks used in
-    the thesis
 
 The extensions/ directory
   adds (or attempts to add) various additional features and ideas.
@@ -75,16 +73,17 @@ The explorations/ directory
   time has not yet come, etc.
 
 The testing/ directory
-  is the unit testing framework this project uses.  As software,
-  testing/ is a separate entity and not part of the propagator project
-  at all; but it so happens that Alexey also maintains it.
+  is the unit testing framework this project uses, distributed here in
+  source form.  As software, testing/ is a separate entity and not
+  part of the propagator project at all; but it so happens that Alexey
+  also maintains it.
 
 
 LOADING CONVENTION:
 
 Loading is done through files called load.scm in every directory.
 They are responsible for collecting the contents of their own
-directory, and for their needed dependencies when appropriate.
+directory, and for loading their needed dependencies when appropriate.
 
 The toplevel load.scm is the main entry point.  extensions/load.scm,
 core/load.scm, and examples/load.scm serve as secondary entry points
@@ -95,6 +94,9 @@ UNIT TESTING:
 
 run-tests scripts run the unit tests for the portion of system in that
 directory.  The toplevel run-tests runs all the unit tests.
+
+examples/run-examples exercises all the extended examples.  This takes
+several minutes, so is not considered part of the normal test suite.
 
 Unit tests are in test/ subdirectories of their respective
 directories.  The test suites are independent of each other, and
@@ -107,9 +109,6 @@ Test suites can also be run from the REPL by loading the system,
 loading an appropriate test suite's test/load.scm file, and running
 (run-registered-tests).  This offers interactive debugging of the
 tests.
-
-examples/run-examples exercises all the extended examples.  This takes
-several minutes, so is not considered part of the normal test suite.
 
 Some of the extensions rely on the symbolic algebra subsystems in
 Mechanics Scmutils.  The full system will load just fine into a normal
