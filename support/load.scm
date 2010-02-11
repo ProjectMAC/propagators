@@ -38,11 +38,27 @@
 (define (cf-conditionally filename)
   (fluid-let ((sf/default-syntax-table (nearest-repl/environment)))
     (sf-conditionally filename))
-  (if (not (file-processed? filename "bin" (compiled-code-type)))
+  (if (cf-seems-necessary? filename)
       (compile-bin-file filename)))
 
+(define (compiler-available?)
+  (not (lexical-unbound? (nearest-repl/environment) 'cf)))
+
+(define (compilation-seems-necessary? filename)
+  (or (sf-seems-necessary? filename)
+      (cf-seems-necessary? filename)))
+
+(define (sf-seems-necessary? filename)
+  (not (file-processed? filename "scm" "bin")))
+
+(define (cf-seems-necessary? filename)
+  (not (file-processed? filename "bin" (compiled-code-type))))
+
 (define (load-compiled filename)
-  (cf-conditionally filename)
+  (if (compiler-available?)
+      (cf-conditionally filename)
+      (if (compilation-seems-necessary? filename)
+	  (warn "The compiler does not seem to be loaded;\nSkipping compilation;\nAre you running Scheme with --compiler?")))
   (load filename))
 
 (define (load-relative-compiled filename)
