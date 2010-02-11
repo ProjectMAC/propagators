@@ -1,0 +1,36 @@
+Massage:
+- Release and document test-manager carefully (esp interaction and produces)
+- Write a "new propagator programmer" guide?
+
+- Tease apart Scmutils stuff from Scheme stuff?
+- Extract prop-dot into support/; abstract propagator stuff away from it?
+- Add the appropriate elisp file for nice highlighting and indentation
+- Concept diagram?  (All the way down to test-manager/, MIT Scheme,
+  and Scheme?)  With concept dependencies, "how to know what
+  concept(s) you are looking at", "how to know what concept(s) you
+  need for task X".
+- rake workbook (lots of enscript, with some file names and chapter names)
+- rake stats (count files, lines, words, syntactic tokens, etc)
+- Are there more example networks to be extracted out of the unit tests?
+- Write decent progress reporting for all the examples?
+  - solve-puzzle returns the answer and is suitable for a silent test
+  - do-puzzle has wallpaper and is suitable for the repl
+- Is voltage-divider* an example or an extension or a test of an extension?
+  - Is electric-parts.scm an extension or an example?  bridge-rectifier?
+- Draw all the example networks; and all the networks made by the examples/
+- Can I get away with
+  (in-test-group mumble (load "mumble-test"))
+  being the standard way to do things?
+  Can I abstract that?
+  - Automatically localizes everything in the test files
+- Read through all the code from the top
+
+- Make emacs highlight rtd:mumble?
+- fail-all, for-each-consistent-state, and map-consistent-states are
+  only used by the bridge rectifier.  (Which might be an example
+  anyway).  But they are in principle more general.  Where should they
+  go?
+- Where does the stuff in extensions/test-utils.scm belong?
+- Look through the file structure of the tests again?
+- Does defhandler want to become define-handler?
+- Normalize the integrations being declared?
