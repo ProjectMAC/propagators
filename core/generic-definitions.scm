@@ -115,10 +115,8 @@
 (define disjoiner
   (function->propagator-constructor (nary-unpacking generic-or)))
 
-(define (pass-through in out)
-  (propagator (list in)
-    (lambda ()
-      (add-content out (content in)))))
+(define pass-through
+  (function->propagator-constructor identity))
 
 (define switch
   (function->propagator-constructor (nary-unpacking switch-function)))
