@@ -66,4 +66,20 @@
 }
 " (out)))))
 
+ (define-each-check
+   (< (memory-loss-from (repeated 100 make-eq-hash-table)) 2)
+   (< (memory-loss-from (repeated 100 make-strong-eq-hash-table)) 2)
+   (< (memory-loss-from (repeated 100 reset-premise-info!)) 2)
+   (< (memory-loss-from (repeated 2000 reset-network-groups!)) -1)
+   (< (memory-loss-from (repeated 2000 initialize-scheduler)) -1))
+
+ (define-test (groups-do-not-leak)
+   (define (one-small-network)
+     (initialize-scheduler)
+     (define-cell foo)
+     (define-cell bar)
+     (pass-through foo bar))
+   (check (< (memory-loss-from (repeated 2000 one-small-network))
+	     -1)))
+
  )
