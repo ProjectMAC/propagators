@@ -24,6 +24,7 @@
    (equal? '+ (name generic-+)))
 
  (define-test (naming-smoke)
+   (initialize-scheduler)
    (define-cell foo)
    (define-cell bar)
    (define-cell baz)
@@ -52,14 +53,16 @@
     (define-cell bar)
     (pass-through foo bar)
     (prop:dot:write-graph-to-string (list foo bar))
-    (check (equal?
+    (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
-  \"(variable) 12\" [label=\"foo\", shape=\"ellipse\" ];
+ subgraph cluster_12 { label=\"top-group\"; 
   \"(propagator) 13\" [label=\"identity\", shape=\"box\" ];
-  \"(variable) 12\" -> \"(propagator) 13\" [label=\"\" ];
-  \"(propagator) 13\" -> \"(variable) 14\" [label=\"\" ];
-  \"(variable) 14\" [label=\"bar\", shape=\"ellipse\" ];
+  \"(variable) 14\" -> \"(propagator) 13\" [label=\"\" ];
+  \"(variable) 14\" [label=\"foo\", shape=\"ellipse\" ];
+  \"(propagator) 13\" -> \"(variable) 15\" [label=\"\" ];
+  \"(variable) 15\" [label=\"bar\", shape=\"ellipse\" ];
+ }
 }
 " (out)))))
 

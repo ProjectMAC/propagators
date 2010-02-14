@@ -155,13 +155,37 @@
             (for-each (lambda (propagator)
                         (visit propagator visit-propagator))
                       (prop:variable-connections variable)))))
-
+#;
     (for-each (lambda (node)
                 (visit node
                        (cond ((prop:propagator? node) visit-propagator)
                              ((prop:variable? node) visit-variable)
                              (else (error "Invalid propagation node:" node)))))
-              nodes)))
+              nodes)
+
+    (define (visit-group group)
+      (write-string " subgraph cluster_" output-port)
+      (write (hash group) output-port)
+      (write-string " { " output-port)
+      (prop:dot:write-subgraph-attributes
+       `(("label" . ,(write-to-string (name group))))
+       output-port)
+      (write-string "\n" output-port)
+      (for-each visit-thing (network-group-elements group))
+      (write-string " }\n" output-port))
+
+    (define (visit-thing thing)
+      (cond ((network-group? thing)
+	     (visit thing visit-group))
+	    ((cell? thing)
+	     (visit thing visit-variable))
+	    ((propagator? thing)
+	     (visit thing visit-propagator))
+	    (else
+	     'ok)))
+
+    (visit-group *current-network-group*)
+    ))
 
 (define (prop:dot:write-node node-id attributes output-port)
   (write-string "  " output-port)
@@ -192,6 +216,16 @@
 		    (set! first-attribute? #f))
 		  attributes)
 	(write-string " ]" output-port))))
+
+;;; TODO Why is the string handling in MIT Scheme so awful?
+(define (prop:dot:write-subgraph-attributes attributes output-port)
+  (if (pair? attributes)
+      (for-each (lambda (attribute)
+		  (write-string (car attribute) output-port)
+		  (write-string "=" output-port)
+		  (write (cdr attribute) output-port)
+		  (write-string "; " output-port))
+		attributes)))
 
 ;;; Stubs by axch
 

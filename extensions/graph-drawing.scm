@@ -78,4 +78,5 @@
     (lambda ()
       (clear-network-group *current-network-group*)
       (set! *current-network-group* (make-network-group '()))
+      (eq-put! *current-network-group* 'name 'top-group)
       (initialize-scheduler))))
