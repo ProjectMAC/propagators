@@ -21,6 +21,10 @@
 
 (declare (usual-integrations make-cell cell?))
 
+;;; TODO Fix this stupid stub
+(define (network-register thing)
+  'ok)
+
 ;;; Propagator cells, in message-accepter style
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
@@ -43,6 +47,7 @@
             ((eq? message 'new-neighbor!) new-neighbor!)
             (else (error "Unknown message" message))))
     (eq-put! me 'cell #t)
+    (network-register me)
     me))
 
 (define (content cell)
@@ -109,6 +114,7 @@
               (new-neighbor! cell to-do))
             (listify neighbors))
   (eq-put! to-do 'propagator #t)
+  (network-register to-do)
   (alert-propagator to-do))
 
 (define (propagator? thing)
