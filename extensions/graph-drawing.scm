@@ -42,6 +42,7 @@
 (eq-put! generic-or  'name 'or)
 
 (eq-put! switch-function 'name 'switch)
+(eq-put! identity 'name 'identity)
 
 (define (neighbors element)
   (if (cell? element)
