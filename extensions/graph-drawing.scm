@@ -53,3 +53,29 @@
 	    ;; Fail over
 	    '()))))
 
+(define-structure network-group
+  elements)
+
+(define *current-network-group* #f)
+
+;;; TODO Test that this actually prevents memory leaks
+(define (clear-network-group thing)
+  (if (network-group? thing)
+      (begin
+	(for-each clear-network-group (network-group-elements thing))
+	(set-network-group-elements! thing '()))))
+
+;;; TODO Make the overall test suite pass
+(define (network-register thing)
+  (if (memq thing (network-group-elements *current-network-group*))
+      'ok
+      (set-network-group-elements! *current-network-group*
+       (cons thing (network-group-elements *current-network-group*))))
+  (eq-put! thing 'network-group *current-network-group*))
+
+(define initialize-scheduler
+  (let ((initialize-scheduler initialize-scheduler))
+    (lambda ()
+      (clear-network-group *current-network-group*)
+      (set! *current-network-group* (make-network-group '()))
+      (initialize-scheduler))))
