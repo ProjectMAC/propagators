@@ -82,3 +82,40 @@
 (define-method generic-match ((pattern <inexact>) (object <inexact>))
   (or (= pattern object)
       (= pattern (->significant-figures 5 object))))
+
+;;; For looking for memory leaks
+
+(define (garbage-collect-to-stability)
+  ;; This loop is necessary because gc-daemons may make more things
+  ;; unreachable; in principle for arbitrarily many iterations of the
+  ;; gc.
+  (let loop ((old-memory -1)
+	     (new-memory (gc-flip)))
+    (if (< (abs (- new-memory old-memory)) 10)
+	new-memory
+	(loop new-memory (gc-flip)))))
+
+(define (memory-loss-from thunk)
+  (let ((initial-memory (garbage-collect-to-stability)))
+    (thunk)
+    (- initial-memory (garbage-collect-to-stability))))
+
+(define (repeat count thunk)
+  (let loop ((count count))
+    (if (<= count 0)
+	'ok
+	(begin
+	  (thunk)
+	  (loop (- count 1))))))
+
+;; This version is a thunk combinator!
+(define ((repeated count thunk))
+  (repeat count thunk))
+
+;; To make sure the memory for the primes that hash tables use gets
+;; allocated now, before I start poking said hash tables.
+(let ((upto 150000))
+  (let force-prime-numbers ((primes prime-numbers-stream))
+    (if (< upto (car primes))
+	(car primes)
+	(force-prime-numbers (force (cdr primes))))))
