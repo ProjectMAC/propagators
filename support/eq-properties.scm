@@ -64,13 +64,16 @@
 	  (cdr vcell)
 	  #f))))
 
-(define (eq-rem! node property)
-  (let ((plist
-	 (hash-table/get eq-properties node '())))
-    (let ((vcell (assq property plist)))
-      (if vcell
-	  (hash-table/put! eq-properties node
-	    (delq! vcell plist)))))
+(define (eq-rem! node . properties)
+  (for-each
+   (lambda (property)
+     (let ((plist
+	    (hash-table/get eq-properties node '())))
+       (let ((vcell (assq property plist)))
+	 (if vcell
+	     (hash-table/put! eq-properties node
+			      (delq! vcell plist))))))
+   properties)
   node)
 
 
