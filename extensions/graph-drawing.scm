@@ -58,6 +58,9 @@
 
 (define *current-network-group* #f)
 
+(define (network-group-named name)
+  (eq-put! (make-network-group '()) 'name name))
+
 (define (clear-network-group thing)
   (eq-rem! thing 'shadow-connections 'inputs 'outputs 'network-group)
   (if (network-group? thing)
@@ -72,8 +75,7 @@
 
 (define (reset-network-groups!)
   (clear-network-group *current-network-group*)
-  (set! *current-network-group* (make-network-group '()))
-  (eq-put! *current-network-group* 'name 'top-group))
+  (set! *current-network-group* (network-group-named 'top-group)))
 
 (define initialize-scheduler
   (let ((initialize-scheduler initialize-scheduler))
