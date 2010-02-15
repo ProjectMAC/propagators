@@ -123,6 +123,19 @@
 
 ;;; Standard "propagator macros"
 
+(define-syntax define-macro-propagator
+  (syntax-rules ()
+    ((_ (name arg-from ...) body-form ...)
+     (define (name arg-from ...)
+       (with-network-group (network-group-named 'name)
+	 (lambda ()
+	   body-form ...))))
+    ((_ name body-form ...)
+     (define name
+       (with-network-group (network-group-named 'name)
+	 (lambda ()
+	   body-form ...))))))
+
 (define (conditional control if-true if-false output)
   (let-cell not-control
     (inverter control not-control)
@@ -153,7 +166,7 @@
   (inverter p1 p2)
   (inverter p2 p1))
 
-(define (identity-constraint c1 c2)
+(define-macro-propagator (identity-constraint c1 c2)
   (pass-through c1 c2)
   (pass-through c2 c1))
 

@@ -113,4 +113,30 @@
   \"(propagator) 18\" -> \"(variable) 20\" [label=\"\" ];
 }
 " (out)))))
+
+ (define-test (grouped-drawing-2)
+   (interaction
+    (initialize-scheduler)
+    (define-cell foo)
+    (define-cell bar)
+    (identity-constraint foo bar)
+    (prop:dot:write-graph-to-string (list foo))
+    (check (equal? ;; TODO Make this not depend on the hash numbers!
+"digraph G {
+  ratio=fill;
+ subgraph cluster_21 { label=\"top-group\"; 
+ subgraph cluster_22 { label=\"identity-constraint\"; 
+  \"(propagator) 23\" [label=\"identity\", shape=\"box\" ];
+  \"(propagator) 26\" [label=\"identity\", shape=\"box\" ];
+ }
+  \"(variable) 24\" [label=\"bar\", shape=\"ellipse\" ];
+  \"(variable) 25\" [label=\"foo\", shape=\"ellipse\" ];
+ }
+  \"(variable) 24\" -> \"(propagator) 23\" [label=\"\" ];
+  \"(propagator) 23\" -> \"(variable) 25\" [label=\"\" ];
+  \"(variable) 25\" -> \"(propagator) 26\" [label=\"\" ];
+  \"(propagator) 26\" -> \"(variable) 24\" [label=\"\" ];
+}
+" (out)))))
+
  )
