@@ -140,13 +140,21 @@
           (if (pair? variables)
               (let ((variable (car variables)))
                 (write-edge (variable-node-id variable) name (if number-edges? index ""))
-                (visit variable visit-variable)
                 (loop (cdr variables) (+ index 1)))))))
 
-    (define (visit-propagator propagator)
+    (define (write-propagator-apex propagator)
       (write-propagator-node propagator)
       (write-edges propagator prop:propagator-inputs write-input-edge)
       (write-edges propagator prop:propagator-outputs write-output-edge))
+
+    (define (visit-propagator propagator)
+      (write-propagator-apex propagator)
+      (for-each (lambda (variable)
+		  (visit variable visit-variable))
+		(prop:propagator-inputs propagator))
+      (for-each (lambda (variable)
+		  (visit variable visit-variable))
+		(prop:propagator-outputs propagator)))
     
     (define (visit-variable variable)
       (if (not (prop:bound? variable initial-top-level-environment))
@@ -179,9 +187,9 @@
       (cond ((network-group? thing)
 	     (visit thing visit-group))
 	    ((cell? thing)
-	     (visit thing visit-variable))
+	     (visit thing write-variable-node))
 	    ((propagator? thing)
-	     (visit thing visit-propagator))
+	     (visit thing write-propagator-apex))
 	    (else
 	     'ok)))
 

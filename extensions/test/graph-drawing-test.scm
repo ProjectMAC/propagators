@@ -59,9 +59,9 @@
  subgraph cluster_12 { label=\"top-group\"; 
   \"(propagator) 13\" [label=\"identity\", shape=\"box\" ];
   \"(variable) 14\" -> \"(propagator) 13\" [label=\"\" ];
-  \"(variable) 14\" [label=\"foo\", shape=\"ellipse\" ];
   \"(propagator) 13\" -> \"(variable) 15\" [label=\"\" ];
   \"(variable) 15\" [label=\"bar\", shape=\"ellipse\" ];
+  \"(variable) 14\" [label=\"foo\", shape=\"ellipse\" ];
  }
 }
 " (out)))))
@@ -90,4 +90,27 @@
      (initialize-scheduler))
    (check (< (memory-loss-from (repeated 100 one-small-network)) 2)))
 
+ (define-test (grouped-drawing)
+   (interaction
+    (initialize-scheduler)
+    (define-cell foo)
+    (with-network-group (network-group-named 'subgroup)
+      (lambda ()
+	(define-cell bar)
+	(pass-through foo bar)))
+    (prop:dot:write-graph-to-string (list foo))
+    (check (equal? ;; TODO Make this not depend on the hash numbers!
+"digraph G {
+  ratio=fill;
+ subgraph cluster_16 { label=\"top-group\"; 
+ subgraph cluster_17 { label=\"subgroup\"; 
+  \"(propagator) 18\" [label=\"identity\", shape=\"box\" ];
+  \"(variable) 19\" -> \"(propagator) 18\" [label=\"\" ];
+  \"(propagator) 18\" -> \"(variable) 20\" [label=\"\" ];
+  \"(variable) 20\" [label=\"bar\", shape=\"ellipse\" ];
+ }
+  \"(variable) 19\" [label=\"foo\", shape=\"ellipse\" ];
+ }
+}
+" (out)))))
  )

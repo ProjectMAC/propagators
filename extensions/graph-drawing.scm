@@ -73,6 +73,11 @@
        (cons thing (network-group-elements *current-network-group*))))
   (eq-put! thing 'network-group *current-network-group*))
 
+(define (with-network-group group thunk)
+  (network-register group)
+  (fluid-let ((*current-network-group* group))
+    (thunk)))
+
 (define (reset-network-groups!)
   (clear-network-group *current-network-group*)
   (set! *current-network-group* (network-group-named 'top-group)))
