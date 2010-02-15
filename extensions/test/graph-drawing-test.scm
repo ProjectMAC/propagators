@@ -58,11 +58,11 @@
   ratio=fill;
  subgraph cluster_12 { label=\"top-group\"; 
   \"(propagator) 13\" [label=\"identity\", shape=\"box\" ];
-  \"(variable) 14\" -> \"(propagator) 13\" [label=\"\" ];
-  \"(propagator) 13\" -> \"(variable) 15\" [label=\"\" ];
   \"(variable) 15\" [label=\"bar\", shape=\"ellipse\" ];
   \"(variable) 14\" [label=\"foo\", shape=\"ellipse\" ];
  }
+  \"(variable) 14\" -> \"(propagator) 13\" [label=\"\" ];
+  \"(propagator) 13\" -> \"(variable) 15\" [label=\"\" ];
 }
 " (out)))))
 
@@ -105,12 +105,12 @@
  subgraph cluster_16 { label=\"top-group\"; 
  subgraph cluster_17 { label=\"subgroup\"; 
   \"(propagator) 18\" [label=\"identity\", shape=\"box\" ];
-  \"(variable) 19\" -> \"(propagator) 18\" [label=\"\" ];
-  \"(propagator) 18\" -> \"(variable) 20\" [label=\"\" ];
   \"(variable) 20\" [label=\"bar\", shape=\"ellipse\" ];
  }
   \"(variable) 19\" [label=\"foo\", shape=\"ellipse\" ];
  }
+  \"(variable) 19\" -> \"(propagator) 18\" [label=\"\" ];
+  \"(propagator) 18\" -> \"(variable) 20\" [label=\"\" ];
 }
 " (out)))))
  )

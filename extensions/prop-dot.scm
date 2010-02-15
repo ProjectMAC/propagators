@@ -91,7 +91,9 @@
               "ratio=fill")))
 
 (define (prop:dot:walk-graph nodes output-port)
-  (let ((visited (make-eq-hash-table)))
+  (let ((visited (make-eq-hash-table))
+	(defer-edges? #t)
+	(deferred-edges '()))
 
     (define (visit node procedure)
       (if (not (hash-table/get visited node #f))
@@ -125,7 +127,14 @@
        output-port))
 
     (define (write-edge source target label)
-      (prop:dot:write-edge source target `(("label" . ,label)) output-port))
+      (if defer-edges?
+	  (set! deferred-edges
+		(cons
+		 (call-with-output-string
+		  (lambda (output-port)
+		    (prop:dot:write-edge source target `(("label" . ,label)) output-port)))
+		 deferred-edges))
+	  (prop:dot:write-edge source target `(("label" . ,label)) output-port)))
 
     (define (write-input-edge input name index)
       (write-edge input name index))
@@ -197,6 +206,10 @@
     ;;; group; if cells, draw without groups; if group, draw from that
     ;;; group; if nothing, draw from the top level.
     (visit-group *current-network-group*)
+    (if defer-edges?
+	(for-each (lambda (edge)
+		    (write-string edge output-port))
+		  (reverse deferred-edges)))
     ))
 
 (define (prop:dot:write-node node-id attributes output-port)
