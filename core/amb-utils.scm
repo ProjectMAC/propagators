@@ -21,13 +21,13 @@
 
 (declare (usual-integrations make-cell))
 
-(define (require cell)
+(define-macro-propagator (require cell)
   ((constant #t) cell))
 
-(define (forbid cell)
+(define-macro-propagator (forbid cell)
   ((constant #f) cell))
 
-(define (require-distinct cells)
+(define-macro-propagator (require-distinct cells)
   (for-each-distinct-pair
    (lambda (c1 c2)
      (define-cell p)
@@ -35,7 +35,7 @@
      (forbid p))
    cells))
 
-(define (one-of values output-cell)
+(define-macro-propagator (one-of values output-cell)
   (let ((cells
          (map (lambda (value)
                 (define-cell cell)
@@ -44,7 +44,7 @@
               values)))
     (one-of-the-cells cells output-cell)))
 
-(define (one-of-the-cells input-cells output-cell)
+(define-macro-propagator (one-of-the-cells input-cells output-cell)
   (cond ((= (length input-cells) 2)
          (let-cell p
            (conditional p

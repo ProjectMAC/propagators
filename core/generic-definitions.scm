@@ -123,6 +123,12 @@
 
 ;;; Standard "propagator macros"
 
+;;; This is (meant to be) just like define, except that it wraps the
+;;; body being defined in a with-network-group, which is a hook for
+;;; tagging all cells and propagators created inside the call with a
+;;; common identity, which can then be passed on to the graph drawing
+;;; tools used to inspect the network.
+
 (define-syntax define-macro-propagator
   (syntax-rules ()
     ((_ (name arg-from ...) body-form ...)
@@ -136,33 +142,40 @@
 	 (lambda ()
 	   body-form ...))))))
 
-(define (conditional control if-true if-false output)
+;;; TODO Get rid of these stupid stubs
+(define (network-group-named name)
+  #f)
+
+(define (with-network-group group thunk)
+  (thunk))
+
+(define-macro-propagator (conditional control if-true if-false output)
   (let-cell not-control
     (inverter control not-control)
     (switch control if-true output)
     (switch not-control if-false output)))
 
-(define (conditional-writer control input if-true if-false)
+(define-macro-propagator (conditional-writer control input if-true if-false)
   (let-cell not-control
     (inverter control not-control)
     (switch control input if-true)
     (switch not-control input if-false)))
 
-(define (sum-constraint a1 a2 sum)
+(define-macro-propagator (sum-constraint a1 a2 sum)
   (adder a1 a2 sum)
   (subtractor sum a1 a2)
   (subtractor sum a2 a1))
 
-(define (product-constraint m1 m2 product)
+(define-macro-propagator (product-constraint m1 m2 product)
   (multiplier m1 m2 product)
   (divider product m1 m2)
   (divider product m2 m1))
 
-(define (quadratic-constraint x x^2)
+(define-macro-propagator (quadratic-constraint x x^2)
   (squarer x x^2)
   (sqrter x^2 x))
 
-(define (not-constraint p1 p2)
+(define-macro-propagator (not-constraint p1 p2)
   (inverter p1 p2)
   (inverter p2 p1))
 
