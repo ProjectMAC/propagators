@@ -58,14 +58,11 @@
 
 (define *current-network-group* #f)
 
-;;; TODO Test that this actually prevents memory leaks
 (define (clear-network-group thing)
+  (eq-rem! thing 'shadow-connections 'inputs 'outputs 'network-group)
   (if (network-group? thing)
-      (begin
-	(for-each clear-network-group (network-group-elements thing))
-	(set-network-group-elements! thing '()))))
+      (for-each clear-network-group (network-group-elements thing))))
 
-;;; TODO Make the overall test suite pass
 (define (network-register thing)
   (if (memq thing (network-group-elements *current-network-group*))
       'ok
