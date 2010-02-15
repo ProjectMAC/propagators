@@ -164,6 +164,7 @@
               nodes)
 
     (define (visit-group group)
+      ;; TODO Indent the subgraphs correctly?
       (write-string " subgraph cluster_" output-port)
       (write (hash group) output-port)
       (write-string " { " output-port)
@@ -184,6 +185,9 @@
 	    (else
 	     'ok)))
 
+    ;;; TODO Interface change: accept either some cells or a network
+    ;;; group; if cells, draw without groups; if group, draw from that
+    ;;; group; if nothing, draw from the top level.
     (visit-group *current-network-group*)
     ))
 
