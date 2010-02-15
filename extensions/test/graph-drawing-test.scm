@@ -70,8 +70,8 @@
    (< (memory-loss-from (repeated 100 make-eq-hash-table)) 2)
    (< (memory-loss-from (repeated 100 make-strong-eq-hash-table)) 2)
    (< (memory-loss-from (repeated 100 reset-premise-info!)) 2)
-   (< (memory-loss-from (repeated 2000 reset-network-groups!)) -1)
-   (< (memory-loss-from (repeated 2000 initialize-scheduler)) -1))
+   (< (memory-loss-from (repeated 500 reset-network-groups!)) 10)
+   (< (memory-loss-from (repeated 100 initialize-scheduler)) 2))
 
  (define-test (groups-do-not-leak)
    (define (one-small-network)

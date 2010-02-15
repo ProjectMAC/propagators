@@ -91,6 +91,8 @@
   ;; gc.
   (let loop ((old-memory -1)
 	     (new-memory (gc-flip)))
+    ;; Poke the eq-properties table to make it rehash and clean itself
+    (eq-get 'full-lexical 'grumble)
     (if (< (abs (- new-memory old-memory)) 10)
 	new-memory
 	(loop new-memory (gc-flip)))))
