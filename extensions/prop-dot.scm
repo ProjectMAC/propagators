@@ -131,14 +131,13 @@
        output-port))
 
     (define (write-edge source target label)
+      (define (edge-writer output-port)
+	(prop:dot:write-edge source target `(("label" . ,label)) output-port))
       (if defer-edges?
 	  (set! deferred-edges
-		(cons
-		 (call-with-output-string
-		  (lambda (output-port)
-		    (prop:dot:write-edge source target `(("label" . ,label)) output-port)))
-		 deferred-edges))
-	  (prop:dot:write-edge source target `(("label" . ,label)) output-port)))
+		(cons (call-with-output-string edge-writer)
+		      deferred-edges))
+	  (edge-writer output-port)))
 
     (define (write-input-edge input name index)
       (write-edge input name index))
