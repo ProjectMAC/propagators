@@ -41,7 +41,6 @@
 
 (for-each load-relative
  '("environments"
-   "graph-drawing"
    "prop-dot"))
 
 (maybe-warn-low-memory)
