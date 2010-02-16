@@ -120,7 +120,7 @@
     (define-cell foo)
     (define-cell bar)
     (identity-constraint foo bar)
-    (prop:dot:write-graph-to-string *current-network-group*)
+    (prop:dot:write-graph-to-string)
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;

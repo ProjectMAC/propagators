@@ -35,14 +35,14 @@
 #;
 (fluid-let ((prop:cell-label
 	     (lambda (var) (cons (name var) (content var)))))
-  (prop:dot:show-graph (list in-n)))
+  (prop:dot:show-graph))
 ;;; That draws a picture of the network and lists the contents
 ;;; of the cells (with write-to-string).
 
-(define (prop:dot:show-graph root-nodes #!optional drawing-program)
+(define (prop:dot:show-graph #!optional start drawing-program)
   (call-with-temporary-file-pathname
    (lambda (svg-pathname)
-     (prop:dot:draw-graph-to-file root-nodes svg-pathname drawing-program)
+     (prop:dot:draw-graph-to-file svg-pathname start drawing-program)
      ;; TODO There is, in principle, support for asynchronous
      ;; subprocesses, but it is "available for those who are willing
      ;; to read the source code."  More on this in an email exchange
@@ -50,32 +50,34 @@
      (run-shell-command
       (string-append "eog " (->namestring svg-pathname))))))
 
-(define (prop:dot:draw-graph-to-file root-nodes pathname #!optional drawer)
+(define (prop:dot:draw-graph-to-file pathname #!optional start drawer)
   (if (default-object? drawer)
       (set! drawer "dot"))
   (call-with-temporary-file-pathname
    (lambda (graph-pathname)
-     (prop:dot:write-graph-to-file root-nodes graph-pathname)
+     (prop:dot:write-graph-to-file graph-pathname start)
      (run-shell-command
       (string-append
        drawer " " (->namestring graph-pathname)
        " -Tsvg -o " (->namestring pathname))))))
 
-(define (prop:dot:write-graph-to-file root-nodes pathname)
+(define (prop:dot:write-graph-to-file pathname #!optional start)
   (call-with-output-file pathname
     (lambda (output-port)
-      (prop:dot:write-graph root-nodes output-port))))
+      (prop:dot:write-graph start output-port))))
 
-(define (prop:dot:write-graph-to-string root-nodes)
+(define (prop:dot:write-graph-to-string #!optional start)
   (call-with-output-string
    (lambda (output-port)
-     (prop:dot:write-graph root-nodes output-port))))
+     (prop:dot:write-graph start output-port))))
 
-(define (prop:dot:write-graph root-nodes output-port)
+(define (prop:dot:write-graph #!optional start output-port)
+  (if (default-object? output-port)
+      (set! output-port (current-output-port)))
   (write-string "digraph G {" output-port)
   (newline output-port)
   (prop:dot:write-options output-port)
-  (prop:dot:walk-graph root-nodes output-port)
+  (prop:dot:walk-graph output-port start)
   (write-string "}" output-port)
   (newline output-port))
 
@@ -90,7 +92,7 @@
               ; "page=\"8.5,11\""
               "ratio=fill")))
 
-(define (prop:dot:walk-graph start output-port)
+(define (prop:dot:walk-graph output-port #!optional start)
   (let ((visited (make-eq-hash-table))
 	(defer-edges? #f)
 	(deferred-edges '()))
