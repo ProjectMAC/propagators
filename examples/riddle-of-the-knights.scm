@@ -26,18 +26,18 @@
 	    (new-name (symbol 'p: propagatee-name)))
        `(define ,new-name
 	  (flat-function->propagator-expression
-	   ,(close-syntax propagatee-name use-env)))))))
+	   (name! ,(close-syntax propagatee-name use-env) ',propagatee-name)))))))
 
-(define (conditional-wire control end1 end2)
+(define-macro-propagator (conditional-wire control end1 end2)
   (switch control end1 end2)
   (switch control end2 end1))
 
-(define (guess-link cell1 cell2)
+(define-macro-propagator (guess-link cell1 cell2)
   (let ((control (p:amb)))
     (conditional-wire control cell1 cell2)
     control))
 
-(define (quadratic-guess-bijection cells1 cells2)
+(define-macro-propagator (quadratic-guess-bijection cells1 cells2)
   (define (not-all-off . cells)
     (require (reduce p:or #f cells)))
   (let ((controls
@@ -54,7 +54,7 @@
 	      controls)
     (apply for-each not-all-off controls)))
 
-(define (quadratic-extend-bijection cell-alist cells1 cells2)
+(define-macro-propagator (quadratic-extend-bijection cell-alist cells1 cells2)
   (for-each (lambda (cell-pair)
 	      (pass-through (car cell-pair) (cdr cell-pair))
 	      (pass-through (cdr cell-pair) (car cell-pair)))
@@ -154,6 +154,7 @@
   name
   shield
   horse)
+(name! make-knight 'make-knight)
 
 (propagatify knight-name)
 (propagatify knight-shield)
@@ -192,18 +193,20 @@
 (specify-flat symbol?)
 
 (define (cell-table-lookup-function cell-table)
-  (lambda (key)
-    (let ((answer (content (or (get key cell-table)
-			       (error "No owner for" key)))))
-      (if (tms? answer)
-	  (let ((best-answer (tms-query answer)))
-	    (cond ((v&s? best-answer)
-		   (make-tms (list best-answer)))
-		  ((nothing? best-answer)
-		   nothing)
-		  (else
-		   (error "Huh? owner-of confused by" best-answer))))
-	  answer))))
+  (name!
+   (lambda (key)
+     (let ((answer (content (or (get key cell-table)
+				(error "No owner for" key)))))
+       (if (tms? answer)
+	   (let ((best-answer (tms-query answer)))
+	     (cond ((v&s? best-answer)
+		    (make-tms (list best-answer)))
+		   ((nothing? best-answer)
+		    nothing)
+		   (else
+		    (error "Huh? owner-of confused by" best-answer))))
+	   answer)))
+   'get))
 
 (define (knight-maker name-cell shield-cell horse-cell output)
   (propagator (list name-cell shield-cell horse-cell)

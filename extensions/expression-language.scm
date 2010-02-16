@@ -83,7 +83,9 @@
   (functionalize (function->propagator-constructor (nary-unpacking f))))
 
 (define p:eq? (flat-function->propagator-expression eq?))
+(name! eq? 'eq?)
 (define p:expt (flat-function->propagator-expression expt))
+(name! expt 'expt)
 
 (define c:+ (functionalize sum-constraint))
 (define c:* (functionalize product-constraint))

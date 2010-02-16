@@ -42,6 +42,7 @@
 (propagatify deck-supply)
 
 (define p:make-deck (functionalize (function->propagator-constructor make-deck)))
+(name! make-deck 'make-deck)
 
 (specify-flat deck?)
 
