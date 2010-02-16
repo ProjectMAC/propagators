@@ -105,7 +105,6 @@
     (define (node-type-string node)
       (cond ((cell? node) "(cell) ")
 	    ((propagator? node) "(prop) ")
-	    ((network-group? node) "cluster_")
 	    (else
 	     (error "Unknown node type" node))))
 
