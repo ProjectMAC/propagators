@@ -156,8 +156,8 @@
 
     (define (write-propagator-apex propagator)
       (write-node propagator)
-      (write-edges propagator prop:propagator-inputs write-input-edge)
-      (write-edges propagator prop:propagator-outputs write-output-edge))
+      (write-edges propagator propagator-inputs write-input-edge)
+      (write-edges propagator propagator-outputs write-output-edge))
 
     (define (visit node)
       (if (not (hash-table/get visited node #f))
@@ -170,13 +170,12 @@
     (define (visit-propagator propagator)
       (write-propagator-apex propagator)
       (for-each visit
-		(append (prop:propagator-inputs propagator)
-			(prop:propagator-outputs propagator))))
+		(append (propagator-inputs propagator)
+			(propagator-outputs propagator))))
     
     (define (visit-cell cell)
       (write-node cell)
-      (for-each visit
-		(prop:variable-connections cell)))
+      (for-each visit (cell-connections cell)))
 
     (define (traverse-group group)
       (fluid-let ((defer-edges? #t))
@@ -282,23 +281,6 @@
   (fluid-let ((prop:dot:indentation-level
 	       (+ prop:dot:indentation-level 1)))
     (thunk)))
-
-;;; Stubs by axch
-
-(define (prop:propagator-inputs propagator)
-  (or (eq-get propagator 'inputs)
-      (eq-get propagator 'neighbors)
-      '()))
-
-(define (prop:propagator-outputs propagator)
-  (or (eq-get propagator 'outputs)
-      (eq-get propagator 'neighbors)
-      '()))
-
-(define (prop:variable-connections cell)
-  (append (neighbors cell)
-	  (or (eq-get cell 'shadow-connections)
-	      '())))
 
 (define prop:propagator-label name)
 (define prop:cell-label name)

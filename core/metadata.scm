@@ -53,3 +53,21 @@
     (lambda ()
       (initialize-scheduler)
       (reset-network-groups!))))
+
+(define (propagator-inputs propagator)
+  (or (eq-get propagator 'inputs)
+      (eq-get propagator 'neighbors)
+      '()))
+
+(define (propagator-outputs propagator)
+  (or (eq-get propagator 'outputs)
+      (eq-get propagator 'neighbors)
+      '()))
+
+(define (cell-connections cell)
+  ;; The neighbors are the ones that need to be woken up; the
+  ;; connections are the ones that touch the cell at all.  This
+  ;; concept is useful for walking the graph structure of the network.
+  (append (neighbors cell)
+	  (or (eq-get cell 'shadow-connections)
+	      '())))
