@@ -21,6 +21,25 @@ def scheme command
   sh "mit-scheme --compiler -heap 6000 --batch-mode --no-init-file --eval '(set! load/suppress-loading-message? #t)' --eval '(begin #{command} (%exit 0))'"
 end
 
-task "multiple-dwelling.dot" do
-  scheme "(load \"load\") (initialize-scheduler) (multiple-dwelling) (prop:dot:write-graph-to-file \"multiple-dwelling.dot\")"
+def dot_dump command, filename
+  task "#{filename}.dot" do
+    scheme "(load \"load\") (initialize-scheduler) #{command} (prop:dot:write-graph-to-file \"#{filename}.dot\")"
+  end
+  task "dot-graphs" => "#{filename}.dot"
 end
+
+def dot_process filename, format
+  file "#{filename}.#{format}" => "#{filename}.dot" do
+    sh "dot -T#{format} -o #{filename}.#{format} #{filename}.dot"
+  end
+end
+
+def picture command, filename
+  dot_dump command, filename
+  dot_process(filename, "svg")
+  dot_process(filename, "png")
+end
+
+picture "(multiple-dwelling)", "multiple-dwelling"
+picture "(build-network)", "riddle-of-the-knights"
+picture "(build-albatross-network)", "albatross-conundrum"
