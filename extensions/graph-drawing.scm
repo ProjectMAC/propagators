@@ -17,33 +17,6 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (name thing)
-  (let ((name-property (eq-get thing 'name)))
-    (if name-property
-	(name name-property)
-	thing)))
-
-(eq-put! generic-+ 'name '+)
-(eq-put! generic-- 'name '-)
-(eq-put! generic-* 'name '*)
-(eq-put! generic-/ 'name '/)
-
-(eq-put! generic-abs    'name 'abs)
-(eq-put! generic-square 'name 'square)
-(eq-put! generic-sqrt   'name 'sqrt)
-(eq-put! generic-=      'name '=)
-(eq-put! generic-<      'name '<)
-(eq-put! generic->      'name '>)
-(eq-put! generic-<=     'name '<=)
-(eq-put! generic->=     'name '>=)
-
-(eq-put! generic-not 'name 'not)
-(eq-put! generic-and 'name 'and)
-(eq-put! generic-or  'name 'or)
-
-(eq-put! switch-function 'name 'switch)
-(eq-put! identity 'name 'identity)
-
 (define (neighbors element)
   (if (cell? element)
       (element 'neighbors)

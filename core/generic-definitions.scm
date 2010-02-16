@@ -41,6 +41,8 @@
 ;; I want a name for the function that does the switch job
 (define (switch-function control input)
   (if control input nothing))
+(name! switch-function 'switch)
+(name! identity 'identity)
 
 ;;; General generic-monadic machinery
 

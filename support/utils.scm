@@ -102,3 +102,20 @@
 	(begin (warn (string-append "The available heap looks kind of small at " (write-to-string mem) " words"))
 	       (warn "Are you running Scheme with the default heap size?")
 	       (warn "Try, say, --heap 6000 if you run out of memory")))))
+
+(define (name thing)
+  (let ((name-property (eq-get thing 'name)))
+    (if name-property
+	(name name-property)
+	thing)))
+
+(define (name! thing name)
+  (eq-put! thing 'name name))
+
+(define make-generic-operator
+  (let ((make-generic-operator make-generic-operator))
+    (named-lambda (make-generic-operator arity #!optional name default-operation)
+      (let ((answer (make-generic-operator arity name default-operation)))
+	(if (default-object? name)
+	    answer
+	    (name! answer name))))))

@@ -34,8 +34,8 @@
 (for-each load-relative-compiled
   '("profiler"
     "eq-properties"
-    "utils"
     "generic-system"
+    "utils"
     "test-utils"))
 
 (maybe-warn-low-memory)
