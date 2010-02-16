@@ -100,28 +100,32 @@
           (begin (hash-table/put! visited node #t)
                  (procedure node))))
 
-    (define (variable-node-id variable)
-      (string-append "(cell) " (write-to-string (hash variable))))
+    (define (node-type-string node)
+      (cond ((cell? node) "(cell) ")
+	    ((propagator? node) "(prop) ")
+	    ((network-group? node) "cluster_")
+	    (else
+	     (error "Unknown node type" node))))
+
+    (define (node-id node)
+      (string-append (node-type-string node) (write-to-string (hash node))))
 
     (define (variable-name variable)
       (write-to-string (prop:variable-name variable)))
-
-    (define (propagator-node-id propagator)
-      (string-append "(prop) " (write-to-string (hash propagator))))
 
     (define (propagator-name propagator)
       (write-to-string (prop:propagator-name propagator)))
 
     (define (write-variable-node variable)
       (prop:dot:write-node
-       (variable-node-id variable)
+       (node-id variable)
        `(("label" . ,(variable-name variable))
 	 ("shape" . "ellipse"))
        output-port))
 
     (define (write-propagator-node propagator)
       (prop:dot:write-node
-       (propagator-node-id propagator)
+       (node-id propagator)
        `(("label" . ,(propagator-name propagator))
 	 ("shape" . "box"))
        output-port))
@@ -143,12 +147,12 @@
       (write-edge name output index))
 
     (define (write-edges propagator accessor write-edge)
-      (let ((name (propagator-node-id propagator))
+      (let ((name (node-id propagator))
 	    (number-edges? (< 1 (length (accessor propagator)))))
         (let loop ((variables (accessor propagator)) (index 0))
           (if (pair? variables)
               (let ((variable (car variables)))
-                (write-edge (variable-node-id variable) name (if number-edges? index ""))
+                (write-edge (node-id variable) name (if number-edges? index ""))
                 (loop (cdr variables) (+ index 1)))))))
 
     (define (write-propagator-apex propagator)
