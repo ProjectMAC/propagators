@@ -157,7 +157,7 @@
     (define (visit node)
       (if (not (hash-table/get visited node #f))
           (begin (hash-table/put! visited node #t)
-                 (cond ((cell? node) (visit-variable node))
+                 (cond ((cell? node) (visit-cell node))
 		       ((propagator? node) (visit-propagator node))
 		       (else
 			(error "Unknown node type" node))))))
@@ -168,10 +168,10 @@
 		(append (prop:propagator-inputs propagator)
 			(prop:propagator-outputs propagator))))
     
-    (define (visit-variable variable)
-      (write-node variable)
+    (define (visit-cell cell)
+      (write-node cell)
       (for-each visit
-		(prop:variable-connections variable)))
+		(prop:variable-connections cell)))
 #;
     (for-each visit nodes)
 
@@ -264,7 +264,5 @@
 	  (or (eq-get cell 'shadow-connections)
 	      '())))
 
-(define prop:propagator? propagator?)
-(define prop:variable? cell?)
 (define prop:propagator-label name)
 (define prop:cell-label name)
