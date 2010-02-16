@@ -33,7 +33,7 @@
 
 ;;; Here's a cute way to use this:
 #;
-(fluid-let ((prop:variable-name
+(fluid-let ((prop:cell-label
 	     (lambda (var) (cons (name var) (content var)))))
   (prop:dot:show-graph (list in-n)))
 ;;; That draws a picture of the network and lists the contents
@@ -111,10 +111,10 @@
       (string-append (node-type-string node) (write-to-string (hash node))))
 
     (define (variable-name variable)
-      (write-to-string (prop:variable-name variable)))
+      (write-to-string (prop:cell-label variable)))
 
     (define (propagator-name propagator)
-      (write-to-string (prop:propagator-name propagator)))
+      (write-to-string (prop:propagator-label propagator)))
 
     (define (write-variable-node variable)
       (prop:dot:write-node
@@ -275,7 +275,7 @@
 
 (define prop:propagator? propagator?)
 (define prop:variable? cell?)
-(define prop:propagator-name name)
-(define prop:variable-name name)
+(define prop:propagator-label name)
+(define prop:cell-label name)
 (define (prop:bound? foo bar) #f)
 (define initial-top-level-environment #f)
