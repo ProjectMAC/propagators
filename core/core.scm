@@ -114,9 +114,7 @@
   (alert-propagator to-do))
 
 (define (propagator? thing)
-  (or (eq-get thing 'propagator)
-      ;; TODO Do I still need this fallback?
-      (not (cell? thing))))
+  (eq-get thing 'propagator))
 
 (define (function->propagator-constructor f)
   (lambda cells
