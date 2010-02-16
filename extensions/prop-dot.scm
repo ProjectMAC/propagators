@@ -95,11 +95,6 @@
 	(defer-edges? #t)
 	(deferred-edges '()))
 
-    (define (visit node procedure)
-      (if (not (hash-table/get visited node #f))
-          (begin (hash-table/put! visited node #t)
-                 (procedure node))))
-
     (define (node-type-string node)
       (cond ((cell? node) "(cell) ")
 	    ((propagator? node) "(prop) ")
@@ -159,6 +154,11 @@
       (write-edges propagator prop:propagator-inputs write-input-edge)
       (write-edges propagator prop:propagator-outputs write-output-edge))
 
+    (define (visit node procedure)
+      (if (not (hash-table/get visited node #f))
+          (begin (hash-table/put! visited node #t)
+                 (procedure node))))
+
     (define (visit-propagator propagator)
       (write-propagator-apex propagator)
       (for-each (lambda (variable)
@@ -179,7 +179,7 @@
                              (else (error "Invalid propagation node:" node)))))
               nodes)
 
-    (define (visit-group group)
+    (define (traverse-group group)
       ;; TODO Indent the subgraphs correctly?
       (write-string " subgraph cluster_" output-port)
       (write (hash group) output-port)
@@ -188,23 +188,23 @@
        `(("label" . ,(write-to-string (name group))))
        output-port)
       (write-string "\n" output-port)
-      (for-each visit-thing (network-group-elements group))
+      (for-each traverse-thing (network-group-elements group))
       (write-string " }\n" output-port))
 
-    (define (visit-thing thing)
+    (define (traverse-thing thing)
       (cond ((network-group? thing)
-	     (visit thing visit-group))
+	     (traverse-group thing))
 	    ((cell? thing)
-	     (visit thing write-node))
+	     (write-node thing))
 	    ((propagator? thing)
-	     (visit thing write-propagator-apex))
+	     (write-propagator-apex thing))
 	    (else
 	     'ok)))
 
     ;;; TODO Interface change: accept either some cells or a network
     ;;; group; if cells, draw without groups; if group, draw from that
     ;;; group; if nothing, draw from the top level.
-    (visit-group *current-network-group*)
+    (traverse-group *current-network-group*)
     (if defer-edges?
 	(for-each (lambda (edge)
 		    (write-string edge output-port))
