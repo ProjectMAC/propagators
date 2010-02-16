@@ -241,10 +241,11 @@
   (write-string id output-port)
   (write-string " { " output-port)
   (prop:dot:write-subgraph-attributes attributes output-port)
-  (write-string "\n" output-port)
+  (newline output-port)
   (prop:dot:indented write-contents)
   (prop:dot:write-indentation output-port)
-  (write-string "}\n" output-port))
+  (write-string "}" output-port)
+  (newline output-port))
 
 (define (prop:dot:write-attributes attributes output-port)
   (if (pair? attributes)
