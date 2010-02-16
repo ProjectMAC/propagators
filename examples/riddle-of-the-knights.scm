@@ -208,17 +208,12 @@
 	   answer)))
    'get))
 
-(define (knight-maker name-cell shield-cell horse-cell output)
-  (propagator (list name-cell shield-cell horse-cell)
-    (lambda ()
-      (add-content output
-        (make-knight (content name-cell) (content shield-cell) (content horse-cell))))))
-
-(define p:knight-maker (functionalize knight-maker))
+(define p:knight-maker
+  (functionalize (function->propagator-constructor make-knight)))
 
 (define (build-network)
   (let* ((knight-cells
-	  (map (lambda (foo) (make-cell)) knights))
+	  (map (lambda (foo) (make-named-cell 'knight)) knights))
 	 (knight-name-cells
 	  (map (lambda (name)
 		 (p:knight-maker name nothing nothing))
