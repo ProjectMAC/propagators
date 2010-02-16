@@ -83,7 +83,7 @@
 
 (define (prop:dot:write-options output-port)
   (for-each (lambda (option)
-              (write-string "  " output-port)
+	      (prop:dot:write-indentation output-port)
               (write-string option output-port)
               (write-string ";" output-port)
               (newline output-port))
@@ -217,14 +217,14 @@
     (dispatch start)))
 
 (define (prop:dot:write-node node-id attributes output-port)
-  (write-string "  " output-port)
+  (prop:dot:write-indentation output-port)
   (write node-id output-port)
   (prop:dot:write-attributes attributes output-port)
   (write-string ";" output-port)
   (newline output-port))
 
 (define (prop:dot:write-edge source-name target-name attributes output-port)
-  (write-string "  " output-port)
+  (prop:dot:write-indentation output-port)
   (write source-name output-port)
   (write-string " -> " output-port)
   (write target-name output-port)
@@ -239,13 +239,15 @@
 
 (define (prop:dot:write-subgraph id attributes write-contents output-port)
   ;; TODO Indent the subgraphs correctly?
-  (write-string " subgraph " output-port)
+  (prop:dot:write-indentation output-port)
+  (write-string "subgraph " output-port)
   (write-string id output-port)
   (write-string " { " output-port)
   (prop:dot:write-subgraph-attributes attributes output-port)
   (write-string "\n" output-port)
   (write-contents)
-  (write-string " }\n" output-port))
+  (prop:dot:write-indentation output-port)
+  (write-string "}\n" output-port))
 
 (define (prop:dot:write-attributes attributes output-port)
   (if (pair? attributes)
@@ -270,6 +272,9 @@
 		  (write (cdr attribute) output-port)
 		  (write-string "; " output-port))
 		attributes)))
+
+(define (prop:dot:write-indentation output-port)
+  (write-string "  " output-port))
 
 ;;; Stubs by axch
 
