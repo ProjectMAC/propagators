@@ -133,13 +133,11 @@
        output-port))
 
     (define (write-edge source target label)
-      (define (edge-writer output-port)
+      (define (edge-writer)
 	(prop:dot:write-edge source target `(("label" . ,label)) output-port))
       (if defer-edges?
-	  (set! deferred-edges
-		(cons (call-with-output-string edge-writer)
-		      deferred-edges))
-	  (edge-writer output-port)))
+	  (set! deferred-edges (cons edge-writer deferred-edges))
+	  (edge-writer)))
 
     (define (write-input-edge input name index)
       (write-edge input name index))
@@ -203,8 +201,7 @@
     (define (maybe-dump-deferred-edges)
       (if (not defer-edges?)
 	  (begin
-	    (for-each (lambda (edge)
-			(write-string edge output-port))
+	    (for-each (lambda (edge-writer) (edge-writer))
 		      (reverse deferred-edges))
 	    (set! deferred-edges '()))))
 
@@ -240,14 +237,13 @@
    attributes write-contents output-port))
 
 (define (prop:dot:write-subgraph id attributes write-contents output-port)
-  ;; TODO Indent the subgraphs correctly?
   (prop:dot:write-indentation output-port)
   (write-string "subgraph " output-port)
   (write-string id output-port)
   (write-string " { " output-port)
   (prop:dot:write-subgraph-attributes attributes output-port)
   (write-string "\n" output-port)
-  (write-contents)
+  (prop:dot:indented write-contents)
   (prop:dot:write-indentation output-port)
   (write-string "}\n" output-port))
 
