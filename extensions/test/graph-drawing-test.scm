@@ -52,7 +52,7 @@
     (define-cell foo)
     (define-cell bar)
     (pass-through foo bar)
-    (prop:dot:write-graph-to-string (list foo bar))
+    (prop:dot:write-graph-to-string *current-network-group*)
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
@@ -98,7 +98,7 @@
       (lambda ()
 	(define-cell bar)
 	(pass-through foo bar)))
-    (prop:dot:write-graph-to-string (list foo))
+    (prop:dot:write-graph-to-string *current-network-group*)
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
@@ -120,7 +120,7 @@
     (define-cell foo)
     (define-cell bar)
     (identity-constraint foo bar)
-    (prop:dot:write-graph-to-string (list foo))
+    (prop:dot:write-graph-to-string *current-network-group*)
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;

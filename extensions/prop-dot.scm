@@ -90,11 +90,14 @@
               ; "page=\"8.5,11\""
               "ratio=fill")))
 
-(define (prop:dot:walk-graph nodes output-port)
+(define (prop:dot:walk-graph start output-port)
   (let ((visited (make-eq-hash-table))
-	(defer-edges? #t)
+	(defer-edges? #f)
 	(deferred-edges '()))
 
+    (define (node? thing)
+      (or (cell? thing) (propagator? thing)))
+    
     (define (node-type-string node)
       (cond ((cell? node) "(cell) ")
 	    ((propagator? node) "(prop) ")
@@ -172,18 +175,18 @@
       (write-node cell)
       (for-each visit
 		(prop:variable-connections cell)))
-#;
-    (for-each visit nodes)
 
     (define (traverse-group group)
-      (prop:dot:write-cluster
-       (hash group)
-       `(("label" . ,(write-to-string (name group))))
-       (lambda ()
-	 (for-each traverse-thing (network-group-elements group)))
-       output-port))
+      (fluid-let ((defer-edges? #t))
+	(prop:dot:write-cluster
+	 (hash group)
+	 `(("label" . ,(write-to-string (name group))))
+	 (lambda ()
+	   (for-each traverse (network-group-elements group)))
+	 output-port))
+      (maybe-dump-deferred-edges))
 
-    (define (traverse-thing thing)
+    (define (traverse thing)
       (cond ((network-group? thing)
 	     (traverse-group thing))
 	    ((cell? thing)
@@ -193,15 +196,23 @@
 	    (else
 	     'ok)))
 
-    ;;; TODO Interface change: accept either some cells or a network
-    ;;; group; if cells, draw without groups; if group, draw from that
-    ;;; group; if nothing, draw from the top level.
-    (traverse-group *current-network-group*)
-    (if defer-edges?
-	(for-each (lambda (edge)
-		    (write-string edge output-port))
-		  (reverse deferred-edges)))
-    ))
+    (define (maybe-dump-deferred-edges)
+      (if (not defer-edges?)
+	  (begin
+	    (for-each (lambda (edge)
+			(write-string edge output-port))
+		      (reverse deferred-edges))
+	    (set! deferred-edges '()))))
+
+    (define (dispatch start)
+      (cond ((default-object? start) (traverse-group *current-network-group*))
+	    ((network-group? start) (traverse-group start))
+	    ((node? start) (visit start))
+	    ((pair? start) (for-each dispatch start))
+	    (else
+	     (error "Unknown entry point" start))))
+
+    (dispatch start)))
 
 (define (prop:dot:write-node node-id attributes output-port)
   (write-string "  " output-port)
