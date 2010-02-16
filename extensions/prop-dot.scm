@@ -220,9 +220,14 @@
   (newline output-port))
 
 (define (prop:dot:write-cluster id attributes write-contents output-port)
+  (prop:dot:write-subgraph
+   (string-append "cluster_" (write-to-string id))
+   attributes write-contents output-port))
+
+(define (prop:dot:write-subgraph id attributes write-contents output-port)
   ;; TODO Indent the subgraphs correctly?
-  (write-string " subgraph cluster_" output-port)
-  (write id output-port)
+  (write-string " subgraph " output-port)
+  (write-string id output-port)
   (write-string " { " output-port)
   (prop:dot:write-subgraph-attributes attributes output-port)
   (write-string "\n" output-port)
