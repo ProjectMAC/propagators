@@ -154,30 +154,26 @@
       (write-edges propagator prop:propagator-inputs write-input-edge)
       (write-edges propagator prop:propagator-outputs write-output-edge))
 
-    (define (visit node procedure)
+    (define (visit node)
       (if (not (hash-table/get visited node #f))
           (begin (hash-table/put! visited node #t)
-                 (procedure node))))
+                 (cond ((cell? node) (visit-variable node))
+		       ((propagator? node) (visit-propagator node))
+		       (else
+			(error "Unknown node type" node))))))
 
     (define (visit-propagator propagator)
       (write-propagator-apex propagator)
-      (for-each (lambda (variable)
-		  (visit variable visit-variable))
+      (for-each visit
 		(append (prop:propagator-inputs propagator)
 			(prop:propagator-outputs propagator))))
     
     (define (visit-variable variable)
       (write-node variable)
-      (for-each (lambda (propagator)
-		  (visit propagator visit-propagator))
+      (for-each visit
 		(prop:variable-connections variable)))
 #;
-    (for-each (lambda (node)
-                (visit node
-                       (cond ((prop:propagator? node) visit-propagator)
-                             ((prop:variable? node) visit-variable)
-                             (else (error "Invalid propagation node:" node)))))
-              nodes)
+    (for-each visit nodes)
 
     (define (traverse-group group)
       ;; TODO Indent the subgraphs correctly?
