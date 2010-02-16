@@ -186,7 +186,8 @@
 	 (lambda ()
 	   (for-each traverse (network-group-elements group)))
 	 output-port))
-      (maybe-dump-deferred-edges))
+      (if (not defer-edges?)
+	  (dump-deferred-edges)))
 
     (define (traverse thing)
       (cond ((network-group? thing)
@@ -198,12 +199,10 @@
 	    (else
 	     'ok)))
 
-    (define (maybe-dump-deferred-edges)
-      (if (not defer-edges?)
-	  (begin
-	    (for-each (lambda (edge-writer) (edge-writer))
-		      (reverse deferred-edges))
-	    (set! deferred-edges '()))))
+    (define (dump-deferred-edges)
+      (for-each (lambda (edge-writer) (edge-writer))
+		(reverse deferred-edges))
+      (set! deferred-edges '()))
 
     (define (dispatch start)
       (cond ((default-object? start) (traverse-group *current-network-group*))
