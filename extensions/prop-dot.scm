@@ -101,13 +101,13 @@
                  (procedure node))))
 
     (define (variable-node-id variable)
-      (string-append "(variable) " (write-to-string (hash variable))))
+      (string-append "(cell) " (write-to-string (hash variable))))
 
     (define (variable-name variable)
       (write-to-string (prop:variable-name variable)))
 
     (define (propagator-node-id propagator)
-      (string-append "(propagator) " (write-to-string (hash propagator))))
+      (string-append "(prop) " (write-to-string (hash propagator))))
 
     (define (propagator-name propagator)
       (write-to-string (prop:propagator-name propagator)))

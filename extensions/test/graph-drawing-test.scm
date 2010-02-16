@@ -57,12 +57,12 @@
 "digraph G {
   ratio=fill;
  subgraph cluster_12 { label=\"top-group\"; 
-  \"(propagator) 13\" [label=\"identity\", shape=\"box\" ];
-  \"(variable) 15\" [label=\"bar\", shape=\"ellipse\" ];
-  \"(variable) 14\" [label=\"foo\", shape=\"ellipse\" ];
+  \"(prop) 13\" [label=\"identity\", shape=\"box\" ];
+  \"(cell) 15\" [label=\"bar\", shape=\"ellipse\" ];
+  \"(cell) 14\" [label=\"foo\", shape=\"ellipse\" ];
  }
-  \"(variable) 14\" -> \"(propagator) 13\" [label=\"\" ];
-  \"(propagator) 13\" -> \"(variable) 15\" [label=\"\" ];
+  \"(cell) 14\" -> \"(prop) 13\" [label=\"\" ];
+  \"(prop) 13\" -> \"(cell) 15\" [label=\"\" ];
 }
 " (out)))))
 
@@ -104,13 +104,13 @@
   ratio=fill;
  subgraph cluster_16 { label=\"top-group\"; 
  subgraph cluster_17 { label=\"subgroup\"; 
-  \"(propagator) 18\" [label=\"identity\", shape=\"box\" ];
-  \"(variable) 20\" [label=\"bar\", shape=\"ellipse\" ];
+  \"(prop) 18\" [label=\"identity\", shape=\"box\" ];
+  \"(cell) 20\" [label=\"bar\", shape=\"ellipse\" ];
  }
-  \"(variable) 19\" [label=\"foo\", shape=\"ellipse\" ];
+  \"(cell) 19\" [label=\"foo\", shape=\"ellipse\" ];
  }
-  \"(variable) 19\" -> \"(propagator) 18\" [label=\"\" ];
-  \"(propagator) 18\" -> \"(variable) 20\" [label=\"\" ];
+  \"(cell) 19\" -> \"(prop) 18\" [label=\"\" ];
+  \"(prop) 18\" -> \"(cell) 20\" [label=\"\" ];
 }
 " (out)))))
 
@@ -126,16 +126,16 @@
   ratio=fill;
  subgraph cluster_21 { label=\"top-group\"; 
  subgraph cluster_22 { label=\"identity-constraint\"; 
-  \"(propagator) 23\" [label=\"identity\", shape=\"box\" ];
-  \"(propagator) 26\" [label=\"identity\", shape=\"box\" ];
+  \"(prop) 23\" [label=\"identity\", shape=\"box\" ];
+  \"(prop) 26\" [label=\"identity\", shape=\"box\" ];
  }
-  \"(variable) 24\" [label=\"bar\", shape=\"ellipse\" ];
-  \"(variable) 25\" [label=\"foo\", shape=\"ellipse\" ];
+  \"(cell) 24\" [label=\"bar\", shape=\"ellipse\" ];
+  \"(cell) 25\" [label=\"foo\", shape=\"ellipse\" ];
  }
-  \"(variable) 24\" -> \"(propagator) 23\" [label=\"\" ];
-  \"(propagator) 23\" -> \"(variable) 25\" [label=\"\" ];
-  \"(variable) 25\" -> \"(propagator) 26\" [label=\"\" ];
-  \"(propagator) 26\" -> \"(variable) 24\" [label=\"\" ];
+  \"(cell) 24\" -> \"(prop) 23\" [label=\"\" ];
+  \"(prop) 23\" -> \"(cell) 25\" [label=\"\" ];
+  \"(cell) 25\" -> \"(prop) 26\" [label=\"\" ];
+  \"(prop) 26\" -> \"(cell) 24\" [label=\"\" ];
 }
 " (out)))))
 
