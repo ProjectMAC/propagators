@@ -176,16 +176,12 @@
     (for-each visit nodes)
 
     (define (traverse-group group)
-      ;; TODO Indent the subgraphs correctly?
-      (write-string " subgraph cluster_" output-port)
-      (write (hash group) output-port)
-      (write-string " { " output-port)
-      (prop:dot:write-subgraph-attributes
+      (prop:dot:write-cluster
+       (hash group)
        `(("label" . ,(write-to-string (name group))))
-       output-port)
-      (write-string "\n" output-port)
-      (for-each traverse-thing (network-group-elements group))
-      (write-string " }\n" output-port))
+       (lambda ()
+	 (for-each traverse-thing (network-group-elements group)))
+       output-port))
 
     (define (traverse-thing thing)
       (cond ((network-group? thing)
@@ -222,6 +218,16 @@
   (prop:dot:write-attributes attributes output-port)
   (write-string ";" output-port)
   (newline output-port))
+
+(define (prop:dot:write-cluster id attributes write-contents output-port)
+  ;; TODO Indent the subgraphs correctly?
+  (write-string " subgraph cluster_" output-port)
+  (write id output-port)
+  (write-string " { " output-port)
+  (prop:dot:write-subgraph-attributes attributes output-port)
+  (write-string "\n" output-port)
+  (write-contents)
+  (write-string " }\n" output-port))
 
 (define (prop:dot:write-attributes attributes output-port)
   (if (pair? attributes)
