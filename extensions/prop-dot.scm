@@ -76,8 +76,10 @@
       (set! output-port (current-output-port)))
   (write-string "digraph G {" output-port)
   (newline output-port)
-  (prop:dot:write-options output-port)
-  (prop:dot:walk-graph output-port start)
+  (prop:dot:indented
+   (lambda ()
+     (prop:dot:write-options output-port)
+     (prop:dot:walk-graph output-port start)))
   (write-string "}" output-port)
   (newline output-port))
 
@@ -273,8 +275,17 @@
 		  (write-string "; " output-port))
 		attributes)))
 
+(define prop:dot:indentation-level 0)
+
 (define (prop:dot:write-indentation output-port)
-  (write-string "  " output-port))
+  (repeat prop:dot:indentation-level
+	  (lambda ()
+	    (write-string "  " output-port))))
+
+(define (prop:dot:indented thunk)
+  (fluid-let ((prop:dot:indentation-level
+	       (+ prop:dot:indentation-level 1)))
+    (thunk)))
 
 ;;; Stubs by axch
 
