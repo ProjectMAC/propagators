@@ -52,19 +52,19 @@
     (define-cell foo)
     (define-cell bar)
     (pass-through foo bar)
-    (prop:dot:write-graph-to-string *current-network-group*)
+    (prop:dot:write-graph-to-string foo)
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
- subgraph cluster_12 { label=\"top-group\"; 
+  \"(cell) 12\" [label=\"foo\", shape=\"ellipse\" ];
   \"(prop) 13\" [label=\"identity\", shape=\"box\" ];
-  \"(cell) 15\" [label=\"bar\", shape=\"ellipse\" ];
-  \"(cell) 14\" [label=\"foo\", shape=\"ellipse\" ];
- }
-  \"(cell) 14\" -> \"(prop) 13\" [label=\"\" ];
-  \"(prop) 13\" -> \"(cell) 15\" [label=\"\" ];
+  \"(cell) 12\" -> \"(prop) 13\" [label=\"\" ];
+  \"(prop) 13\" -> \"(cell) 14\" [label=\"\" ];
+  \"(cell) 14\" [label=\"bar\", shape=\"ellipse\" ];
 }
-" (out)))))
+" (out)))
+    (check (equal? (prop:dot:write-graph-to-string foo)
+		   (prop:dot:write-graph-to-string (list foo bar))))))
 
  (define-each-check
    (< (memory-loss-from (repeated 100 make-eq-hash-table)) 2)
@@ -102,15 +102,15 @@
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
- subgraph cluster_16 { label=\"top-group\"; 
- subgraph cluster_17 { label=\"subgroup\"; 
-  \"(prop) 18\" [label=\"identity\", shape=\"box\" ];
-  \"(cell) 20\" [label=\"bar\", shape=\"ellipse\" ];
+ subgraph cluster_15 { label=\"top-group\"; 
+ subgraph cluster_16 { label=\"subgroup\"; 
+  \"(prop) 17\" [label=\"identity\", shape=\"box\" ];
+  \"(cell) 19\" [label=\"bar\", shape=\"ellipse\" ];
  }
-  \"(cell) 19\" [label=\"foo\", shape=\"ellipse\" ];
+  \"(cell) 18\" [label=\"foo\", shape=\"ellipse\" ];
  }
-  \"(cell) 19\" -> \"(prop) 18\" [label=\"\" ];
-  \"(prop) 18\" -> \"(cell) 20\" [label=\"\" ];
+  \"(cell) 18\" -> \"(prop) 17\" [label=\"\" ];
+  \"(prop) 17\" -> \"(cell) 19\" [label=\"\" ];
 }
 " (out)))))
 
@@ -124,18 +124,18 @@
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
- subgraph cluster_21 { label=\"top-group\"; 
- subgraph cluster_22 { label=\"identity-constraint\"; 
-  \"(prop) 23\" [label=\"identity\", shape=\"box\" ];
-  \"(prop) 26\" [label=\"identity\", shape=\"box\" ];
+ subgraph cluster_20 { label=\"top-group\"; 
+ subgraph cluster_21 { label=\"identity-constraint\"; 
+  \"(prop) 22\" [label=\"identity\", shape=\"box\" ];
+  \"(prop) 25\" [label=\"identity\", shape=\"box\" ];
  }
-  \"(cell) 24\" [label=\"bar\", shape=\"ellipse\" ];
-  \"(cell) 25\" [label=\"foo\", shape=\"ellipse\" ];
+  \"(cell) 23\" [label=\"bar\", shape=\"ellipse\" ];
+  \"(cell) 24\" [label=\"foo\", shape=\"ellipse\" ];
  }
-  \"(cell) 24\" -> \"(prop) 23\" [label=\"\" ];
-  \"(prop) 23\" -> \"(cell) 25\" [label=\"\" ];
-  \"(cell) 25\" -> \"(prop) 26\" [label=\"\" ];
-  \"(prop) 26\" -> \"(cell) 24\" [label=\"\" ];
+  \"(cell) 23\" -> \"(prop) 22\" [label=\"\" ];
+  \"(prop) 22\" -> \"(cell) 24\" [label=\"\" ];
+  \"(cell) 24\" -> \"(prop) 25\" [label=\"\" ];
+  \"(prop) 25\" -> \"(cell) 23\" [label=\"\" ];
 }
 " (out)))))
 
