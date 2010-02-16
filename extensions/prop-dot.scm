@@ -110,24 +110,24 @@
     (define (node-id node)
       (string-append (node-type-string node) (write-to-string (hash node))))
 
-    (define (variable-name variable)
-      (write-to-string (prop:cell-label variable)))
+    (define (node-name node)
+      (write-to-string
+       (cond ((cell? node) (prop:cell-label node))
+	     ((propagator? node) (prop:propagator-label node))
+	     (else
+	      (error "Unnameable node type" node)))))
 
-    (define (propagator-name propagator)
-      (write-to-string (prop:propagator-label propagator)))
+    (define (node-shape node)
+      (cond ((cell? node) "ellipse")
+	    ((propagator? node) "box")
+	    (else
+	     (error "Unshapeable node type" node))))
 
-    (define (write-variable-node variable)
+    (define (write-node node)
       (prop:dot:write-node
-       (node-id variable)
-       `(("label" . ,(variable-name variable))
-	 ("shape" . "ellipse"))
-       output-port))
-
-    (define (write-propagator-node propagator)
-      (prop:dot:write-node
-       (node-id propagator)
-       `(("label" . ,(propagator-name propagator))
-	 ("shape" . "box"))
+       (node-id node)
+       `(("label" . ,(node-name node))
+	 ("shape" . ,(node-shape node)))
        output-port))
 
     (define (write-edge source target label)
@@ -156,7 +156,7 @@
                 (loop (cdr variables) (+ index 1)))))))
 
     (define (write-propagator-apex propagator)
-      (write-propagator-node propagator)
+      (write-node propagator)
       (write-edges propagator prop:propagator-inputs write-input-edge)
       (write-edges propagator prop:propagator-outputs write-output-edge))
 
@@ -172,7 +172,7 @@
     (define (visit-variable variable)
       (if (not (prop:bound? variable initial-top-level-environment))
           (begin
-            (write-variable-node variable)
+            (write-node variable)
             (for-each (lambda (propagator)
                         (visit propagator visit-propagator))
                       (prop:variable-connections variable)))))
@@ -200,7 +200,7 @@
       (cond ((network-group? thing)
 	     (visit thing visit-group))
 	    ((cell? thing)
-	     (visit thing write-variable-node))
+	     (visit thing write-node))
 	    ((propagator? thing)
 	     (visit thing write-propagator-apex))
 	    (else
