@@ -21,10 +21,6 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;; TODO Fix this stupid stub
-(define (network-register thing)
-  'ok)
-
 ;;; Propagator cells, in message-accepter style
 (define (make-cell)
   (let ((neighbors '()) (content nothing))

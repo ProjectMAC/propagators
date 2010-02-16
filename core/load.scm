@@ -33,6 +33,7 @@
 
 (for-each load-relative-compiled
   '("scheduler"
+    "metadata"
     "core"
     "generic-definitions"
     "intervals"

@@ -142,13 +142,6 @@
 	 (lambda ()
 	   body-form ...))))))
 
-;;; TODO Get rid of these stupid stubs
-(define (network-group-named name)
-  #f)
-
-(define (with-network-group group thunk)
-  (thunk))
-
 (define-macro-propagator (conditional control if-true if-false output)
   (let-cell not-control
     (inverter control not-control)

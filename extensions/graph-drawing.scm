@@ -53,37 +53,3 @@
 	    ;; Fail over
 	    '()))))
 
-(define-structure network-group
-  elements)
-
-(define *current-network-group* #f)
-
-(define (network-group-named name)
-  (eq-put! (make-network-group '()) 'name name))
-
-(define (clear-network-group thing)
-  (eq-rem! thing 'shadow-connections 'inputs 'outputs 'network-group)
-  (if (network-group? thing)
-      (for-each clear-network-group (network-group-elements thing))))
-
-(define (network-register thing)
-  (if (memq thing (network-group-elements *current-network-group*))
-      'ok
-      (set-network-group-elements! *current-network-group*
-       (cons thing (network-group-elements *current-network-group*))))
-  (eq-put! thing 'network-group *current-network-group*))
-
-(define (with-network-group group thunk)
-  (network-register group)
-  (fluid-let ((*current-network-group* group))
-    (thunk)))
-
-(define (reset-network-groups!)
-  (clear-network-group *current-network-group*)
-  (set! *current-network-group* (network-group-named 'top-group)))
-
-(define initialize-scheduler
-  (let ((initialize-scheduler initialize-scheduler))
-    (lambda ()
-      (initialize-scheduler)
-      (reset-network-groups!))))
