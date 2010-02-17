@@ -88,7 +88,14 @@
 		(write-string (cdr (assoc "label" attributes)) output-port)
 		(newline output-port)))
 	     (write-tag
-	      "y:Shape" `((type . ,(cdr (assoc "shape" attributes))))))))))))
+	      "y:Shape" `((type . ,(compute-node-shape attributes)))))))))))
+
+  ;; What a hack!
+  (define (compute-node-shape attributes)
+    (let ((candidate (cdr (assoc "shape" attributes))))
+      (if (equal? "box" candidate)
+	  "rectangle"
+	  candidate)))
 
   (define (write-edge source-name target-name attributes)
     ;; TODO Edge labels
