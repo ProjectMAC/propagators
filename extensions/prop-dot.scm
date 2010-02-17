@@ -87,22 +87,6 @@
     (define (node? thing)
       (or (cell? thing) (propagator? thing)))
     
-    (define (node-type-string node)
-      (cond ((cell? node) "(cell) ")
-	    ((propagator? node) "(prop) ")
-	    (else
-	     (error "Unknown node type" node))))
-
-    (define (node-id node)
-      (string-append (node-type-string node) (write-to-string (hash node))))
-
-    (define (node-name node)
-      (write-to-string
-       (cond ((cell? node) (prop:cell-label node))
-	     ((propagator? node) (prop:propagator-label node))
-	     (else
-	      (error "Unnameable node type" node)))))
-
     (define (node-shape node)
       (cond ((cell? node) "ellipse")
 	    ((propagator? node) "box")
@@ -111,8 +95,8 @@
 
     (define (write-node node)
       ((writer 'write-node)
-       (node-id node)
-       `(("label" . ,(node-name node))
+       (prop:dot:node-id node)
+       `(("label" . ,(prop:dot:node-label node))
 	 ("shape" . ,(node-shape node)))))
 
     (define (write-edge source target label)
@@ -129,12 +113,12 @@
       (write-edge name output index))
 
     (define (write-edges propagator accessor write-edge)
-      (let ((name (node-id propagator))
+      (let ((name (prop:dot:node-id propagator))
 	    (number-edges? (< 1 (length (accessor propagator)))))
         (let loop ((cells (accessor propagator)) (index 0))
           (if (pair? cells)
               (let ((cell (car cells)))
-                (write-edge (node-id cell) name (if number-edges? index ""))
+                (write-edge (prop:dot:node-id cell) name (if number-edges? index ""))
                 (loop (cdr cells) (+ index 1)))))))
 
     (define (write-propagator-apex propagator)
@@ -194,6 +178,21 @@
 	     (error "Unknown entry point" start))))
 
     (dispatch start)))
+
+(define (prop:dot:node-id node)
+  (define (node-type-string node)
+    (cond ((cell? node) "(cell) ")
+	  ((propagator? node) "(prop) ")
+	  (else
+	   (error "Unknown node type" node))))
+  (string-append (node-type-string node) (write-to-string (hash node))))
+
+(define (prop:dot:node-label node)
+  (write-to-string
+   (cond ((cell? node) (prop:cell-label node))
+	 ((propagator? node) (prop:propagator-label node))
+	 (else
+	  (error "Unnameable node type" node)))))
 
 (define prop:dot:indentation-level 0)
 
