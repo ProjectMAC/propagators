@@ -92,12 +92,17 @@
     (write-tag "edge" `((source . ,source-name)
 			(target . ,target-name))))
 
-  ;; TODO Clusters
   (define (write-cluster id attributes write-contents)
-    (write-subgraph
-     (string-append "cluster_" (write-to-string id))
-     attributes write-contents))
+    (write-tag
+     "node" `((id . ,(string-append "(cluster) " (write-to-string id)))
+	      (yfiles.foldertype . "group"))
+     (lambda ()
+       (write-tag
+	"graph" `((edgedefault . "directed")
+		  (id . ,(string-append "(subgraph) " (write-to-string id))))
+	write-contents))))
 
+  ;; TODO Clusters
   (define (write-subgraph id attributes write-contents)
     (write-indentation)
     (write-string "subgraph " output-port)
