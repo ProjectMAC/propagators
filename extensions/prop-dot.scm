@@ -74,27 +74,12 @@
 (define (prop:dot:write-graph #!optional start output-port)
   (if (default-object? output-port)
       (set! output-port (current-output-port)))
-  (write-string "digraph G {" output-port)
-  (newline output-port)
-  (prop:dot:indented
-   (lambda ()
-     (prop:dot:write-options output-port)
-     (prop:dot:walk-graph output-port start)))
-  (write-string "}" output-port)
-  (newline output-port))
+  (let ((writer (make-dot-writer output-port)))
+    ((writer 'write-graph)
+     (lambda ()
+       (prop:dot:walk-graph writer start)))))
 
-(define (prop:dot:write-options output-port)
-  (for-each (lambda (option)
-	      (prop:dot:write-indentation output-port)
-              (write-string option output-port)
-              (write-string ";" output-port)
-              (newline output-port))
-            '(; "orientation=landscape"
-              ; "size=\"10,7.5\""
-              ; "page=\"8.5,11\""
-              "ratio=fill")))
-
-(define (prop:dot:walk-graph output-port #!optional start)
+(define (prop:dot:walk-graph writer #!optional start)
   (let ((visited (make-eq-hash-table))
 	(defer-edges? #f)
 	(deferred-edges '()))
@@ -125,15 +110,14 @@
 	     (error "Unshapeable node type" node))))
 
     (define (write-node node)
-      (prop:dot:write-node
+      ((writer 'write-node)
        (node-id node)
        `(("label" . ,(node-name node))
-	 ("shape" . ,(node-shape node)))
-       output-port))
+	 ("shape" . ,(node-shape node)))))
 
     (define (write-edge source target label)
       (define (edge-writer)
-	(prop:dot:write-edge source target `(("label" . ,label)) output-port))
+	((writer 'write-edge) source target `(("label" . ,label))))
       (if defer-edges?
 	  (set! deferred-edges (cons edge-writer deferred-edges))
 	  (edge-writer)))
@@ -178,12 +162,11 @@
 
     (define (traverse-group group)
       (fluid-let ((defer-edges? #t))
-	(prop:dot:write-cluster
+	((writer 'write-cluster)
 	 (hash group)
 	 `(("label" . ,(write-to-string (name group))))
 	 (lambda ()
-	   (for-each traverse (network-group-elements group)))
-	 output-port))
+	   (for-each traverse (network-group-elements group)))))
       (if (not defer-edges?)
 	  (dump-deferred-edges)))
 
@@ -212,69 +195,7 @@
 
     (dispatch start)))
 
-(define (prop:dot:write-node node-id attributes output-port)
-  (prop:dot:write-indentation output-port)
-  (write node-id output-port)
-  (prop:dot:write-attributes attributes output-port)
-  (write-string ";" output-port)
-  (newline output-port))
-
-(define (prop:dot:write-edge source-name target-name attributes output-port)
-  (prop:dot:write-indentation output-port)
-  (write source-name output-port)
-  (write-string " -> " output-port)
-  (write target-name output-port)
-  (prop:dot:write-attributes attributes output-port)
-  (write-string ";" output-port)
-  (newline output-port))
-
-(define (prop:dot:write-cluster id attributes write-contents output-port)
-  (prop:dot:write-subgraph
-   (string-append "cluster_" (write-to-string id))
-   attributes write-contents output-port))
-
-(define (prop:dot:write-subgraph id attributes write-contents output-port)
-  (prop:dot:write-indentation output-port)
-  (write-string "subgraph " output-port)
-  (write-string id output-port)
-  (write-string " { " output-port)
-  (prop:dot:write-subgraph-attributes attributes output-port)
-  (newline output-port)
-  (prop:dot:indented write-contents)
-  (prop:dot:write-indentation output-port)
-  (write-string "}" output-port)
-  (newline output-port))
-
-(define (prop:dot:write-attributes attributes output-port)
-  (if (pair? attributes)
-      (let ((first-attribute? #t))
-	(write-string " [" output-port)
-	(for-each (lambda (attribute)
-		    (if (not first-attribute?)
-			(write-string ", " output-port))
-		    (write-string (car attribute) output-port)
-		    (write-string "=" output-port)
-		    (write (cdr attribute) output-port)
-		    (set! first-attribute? #f))
-		  attributes)
-	(write-string " ]" output-port))))
-
-;;; TODO Why is the string handling in MIT Scheme so awful?
-(define (prop:dot:write-subgraph-attributes attributes output-port)
-  (if (pair? attributes)
-      (for-each (lambda (attribute)
-		  (write-string (car attribute) output-port)
-		  (write-string "=" output-port)
-		  (write (cdr attribute) output-port)
-		  (write-string "; " output-port))
-		attributes)))
-
 (define prop:dot:indentation-level 0)
-
-(define (prop:dot:write-indentation output-port)
-  (repeat prop:dot:indentation-level
-	  (lambda ()
-	    (write-string "  " output-port))))
 
 (define (prop:dot:indented thunk)
   (fluid-let ((prop:dot:indentation-level
