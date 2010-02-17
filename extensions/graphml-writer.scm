@@ -117,43 +117,6 @@
 		  (id . ,(string-append "(subgraph) " (write-to-string id))))
 	write-contents))))
 
-  ;; TODO Clusters
-  (define (write-subgraph id attributes write-contents)
-    (write-indentation)
-    (write-string "subgraph " output-port)
-    (write-string id output-port)
-    (write-string " { " output-port)
-    (write-subgraph-attributes attributes)
-    (newline output-port)
-    (prop:dot:indented write-contents)
-    (write-indentation)
-    (write-string "}" output-port)
-    (newline output-port))
-
-  (define (write-attributes attributes)
-    (if (pair? attributes)
-	(let ((first-attribute? #t))
-	  (write-string " [" output-port)
-	  (for-each (lambda (attribute)
-		      (if (not first-attribute?)
-			  (write-string ", " output-port))
-		      (write-string (car attribute) output-port)
-		      (write-string "=" output-port)
-		      (write (cdr attribute) output-port)
-		      (set! first-attribute? #f))
-		    attributes)
-	  (write-string " ]" output-port))))
-
-  ;;; TODO Why is the string handling in MIT Scheme so awful?
-  (define (write-subgraph-attributes attributes)
-    (if (pair? attributes)
-	(for-each (lambda (attribute)
-		    (write-string (car attribute) output-port)
-		    (write-string "=" output-port)
-		    (write (cdr attribute) output-port)
-		    (write-string "; " output-port))
-		  attributes)))
-
   (define (write-indentation)
     (repeat prop:dot:indentation-level
 	    (lambda ()
