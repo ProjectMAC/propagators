@@ -48,6 +48,7 @@
     (newline output-port))
 
   (define (write-tag tag attributes #!optional write-contents)
+    (newline output-port)
     (write-indentation)
     (write-string "<" output-port)
     (write-string tag output-port)
@@ -62,13 +63,10 @@
     (if (default-object? write-contents)
 	(write-string "/>" output-port)
 	(begin (write-string ">" output-port)
-	       (newline output-port)
 	       (prop:dot:indented write-contents)
-	       (write-indentation)
 	       (write-string "</" output-port)
 	       (write-string tag output-port)
-	       (write-string ">" output-port)))
-    (newline output-port))
+	       (write-string ">" output-port))))
 
   (define (write-node node-id attributes)
     (write-tag
@@ -84,9 +82,7 @@
 	     (write-tag
 	      "y:NodeLabel" '()
 	      (lambda ()
-		(write-indentation)
-		(write-string (cdr (assoc "label" attributes)) output-port)
-		(newline output-port)))
+		(write-string (cdr (assoc "label" attributes)) output-port)))
 	     (write-tag
 	      "y:Shape" `((type . ,(compute-node-shape attributes)))))))))))
 
