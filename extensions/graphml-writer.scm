@@ -62,9 +62,9 @@
 	       (write-string tag output-port)
 	       (write-string ">" output-port))))
 
-  (define (write-node node-id attributes)
+  (define (write-node node)
     (write-tag
-     "node" `((id . ,node-id))
+     "node" `((id . ,(prop:dot:node-id node)))
      (lambda ()
        (write-tag
 	"data" '((key . "d3"))
@@ -76,16 +76,15 @@
 	     (write-tag
 	      "y:NodeLabel" '()
 	      (lambda ()
-		(write-string (cdr (assoc "label" attributes)) output-port)))
+		(write-string (prop:dot:node-label node) output-port)))
 	     (write-tag
-	      "y:Shape" `((type . ,(compute-node-shape attributes)))))))))))
+	      "y:Shape" `((type . ,(compute-node-shape node)))))))))))
 
-  ;; What a hack!
-  (define (compute-node-shape attributes)
-    (let ((candidate (cdr (assoc "shape" attributes))))
-      (if (equal? "box" candidate)
-	  "rectangle"
-	  candidate)))
+  (define (compute-node-shape node)
+    (cond ((cell? node) "ellipse")
+	  ((propagator? node) "rectangle")
+	  (else
+	   (error "Unknown node type" node))))
 
   (define (write-edge source-name target-name attributes)
     ;; TODO Edge labels

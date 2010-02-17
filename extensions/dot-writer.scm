@@ -39,12 +39,24 @@
                 ; "page=\"8.5,11\""
 		"ratio=fill")))
 
-  (define (write-node node-id attributes)
+  (define (do-write-node node-id attributes)
     (write-indentation)
     (write node-id output-port)
     (write-attributes attributes)
     (write-string ";" output-port)
     (newline output-port))
+
+  (define (node-shape node)
+    (cond ((cell? node) "ellipse")
+	  ((propagator? node) "box")
+	  (else
+	   (error "Unshapeable node type" node))))
+
+  (define (write-node node)
+    (do-write-node
+     (prop:dot:node-id node)
+     `(("label" . ,(prop:dot:node-label node))
+       ("shape" . ,(node-shape node)))))
 
   (define (write-edge source-name target-name attributes)
     (write-indentation)

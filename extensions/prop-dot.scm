@@ -86,18 +86,8 @@
 
     (define (node? thing)
       (or (cell? thing) (propagator? thing)))
-    
-    (define (node-shape node)
-      (cond ((cell? node) "ellipse")
-	    ((propagator? node) "box")
-	    (else
-	     (error "Unshapeable node type" node))))
 
-    (define (write-node node)
-      ((writer 'write-node)
-       (prop:dot:node-id node)
-       `(("label" . ,(prop:dot:node-label node))
-	 ("shape" . ,(node-shape node)))))
+    (define write-node (writer 'write-node))
 
     (define (write-edge source target label)
       (define (edge-writer)
