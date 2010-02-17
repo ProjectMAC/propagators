@@ -41,6 +41,7 @@
 
 (for-each load-relative
  '("environments"
-   "prop-dot"))
+   "prop-dot"
+   "dot-writer"))
 
 (maybe-warn-low-memory)
