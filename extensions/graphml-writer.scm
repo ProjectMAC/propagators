@@ -54,8 +54,9 @@
     (for-each (lambda (pair)
 		(write-string " " output-port)
 		(write (car pair) output-port)
+		(write-string "=" output-port)
 		(write-string "\"" output-port)
-		(write (cdr pair) output-port)
+		(write-string (cdr pair) output-port)
 		(write-string "\"" output-port))
 	      attributes)
     (if (default-object? write-contents)
@@ -63,6 +64,7 @@
 	(begin (write-string ">" output-port)
 	       (newline output-port)
 	       (prop:dot:indented write-contents)
+	       (write-indentation)
 	       (write-string "</" output-port)
 	       (write-string tag output-port)
 	       (write-string ">" output-port)))
@@ -73,7 +75,7 @@
      "node" `((id . ,node-id))
      (lambda ()
        (write-tag
-	"data" '((key . d3))
+	"data" '((key . "d3"))
         (lambda ()
 	  (write-tag
 	   "y:ShapeNode" '()
@@ -82,7 +84,9 @@
 	     (write-tag
 	      "y:NodeLabel" '()
 	      (lambda ()
-		(write-string (cdr (assoc "label" attributes)) output-port)))
+		(write-indentation)
+		(write-string (cdr (assoc "label" attributes)) output-port)
+		(newline output-port)))
 	     (write-tag
 	      "y:Shape" `((type . ,(cdr (assoc "shape" attributes))))))))))))
 
