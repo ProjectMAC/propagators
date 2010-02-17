@@ -42,6 +42,7 @@
 (for-each load-relative
  '("environments"
    "prop-dot"
-   "dot-writer"))
+   "dot-writer"
+   "graphml-writer"))
 
 (maybe-warn-low-memory)
