@@ -33,7 +33,7 @@
      `((xmlns . "http://graphml.graphdrawing.org/xmlns")
        (xmlns:xsi . "http://www.w3.org/2001/XMLSchema-instance")
        (xmlns:y . "http://www.yworks.com/xml/graphml")
-       (,(string->symbol "xsi:schemeLocation") . "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd"))
+       (xsi:schemaLocation . "http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd"))
      write-contents)
     (newline output-port))
 
