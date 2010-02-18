@@ -67,17 +67,17 @@
     (write-string ";" output-port)
     (newline output-port))
 
-  (define (write-cluster id attributes write-contents)
+  (define (write-cluster id label write-contents)
     (write-subgraph
      (string-append "cluster_" (write-to-string id))
-     attributes write-contents))
+     label write-contents))
 
-  (define (write-subgraph id attributes write-contents)
+  (define (write-subgraph id label write-contents)
     (write-indentation)
     (write-string "subgraph " output-port)
     (write-string id output-port)
     (write-string " { " output-port)
-    (write-subgraph-attributes attributes)
+    (write-subgraph-attributes `(("label" . ,(write-to-string label))))
     (newline output-port)
     (prop:dot:indented write-contents)
     (write-indentation)

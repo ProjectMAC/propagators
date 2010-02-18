@@ -91,7 +91,7 @@
     (write-tag "edge" `((source . ,source-name)
 			(target . ,target-name))))
 
-  (define (write-cluster id attributes write-contents)
+  (define (write-cluster id label write-contents)
     (write-tag "node" `((id . ,(string-append "(cluster) " (write-to-string id)))
 			(yfiles.foldertype . "group"))
      (lambda ()
@@ -105,12 +105,12 @@
 		 (lambda ()
 		   (write-tag "y:NodeLabel" '()
 		    (lambda ()
-		      (write-string (cdr (assoc "label" attributes)) output-port)))))
+		      (write label output-port)))))
 		(write-tag "y:GroupNode" '()
 		 (lambda ()
 		   (write-tag "y:NodeLabel" '()
 		    (lambda ()
-		      (write-string (cdr (assoc "label" attributes)) output-port)))))))))))
+		      (write label output-port)))))))))))
        (write-tag
 	"graph" `((edgedefault . "directed")
 		  (id . ,(string-append "(subgraph) " (write-to-string id))))

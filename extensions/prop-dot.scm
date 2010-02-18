@@ -152,9 +152,7 @@
 
     (define (traverse-group group)
       (fluid-let ((defer-edges? #t))
-	((writer 'write-cluster)
-	 (hash group)
-	 `(("label" . ,(write-to-string (name group))))
+	((writer 'write-cluster) (hash group) (name group)
 	 (lambda ()
 	   (for-each traverse (network-group-elements group)))))
       (if (not defer-edges?)
