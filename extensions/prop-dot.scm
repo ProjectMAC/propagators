@@ -107,7 +107,7 @@
 
     (define (write-edge source target label)
       (define (edge-writer)
-	((writer 'write-edge) source target `(("label" . ,label))))
+	((writer 'write-edge) source target label))
       (if defer-edges?
 	  (set! deferred-edges (cons edge-writer deferred-edges))
 	  (edge-writer)))

@@ -58,12 +58,12 @@
      `(("label" . ,(prop:dot:node-label node))
        ("shape" . ,(node-shape node)))))
 
-  (define (write-edge source-name target-name attributes)
+  (define (write-edge source-name target-name label)
     (write-indentation)
     (write source-name output-port)
     (write-string " -> " output-port)
     (write target-name output-port)
-    (write-attributes attributes)
+    (write-attributes `(("label" . ,label)))
     (write-string ";" output-port)
     (newline output-port))
 

@@ -86,7 +86,7 @@
 	  (else
 	   (error "Unknown node type" node))))
 
-  (define (write-edge source-name target-name attributes)
+  (define (write-edge source-name target-name label)
     ;; TODO Edge labels
     (write-tag "edge" `((source . ,source-name)
 			(target . ,target-name))))
