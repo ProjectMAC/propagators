@@ -69,10 +69,10 @@
        (write-tag
 	"data" '((key . "d3"))
         (lambda ()
+	  ;; Could also do y:GenericNode configuration="ShinyPlateNode2" for propagators
 	  (write-tag
 	   "y:ShapeNode" '()
 	   (lambda ()
-	     ;; TODO This is a hack!
 	     (write-tag
 	      "y:NodeLabel" '()
 	      (lambda ()
@@ -82,33 +82,43 @@
 
   (define (compute-node-shape node)
     (cond ((cell? node) "ellipse")
-	  ((propagator? node) "rectangle")
+	  ((propagator? node) "roundrectangle")
 	  (else
 	   (error "Unknown node type" node))))
 
   (define (write-edge source-name target-name label)
     ;; TODO Edge labels
     (write-tag "edge" `((source . ,source-name)
-			(target . ,target-name))))
+			(target . ,target-name))
+     (lambda ()
+       (write-tag "data" '((key . "d6"))
+	(lambda ()
+	  (write-tag "y:PolyLineEdge" '()
+	   (lambda ()
+	     (write-tag "y:Arrows" '((source . "none")
+				     (target . "standard"))))))))))
 
   (define (write-cluster id label write-contents)
     (write-tag "node" `((id . ,(string-append "(cluster) " (write-to-string id)))
-			(yfiles.foldertype . "group"))
+			(yfiles.foldertype . "folder"))
      (lambda ()
        (write-tag "data" `((key . "d3"))
 	(lambda ()
 	  (write-tag "y:ProxyAutoBoundsNode" '()
 	   (lambda ()
-	     (write-tag "y:Realizers" '((active . "0"))
+	     (write-tag "y:Realizers" '((active . "1"))
 	      (lambda ()
 		(write-tag "y:GroupNode" '()
 		 (lambda ()
-		   (write-tag "y:NodeLabel" '()
+		   ;; TODO Preserve case of attribute names
+		   (write-tag "y:NodeLabel" '((modelname . "internal")
+					      (modelposition . "tl"))
 		    (lambda ()
 		      (write label output-port)))))
 		(write-tag "y:GroupNode" '()
 		 (lambda ()
-		   (write-tag "y:NodeLabel" '()
+		   (write-tag "y:NodeLabel" '((modelname . "internal")
+					      (modelposition . "tl"))
 		    (lambda ()
 		      (write label output-port)))))))))))
        (write-tag
