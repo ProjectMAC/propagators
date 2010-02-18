@@ -33,11 +33,18 @@
 
 ;;; Here's a cute way to use this:
 #;
-(fluid-let ((prop:cell-label
-	     (lambda (var) (cons (name var) (content var)))))
-  (prop:dot:show-graph))
+ (fluid-let ((prop:cell-label
+	      (lambda (var) (cons (name var) (content var)))))
+   (prop:dot:show-graph))
 ;;; That draws a picture of the network and lists the contents
 ;;; of the cells (with write-to-string).
+
+;;; Here's another fun way to play:
+#;
+ (fluid-let ((make-dot-writer make-graphml-writer))
+   (prop:dot:write-graph-to-file "frob.graphml"))
+;;; That draws stuff in gramphml.  (I'll fix this interface soon, I
+;;; promise).
 
 (define (prop:dot:show-graph #!optional start drawing-program)
   (call-with-temporary-file-pathname
