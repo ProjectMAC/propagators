@@ -192,6 +192,11 @@
 (specify-flat horse?)
 (specify-flat symbol?)
 
+(define (cell-grabber cell-table)
+  (lambda (key)
+    (or (get key cell-table)
+	(error "No owner for" key))))
+
 (define (cell-table-lookup-function cell-table)
   (name!
    (lambda (key)
@@ -233,13 +238,14 @@
 	   (map cons shields knight-shield-cells)
 	   (map cons horses knight-horse-cells)))
 	 (owner-of (cell-table-lookup-function cell-table))
+	 (cell-of (cell-grabber cell-table))
 	 (p:owner (flat-function->propagator-expression owner-of))
 	 (p:horse-of (lambda (thing)
-		       (p:knight-horse (p:owner thing))))
+		       (p:knight-horse (cell-of thing))))
 	 (p:shield-of (lambda (thing)
-			(p:knight-shield (p:owner thing))))
+			(p:knight-shield (cell-of thing))))
 	 (p:name-of (lambda (thing)
-		      (p:knight-name (p:owner thing)))))
+		      (p:knight-name (cell-of thing)))))
     ;; This is how the depth-first version of this program specified
     ;; its knights-{shields|horses|names} bijections.
     #|
