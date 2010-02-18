@@ -31,6 +31,15 @@
 ;;; Explore various graph drawing engines: graphviz, JGraph, others.
 ;;; http://www2.research.att.com/~volinsky/Graphs/slides/north.pdf
 
+;;; TODO:
+;;; Output Graphml (with some extensions) format as well as dot
+;;; Dump subgroup data for compound propagators ?
+;;; Dump subgroup data for closures ??
+;;; Dump subgroup data for nested expressions
+;;; Dump values (maybe user-configurable views on them?)
+;;; Dump animations of the progress of values over time
+;;; Draw pictures of all the interesting propagator networks.
+
 ;;; Here's a cute way to use this:
 #;
  (fluid-let ((prop:cell-label
