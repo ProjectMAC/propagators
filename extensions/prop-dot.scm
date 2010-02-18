@@ -32,6 +32,8 @@
 ;;; http://www2.research.att.com/~volinsky/Graphs/slides/north.pdf
 
 ;;; TODO:
+;;; Clean up the nomenclature of this now relatively syntax-independent
+;;;   network traversal code
 ;;; Output Graphml (with some extensions) format as well as dot
 ;;; Dump subgroup data for compound propagators ?
 ;;; Dump subgroup data for closures ??
