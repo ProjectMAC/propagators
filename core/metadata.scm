@@ -34,6 +34,13 @@
        (cons thing (network-group-elements *current-network-group*))))
   (eq-put! thing 'network-group *current-network-group*))
 
+(define (network-unregister thing)
+  (let ((group (network-group-of thing)))
+    (if group
+	(set-network-group-elements! group
+	 (delq thing (network-group-elements group)))))
+  (eq-rem! thing 'network-group))
+
 (define (network-group-of thing)
   (eq-get thing 'network-group))
 
