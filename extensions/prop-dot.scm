@@ -22,7 +22,6 @@
 ;;; TODO:
 ;;; Clean up the nomenclature of this now relatively syntax-independent
 ;;;   network traversal code
-;;; Dump subgroup data for compound propagators ?
 ;;; Dump subgroup data for closures ??
 ;;; - Implement draw-closure (in addition to draw-graph)?
 ;;; Dump subgroup data for nested expressions
