@@ -56,11 +56,11 @@
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
-  \"(cell) 12\" [label=\"foo\", shape=\"ellipse\" ];
-  \"(prop) 13\" [label=\"identity\", shape=\"box\" ];
-  \"(cell) 12\" -> \"(prop) 13\" [label=\"\" ];
-  \"(prop) 13\" -> \"(cell) 14\" [label=\"\" ];
-  \"(cell) 14\" [label=\"bar\", shape=\"ellipse\" ];
+  \"cell-12\" [label=\"foo\", shape=\"ellipse\" ];
+  \"prop-13\" [label=\"identity\", shape=\"box\" ];
+  \"cell-12\" -> \"prop-13\" [label=\"\" ];
+  \"prop-13\" -> \"cell-14\" [label=\"\" ];
+  \"cell-14\" [label=\"bar\", shape=\"ellipse\" ];
 }
 " (out)))
     (check (equal? (prop:dot:write-graph-to-string foo)
@@ -104,13 +104,13 @@
   ratio=fill;
   subgraph cluster_15 { label=\"top-group\"; 
     subgraph cluster_16 { label=\"subgroup\"; 
-      \"(prop) 17\" [label=\"identity\", shape=\"box\" ];
-      \"(cell) 19\" [label=\"bar\", shape=\"ellipse\" ];
+      \"prop-17\" [label=\"identity\", shape=\"box\" ];
+      \"cell-19\" [label=\"bar\", shape=\"ellipse\" ];
     }
-    \"(cell) 18\" [label=\"foo\", shape=\"ellipse\" ];
+    \"cell-18\" [label=\"foo\", shape=\"ellipse\" ];
   }
-  \"(cell) 18\" -> \"(prop) 17\" [label=\"\" ];
-  \"(prop) 17\" -> \"(cell) 19\" [label=\"\" ];
+  \"cell-18\" -> \"prop-17\" [label=\"\" ];
+  \"prop-17\" -> \"cell-19\" [label=\"\" ];
 }
 " (out)))))
 
@@ -126,17 +126,20 @@
   ratio=fill;
   subgraph cluster_20 { label=\"top-group\"; 
     subgraph cluster_21 { label=\"identity-constraint\"; 
-      \"(prop) 22\" [label=\"identity\", shape=\"box\" ];
-      \"(prop) 25\" [label=\"identity\", shape=\"box\" ];
+      \"prop-22\" [label=\"identity\", shape=\"box\" ];
+      \"prop-25\" [label=\"identity\", shape=\"box\" ];
     }
-    \"(cell) 23\" [label=\"bar\", shape=\"ellipse\" ];
-    \"(cell) 24\" [label=\"foo\", shape=\"ellipse\" ];
+    \"cell-23\" [label=\"bar\", shape=\"ellipse\" ];
+    \"cell-24\" [label=\"foo\", shape=\"ellipse\" ];
   }
-  \"(cell) 23\" -> \"(prop) 22\" [label=\"\" ];
-  \"(prop) 22\" -> \"(cell) 24\" [label=\"\" ];
-  \"(cell) 24\" -> \"(prop) 25\" [label=\"\" ];
-  \"(prop) 25\" -> \"(cell) 23\" [label=\"\" ];
+  \"cell-23\" -> \"prop-22\" [label=\"\" ];
+  \"prop-22\" -> \"cell-24\" [label=\"\" ];
+  \"cell-24\" -> \"prop-25\" [label=\"\" ];
+  \"prop-25\" -> \"cell-23\" [label=\"\" ];
 }
 " (out)))))
+
+ ;; TODO Add a test of drawing networks with expanded and unexpanded
+ ;; compound propagators.
 
  )
