@@ -64,6 +64,14 @@
 	       (write-string tag output-port)
 	       (write-string ">" output-port))))
 
+  (define (write-data string)
+    (write-string (xml-escape string) output-port))
+
+  (define (xml-escape string)
+    ;; Yes, I know this is horribly inadequate and wrong, but it's
+    ;; good enough for now.
+    (string-replace string "<" "&lt;"))
+
   (define (write-node node)
     (write-tag
      "node" `((id . ,(prop:dot:node-id node)))
@@ -78,7 +86,7 @@
 	     (write-tag
 	      "y:NodeLabel" '()
 	      (lambda ()
-		(write-string (prop:dot:node-label node) output-port)))
+		(write-data (prop:dot:node-label node))))
 	     (write-tag
 	      "y:Shape" `((type . ,(compute-node-shape node)))))))))))
 
