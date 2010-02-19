@@ -17,30 +17,20 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-;;; Code to render propagator networks as dot graphs.
-
-;;; TODO Further improvements
-
-;;; Desperately need support for various forms of abstraction on the
-;;; graph, perhaps in the form of subgraph labels.  In particular, the
-;;; internal structure of "macros", call-sites, and closures should be
-;;; subgraphed, and ideally suppressible.
-;;; - In particular, draw-closure (instead of draw-graph) might be
-;;;   easy enough to implement.
-
-;;; Explore various graph drawing engines: graphviz, JGraph, others.
-;;; http://www2.research.att.com/~volinsky/Graphs/slides/north.pdf
+;;; Code to visualize propagator networks as graphs.
 
 ;;; TODO:
 ;;; Clean up the nomenclature of this now relatively syntax-independent
 ;;;   network traversal code
-;;; Output Graphml (with some extensions) format as well as dot
 ;;; Dump subgroup data for compound propagators ?
 ;;; Dump subgroup data for closures ??
+;;; - Implement draw-closure (in addition to draw-graph)?
 ;;; Dump subgroup data for nested expressions
-;;; Dump values (maybe user-configurable views on them?)
+;;; Dump snapshots of values (maybe user-configurable views on them?)
 ;;; Dump animations of the progress of values over time
 ;;; Draw pictures of all the interesting propagator networks.
+;;; Explore various graph drawing engines: graphviz, JGraph, others.
+;;;   http://www2.research.att.com/~volinsky/Graphs/slides/north.pdf
 
 ;;; Here's a cute way to use this:
 #;
