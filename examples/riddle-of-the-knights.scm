@@ -197,22 +197,6 @@
     (or (get key cell-table)
 	(error "No owner for" key))))
 
-(define (cell-table-lookup-function cell-table)
-  (name!
-   (lambda (key)
-     (let ((answer (content (or (get key cell-table)
-				(error "No owner for" key)))))
-       (if (tms? answer)
-	   (let ((best-answer (tms-query answer)))
-	     (cond ((v&s? best-answer)
-		    (make-tms (list best-answer)))
-		   ((nothing? best-answer)
-		    nothing)
-		   (else
-		    (error "Huh? owner-of confused by" best-answer))))
-	   answer)))
-   'get))
-
 (define p:knight-maker
   (functionalize (function->propagator-constructor make-knight)))
 
@@ -237,9 +221,7 @@
 	   (map cons names knight-name-cells)
 	   (map cons shields knight-shield-cells)
 	   (map cons horses knight-horse-cells)))
-	 (owner-of (cell-table-lookup-function cell-table))
 	 (cell-of (cell-grabber cell-table))
-	 (p:owner (flat-function->propagator-expression owner-of))
 	 (p:horse-of (lambda (thing)
 		       (p:knight-horse (cell-of thing))))
 	 (p:shield-of (lambda (thing)
