@@ -31,10 +31,10 @@
 (define (sqrt-iter x g answer)
   (compound-propagator (list x g)
     (lambda ()
-      (let-cells (done x-if-not-done g-if-done g-if-not-done
+      (let-cells (done x-if-done x-if-not-done g-if-done g-if-not-done
 		       new-g recursive-answer)
         (good-enuf? x g done)
-        (conditional-writer done x (make-cell) x-if-not-done)
+        (conditional-writer done x x-if-done x-if-not-done)
         (conditional-writer done g g-if-done g-if-not-done)
         (heron-step x-if-not-done g-if-not-done new-g)
         (sqrt-iter x-if-not-done new-g recursive-answer)
