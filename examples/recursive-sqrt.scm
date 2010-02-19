@@ -21,41 +21,49 @@
 
 (define (heron-step x g h)
   (compound-propagator (list x g)       ; inputs
-    (lambda ()                          ; how to build
-      (let-cells (x/g g+x/g two)
-        (divider x g x/g)
-        (adder g x/g g+x/g)
-        ((constant 2) two)
-        (divider g+x/g two h)))))
+    (eq-put!
+     (lambda ()				; how to build
+       (let-cells (x/g g+x/g two)
+	 (divider x g x/g)
+	 (adder g x/g g+x/g)
+	 ((constant 2) two)
+	 (divider g+x/g two h)))
+     'name 'heron-step)))
 
 (define (sqrt-iter x g answer)
   (compound-propagator (list x g)
-    (lambda ()
-      (let-cells (done x-if-done x-if-not-done g-if-done g-if-not-done
-		       new-g recursive-answer)
-        (good-enuf? x g done)
-        (conditional-writer done x x-if-done x-if-not-done)
-        (conditional-writer done g g-if-done g-if-not-done)
-        (heron-step x-if-not-done g-if-not-done new-g)
-        (sqrt-iter x-if-not-done new-g recursive-answer)
-        (conditional done g-if-done recursive-answer answer)))))
+    (eq-put!
+     (lambda ()
+       (let-cells (done x-if-done x-if-not-done g-if-done g-if-not-done
+			new-g recursive-answer)
+	 (good-enuf? x g done)
+	 (conditional-writer done x x-if-done x-if-not-done)
+	 (conditional-writer done g g-if-done g-if-not-done)
+	 (heron-step x-if-not-done g-if-not-done new-g)
+	 (sqrt-iter x-if-not-done new-g recursive-answer)
+	 (conditional done g-if-done recursive-answer answer)))
+     'name 'sqrt-iter)))
 
 (define (sqrt-network x answer)
   (compound-propagator x
-    (lambda ()
-      (let-cell one
-        ((constant 1.0) one)
-        (sqrt-iter x one answer)))))
+    (eq-put!
+     (lambda ()
+       (let-cell one
+	 ((constant 1.0) one)
+	 (sqrt-iter x one answer)))
+     'name 'sqrt-network)))
 
 (define (good-enuf? x g done)
   (compound-propagator (list x g)
-    (lambda ()
-      (let-cells (g^2 eps x-g^2 ax-g^2)
-        ((constant .00000001) eps)
-        (multiplier g g g^2)
-        (subtractor x g^2 x-g^2)
-        (absolute-value x-g^2 ax-g^2)
-        (<? ax-g^2 eps done)))))
+    (eq-put!
+     (lambda ()
+       (let-cells (g^2 eps x-g^2 ax-g^2)
+	 ((constant .00000001) eps)
+	 (multiplier g g g^2)
+	 (subtractor x g^2 x-g^2)
+	 (absolute-value x-g^2 ax-g^2)
+	 (<? ax-g^2 eps done)))
+     'name 'good-enuf?)))
 
 #|
  (initialize-scheduler)

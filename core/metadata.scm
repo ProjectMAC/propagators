@@ -34,10 +34,19 @@
        (cons thing (network-group-elements *current-network-group*))))
   (eq-put! thing 'network-group *current-network-group*))
 
+(define (network-group-of thing)
+  (eq-get thing 'network-group))
+
+(define (in-network-group group thunk)
+  (if group
+      (fluid-let ((*current-network-group* group))
+	(thunk))
+      (thunk) ;; TODO What should I really do if there is no group?
+      ))
+
 (define (with-network-group group thunk)
   (network-register group)
-  (fluid-let ((*current-network-group* group))
-    (thunk)))
+  (in-network-group group thunk))
 
 (define (clear-network-group thing)
   (eq-rem! thing 'shadow-connections 'inputs 'outputs 'network-group)

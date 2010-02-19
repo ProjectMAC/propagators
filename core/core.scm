@@ -153,7 +153,11 @@
           (if (every nothing? (map content neighbors))
               'ok
               (begin (set! done? #t)
-                     (to-build)))))
+		     (in-network-group (network-group-of test)
+		      (lambda ()
+			(with-network-group (network-group-named (name to-build))
+			 to-build)))))))
+    (eq-label! test 'name (name to-build))
     (propagator neighbors test)))
 
 ;;; Merging, and the basic data types.
