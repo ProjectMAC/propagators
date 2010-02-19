@@ -101,7 +101,7 @@
 				     (target . "standard"))))))))))
 
   (define (write-cluster id label write-contents)
-    (write-tag "node" `((id . ,(string-append "(cluster) " (write-to-string id)))
+    (write-tag "node" `((id . ,(string-append "cluster-" (write-to-string id)))
 			(yfiles.foldertype . "folder"))
      (lambda ()
        (write-tag "data" `((key . "d3"))
@@ -128,7 +128,7 @@
 		      (write label output-port)))))))))))
        (write-tag
 	"graph" `((edgedefault . "directed")
-		  (id . ,(string-append "(subgraph) " (write-to-string id))))
+		  (id . ,(string-append "subgraph-" (write-to-string id))))
 	write-contents))))
 
   (define (write-indentation)

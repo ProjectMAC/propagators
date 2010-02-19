@@ -178,8 +178,8 @@
 
 (define (prop:dot:node-id node)
   (define (node-type-string node)
-    (cond ((cell? node) "(cell) ")
-	  ((propagator? node) "(prop) ")
+    (cond ((cell? node) "cell-")
+	  ((propagator? node) "prop-")
 	  (else
 	   (error "Unknown node type" node))))
   (string-append (node-type-string node) (write-to-string (hash node))))
