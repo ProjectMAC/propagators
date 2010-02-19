@@ -86,6 +86,10 @@
   (let ((plist
 	 (hash-table/get eq-properties node #f)))
     (if plist (cons node plist) #f)))
+
+(define (eq-clone! source target)
+  (hash-table/put! eq-properties target
+    (hash-table/get eq-properties source '())))
 
 ;;; Path names are built with properties.
 

@@ -160,7 +160,7 @@
 			(network-unregister test)
 			(with-network-group (network-group-named (name to-build))
 			 to-build)))))))
-    (eq-label! test 'name (name to-build))
+    (eq-clone! to-build test)
     (propagator neighbors test)))
 
 ;;; Merging, and the basic data types.
