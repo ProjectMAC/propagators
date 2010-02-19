@@ -28,6 +28,7 @@
 ;;; Dump subgroup data for nested expressions
 ;;; Dump snapshots of values (maybe user-configurable views on them?)
 ;;; Dump animations of the progress of values over time
+;;; - ddb searches; recursions
 ;;; Draw pictures of all the interesting propagator networks.
 ;;; Explore various graph drawing engines: graphviz, JGraph, others.
 ;;;   http://www2.research.att.com/~volinsky/Graphs/slides/north.pdf
