@@ -111,3 +111,6 @@
 (propagatify make-trip-segment-by-pain)
 (propagatify make-trip-segment-by-method)
 
+
+;;; Hack for numerical estimates.  I should really do this with
+;;; premises and proper truth maintenance

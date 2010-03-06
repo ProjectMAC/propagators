@@ -1,19 +1,11 @@
 Estimate merger (premises? "degrees of specificity"?)
-- Ha! Given a prior pdf and a posterior pdf, you can compute by
-  division what the likelihood must have been at each possible datum
-  (provided the support of the posterior is a subset of the support of
-  the prior).  Having computed the likelihood and knowing the prior,
-  you can compute the normalizing constant.  The normalizing constant
-  is the level of surprise; so you can compute how surprising a piece
-  of evidence must have been from the conclusion the evidence yielded,
-  without having to examine the evidence itself.  "He must have found
-  out something really wild to have changed his opinion that much."
-  In fact, the amplification of the posterior over the prior at a single
-  point is a lower bound on the overall surprise.
-  - This relies on normalizing the likelihood so that the max-likelihood
-    event, say, has likelihood 1.
+Method compounder?
 Method merger?
 Test split-node
+- Bug: p:+ uses my generic-+; will I pick up units and estimates
+  together correctly?  Does avoiding usual-integrations in 
+  generic-definitions.scm solve this problem?  Why did I need (access / mumble)
+  again?
 Add data for other methods
 Test choice-node
 Test full thing (recursive definitions)
@@ -39,3 +31,18 @@ Crunch todo.org
 
 "The fact that you can add an arbitary critic or selector; pieces are
 autonomous"
+
+
+Ha! Given a prior pdf and a posterior pdf, you can compute by
+division what the likelihood must have been at each possible datum
+(provided the support of the posterior is a subset of the support of
+the prior).  Having computed the likelihood and knowing the prior,
+you can compute the normalizing constant.  The normalizing constant
+is the level of surprise; so you can compute how surprising a piece
+of evidence must have been from the conclusion the evidence yielded,
+without having to examine the evidence itself.  "He must have found
+out something really wild to have changed his opinion that much."
+In fact, the amplification of the posterior over the prior at a single
+point is a lower bound on the overall surprise.
+- This relies on normalizing the likelihood so that the max-likelihood
+  event, say, has likelihood 1.
