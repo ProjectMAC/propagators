@@ -96,18 +96,18 @@
 
 ;;; The actual specific planners
 (define (plan-walk go? segment)
-  ((const (make-trip-segment-key 'method 'just-walk)) segment)
-  (time-est segment (& 4 (/ kilometer hour)) segment)
+  ((constant (make-trip-segment-key 'method 'just-walk)) segment)
+  (time-est segment (& 3 (/ mile hour)) segment)
   ;; Or more for food, etc if it takes a long time
-  ((const (make-trip-segment-key 'cost (& 0 dollars))) segment)
+  ((constant (make-trip-segment-key 'cost (& 0 dollar))) segment)
   ;; Or: Some fixed function of time
-  ((const (make-trip-segment-key 'pain (& 0 craps))) segment))
+  ((constant (make-trip-segment-key 'pain (& 0 crap))) segment))
 
 (define (fast-air-estimate segment)
-  ((const (make-trip-segment-key 'method 'fly)) segment)
-  ((const (make-trip-segment-key 'time (& 1 day))) segment)
-  ((const (make-trip-segment-key 'cost (& 500 dollars)) segment))
-  ((const (make-trip-segment-key 'pain (& 200 craps)) segment)))
+  ((constant (make-trip-segment-key 'method 'fly)) segment)
+  ((constant (make-trip-segment-key 'time (& 1 day))) segment)
+  ((constant (make-trip-segment-key 'cost (& 500 dollar))) segment)
+  ((constant (make-trip-segment-key 'pain (& 200 crap))) segment))
 
 (define (airport-splitter go? segment to by from)
   ; (start segment) -> (start to)
@@ -121,11 +121,11 @@
   ...)
 
 (define (fast-train-estimate segment)
-  ((const (make-trip-segment-key 'method 'take-the-train)) segment)
+  ((constant (make-trip-segment-key 'method 'take-the-train)) segment)
   ;; Plus two hours for two-from the station?
-  (time-est segment (& 80 (/ kilometer hour)) segment)
-  ((const (make-trip-segment-key 'cost (& 50 dollars))) segment)
-  ((const (make-trip-segment-key 'pain (& 25 craps))) segment))
+  (time-est segment (& 50 (/ mile hour)) segment)
+  ((constant (make-trip-segment-key 'cost (& 50 dollar))) segment)
+  ((constant (make-trip-segment-key 'pain (& 25 crap))) segment))
 
 (define (between-stations go? segment)
   ; Complicated task-specific stuff...
@@ -134,16 +134,26 @@
 (define (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer)
     (switch same-city? same-city-answer segment)
-    ((const (make-trip-segment-key 'method 'subway)) same-city-answer)
-    ((const (make-trip-segment-key 'time (& 1 hour)) same-city-answer))
-    ((const (make-trip-segment-key 'cost (& 2 dollars))) same-city-answer)
-    ((const (make-trip-segment-key 'pain (& 25 craps))) same-city-answer)
+    ((constant (make-trip-segment-key 'method 'subway)) same-city-answer)
+    ((constant (make-trip-segment-key 'time (& 1 hour)) same-city-answer))
+    ((constant (make-trip-segment-key 'cost (& 2 dollar))) same-city-answer)
+    ((constant (make-trip-segment-key 'pain (& 25 crap))) same-city-answer)
     (same-city segment same-city?)))
 
 (define (between-stops go? segment)
   ; Complicated task-specific stuff...
   ...)
 
-
+#|
+ (initialize-scheduler)
+ (define-cell foo)
+ (add-content foo (make-trip-segment-key 'start 'home 'end 'met))
+ (fast-air-estimate foo)
+ (run)
+|#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?
+
+;;; Unit system hacking
+(define dollar ampere)
+(define crap ampere)

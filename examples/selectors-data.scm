@@ -1,12 +1,12 @@
 (define-structure
   (trip-segment (constructor make-trip-segment)
 		(keyword-constructor make-trip-segment-key))
-  start
-  end
-  time
-  cost
-  pain
-  method)
+  (start  nothing read-only #t)
+  (end    nothing read-only #t)
+  (time   nothing read-only #t)
+  (cost   nothing read-only #t)
+  (pain   nothing read-only #t)
+  (method nothing read-only #t))
 
 (define (trip-segment-merge trip-segment1 trip-segment2)
   (let ((start-answer  (merge (trip-segment-start trip-segment1)
