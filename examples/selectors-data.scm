@@ -113,3 +113,30 @@
 
 ;;; Hack for numerical estimates.  I should really do this with
 ;;; premises and proper truth maintenance
+
+(define-structure estimate
+  value)
+
+(defhandler merge
+  (lambda (estimate1 estimate2)
+    (if (= (estimate-value estimate1)
+	   (estimate-value estimate1))
+	estimate1			; Redundant estimate
+	estimate2			; Assume new one is better
+	))
+  estimate? estimate?)
+
+(define (maybe-units? thing)
+  (or (number? thing)
+      (with-units? thing)))
+
+;; Estimates always lose to "hard facts":
+(defhandler merge
+  (lambda (content increment)
+    increment)
+  estimate? maybe-units?)
+
+(defhandler merge
+  (lambda (content increment)
+    content)
+  maybe-units? estimate?)
