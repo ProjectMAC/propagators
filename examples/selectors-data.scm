@@ -55,11 +55,20 @@
   ;;; Ha!
   (cdr (assoc (list (trip-segment-start trip-segment)
 		    (trip-segment-end   trip-segment))
-	      `(((home met) . ,(& 400 kilo meter)))))
+	      `(((home met) . ,(& 400 kilo meter))
+		((home logan) . ,(& 8 kilo meter))
+		((logan laguardia) . ,(& 400 kilo meter))
+		((laguardia met) . ,(& 5 kilo meter))
+		)))
   )
 
 (define (time-est-f trip-segment speed)
-  (make-trip-segment-key 'time (/ (distance-est-f trip-segment) speed)))
+  (cond ((nothing? (trip-segment-start trip-segment))
+	 nothing)
+	((nothing? (trip-segment-end trip-segment))
+	 nothing)
+	(else
+	 (make-trip-segment-key 'time (/ (distance-est-f trip-segment) speed)))))
 
 (define time-est (function->propagator-constructor (nary-unpacking time-est-f)))
 
@@ -78,6 +87,10 @@
 
 (propagatify trip-segment-start)
 (propagatify trip-segment-end)
+(propagatify trip-segment-time)
+(propagatify trip-segment-cost)
+(propagatify trip-segment-pain)
+(propagatify trip-segment-method)
 
 (define (pick-airport place)
   (cdr (assoc place '((home . logan)
@@ -103,7 +116,7 @@
 (define (make-trip-segment-by-method method)
   (make-trip-segment-key 'method method))
 
-(propagatify make-trip-segment-by-method)
+(propagatify make-trip-segment-by-start)
 (propagatify make-trip-segment-by-end)
 (propagatify make-trip-segment-by-time)
 (propagatify make-trip-segment-by-cost)

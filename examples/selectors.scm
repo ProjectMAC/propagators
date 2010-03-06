@@ -87,11 +87,6 @@
    (split-node fast-subway-estimate (splitter p:pick-subway)
 	       plan-trip between-stops plan-trip))
 |#
-#;
-(define plan-air
-  (split-node fast-air-estimate (splitter p:pick-airport)
-	      plan-walk between-airports plan-walk))
-
 (define (answer-compounder go? out . subanswers)
   (pass-through
    (p:make-trip-segment-by-start (p:trip-segment-start (car subanswers)))
@@ -101,15 +96,15 @@
    out)
   (pass-through
    (p:make-trip-segment-by-time
-    (apply p:+ (map p:trip-segment-time subanswers)))
+    (reduce p:+ (make-cell) (map p:trip-segment-time subanswers)))
    out)
   (pass-through
    (p:make-trip-segment-by-cost
-    (apply p:+ (map p:trip-segment-cost subanswers)))
+    (reduce p:+ (make-cell) (map p:trip-segment-cost subanswers)))
    out)
   (pass-through
    (p:make-trip-segment-by-pain
-    (apply p:+ (map p:trip-segment-pain subanswers)))
+    (reduce p:+ (make-cell) (map p:trip-segment-pain subanswers)))
    out)
   ;; TODO Do the method correctly; incl the waypoints, etc.
   )
@@ -152,6 +147,10 @@
   ;; TODO Refinement of numbers, and of the method
   (plan-walk go? segment)
   )
+
+(define plan-air
+  (split-node fast-air-estimate (splitter p:pick-airport)
+	      plan-walk between-airports plan-walk))
 
 (define (fast-train-estimate segment)
   ((constant (make-trip-segment-key 'method 'take-the-train)) segment)
@@ -211,6 +210,13 @@
  (run)
  (map pp (map content (list fly-to-met beginning middle end)))
 
+ (initialize-scheduler)
+ (define-cell go?)
+ (define-cell fly-to-met)
+ (add-content fly-to-met (make-trip-segment-key 'start 'home 'end 'met))
+ (plan-air go? fly-to-met)
+ (run)
+ (pp (content fly-to-met))
 |#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?
