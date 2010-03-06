@@ -46,3 +46,4 @@
    "graphml-writer"))
 
 (maybe-warn-low-memory)
+(initialize-scheduler)

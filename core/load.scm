@@ -47,3 +47,4 @@
     "example-networks"))
 
 (maybe-warn-low-memory)
+(initialize-scheduler)
