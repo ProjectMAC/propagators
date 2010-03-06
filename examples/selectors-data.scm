@@ -1,14 +1,35 @@
 ;;; Trip segments in general
 
 (define-structure
-  (trip-segment (constructor make-trip-segment)
-		(keyword-constructor make-trip-segment-key))
+  (trip-segment
+   (constructor make-trip-segment)
+   (constructor make-trip-segment-by-start  (start))
+   (constructor make-trip-segment-by-end    (end))
+   (constructor make-trip-segment-by-time   (time))
+   (constructor make-trip-segment-by-cost   (cost))
+   (constructor make-trip-segment-by-pain   (pain))
+   (constructor make-trip-segment-by-method (method))
+   (keyword-constructor make-trip-segment-key))
   (start  nothing read-only #t)
   (end    nothing read-only #t)
   (time   nothing read-only #t)
   (cost   nothing read-only #t)
   (pain   nothing read-only #t)
   (method nothing read-only #t))
+
+(propagatify trip-segment-start)
+(propagatify trip-segment-end)
+(propagatify trip-segment-time)
+(propagatify trip-segment-cost)
+(propagatify trip-segment-pain)
+(propagatify trip-segment-method)
+
+(propagatify make-trip-segment-by-start)
+(propagatify make-trip-segment-by-end)
+(propagatify make-trip-segment-by-time)
+(propagatify make-trip-segment-by-cost)
+(propagatify make-trip-segment-by-pain)
+(propagatify make-trip-segment-by-method)
 
 (define (trip-segment-merge trip-segment1 trip-segment2)
   (let ((start-answer  (merge (trip-segment-start trip-segment1)
@@ -84,13 +105,6 @@
 (define same-city
   (function->propagator-constructor (nary-unpacking same-city-f?)))
 
-(propagatify trip-segment-start)
-(propagatify trip-segment-end)
-(propagatify trip-segment-time)
-(propagatify trip-segment-cost)
-(propagatify trip-segment-pain)
-(propagatify trip-segment-method)
-
 (define (pick-airport place)
   (cdr (assoc place '((home . logan)
 		      (met . laguardia)))))
@@ -106,32 +120,6 @@
 		    (& 4 hour) (& 432 dollar) (& 215 crap) 'fly))))))
 
 (propagatify airport-lookup)
-
-(define (make-trip-segment-by-start place)
-  (make-trip-segment-key 'start place))
-
-(define (make-trip-segment-by-end place)
-  (make-trip-segment-key 'end place))
-
-(define (make-trip-segment-by-time time)
-  (make-trip-segment-key 'time time))
-
-(define (make-trip-segment-by-cost cost)
-  (make-trip-segment-key 'cost cost))
-
-(define (make-trip-segment-by-pain pain)
-  (make-trip-segment-key 'pain pain))
-
-(define (make-trip-segment-by-method method)
-  (make-trip-segment-key 'method method))
-
-(propagatify make-trip-segment-by-start)
-(propagatify make-trip-segment-by-end)
-(propagatify make-trip-segment-by-time)
-(propagatify make-trip-segment-by-cost)
-(propagatify make-trip-segment-by-pain)
-(propagatify make-trip-segment-by-method)
-
 
 ;;; Hack for numerical estimates.  I should really do this with
 ;;; premises and proper truth maintenance
