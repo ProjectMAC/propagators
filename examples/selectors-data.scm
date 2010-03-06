@@ -74,7 +74,8 @@
   (eq? (trip-segment-start trip-segment)
        (trip-segment-end trip-segment)))
 
-(define same-city (function->propagator-constructor (nary-unpacking same-city-f?)))
+(define same-city
+  (function->propagator-constructor (nary-unpacking same-city-f?)))
 
 (propagatify trip-segment-start)
 (propagatify trip-segment-end)
@@ -91,6 +92,22 @@
 (define (make-trip-segment-by-end place)
   (make-trip-segment-key 'end place))
 
-(propagatify make-trip-segment-by-start)
+(define (make-trip-segment-by-time time)
+  (make-trip-segment-key 'time time))
+
+(define (make-trip-segment-by-cost cost)
+  (make-trip-segment-key 'cost cost))
+
+(define (make-trip-segment-by-pain pain)
+  (make-trip-segment-key 'pain pain))
+
+(define (make-trip-segment-by-method method)
+  (make-trip-segment-key 'method method))
+
+(propagatify make-trip-segment-by-method)
 (propagatify make-trip-segment-by-end)
+(propagatify make-trip-segment-by-time)
+(propagatify make-trip-segment-by-cost)
+(propagatify make-trip-segment-by-pain)
+(propagatify make-trip-segment-by-method)
 

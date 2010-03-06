@@ -93,7 +93,26 @@
 	      plan-walk between-airports plan-walk))
 
 (define (answer-compounder go? out . subanswers)
-  ...)
+  (pass-through
+   (p:make-trip-segment-by-start (p:trip-segment-start (car subanswers)))
+   out)
+  (pass-through
+   (p:make-trip-segment-by-end (p:trip-segment-end (car (last-pair subanswers))))
+   out)
+  (pass-through
+   (p:make-trip-segment-by-time
+    (apply p:+ (map p:trip-segment-time subanswers)))
+   out)
+  (pass-through
+   (p:make-trip-segment-by-cost
+    (apply p:+ (map p:trip-segment-cost subanswers)))
+   out)
+  (pass-through
+   (p:make-trip-segment-by-pain
+    (apply p:+ (map p:trip-segment-pain subanswers)))
+   out)
+  ;; TODO Do the method correctly; incl the waypoints, etc.
+  )
 
 (define (forwarder go? subgo?)
   ;; If the "go" signal is suitably "deep-go", forward it.

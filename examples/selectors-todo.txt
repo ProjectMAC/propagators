@@ -1,7 +1,3 @@
-Clean the kitchen
-Transform examples into unit tests
-Normalize loading structure?  Subdirectory?
-answer-compounder (easy)
 Estimate merger (premises? "degrees of specificity"?)
 - Ha! Given a prior pdf and a posterior pdf, you can compute by
   division what the likelihood must have been at each possible datum
@@ -18,11 +14,21 @@ Estimate merger (premises? "degrees of specificity"?)
     event, say, has likelihood 1.
 Method merger?
 Test split-node
-Test full thing
+Add data for other methods
+Test choice-node
+Test full thing (recursive definitions)
+
+Transform examples into unit tests
+Normalize loading structure?  Subdirectory?
+Refactor out the keyword constructor, since I need the curried versions
+anyway?
 
 Pull the annoyance out of the computation, and make the critics deduce
 the annoyance from the method, and control the search with arbitrary
 criteria.
+
+Normalize use of expression style?  Including the pass-throughs?
+Prettify the program for display.
 
 Draw pictures.
 
