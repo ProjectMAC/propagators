@@ -96,15 +96,15 @@
    out)
   (pass-through
    (p:make-trip-segment-by-time
-    (reduce p:+ (make-cell) (map p:trip-segment-time subanswers)))
+    (reduce p:+ (p:const 0) (map p:trip-segment-time subanswers)))
    out)
   (pass-through
    (p:make-trip-segment-by-cost
-    (reduce p:+ (make-cell) (map p:trip-segment-cost subanswers)))
+    (reduce p:+ (p:const 0) (map p:trip-segment-cost subanswers)))
    out)
   (pass-through
    (p:make-trip-segment-by-pain
-    (reduce p:+ (make-cell) (map p:trip-segment-pain subanswers)))
+    (reduce p:+ (p:const 0) (map p:trip-segment-pain subanswers)))
    out)
   ;; TODO Do the method correctly; incl the waypoints, etc.
   )
@@ -124,9 +124,12 @@
 
 (define (fast-air-estimate segment)
   ((constant (make-trip-segment-key 'method 'fly)) segment)
-  ((constant (make-trip-segment-key 'time (& 1 day))) segment)
-  ((constant (make-trip-segment-key 'cost (& 500 dollar))) segment)
-  ((constant (make-trip-segment-key 'pain (& 200 crap))) segment))
+  ((constant (make-trip-segment-key
+	      'time (make-estimate (& 1 day)))) segment)
+  ((constant (make-trip-segment-key
+	      'cost (make-estimate (& 500 dollar)))) segment)
+  ((constant (make-trip-segment-key
+	      'pain (make-estimate (& 200 crap)))) segment))
 
 (define ((splitter p:pick-waypoint) go? segment beginning middle end)
   (pass-through (p:make-trip-segment-by-start (p:trip-segment-start segment))
