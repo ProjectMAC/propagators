@@ -59,8 +59,7 @@
   )
 
 (define (time-est-f trip-segment speed)
-  (make-trip-segment-key 'time
-    ((access / generic-environment) (distance-est-f trip-segment) speed)))
+  (make-trip-segment-key 'time (/ (distance-est-f trip-segment) speed)))
 
 (define time-est (function->propagator-constructor (nary-unpacking time-est-f)))
 
