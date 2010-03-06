@@ -30,18 +30,18 @@
 
 (define (critic go? method . answers)
   ;; Choose the method that promises least pain
-  )
+  ...)
 
 (define (push-selector go? pushee method . targets)
   ;; Conditionally shove the contents of the pushee into the target
   ;; indicated by the method
-  )
+  ...)
 
 (define (pull-selector go? pullee method . targets)
   ;; Conditionally shove the contents of the target indicated by the
   ;; method into the pullee (and tag it with the identity of the
   ;; method?)
-  )
+  ...)
 
 (define (plan-air go? segment pain answer)
   (fast-air-estimate segment pain answer)
@@ -73,8 +73,7 @@
 		    (list stage-go? stage-segment)))
 		stages)))
       (apply answer-compounder go? segment (map cadr stage-cells))
-      (apply segment-splitter go? segment (map cadr stage-cells))
-      )))
+      (apply segment-splitter go? segment (map cadr stage-cells)))))
 
 (define plan-air
   (split-node fast-air-estimate airport-splitter
@@ -93,7 +92,7 @@
 
 (define (forwarder go? subgo?)
   ;; If the "go" signal is suitably "deep-go", forward it.
-  )
+  ...)
 
 ;;; The actual specific planners
 (define (plan-walk go? segment)
@@ -115,11 +114,11 @@
   ; (end segment) -> (end from)
   ; (the-airport (start segment)) -> (end to) (start by)
   ; (the-airport (end segment)) -> (end by) (start from)
-  ) ;; Ditto stations, stops
+  ...) ;; Ditto stations, stops
 
 (define (between-airports go? segment)
   ; Complicated task-specific stuff...
-  )
+  ...)
 
 (define (fast-train-estimate segment)
   ((const (make-trip-segment-key 'method 'take-the-train)) segment)
@@ -130,7 +129,7 @@
 
 (define (between-stations go? segment)
   ; Complicated task-specific stuff...
-  )
+  ...)
 
 (define (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer)
@@ -143,7 +142,7 @@
 
 (define (between-stops go? segment)
   ; Complicated task-specific stuff...
-  )
+  ...)
 
 
 ;;; TODO How does one watch this search and adjust the fast estimates

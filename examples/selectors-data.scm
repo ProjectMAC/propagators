@@ -52,7 +52,11 @@
   trip-segment?)
 
 (define (distance-est-f trip-segment)
-  ...)
+  ;;; Ha!
+  (assoc (list (trip-segment-start trip-segment)
+	       (trip-segment-end   trip-segment))
+	 `(((home met) ,(& 400 kilometers))))
+  )
 
 (define (time-est-f trip-segment speed)
   (/ (distance-est-f trip-segment) speed))
@@ -64,5 +68,5 @@
 
 (define (same-city-f? trip-segment)
   ;; Really same-subway-network?
-  )
+  ...)
 
