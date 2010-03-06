@@ -97,17 +97,17 @@
 
 ;;; The actual specific planners
 (define (plan-walk go? segment)
-  ((const (method 'just-walk)) segment)
-  ((const (cost (& 0 dollars))) segment) ; Or more for food, etc if it takes a long time
+  ((const (make-segment-key 'method 'just-walk)) segment)
+  ((const (make-segment-key 'cost (& 0 dollars))) segment) ; Or more for food, etc if it takes a long time
   ; Time: 3 mph
-  ; Annoyance: Some fixed function of time
+  ; Pain: Some fixed function of time
   )
 
 (define (fast-air-estimate segment)
-  ((const (method 'fly)) segment)
-  ((const (time (& 1 day))) segment)
-  ((const (cost (& 500 dollars)) segment))
-  ((const (annoyance (& 200 craps)) segment)))
+  ((const (make-segment-key 'method 'fly)) segment)
+  ((const (make-segment-key 'time (& 1 day))) segment)
+  ((const (make-segment-key 'cost (& 500 dollars)) segment))
+  ((const (make-segment-key 'pain (& 200 craps)) segment)))
 
 (define (airport-splitter go? segment to by from)
   ; (start segment) -> (start to)
