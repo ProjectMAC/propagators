@@ -97,40 +97,49 @@
 
 ;;; The actual specific planners
 (define (plan-walk go? segment)
-  ((const (make-segment-key 'method 'just-walk)) segment)
-  ((const (make-segment-key 'cost (& 0 dollars))) segment) ; Or more for food, etc if it takes a long time
-  ; Time: 3 mph
-  ; Pain: Some fixed function of time
-  )
+  ((const (make-trip-segment-key 'method 'just-walk)) segment)
+  (time-est segment (& 4 (/ kilometer hour)) segment)
+  ;; Or more for food, etc if it takes a long time
+  ((const (make-trip-segment-key 'cost (& 0 dollars))) segment)
+  ;; Or: Some fixed function of time
+  ((const (make-trip-segment-key 'pain (& 0 craps))) segment))
 
 (define (fast-air-estimate segment)
-  ((const (make-segment-key 'method 'fly)) segment)
-  ((const (make-segment-key 'time (& 1 day))) segment)
-  ((const (make-segment-key 'cost (& 500 dollars)) segment))
-  ((const (make-segment-key 'pain (& 200 craps)) segment)))
+  ((const (make-trip-segment-key 'method 'fly)) segment)
+  ((const (make-trip-segment-key 'time (& 1 day))) segment)
+  ((const (make-trip-segment-key 'cost (& 500 dollars)) segment))
+  ((const (make-trip-segment-key 'pain (& 200 craps)) segment)))
 
 (define (airport-splitter go? segment to by from)
   ; (start segment) -> (start to)
   ; (end segment) -> (end from)
   ; (the-airport (start segment)) -> (end to) (start by)
   ; (the-airport (end segment)) -> (end by) (start from)
-  )
+  ) ;; Ditto stations, stops
 
 (define (between-airports go? segment)
   ; Complicated task-specific stuff...
   )
 
 (define (fast-train-estimate segment)
-  ; 50 mph + 2 hours, $50
-  )
+  ((const (make-trip-segment-key 'method 'take-the-train)) segment)
+  ;; Plus two hours for two-from the station?
+  (time-est segment (& 80 (/ kilometer hour)) segment)
+  ((const (make-trip-segment-key 'cost (& 50 dollars))) segment)
+  ((const (make-trip-segment-key 'pain (& 25 craps))) segment))
 
 (define (between-stations go? segment)
   ; Complicated task-specific stuff...
   )
 
 (define (fast-subway-estimate segment)
-  ; 50 mph; fail if in different cities; $2
-  )
+  (let-cells (same-city? same-city-answer)
+    (switch same-city? same-city-answer segment)
+    ((const (make-trip-segment-key 'method 'subway)) same-city-answer)
+    ((const (make-trip-segment-key 'time (& 1 hour)) same-city-answer))
+    ((const (make-trip-segment-key 'cost (& 2 dollars))) same-city-answer)
+    ((const (make-trip-segment-key 'pain (& 25 craps))) same-city-answer)
+    (same-city segment same-city?)))
 
 (define (between-stops go? segment)
   ; Complicated task-specific stuff...

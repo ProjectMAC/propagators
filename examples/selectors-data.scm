@@ -1,6 +1,6 @@
 (define-structure
-  (trip-segment (constructor make-segment)
-		(keyword-constructor make-segment-key))
+  (trip-segment (constructor make-trip-segment)
+		(keyword-constructor make-trip-segment-key))
   start
   end
   time
@@ -8,51 +8,61 @@
   pain
   method)
 
-(define (segment-merge segment1 segment2)
-  (let ((start-answer  (merge (segment-start segment1)  (segment-start segment2)))
-	(end-answer    (merge (segment-end segment1)    (segment-end segment2)))
-	(time-answer   (merge (segment-time segment1)   (segment-time segment2)))
-	(cost-answer   (merge (segment-cost segment1)   (segment-cost segment2)))
-	(pain-answer   (merge (segment-pain segment1)   (segment-pain segment2)))
-	(method-answer (merge (segment-method segment1) (segment-method segment2))))
-    (cond ((and (eq? start-answer  (segment-start segment1))
-		(eq? end-answer    (segment-end segment1))
-		(eq? time-answer   (segment-time segment1))
-		(eq? cost-answer   (segment-cost segment1))
-		(eq? pain-answer   (segment-pain segment1))
-		(eq? method-answer (segment-method segment1)))
-	   segment1)
-	  ((and (eq? start-answer  (segment-start segment2))
-		(eq? end-answer    (segment-end segment2))
-		(eq? time-answer   (segment-time segment2))
-		(eq? cost-answer   (segment-cost segment1))
-		(eq? pain-answer   (segment-pain segment1))
-		(eq? method-answer (segment-method segment1)))
-	   segment2)
+(define (trip-segment-merge trip-segment1 trip-segment2)
+  (let ((start-answer  (merge (trip-segment-start trip-segment1)
+			      (trip-segment-start trip-segment2)))
+	(end-answer    (merge (trip-segment-end trip-segment1)
+			      (trip-segment-end trip-segment2)))
+	(time-answer   (merge (trip-segment-time trip-segment1)
+			      (trip-segment-time trip-segment2)))
+	(cost-answer   (merge (trip-segment-cost trip-segment1)
+			      (trip-segment-cost trip-segment2)))
+	(pain-answer   (merge (trip-segment-pain trip-segment1)
+			      (trip-segment-pain trip-segment2)))
+	(method-answer (merge (trip-segment-method trip-segment1)
+			      (trip-segment-method trip-segment2))))
+    (cond ((and (eq? start-answer  (trip-segment-start trip-segment1))
+		(eq? end-answer    (trip-segment-end trip-segment1))
+		(eq? time-answer   (trip-segment-time trip-segment1))
+		(eq? cost-answer   (trip-segment-cost trip-segment1))
+		(eq? pain-answer   (trip-segment-pain trip-segment1))
+		(eq? method-answer (trip-segment-method trip-segment1)))
+	   trip-segment1)
+	  ((and (eq? start-answer  (trip-segment-start trip-segment2))
+		(eq? end-answer    (trip-segment-end trip-segment2))
+		(eq? time-answer   (trip-segment-time trip-segment2))
+		(eq? cost-answer   (trip-segment-cost trip-segment1))
+		(eq? pain-answer   (trip-segment-pain trip-segment1))
+		(eq? method-answer (trip-segment-method trip-segment1)))
+	   trip-segment2)
 	  (else
-	   (make-segment start-answer end-answer time-answer
-			 cost-answer pain-answer method-answer)))))
+	   (make-trip-segment start-answer end-answer time-answer
+			      cost-answer pain-answer method-answer)))))
 
-(defhandler merge segment-merge segment? segment?)
+(defhandler merge trip-segment-merge trip-segment? trip-segment?)
 
 (defhandler contradictory?
-  (lambda (segment) (or (contradictory? (segment-start  segment))
-			(contradictory? (segment-end    segment))
-			(contradictory? (segment-time   segment))
-			(contradictory? (segment-cost   segment))
-			(contradictory? (segment-pain   segment))
-			(contradictory? (segment-method segment))))
-  segment?)
-
-(define (distance-est segment)
+  (lambda (trip-segment)
+    (or (contradictory? (trip-segment-start  trip-segment))
+	(contradictory? (trip-segment-end    trip-segment))
+	(contradictory? (trip-segment-time   trip-segment))
+	(contradictory? (trip-segment-cost   trip-segment))
+	(contradictory? (trip-segment-pain   trip-segment))
+	(contradictory? (trip-segment-method trip-segment))))
+  trip-segment?)
+
+(define (distance-est-f trip-segment)
   ...)
 
-(define (nearest-airport place)
+(define (time-est-f trip-segment speed)
+  (/ (distance-est-f trip-segment) speed))
+
+(define (nearest-airport-f place)
   ...)
 
 ;; ditto nearest-station, nearest-stop
 
-(define (same-city? segment)
+(define (same-city-f? trip-segment)
   ;; Really same-subway-network?
   )
 
