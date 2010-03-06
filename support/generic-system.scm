@@ -71,7 +71,8 @@
                                          (lambda (branch)
                                            (loop branch (cdr args)))
                                          win-handler)))
-                      default-operation)
+                      default-operation
+		      (error:no-applicable-methods operator name arguments))
                   arguments)))))
     (define (find-branch tree arg win)
       (let loop ((tree tree))
@@ -81,7 +82,7 @@
     (define (win-handler handler) handler)
     (set! default-operation
       (if (default-object? default-operation)
-          (lambda arguments (no-way-known operator arguments))
+          (lambda arguments (no-way-known operator name arguments))
           default-operation))
     (set-operator-record! operator record)
     ;; For backwards compatibility with previous implementation:
@@ -103,6 +104,7 @@
 (define (operator-record-tree record) (cdr record))
 (define (set-operator-record-tree! record tree) (set-cdr! record tree))
 
+;;; TODO Rename to generic-operator-arity for agreement with GJS?
 (define (operator-arity operator)
   (let ((record (get-operator-record operator)))
     (if record
@@ -119,12 +121,12 @@
                      (error "Incorrect operator arity:" operator))
                  record)
                (let ((record (make-operator-record arity)))
-                 (hash-table/put! *generic-operator-table* operator record)
+                 (set-operator-record! operator record)
                  record)))))
     (set-operator-record-tree! record
-                               (bind-in-tree argument-predicates
-                                             handler
-                                             (operator-record-tree record))))
+      (bind-in-tree argument-predicates
+		    handler
+		    (operator-record-tree record))))
   operator)
 
 (define defhandler assign-operation)
@@ -149,8 +151,8 @@
               (cons (cons (car keys) handler)
                     tree))))))
                                     
-(define (no-way-known operator arguments)
-  (error "Generic operator inapplicable:" operator arguments))
+(define (no-way-known operator name arguments)
+  (error "Generic operator inapplicable:" operator name arguments))
 
 ;;; Utility
 (define (any? x)
