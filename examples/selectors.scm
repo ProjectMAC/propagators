@@ -146,10 +146,8 @@
 		end)) ;; Ditto stations, stops
 
 (define (between-airports go? segment)
-  ; Complicated task-specific stuff...
-  ;; TODO Refinement of numbers, and of the method
-  (plan-walk go? segment)
-  )
+  ; Complicated task-specific stuff stubbed...
+  (pass-through (p:airport-lookup segment) segment))
 
 (define plan-air
   (split-node fast-air-estimate (splitter p:pick-airport)

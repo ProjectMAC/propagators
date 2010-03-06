@@ -1,3 +1,5 @@
+;;; Trip segments in general
+
 (define-structure
   (trip-segment (constructor make-trip-segment)
 		(keyword-constructor make-trip-segment-key))
@@ -51,6 +53,8 @@
 	(contradictory? (trip-segment-method trip-segment))))
   trip-segment?)
 
+;;; Stub data for particular jobs
+
 (define (distance-est-f trip-segment)
   ;;; Ha!
   (cdr (assoc (list (trip-segment-start trip-segment)
@@ -72,11 +76,6 @@
 
 (define time-est (function->propagator-constructor (nary-unpacking time-est-f)))
 
-(define (nearest-airport-f place)
-  ...)
-
-;; ditto nearest-station, nearest-stop
-
 (define (same-city-f? trip-segment)
   ;; Really same-subway-network?
   (eq? (trip-segment-start trip-segment)
@@ -95,8 +94,18 @@
 (define (pick-airport place)
   (cdr (assoc place '((home . logan)
 		      (met . laguardia)))))
+;; ditto pick-station, pick-stop
 
 (propagatify pick-airport)
+
+(define (airport-lookup segment)
+  (cdr (assoc (cons (trip-segment-start segment)
+		    (trip-segment-end segment))
+	      `(((logan . laguardia) .
+		 ,(make-trip-segment 'logan 'laguardia
+		    (& 4 hour) (& 432 dollar) (& 215 crap) 'fly))))))
+
+(propagatify airport-lookup)
 
 (define (make-trip-segment-by-start place)
   (make-trip-segment-key 'start place))
