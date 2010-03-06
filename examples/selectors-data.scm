@@ -153,3 +153,20 @@
   (lambda (content increment)
     content)
   maybe-units? estimate?)
+
+(defhandler generic-+
+  (lambda (estimate1 estimate2)
+    (make-estimate (generic-+ (estimate-value estimate1)
+			      (estimate-value estimate2))))
+  estimate? estimate?)
+
+(defhandler generic-+
+  (lambda (estimate value)
+    (make-estimate (generic-+ (estimate-value estimate) value)))
+  estimate? maybe-units?)
+
+(defhandler generic-+
+  (lambda (value estimate)
+    (make-estimate (generic-+ value (estimate-value estimate))))
+  maybe-units? estimate?)
+

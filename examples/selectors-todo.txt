@@ -1,7 +1,3 @@
-Test split-node
-- Possible bug: p:+ uses my generic-+; will I pick up units and
-  estimates together correctly?  Would avoiding usual-integrations in
-  generic-definitions.scm solve this problem?
 Add data for between-airports
 Add data for other methods
 Test choice-node
