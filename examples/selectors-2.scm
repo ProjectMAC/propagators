@@ -1,4 +1,4 @@
-(define (plan-trip go? input pain answer)
+(define (plan-trip go? segment pain answer)
   (let-cells (air-go? air-input air-pain air-answer
 	      train-go? train-input train-pain train-answer
 	      bus-go? bus-input bus-pain bus-answer
@@ -12,24 +12,23 @@
     ))
 
 (define (choice-node . alternatives)
-  (lambda (go? input pain answer)
+  (lambda (go? segment)
     (let-cell method
       (let ((opt-cells
 	     (map (lambda (alternative)
-		    (let-cells (opt-go? opt-input opt-pain opt-answer)
-		      (alternative opt-go? opt-input opt-pain opt-answer)
-		      (list opt-go? opt-input opt-pain opt-answer)))
+		    (let-cells (opt-go? opt-segment)
+		      (alternative opt-go? opt-segment)
+		      (list opt-go? opt-segment)))
 		  alternatives)))
-	(apply critic go? method (map caddr opt-cells))
-	(apply push-selector go? go?    method (map car opt-cells))
-	(apply push-selector go? input  method (map cadr opt-cells))
-	(apply pull-selector go? pain   method (map caddr opt-cells))
-	(apply pull-selector go? answer method (map cadddr opt-cells))))))
+	(apply critic go? method (map cadr opt-cells))
+	(apply push-selector go? go?     method (map car opt-cells))
+	(apply push-selector go? segment method (map cadr opt-cells))
+	(apply pull-selector go? segment method (map cadr opt-cells))))))
 
 (define plan-trip
   (choice-node plan-air plan-train plan-subway plan-walk))
 
-(define (critic go? method . pains)
+(define (critic go? method . answers)
   ;; Choose the method that promises least pain
   )
 
@@ -44,8 +43,8 @@
   ;; method?)
   )
 
-(define (plan-air go? input pain answer)
-  (fast-air-estimate input pain answer)
+(define (plan-air go? segment pain answer)
+  (fast-air-estimate segment pain answer)
   (let-cells (to-air-input by-air-input from-air-input
 	      to-air-pain by-air-pain from-air-pain
 	      to-air-answer by-air-answer from-air-answer
@@ -54,28 +53,27 @@
     (summer go? to-air-pain by-air-pain from-air-pain pain)
     (compounder go? to-air-answer by-air-answer from-air-answer answer)
 
-    (select-source-airport go? input to-air-input by-air-input)
+    (select-source-airport go? segment to-air-input by-air-input)
     (plan-trip to-air-go? to-air-input to-air-pain to-air-answer)
 
     (between-airports by-air-go? by-air-input by-air-pain by-air-answer)
 
-    (select-dest-airport go? input from-air-input by-air-input)
+    (select-dest-airport go? segment from-air-input by-air-input)
     (plan-trip from-air-go? from-air-input from-air-pain from-air-answer)
     ))
 
-(define (split-node estimator input-splitter . stages)
-  (lambda (go? input pain answer)
-    (estimator input pain answer)
+(define (split-node estimator segment-splitter . stages)
+  (lambda (go? segment)
+    (estimator segment)
     (let ((stage-cells
 	   (map (lambda (stage)
-		  (let-cells (stage-go? stage-input stage-pain stage-answer)
+		  (let-cells (stage-go? stage-segment)
 		    (forwarder go? stage-go?)
-		    (stage stage-go? stage-input stage-pain stage-answer)
-		    (list stage-go? stage-input stage-pain stage-answer)))
+		    (stage stage-go? stage-segment)
+		    (list stage-go? stage-segment)))
 		stages)))
-      (apply pain-summer go? pain (map caddr stage-cells))
-      (apply answer-compounder go? answer (map cadddr stage-cells))
-      (apply input-splitter go? input (map cadr stage-cells))
+      (apply answer-compounder go? segment (map cadr stage-cells))
+      (apply segment-splitter go? segment (map cadr stage-cells))
       )))
 
 (define plan-air
@@ -90,10 +88,7 @@
   (split-node fast-subway-estimate stop-splitter
 	      plan-trip between-stops plan-trip))
 
-(define (pain-summer go? out-pain . subpains)
-  ...)
-
-(define (answer-compounder go? out-answer . subanswers)
+(define (answer-compounder go? out . subanswers)
   ...)
 
 (define (forwarder go? subgo?)
@@ -101,43 +96,43 @@
   )
 
 ;;; The actual specific planners
-(define (plan-walk go? input pain answer)
-  ((const 'just-walk) answer)
-  ((const (cost 0)) pain) ; Or more for food, etc if it takes a long time
+(define (plan-walk go? segment)
+  ((const (method 'just-walk)) segment)
+  ((const (cost (& 0 dollars))) segment) ; Or more for food, etc if it takes a long time
   ; Time: 3 mph
   ; Annoyance: Some fixed function of time
   )
 
-(define (fast-air-estimate input pain answer)
-  ((const 'fly) answer)
-  ((const (time (& 1 day))) pain)
-  ((const (cost (& 500 dollars)) pain))
-  ((const (annoyance (& 200 craps)) pain)))
+(define (fast-air-estimate segment)
+  ((const (method 'fly)) segment)
+  ((const (time (& 1 day))) segment)
+  ((const (cost (& 500 dollars)) segment))
+  ((const (annoyance (& 200 craps)) segment)))
 
-(define (airport-splitter go? input to by from)
-  ; (start input) -> (start to)
-  ; (end input) -> (end from)
-  ; (the-airport (start input)) -> (end to) (start by)
-  ; (the-airport (end input)) -> (end by) (start from)
+(define (airport-splitter go? segment to by from)
+  ; (start segment) -> (start to)
+  ; (end segment) -> (end from)
+  ; (the-airport (start segment)) -> (end to) (start by)
+  ; (the-airport (end segment)) -> (end by) (start from)
   )
 
-(define (between-airports go? input pain answer)
+(define (between-airports go? segment)
   ; Complicated task-specific stuff...
   )
 
-(define (fast-train-estimate input pain answer)
+(define (fast-train-estimate segment)
   ; 50 mph + 2 hours, $50
   )
 
-(define (between-stations go? input pain answer)
+(define (between-stations go? segment)
   ; Complicated task-specific stuff...
   )
 
-(define (fast-subway-estimate input pain answer)
+(define (fast-subway-estimate segment)
   ; 50 mph; fail if in different cities; $2
   )
 
-(define (between-stops go? input pain answer)
+(define (between-stops go? segment)
   ; Complicated task-specific stuff...
   )
 
