@@ -53,13 +53,16 @@
 
 (define (distance-est-f trip-segment)
   ;;; Ha!
-  (assoc (list (trip-segment-start trip-segment)
-	       (trip-segment-end   trip-segment))
-	 `(((home met) ,(& 400 kilometers))))
+  (cdr (assoc (list (trip-segment-start trip-segment)
+		    (trip-segment-end   trip-segment))
+	      `(((home met) . ,(& 400 kilo meter)))))
   )
 
 (define (time-est-f trip-segment speed)
-  (/ (distance-est-f trip-segment) speed))
+  (make-trip-segment-key 'time
+    ((access / generic-environment) (distance-est-f trip-segment) speed)))
+
+(define time-est (function->propagator-constructor (nary-unpacking time-est-f)))
 
 (define (nearest-airport-f place)
   ...)

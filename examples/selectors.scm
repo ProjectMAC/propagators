@@ -75,17 +75,17 @@
       (apply answer-compounder go? segment (map cadr stage-cells))
       (apply segment-splitter go? segment (map cadr stage-cells)))))
 #|
-(define plan-air
-  (split-node fast-air-estimate airport-splitter
-	      plan-trip between-airports plan-trip))
+ (define plan-air
+   (split-node fast-air-estimate airport-splitter
+	       plan-trip between-airports plan-trip))
 
-(define plan-train
-  (split-node fast-train-estimate station-splitter
-	      plan-trip between-stations plan-trip))
+ (define plan-train
+   (split-node fast-train-estimate station-splitter
+	       plan-trip between-stations plan-trip))
 
-(define plan-subway
-  (split-node fast-subway-estimate stop-splitter
-	      plan-trip between-stops plan-trip))
+ (define plan-subway
+   (split-node fast-subway-estimate stop-splitter
+	       plan-trip between-stops plan-trip))
 |#
 (define (answer-compounder go? out . subanswers)
   ...)
@@ -97,7 +97,7 @@
 ;;; The actual specific planners
 (define (plan-walk go? segment)
   ((constant (make-trip-segment-key 'method 'just-walk)) segment)
-  (time-est segment (& 3 (/ mile hour)) segment)
+  (time-est segment (p:const (& 3 (/ mile hour))) segment)
   ;; Or more for food, etc if it takes a long time
   ((constant (make-trip-segment-key 'cost (& 0 dollar))) segment)
   ;; Or: Some fixed function of time
@@ -146,10 +146,19 @@
 
 #|
  (initialize-scheduler)
- (define-cell foo)
- (add-content foo (make-trip-segment-key 'start 'home 'end 'met))
- (fast-air-estimate foo)
+ (define-cell walk-to-met)
+ (define-cell go?)
+ (add-content walk-to-met (make-trip-segment-key 'start 'home 'end 'met))
+ (plan-walk go? walk-to-met)
  (run)
+ (pp (content walk-to-met))
+
+ (initialize-scheduler)
+ (define-cell fly-to-met)
+ (add-content fly-to-met (make-trip-segment-key 'start 'home 'end 'met))
+ (fast-air-estimate fly-to-met)
+ (run)
+ (pp (content fly-to-met))
 |#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?
