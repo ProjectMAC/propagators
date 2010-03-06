@@ -75,3 +75,22 @@
        (trip-segment-end trip-segment)))
 
 (define same-city (function->propagator-constructor (nary-unpacking same-city-f?)))
+
+(propagatify trip-segment-start)
+(propagatify trip-segment-end)
+
+(define (pick-airport place)
+  (cdr (assoc place '((home . logan)
+		      (met . laguardia)))))
+
+(propagatify pick-airport)
+
+(define (make-trip-segment-by-start place)
+  (make-trip-segment-key 'start place))
+
+(define (make-trip-segment-by-end place)
+  (make-trip-segment-key 'end place))
+
+(propagatify make-trip-segment-by-start)
+(propagatify make-trip-segment-by-end)
+

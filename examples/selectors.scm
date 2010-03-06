@@ -87,6 +87,11 @@
    (split-node fast-subway-estimate stop-splitter
 	       plan-trip between-stops plan-trip))
 |#
+#;
+(define plan-air
+  (split-node fast-air-estimate airport-splitter
+	      plan-walk between-airports plan-walk))
+
 (define (answer-compounder go? out . subanswers)
   ...)
 
@@ -109,16 +114,25 @@
   ((constant (make-trip-segment-key 'cost (& 500 dollar))) segment)
   ((constant (make-trip-segment-key 'pain (& 200 crap))) segment))
 
-(define (airport-splitter go? segment to by from)
-  ; (start segment) -> (start to)
-  ; (end segment) -> (end from)
-  ; (the-airport (start segment)) -> (end to) (start by)
-  ; (the-airport (end segment)) -> (end by) (start from)
-  ...) ;; Ditto stations, stops
+(define (airport-splitter go? segment beginning middle end)
+  (pass-through (p:make-trip-segment-by-start (p:trip-segment-start segment))
+		beginning)
+  (let-cell (first-airport)
+    (pass-through (p:pick-airport (p:trip-segment-start segment)) first-airport)
+    (pass-through (p:make-trip-segment-by-end first-airport) beginning)
+    (pass-through (p:make-trip-segment-by-start first-airport) middle))
+  (let-cell (last-airport)
+    (pass-through (p:make-trip-segment-by-end last-airport) middle)
+    (pass-through (p:make-trip-segment-by-start last-airport) end)
+    (pass-through (p:pick-airport (p:trip-segment-end segment)) last-airport))
+  (pass-through (p:make-trip-segment-by-end   (p:trip-segment-end   segment))
+		end)) ;; Ditto stations, stops
 
 (define (between-airports go? segment)
   ; Complicated task-specific stuff...
-  ...)
+  ;; TODO Refinement of numbers, and of the method
+  (plan-walk go? segment)
+  )
 
 (define (fast-train-estimate segment)
   ((constant (make-trip-segment-key 'method 'take-the-train)) segment)
@@ -166,6 +180,18 @@
  (fast-subway-estimate subway-to-met)
  (run)
  (pp (content subway-to-met))
+
+ (initialize-scheduler)
+ (define-cell go?)
+ (define-cell fly-to-met)
+ (define-cell beginning)
+ (define-cell middle)
+ (define-cell end)
+ (add-content fly-to-met (make-trip-segment-key 'start 'home 'end 'met))
+ (airport-splitter go? fly-to-met beginning middle end)
+ (run)
+ (map pp (map content (list fly-to-met beginning middle end)))
+
 |#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?
