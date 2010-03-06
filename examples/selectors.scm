@@ -97,7 +97,7 @@
 
 (define (forwarder go? subgo?)
   ;; If the "go" signal is suitably "deep-go", forward it.
-  ...)
+  (pass-through go? subgo?))
 
 ;;; The actual specific planners
 (define (plan-walk go? segment)
