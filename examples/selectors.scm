@@ -117,6 +117,8 @@
 (define (plan-walk go? segment)
   ((constant (make-trip-segment-key 'method 'just-walk)) segment)
   (time-est segment (p:const (& 3 (/ mile hour))) segment)
+  ;; TODO Fix this hack
+  (pass-through (p:tag-not-estimate segment) segment)
   ;; Or more for food, etc if it takes a long time
   ((constant (make-trip-segment-key 'cost (& 0 dollar))) segment)
   ;; Or: Some fixed function of time
@@ -146,7 +148,7 @@
 		end)) ;; Ditto stations, stops
 
 (define (between-airports go? segment)
-  ; Complicated task-specific stuff stubbed...
+  ;; Complicated task-specific stuff stubbed...
   (pass-through (p:airport-lookup segment) segment))
 
 (define plan-air
@@ -155,14 +157,22 @@
 
 (define (fast-train-estimate segment)
   ((constant (make-trip-segment-key 'method 'take-the-train)) segment)
-  ;; Plus two hours for two-from the station?
-  (time-est segment (& 50 (/ mile hour)) segment)
-  ((constant (make-trip-segment-key 'cost (& 50 dollar))) segment)
-  ((constant (make-trip-segment-key 'pain (& 25 crap))) segment))
+  ;; Plus two hours for to-from the station?
+  ;; TODO Clean up which uses of time-est are actually estimates
+  ;; and which are "hard"
+  (time-est segment (p:const (& 50 (/ mile hour))) segment)
+  ((constant (make-trip-segment-key 'cost (make-estimate (& 50 dollar))))
+   segment)
+  ((constant (make-trip-segment-key 'pain (make-estimate (& 25 crap))))
+   segment))
 
 (define (between-stations go? segment)
-  ; Complicated task-specific stuff...
-  ...)
+  ;; Complicated task-specific stuff stubbed...
+  (pass-through (p:station-lookup segment) segment))
+
+(define plan-train
+  (split-node fast-train-estimate (splitter p:pick-station)
+	      plan-walk between-stations plan-walk))
 
 (define (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer)
@@ -218,6 +228,14 @@
  (plan-air go? fly-to-met)
  (run)
  (pp (content fly-to-met))
+
+ (initialize-scheduler)
+ (define-cell go?)
+ (define-cell train-to-met)
+ (add-content train-to-met (make-trip-segment-key 'start 'home 'end 'met))
+ (plan-train go? train-to-met)
+ (run)
+ (pp (content train-to-met))
 |#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?

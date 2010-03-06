@@ -84,6 +84,9 @@
 		((home logan) . ,(& 8 kilo meter))
 		((logan laguardia) . ,(& 400 kilo meter))
 		((laguardia met) . ,(& 5 kilo meter))
+		((home south-station) . ,(& 6 kilo meter))
+		((south-station penn-station) . ,(& 400 kilo meter))
+		((penn-station met) . ,(& 1 kilo meter))
 		)))
   )
 
@@ -93,7 +96,8 @@
 	((nothing? (trip-segment-end trip-segment))
 	 nothing)
 	(else
-	 (make-trip-segment-key 'time (/ (distance-est-f trip-segment) speed)))))
+	 (make-trip-segment-by-time
+	  (make-estimate (/ (distance-est-f trip-segment) speed))))))
 
 (define time-est (function->propagator-constructor (nary-unpacking time-est-f)))
 
@@ -109,7 +113,6 @@
   (cdr (assoc place '((home . logan)
 		      (met . laguardia)))))
 ;; ditto pick-station, pick-stop
-
 (propagatify pick-airport)
 
 (define (airport-lookup segment)
@@ -118,8 +121,20 @@
 	      `(((logan . laguardia) .
 		 ,(make-trip-segment 'logan 'laguardia
 		    (& 4 hour) (& 432 dollar) (& 215 crap) 'fly))))))
-
 (propagatify airport-lookup)
+
+(define (pick-station place)
+  (cdr (assoc place '((home . south-station)
+		      (met . penn-station)))))
+(propagatify pick-station)
+
+(define (station-lookup segment)
+  (cdr (assoc (cons (trip-segment-start segment)
+		    (trip-segment-end segment))
+	      `(((south-station . penn-station) .
+		 ,(make-trip-segment 'south-station 'penn-station
+		    (& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train))))))
+(propagatify station-lookup)
 
 ;;; Hack for numerical estimates.  I should really do this with
 ;;; premises and proper truth maintenance
@@ -167,3 +182,17 @@
     (make-estimate (generic-+ value (estimate-value estimate))))
   maybe-units? estimate?)
 
+(define (tag-not-estimate thing)
+  (cond ((estimate? thing) (estimate-value thing))
+	((trip-segment? thing)
+	 (apply make-trip-segment
+		(map tag-not-estimate
+		     (map (lambda (accessor) (accessor thing))
+			  (list trip-segment-start
+				trip-segment-end
+				trip-segment-time
+				trip-segment-cost
+				trip-segment-pain
+				trip-segment-method)))))
+	(else thing)))
+(propagatify tag-not-estimate)
