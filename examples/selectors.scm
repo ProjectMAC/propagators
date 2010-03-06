@@ -135,7 +135,7 @@
   (let-cells (same-city? same-city-answer)
     (switch same-city? same-city-answer segment)
     ((constant (make-trip-segment-key 'method 'subway)) same-city-answer)
-    ((constant (make-trip-segment-key 'time (& 1 hour)) same-city-answer))
+    ((constant (make-trip-segment-key 'time (& 1 hour))) same-city-answer)
     ((constant (make-trip-segment-key 'cost (& 2 dollar))) same-city-answer)
     ((constant (make-trip-segment-key 'pain (& 25 crap))) same-city-answer)
     (same-city segment same-city?)))
@@ -159,6 +159,13 @@
  (fast-air-estimate fly-to-met)
  (run)
  (pp (content fly-to-met))
+
+ (initialize-scheduler)
+ (define-cell subway-to-met)
+ (add-content subway-to-met (make-trip-segment-key 'start 'home 'end 'met))
+ (fast-subway-estimate subway-to-met)
+ (run)
+ (pp (content subway-to-met))
 |#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?

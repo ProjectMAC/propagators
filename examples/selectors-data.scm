@@ -71,5 +71,7 @@
 
 (define (same-city-f? trip-segment)
   ;; Really same-subway-network?
-  ...)
+  (eq? (trip-segment-start trip-segment)
+       (trip-segment-end trip-segment)))
 
+(define same-city (function->propagator-constructor (nary-unpacking same-city-f?)))
