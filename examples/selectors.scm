@@ -76,20 +76,20 @@
       (apply segment-splitter go? segment (map cadr stage-cells)))))
 #|
  (define plan-air
-   (split-node fast-air-estimate airport-splitter
+   (split-node fast-air-estimate (splitter p:pick-airport)
 	       plan-trip between-airports plan-trip))
 
  (define plan-train
-   (split-node fast-train-estimate station-splitter
+   (split-node fast-train-estimate (splitter p:pick-station)
 	       plan-trip between-stations plan-trip))
 
  (define plan-subway
-   (split-node fast-subway-estimate stop-splitter
+   (split-node fast-subway-estimate (splitter p:pick-subway)
 	       plan-trip between-stops plan-trip))
 |#
 #;
 (define plan-air
-  (split-node fast-air-estimate airport-splitter
+  (split-node fast-air-estimate (splitter p:pick-airport)
 	      plan-walk between-airports plan-walk))
 
 (define (answer-compounder go? out . subanswers)
@@ -114,17 +114,17 @@
   ((constant (make-trip-segment-key 'cost (& 500 dollar))) segment)
   ((constant (make-trip-segment-key 'pain (& 200 crap))) segment))
 
-(define (airport-splitter go? segment beginning middle end)
+(define ((splitter p:pick-waypoint) go? segment beginning middle end)
   (pass-through (p:make-trip-segment-by-start (p:trip-segment-start segment))
 		beginning)
-  (let-cell (first-airport)
-    (pass-through (p:pick-airport (p:trip-segment-start segment)) first-airport)
-    (pass-through (p:make-trip-segment-by-end first-airport) beginning)
-    (pass-through (p:make-trip-segment-by-start first-airport) middle))
-  (let-cell (last-airport)
-    (pass-through (p:make-trip-segment-by-end last-airport) middle)
-    (pass-through (p:make-trip-segment-by-start last-airport) end)
-    (pass-through (p:pick-airport (p:trip-segment-end segment)) last-airport))
+  (let-cell (first-waypoint)
+    (pass-through (p:pick-waypoint (p:trip-segment-start segment)) first-waypoint)
+    (pass-through (p:make-trip-segment-by-end first-waypoint) beginning)
+    (pass-through (p:make-trip-segment-by-start first-waypoint) middle))
+  (let-cell (last-waypoint)
+    (pass-through (p:make-trip-segment-by-end last-waypoint) middle)
+    (pass-through (p:make-trip-segment-by-start last-waypoint) end)
+    (pass-through (p:pick-waypoint (p:trip-segment-end segment)) last-waypoint))
   (pass-through (p:make-trip-segment-by-end   (p:trip-segment-end   segment))
 		end)) ;; Ditto stations, stops
 
