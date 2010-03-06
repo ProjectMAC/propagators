@@ -24,7 +24,7 @@
 	(apply push-selector go? go?     method (map car opt-cells))
 	(apply push-selector go? segment method (map cadr opt-cells))
 	(apply pull-selector go? segment method (map cadr opt-cells))))))
-
+#;
 (define plan-trip
   (choice-node plan-air plan-train plan-subway plan-walk))
 
@@ -74,7 +74,7 @@
 		stages)))
       (apply answer-compounder go? segment (map cadr stage-cells))
       (apply segment-splitter go? segment (map cadr stage-cells)))))
-
+#|
 (define plan-air
   (split-node fast-air-estimate airport-splitter
 	      plan-trip between-airports plan-trip))
@@ -86,7 +86,7 @@
 (define plan-subway
   (split-node fast-subway-estimate stop-splitter
 	      plan-trip between-stops plan-trip))
-
+|#
 (define (answer-compounder go? out . subanswers)
   ...)
 
