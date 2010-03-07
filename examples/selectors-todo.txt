@@ -1,11 +1,8 @@
-Add data for other methods
 Test choice-node
 Test full thing (recursive definitions)
 
 Transform examples into unit tests
 Normalize loading structure?  Subdirectory?
-Refactor out the keyword constructor, since I need the curried versions
-anyway?
 
 Method compounder
 Method merger

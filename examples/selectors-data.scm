@@ -87,6 +87,9 @@
 		((home south-station) . ,(& 6 kilo meter))
 		((south-station penn-station) . ,(& 400 kilo meter))
 		((penn-station met) . ,(& 1 kilo meter))
+		((home beaconsfield) . ,(& 100 meter))
+		((beaconsfield airport) . ,(& 8 kilo meter))
+		((airport logan) . ,(& 500 meter))
 		)))
   )
 
@@ -135,6 +138,21 @@
 		 ,(make-trip-segment 'south-station 'penn-station
 		    (& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train))))))
 (propagatify station-lookup)
+
+(define (pick-stop place)
+  (cdr (assoc place '((home . beaconsfield)
+		      (logan . airport)
+		      (laguardia . ??)
+		      (met . ???)))))
+(propagatify pick-stop)
+
+(define (stop-lookup segment)
+  (cdr (assoc (cons (trip-segment-start segment)
+		    (trip-segment-end segment))
+	      `(((beaconsfield . airport) .
+		 ,(make-trip-segment 'beaconsfield 'airport
+		    (& 2 hour) (& 1.70 dollar) (& 15 crap) 'subway))))))
+(propagatify stop-lookup)
 
 ;;; Hack for numerical estimates.  I should really do this with
 ;;; premises and proper truth maintenance

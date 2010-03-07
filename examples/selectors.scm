@@ -177,16 +177,22 @@
 (define (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer)
     (switch same-city? same-city-answer segment)
-    ((constant (make-trip-segment-key 'method 'subway)) same-city-answer)
-    ((constant (make-trip-segment-key 'time (& 1 hour))) same-city-answer)
-    ((constant (make-trip-segment-key 'cost (& 2 dollar))) same-city-answer)
-    ((constant (make-trip-segment-key 'pain (& 25 crap))) same-city-answer)
+    ((constant (make-trip-segment-by-method 'subway)) same-city-answer)
+    ((constant (make-trip-segment-by-time (make-estimate (& 1 hour))))
+     same-city-answer)
+    ((constant (make-trip-segment-by-cost (make-estimate (& 2 dollar))))
+     same-city-answer)
+    ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
+     same-city-answer)
     (same-city segment same-city?)))
 
 (define (between-stops go? segment)
-  ; Complicated task-specific stuff...
-  ...)
+  ;; Complicated task-specific stuff stubbed...
+  (pass-through (p:stop-lookup segment) segment))
 
+(define plan-subway
+  (split-node fast-train-estimate (splitter p:pick-stop)
+	      plan-walk between-stops plan-walk))
 #|
  (initialize-scheduler)
  (define-cell walk-to-met)
@@ -236,6 +242,14 @@
  (plan-train go? train-to-met)
  (run)
  (pp (content train-to-met))
+
+ (initialize-scheduler)
+ (define-cell go?)
+ (define-cell subway-to-logan)
+ (add-content subway-to-logan (make-trip-segment-key 'start 'home 'end 'logan))
+ (plan-subway go? subway-to-logan)
+ (run)
+ (pp (content subway-to-logan))
 |#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?
