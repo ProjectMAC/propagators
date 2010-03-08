@@ -13,26 +13,32 @@
 
 (define (choice-node . alternatives)
   (lambda (go? segment)
-    (let-cells (elaboree-method final-method)
-      (let ((opt-cells
-	     (map (lambda (alternative)
-		    (let-cells (opt-go? opt-segment)
-		      (pass-through
-		       (p:make-trip-segment-by-start
-			(p:trip-segment-start segment))
-		       opt-segment)
-		      (pass-through
-		       (p:make-trip-segment-by-end
-			(p:trip-segment-end segment))
-		       opt-segment)
-		      ((constant 'go-fast) opt-go?)
-		      (alternative opt-go? opt-segment)
-		      (list opt-go? opt-segment)))
-		  alternatives)))
-	(apply critic go? elaboree-method final-method (map cadr opt-cells))
-	(apply push-selector go? go?     elaboree-method (map car opt-cells))
-	;; (apply push-selector go? segment elaboree-method (map cadr opt-cells))
-	(apply pull-selector go? segment final-method    (map cadr opt-cells))))))
+    (compound-propagator (list go?)	; Only expand if go? has something
+      (eq-label!
+       (lambda ()
+	 (let-cells (elaboree-method final-method)
+	   (let ((opt-cells
+		  (map (lambda (alternative)
+			 (let-cells (opt-go? opt-segment)
+			   (pass-through
+			    (p:make-trip-segment-by-start
+			     (p:trip-segment-start segment))
+			    opt-segment)
+			   (pass-through
+			    (p:make-trip-segment-by-end
+			     (p:trip-segment-end segment))
+			    opt-segment)
+			   ((constant 'go-fast) opt-go?)
+			   (alternative opt-go? opt-segment)
+			   (list opt-go? opt-segment)))
+		       alternatives)))
+	     (apply critic go? elaboree-method final-method (map cadr opt-cells))
+	     (apply push-selector go? go?     elaboree-method (map car opt-cells))
+	     ;; (apply push-selector go? segment elaboree-method (map cadr opt-cells))
+	     (apply pull-selector go? segment final-method    (map cadr opt-cells)))))
+       'name 'a-choice-node
+       'inputs (list go? segment)
+       'output (list segment)))))
 #;
 (define plan-trip
   (choice-node plan-air plan-train plan-subway plan-walk))
@@ -42,7 +48,7 @@
   (define (the-propagator)
     (let ((best-method-index (find-best-method (map content answers))))
       (if best-method-index
-	  (if (estimate? (content (list-ref answers best-method-index)))
+	  (if (estimate? (trip-segment-time (content (list-ref answers best-method-index))))
 	      (add-content elaboree-method (make-estimate best-method-index))
 	      (if (and (every trip-segment? (map content answers))
 		       (every (lambda (ans)
@@ -107,16 +113,22 @@
 
 (define (split-node estimator segment-splitter . stages)
   (lambda (go? segment)
-    (estimator segment)
-    (let ((stage-cells
-	   (map (lambda (stage)
-		  (let-cells (stage-go? stage-segment)
-		    (forwarder go? stage-go?)
-		    (stage stage-go? stage-segment)
-		    (list stage-go? stage-segment)))
-		stages)))
-      (apply answer-compounder go? segment (map cadr stage-cells))
-      (apply segment-splitter go? segment (map cadr stage-cells)))))
+    (compound-propagator (list go?) ; Only expand if go? has something
+      (eq-label!
+       (lambda ()
+	 (estimator segment)
+	 (let ((stage-cells
+		(map (lambda (stage)
+		       (let-cells (stage-go? stage-segment)
+			 (forwarder go? stage-go?)
+			 (stage stage-go? stage-segment)
+			 (list stage-go? stage-segment)))
+		     stages)))
+	   (apply answer-compounder go? segment (map cadr stage-cells))
+	   (apply segment-splitter go? segment (map cadr stage-cells))))
+       'name 'a-split-node
+       'inputs (list go? segment)
+       'outputs (list segment)))))
 #|
  (define plan-air
    (split-node fast-air-estimate (splitter p:pick-airport)
@@ -157,15 +169,21 @@
   (pass-through (p:deep-only go?) subgo?))
 
 ;;; The actual specific planners
-(define-macro-propagator (plan-walk go? segment)
-  ((constant (make-trip-segment-key 'method 'just-walk)) segment)
-  (time-est segment (p:const (& 3 (/ mile hour))) segment)
-  ;; TODO Fix this hack
-  (pass-through (p:tag-not-estimate segment) segment)
-  ;; Or more for food, etc if it takes a long time
-  ((constant (make-trip-segment-key 'cost (& 0 dollar))) segment)
-  ;; Or: Some fixed function of time
-  ((constant (make-trip-segment-key 'pain (& 0 crap))) segment))
+(define (plan-walk go? segment)
+  (compound-propagator (list go?)
+    (eq-label!
+     (lambda ()
+       ((constant (make-trip-segment-key 'method 'just-walk)) segment)
+       (time-est segment (p:const (& 3 (/ mile hour))) segment)
+       ;; TODO Fix this hack
+       (pass-through (p:tag-not-estimate segment) segment)
+       ;; Or more for food, etc if it takes a long time
+       ((constant (make-trip-segment-key 'cost (& 0 dollar))) segment)
+       ;; Or: Some fixed function of time
+       ((constant (make-trip-segment-key 'pain (& 0 crap))) segment))
+     'name 'plan-walk
+     'inputs (list go? segment)
+     'outputs (list segment))))
 
 (define-macro-propagator (fast-air-estimate segment)
   ((constant (make-trip-segment-key 'method 'fly)) segment)
@@ -191,8 +209,14 @@
 		end))
 
 (define-macro-propagator (between-airports go? segment)
-  ;; Complicated task-specific stuff stubbed...
-  (pass-through (p:airport-lookup segment) segment))
+  (compound-propagator (list go?)
+    (eq-label!
+     (lambda ()
+       ;; Complicated task-specific stuff stubbed...
+       (pass-through (p:airport-lookup segment) segment))
+     'name 'between-airports
+     'inputs (list go? segment)
+     'outputs (list segment))))
 
 (define plan-air
   (split-node fast-air-estimate (splitter p:pick-airport)
@@ -210,8 +234,14 @@
    segment))
 
 (define-macro-propagator (between-stations go? segment)
-  ;; Complicated task-specific stuff stubbed...
-  (pass-through (p:station-lookup segment) segment))
+  (compound-propagator (list go?)
+    (eq-label!
+     (lambda ()
+       ;; Complicated task-specific stuff stubbed...
+       (pass-through (p:station-lookup segment) segment))
+     'name 'between-stations
+     'inputs (list go? segment)
+     'outputs (list segment))))
 
 (define plan-train
   (split-node fast-train-estimate (splitter p:pick-station)
@@ -230,8 +260,14 @@
     (same-city segment same-city?)))
 
 (define-macro-propagator (between-stops go? segment)
-  ;; Complicated task-specific stuff stubbed...
-  (pass-through (p:stop-lookup segment) segment))
+  (compound-propagator (list go?)
+    (eq-label!
+     (lambda ()
+       ;; Complicated task-specific stuff stubbed...
+       (pass-through (p:stop-lookup segment) segment))
+     'name 'between-stops
+     'inputs (list go? segment)
+     'outputs (list segment))))
 
 (define plan-subway
   (split-node fast-subway-estimate (splitter p:pick-stop)
