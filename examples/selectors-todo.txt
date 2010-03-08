@@ -1,20 +1,23 @@
-Test full thing (recursive definitions)
+Explore behavior of full thing
+- Get it to decide to fly, to take the train, etc
+- Observe fully-elaborated methods
+  - Method compounder
+  - Method merger
 
 Transform examples into unit tests
 Normalize loading structure?  Subdirectory?
 
-Method compounder
-Method merger
 
 Pull the annoyance out of the computation, and make the critics deduce
 the annoyance from the method, and control the search with arbitrary
 criteria.
 
-Use the go? cells for something
-
 Normalize use of expression style?  Including the pass-throughs?
 Prettify the program for display.
 
+Add more metadata for pictures.
+- Better grouping of subfunctions
+- Better names for split nodes and choice nodes
 Draw pictures.
 
 Create a file for ideas about the merging-language.
