@@ -57,6 +57,8 @@
 		  (begin
 		    (pp `(thinking about ,best-method-answer))
 		    (pp best-method-answer)
+		    (pp (content elaboree-method))
+		    (pp (make-estimate best-method-index))
 		    (add-content elaboree-method
 				 (make-estimate best-method-index)))
 		  (begin
@@ -78,9 +80,11 @@
 	(the-propagator
 	 (lambda ()
 	   (if (not (nothing? (content method)))
-	       (add-content
-		(list-ref targets (method-index (content method)))
-		(content pushee))))))
+	       (begin
+		 (pp `(pushing to ,(method-index (content method))))
+		 (add-content
+		  (list-ref targets (method-index (content method)))
+		  (content pushee)))))))
     (eq-label! the-propagator
      'name 'push-selector 'inputs inputs 'outputs targets)
     (for-each (lambda (target)
@@ -108,6 +112,12 @@
     (compound-propagator (list go?) ; Only expand if go? has something
       (eq-label!
        (lambda ()
+	 (newline)
+	 (pp `(expanding a split-node ,estimator
+			 ,(if (nothing? (content segment))
+			      segment
+			      (cons (trip-segment-start (content segment))
+				    (trip-segment-end (content segment))))))
 	 (estimator segment)
 	 (let ((stage-cells
 		(map (lambda (stage)
@@ -195,7 +205,7 @@
 (define-macro-propagator (fast-intercity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
    segment)
-  ((constant (make-trip-segment-by-time (make-estimate (& 1 day))))
+  ((constant (make-trip-segment-by-time (make-estimate (& 7 hour))))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 500 dollar))))
    segment)

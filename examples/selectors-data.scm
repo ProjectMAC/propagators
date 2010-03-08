@@ -239,7 +239,7 @@
 (defhandler merge
   (lambda (estimate1 estimate2)
     (if (= (estimate-value estimate1)
-	   (estimate-value estimate1))
+	   (estimate-value estimate2))
 	estimate1			; Redundant estimate
 	estimate2			; Assume new one is better
 	))
@@ -301,6 +301,10 @@
 (define method-index the-estimate)
 
 (define (find-best-method method-estimates)
+  (define (estimate-lower-bound thing)
+    (if (estimate? thing)
+	(/ (estimate-value thing) 2)
+	thing))
   (let lp ((best-time #f)
 	   (best-answer #f)
 	   (current 0)
@@ -311,9 +315,9 @@
 	   (lp best-time best-answer (+ current 1) (cdr to-check)))
 	  ((or (not best-time)
 	       (unitable-<?
-		(the-estimate (trip-segment-time (car to-check)))
+		(estimate-lower-bound (trip-segment-time (car to-check)))
 		best-time))
-	   (lp (the-estimate (trip-segment-time (car to-check)))
+	   (lp (estimate-lower-bound (trip-segment-time (car to-check)))
 	       current
 	       (+ current 1)
 	       (cdr to-check)))
