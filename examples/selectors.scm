@@ -16,6 +16,11 @@
     (compound-propagator (list go?)	; Only expand if go? has something
       (eq-label!
        (lambda ()
+	 (pp `(planning a trip across 
+			,(if (nothing? (content segment))
+			     segment
+			     (cons (trip-segment-start (content segment))
+				   (trip-segment-end (content segment))))))
 	 (let-cells (elaboree-method final-method)
 	   (let ((opt-cells
 		  (map (lambda (alternative)
@@ -46,14 +51,17 @@
 (define (critic go? elaboree-method final-method . answers)
   ;; Choose the method that promises least pain
   (define (the-propagator)
-    (let ((best-method-index (find-best-method (map content answers))))
-      (if best-method-index
-	  (if (estimate? (trip-segment-time (content (list-ref answers best-method-index))))
-	      (add-content elaboree-method (make-estimate best-method-index))
-	      (if (and (every trip-segment? (map content answers))
-		       (every (lambda (ans)
-				(not (nothing? (trip-segment-time (content ans)))))
-			      answers))
+    (if (and (every trip-segment? (map content answers))
+	     (every (lambda (ans)
+		      (not (nothing? (trip-segment-time (content ans)))))
+		    answers))
+	(let ((best-method-index (find-best-method (map content answers))))
+	  (if best-method-index
+	      (if (estimate? (trip-segment-time (content (list-ref answers best-method-index))))
+		  (begin
+		    (pp `(thinking about ,(content (list-ref answers best-method-index))))
+		    (pp (content (list-ref answers best-method-index)))
+		    (add-content elaboree-method (make-estimate best-method-index)))
 		  (add-content final-method best-method-index))))))
   (let ((inputs (cons go? answers)))
     (eq-label! the-propagator 'name 'critic 'inputs inputs 'outputs (list elaboree-method final-method))
