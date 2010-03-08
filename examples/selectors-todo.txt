@@ -4,10 +4,6 @@ Explore behavior of full thing
   - Method compounder
   - Method merger
 
-Transform examples into unit tests
-Normalize loading structure?  Subdirectory?
-
-
 Pull the annoyance out of the computation, and make the critics deduce
 the annoyance from the method, and control the search with arbitrary
 criteria.
