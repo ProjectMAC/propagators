@@ -43,6 +43,8 @@
 (define (critic go? elaboree-method final-method . answers)
   ;; Choose the method that promises least pain
   (define (the-propagator)
+    (newline)
+    (for-each pp (map content answers))
     (if (and (every trip-segment? (map content answers))
 	     (every (lambda (ans)
 		      (not (nothing? (trip-segment-time (content ans)))))
@@ -50,8 +52,6 @@
 	(let* ((best-method-index (find-best-method (map content answers)))
 	       (best-method-answer
 		(content (list-ref answers best-method-index))))
-	  (newline)
-	  (for-each pp (map content answers))
 	  (if best-method-index
 	      (if (estimate? (trip-segment-time best-method-answer))
 		  (begin
@@ -173,6 +173,26 @@
 	 'outputs (list segment))))))
 
 (define-macro-propagator (fast-air-estimate segment)
+  (let-cells (same-city? same-city-answer intercity-answer)
+    (same-city segment same-city?)
+    (conditional same-city? same-city-answer intercity-answer segment)
+    (conditional-writer same-city? segment same-city-answer intercity-answer)
+    (fast-incity-air-estimate same-city-answer)
+    (fast-intercity-air-estimate intercity-answer)))
+
+(define-macro-propagator (fast-incity-air-estimate segment)
+  ((constant (make-trip-segment-by-method 'fly))
+   segment)
+  ;; TODO notate impossibility
+  ((constant (make-trip-segment-by-time
+	      (make-estimate (& (expt 10 10) hour))))
+   segment)
+  ((constant (make-trip-segment-by-cost (make-estimate (& 500 dollar))))
+   segment)
+  ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap))))
+   segment))
+
+(define-macro-propagator (fast-intercity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
    segment)
   ((constant (make-trip-segment-by-time (make-estimate (& 1 day))))
@@ -213,6 +233,26 @@
 		     (force plan-trip) between-airports (force plan-trip))))
 
 (define-macro-propagator (fast-train-estimate segment)
+  (let-cells (same-city? same-city-answer intercity-answer)
+    (same-city segment same-city?)
+    (conditional same-city? same-city-answer intercity-answer segment)
+    (conditional-writer same-city? segment same-city-answer intercity-answer)
+    (fast-incity-train-estimate same-city-answer)
+    (fast-intercity-train-estimate intercity-answer)))
+
+(define-macro-propagator (fast-incity-train-estimate segment)
+  ((constant (make-trip-segment-by-method 'take-the-train))
+   segment)
+  ;; TODO notate impossibility
+  ((constant (make-trip-segment-by-time
+	      (make-estimate (& (expt 10 10) hour))))
+   segment)
+  ((constant (make-trip-segment-by-cost (make-estimate (& 50 dollar))))
+   segment)
+  ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
+   segment))
+
+(define-macro-propagator (fast-intercity-train-estimate segment)
   ((constant (make-trip-segment-by-method 'take-the-train)) segment)
   ;; Plus two hours for to-from the station?
   ;; TODO Clean up which uses of time-est are actually estimates
@@ -245,6 +285,7 @@
   (let-cells (same-city? same-city-answer intercity-answer)
     (same-city segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
+    (conditional-writer same-city? segment same-city-answer intercity-answer)
     (fast-incity-subway-estimate same-city-answer)
     (fast-intercity-subway-estimate intercity-answer)))
 
