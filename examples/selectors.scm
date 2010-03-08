@@ -44,8 +44,10 @@
 	(if best-method-index
 	    (if (estimate? (content (list-ref answers best-method-index)))
 		(add-content elaboree-method (make-estimate best-method-index))
-		(if (every (lambda (x) (not (nothing? x)))
-			   (map content answers))
+		(if (and (every trip-segment? (map content answers))
+			 (every (lambda (ans)
+				  (not (nothing? (trip-segment-time (content ans)))))
+				answers))
 		    (add-content final-method best-method-index))))))))
 
 (define (push-selector go? pushee method . targets)
