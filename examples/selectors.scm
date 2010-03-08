@@ -37,10 +37,14 @@
 			   (alternative opt-go? opt-segment)
 			   (list opt-go? opt-segment)))
 		       (map force alternatives))))
-	     (apply critic go? elaboree-method final-method (map cadr opt-cells))
-	     (apply push-selector go? go?     elaboree-method (map car opt-cells))
-	     ;; (apply push-selector go? segment elaboree-method (map cadr opt-cells))
-	     (apply pull-selector go? segment final-method    (map cadr opt-cells)))))
+	     (apply critic go? elaboree-method final-method
+		    (map cadr opt-cells))
+	     (apply push-selector go? go? elaboree-method
+		    (map car opt-cells))
+	     #;(apply push-selector go? segment elaboree-method
+		    (map cadr opt-cells))
+	     (apply pull-selector go? segment final-method
+		    (map cadr opt-cells)))))
        'name 'a-choice-node
        'inputs (list go? segment)
        'output (list segment)))))
@@ -55,17 +59,24 @@
 	     (every (lambda (ans)
 		      (not (nothing? (trip-segment-time (content ans)))))
 		    answers))
-	(let ((best-method-index (find-best-method (map content answers))))
+	(let* ((best-method-index (find-best-method (map content answers)))
+	       (best-method-answer
+		(content (list-ref answers best-method-index))))
 	  (if best-method-index
-	      (if (estimate? (trip-segment-time (content (list-ref answers best-method-index))))
+	      (if (estimate? (trip-segment-time best-method-answer))
 		  (begin
-		    #;
-		    (pp `(thinking about ,(content (list-ref answers best-method-index)))) #;
-		    (pp (content (list-ref answers best-method-index)))
-		    (add-content elaboree-method (make-estimate best-method-index)))
-		  (add-content final-method best-method-index))))))
+		    (pp `(thinking about ,best-method-answer))
+		    (pp best-method-answer)
+		    (add-content elaboree-method
+				 (make-estimate best-method-index)))
+		  (begin
+		    (pp `(decided on ,best-method-answer))
+		    (pp best-method-answer)
+		    (add-content final-method best-method-index)))))))
   (let ((inputs (cons go? answers)))
-    (eq-label! the-propagator 'name 'critic 'inputs inputs 'outputs (list elaboree-method final-method))
+    (eq-label! the-propagator
+     'name 'critic 'inputs inputs
+     'outputs (list elaboree-method final-method))
     (eq-adjoin! elaboree-method 'shadow-connections the-propagator)
     (eq-adjoin! elaboree-method 'shadow-connections the-propagator)
     (propagator inputs the-propagator)))
@@ -77,8 +88,9 @@
 	(the-propagator
 	 (lambda ()
 	   (if (not (nothing? (content method)))
-	       (add-content (list-ref targets (method-index (content method)))
-			    (content pushee))))))
+	       (add-content
+		(list-ref targets (method-index (content method)))
+		(content pushee))))))
     (eq-label! the-propagator
      'name 'push-selector 'inputs inputs 'outputs targets)
     (for-each (lambda (target)
@@ -95,7 +107,7 @@
 	 (lambda ()
 	   (if (not (nothing? (content method)))
 	       (add-content pullee
-			    (content (list-ref targets (content method))))))))
+		 (content (list-ref targets (content method))))))))
     (eq-label! the-propagator
      'name 'pull-selector 'inputs inputs 'outputs (list pullee))
     (eq-adjoin! pullee 'shadow-connections the-propagator)
@@ -141,10 +153,12 @@
 
 (define-macro-propagator (answer-compounder go? out . subanswers)
   (pass-through
-   (p:make-trip-segment-by-start (p:trip-segment-start (car subanswers)))
+   (p:make-trip-segment-by-start
+    (p:trip-segment-start (car subanswers)))
    out)
   (pass-through
-   (p:make-trip-segment-by-end (p:trip-segment-end (car (last-pair subanswers))))
+   (p:make-trip-segment-by-end
+    (p:trip-segment-end (car (last-pair subanswers))))
    out)
   (pass-through
    (p:make-trip-segment-by-time
@@ -188,22 +202,28 @@
 	 'outputs (list segment))))))
 
 (define-macro-propagator (fast-air-estimate segment)
-  ((constant (make-trip-segment-by-method 'fly)) segment)
-  ((constant (make-trip-segment-by-time (make-estimate (& 1 day)))) segment)
-  ((constant (make-trip-segment-by-cost (make-estimate (& 500 dollar)))) segment)
-  ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap)))) segment))
+  ((constant (make-trip-segment-by-method 'fly))
+   segment)
+  ((constant (make-trip-segment-by-time (make-estimate (& 1 day))))
+   segment)
+  ((constant (make-trip-segment-by-cost (make-estimate (& 500 dollar))))
+   segment)
+  ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap))))
+   segment))
 
 (define ((splitter p:pick-waypoint) go? segment beginning middle end)
   (pass-through (p:make-trip-segment-by-start (p:trip-segment-start segment))
 		beginning)
   (let-cell (first-waypoint)
-    (pass-through (p:pick-waypoint (p:trip-segment-start segment)) first-waypoint)
+    (pass-through (p:pick-waypoint (p:trip-segment-start segment))
+		  first-waypoint)
     (pass-through (p:make-trip-segment-by-end first-waypoint) beginning)
     (pass-through (p:make-trip-segment-by-start first-waypoint) middle))
   (let-cell (last-waypoint)
     (pass-through (p:make-trip-segment-by-end last-waypoint) middle)
     (pass-through (p:make-trip-segment-by-start last-waypoint) end)
-    (pass-through (p:pick-waypoint (p:trip-segment-end segment)) last-waypoint))
+    (pass-through (p:pick-waypoint (p:trip-segment-end segment))
+		  last-waypoint))
   (pass-through (p:make-trip-segment-by-end   (p:trip-segment-end   segment))
 		end))
 
@@ -258,18 +278,26 @@
     (fast-intercity-subway-estimate intercity-answer)))
 
 (define-macro-propagator (fast-incity-subway-estimate segment)
-  ((constant (make-trip-segment-by-method 'subway)) segment)
-  ((constant (make-trip-segment-by-time (make-estimate (& 1 hour)))) segment)
-  ((constant (make-trip-segment-by-cost (make-estimate (& 2 dollar)))) segment)
-  ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap)))) segment))
+  ((constant (make-trip-segment-by-method 'subway))
+   segment)
+  ((constant (make-trip-segment-by-time (make-estimate (& 1 hour))))
+   segment)
+  ((constant (make-trip-segment-by-cost (make-estimate (& 2 dollar))))
+   segment)
+  ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
+   segment))
 
 (define-macro-propagator (fast-intercity-subway-estimate segment)
-  ((constant (make-trip-segment-by-method 'subway)) segment)
-  ;; TODO notate impossibility
-  ((constant (make-trip-segment-by-time (make-estimate (& (expt 10 10) hour))))
+  ((constant (make-trip-segment-by-method 'subway))
    segment)
-  ((constant (make-trip-segment-by-cost (make-estimate (& 2 dollar)))) segment)
-  ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap)))) segment))
+  ;; TODO notate impossibility
+  ((constant (make-trip-segment-by-time
+	      (make-estimate (& (expt 10 10) hour))))
+   segment)
+  ((constant (make-trip-segment-by-cost (make-estimate (& 2 dollar))))
+   segment)
+  ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
+   segment))
 
 (define-macro-propagator (between-stops go? segment)
   (compound-propagator (list go?)

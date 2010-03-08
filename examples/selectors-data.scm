@@ -173,7 +173,8 @@
 		       (laguardia-airport . laguardia-airport)
 		       (penn-station . 34th-street)
 		       (34th-street . 34th-street)
-		       (met . 57th-street) ;; Cheating; there are many, of course
+		       ;; Cheating; there are many, of course
+		       (met . 57th-street)
 		       (57th-street . 57th-street))))
 (propagatify pick-stop)
 
@@ -303,7 +304,8 @@
 	   (current 0)
 	   (to-check method-estimates))
     (cond ((null? to-check) best-answer)
-	  ((or (nothing? (car to-check)) (nothing? (trip-segment-time (car to-check))))
+	  ((or (nothing? (car to-check))
+	       (nothing? (trip-segment-time (car to-check))))
 	   (lp best-time best-answer (+ current 1) (cdr to-check)))
 	  ((or (not best-time)
 	       (unitable-<?
