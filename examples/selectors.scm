@@ -25,7 +25,7 @@
 		       (p:make-trip-segment-by-end
 			(p:trip-segment-end segment))
 		       opt-segment)
-		      ((const 'go-fast) opt-go?)
+		      ((constant 'go-fast) opt-go?)
 		      (alternative opt-go? opt-segment)
 		      (list opt-go? opt-segment)))
 		  alternatives)))
@@ -188,7 +188,7 @@
     (pass-through (p:make-trip-segment-by-start last-waypoint) end)
     (pass-through (p:pick-waypoint (p:trip-segment-end segment)) last-waypoint))
   (pass-through (p:make-trip-segment-by-end   (p:trip-segment-end   segment))
-		end)) ;; Ditto stations, stops
+		end))
 
 (define-macro-propagator (between-airports go? segment)
   ;; Complicated task-specific stuff stubbed...
