@@ -269,3 +269,21 @@
 
 (define (unitable-<? thing1 thing2)
   (< (strip-units thing1) (strip-units thing2)))
+
+(define (eql? const)
+  (lambda (x)
+    (eqv? x const)))
+
+(defhandler merge
+  (lambda (content increment) 'go-deep)
+  (eql? 'go-fast) (eql? 'go-deep))
+
+(defhandler merge
+  (lambda (content increment) 'go-deep)
+  (eql? 'go-deep) (eql? 'go-fast))
+
+(define (deep-only go-command)
+  (if (eq? 'go-deep go-command)
+      go-command
+      nothing))
+(propagatify deep-only)

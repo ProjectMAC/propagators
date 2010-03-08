@@ -25,6 +25,7 @@
 		       (p:make-trip-segment-by-end
 			(p:trip-segment-end segment))
 		       opt-segment)
+		      ((const 'go-fast) opt-go?)
 		      (alternative opt-go? opt-segment)
 		      (list opt-go? opt-segment)))
 		  alternatives)))
@@ -152,8 +153,8 @@
   )
 
 (define (forwarder go? subgo?)
-  ;; If the "go" signal is suitably "deep-go", forward it.
-  (pass-through go? subgo?))
+  ;; If the "go" signal is suitably "go-deep", forward it.
+  (pass-through (p:deep-only go?) subgo?))
 
 ;;; The actual specific planners
 (define-macro-propagator (plan-walk go? segment)
@@ -298,6 +299,7 @@
 
  (initialize-scheduler)
  (define-cell go?)
+ (add-content go? 'go-deep)
  (define-cell trip-to-met)
  (add-content trip-to-met (make-trip-segment-key 'start 'home 'end 'met))
  (plan-trip go? trip-to-met)
