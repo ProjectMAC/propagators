@@ -93,8 +93,8 @@
 
 (define (same-city-f? trip-segment)
   ;; Really same-subway-network?
-  (eq? (trip-segment-start trip-segment)
-       (trip-segment-end trip-segment)))
+  (eq? (pick-airport (trip-segment-start trip-segment))
+       (pick-airport (trip-segment-end trip-segment))))
 
 (define same-city
   (function->propagator-constructor (nary-unpacking same-city-f?)))
@@ -103,6 +103,7 @@
   (force-assoc place '((home . logan)
 		       (logan . logan)
 		       (south-station . logan)
+		       (south-station-under . logan)
 		       (beaconsfield . logan)
 		       (airport . logan)
 		       (laguardia . laguardia)
@@ -135,6 +136,7 @@
   (force-assoc place '((home . south-station)
 		       (logan . south-station)
 		       (south-station . south-station)
+		       (south-station-under . south-station)
 		       (beaconsfield . south-station)
 		       (airport . south-station)
 		       (laguardia . penn-station)

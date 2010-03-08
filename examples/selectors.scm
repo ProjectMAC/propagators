@@ -1,21 +1,9 @@
-(define (plan-trip go? segment pain answer)
-  (let-cells (air-go? air-input air-pain air-answer
-	      train-go? train-input train-pain train-answer
-	      bus-go? bus-input bus-pain bus-answer
-	      method)
-    (plan-air air-go? air-input air-pain air-answer)
-    (plan-train train-go? train-input train-pain train-answer)
-    (plan-bus bus-go? bus-input bus-pain bus-answer)
-    (critic go? air-pain train-pain bus-pain method)
-    (selector go? method air-go? train-go? bus-go?)
-    (answerer go? method air-answer train-answer bus-answer answer)
-    ))
-
 (define (choice-node . alternatives)
   (lambda (go? segment)
     (compound-propagator (list go?)	; Only expand if go? has something
       (eq-label!
-       (lambda () #;
+       (lambda ()
+	 (newline)
 	 (pp `(planning a trip across 
 			,(if (nothing? (content segment))
 			     segment
@@ -62,6 +50,8 @@
 	(let* ((best-method-index (find-best-method (map content answers)))
 	       (best-method-answer
 		(content (list-ref answers best-method-index))))
+	  (newline)
+	  (for-each pp (map content answers))
 	  (if best-method-index
 	      (if (estimate? (trip-segment-time best-method-answer))
 		  (begin
@@ -78,7 +68,7 @@
      'name 'critic 'inputs inputs
      'outputs (list elaboree-method final-method))
     (eq-adjoin! elaboree-method 'shadow-connections the-propagator)
-    (eq-adjoin! elaboree-method 'shadow-connections the-propagator)
+    (eq-adjoin! final-method 'shadow-connections the-propagator)
     (propagator inputs the-propagator)))
 
 (define (push-selector go? pushee method . targets)
@@ -113,25 +103,6 @@
     (eq-adjoin! pullee 'shadow-connections the-propagator)
     (propagator inputs the-propagator)))
 
-(define (plan-air go? segment pain answer)
-  (fast-air-estimate segment pain answer)
-  (let-cells (to-air-input by-air-input from-air-input
-	      to-air-pain by-air-pain from-air-pain
-	      to-air-answer by-air-answer from-air-answer
-	      to-air-go? by-air-go? from-air-go?)
-    (forwarder go? to-air-go? by-air-go? from-air-go?)
-    (summer go? to-air-pain by-air-pain from-air-pain pain)
-    (compounder go? to-air-answer by-air-answer from-air-answer answer)
-
-    (select-source-airport go? segment to-air-input by-air-input)
-    (plan-trip to-air-go? to-air-input to-air-pain to-air-answer)
-
-    (between-airports by-air-go? by-air-input by-air-pain by-air-answer)
-
-    (select-dest-airport go? segment from-air-input by-air-input)
-    (plan-trip from-air-go? from-air-input from-air-pain from-air-answer)
-    ))
-
 (define (split-node estimator segment-splitter . stages)
   (lambda (go? segment)
     (compound-propagator (list go?) ; Only expand if go? has something
