@@ -334,4 +334,7 @@
   (if (lexical-unbound? (the-environment) 'ampere)
       'units-not-available
       ampere))
-(define crap dollar)
+(define crap 
+  (if (lexical-unbound? (the-environment) 'kilogram)
+      'units-not-available
+      kilogram))
