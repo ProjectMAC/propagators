@@ -44,7 +44,8 @@
   ;; Choose the method that promises least pain
   (define (the-propagator)
     (newline)
-    (for-each pp (map content answers))
+    (pp 'considering-estimates)
+    (for-each print-cell-contents answers)
     (if (and (every trip-segment? (map content answers))
 	     (every (lambda (ans)
 		      (not (nothing? (trip-segment-time (content ans)))))
@@ -55,16 +56,15 @@
 	  (if best-method-index
 	      (if (estimate? (trip-segment-time best-method-answer))
 		  (begin
-		    (pp `(thinking about ,best-method-answer))
-		    (pp best-method-answer)
-		    (pp (content elaboree-method))
-		    (pp (make-estimate best-method-index))
+		    (pp `(thinking about ,(trip-segment-method
+					   best-method-answer)))
 		    (add-content elaboree-method
 				 (make-estimate best-method-index)))
 		  (begin
-		    (pp `(decided on ,best-method-answer))
-		    (pp best-method-answer)
-		    (add-content final-method best-method-index)))))))
+		    (pp `(decided on ,(trip-segment-method
+				       best-method-answer)))
+		    (add-content final-method best-method-index)))))
+	(pp 'waiting-for-more-estimates)))
   (let ((inputs (cons go? answers)))
     (eq-label! the-propagator
      'name 'critic 'inputs inputs
@@ -80,11 +80,9 @@
 	(the-propagator
 	 (lambda ()
 	   (if (not (nothing? (content method)))
-	       (begin
-		 (pp `(pushing to ,(method-index (content method))))
-		 (add-content
-		  (list-ref targets (method-index (content method)))
-		  (content pushee)))))))
+	       (add-content
+		(list-ref targets (method-index (content method)))
+		(content pushee))))))
     (eq-label! the-propagator
      'name 'push-selector 'inputs inputs 'outputs targets)
     (for-each (lambda (target)
@@ -112,12 +110,6 @@
     (compound-propagator (list go?) ; Only expand if go? has something
       (eq-label!
        (lambda ()
-	 (newline)
-	 (pp `(expanding a split-node ,estimator
-			 ,(if (nothing? (content segment))
-			      segment
-			      (cons (trip-segment-start (content segment))
-				    (trip-segment-end (content segment))))))
 	 (estimator segment)
 	 (let ((stage-cells
 		(map (lambda (stage)

@@ -34,6 +34,29 @@
 (slotful-information-type trip-segment? make-trip-segment
   trip-segment-start trip-segment-end trip-segment-time
   trip-segment-cost trip-segment-pain trip-segment-method)
+
+(define (print-trip-segment trip-segment)
+  (define (normalize-knowledge thing)
+    (cond ((nothing? thing)
+	   'unknown)
+	  ((estimate? thing)
+	   `(estimated ,(normalize-knowledge (estimate-value thing))))
+	  ((with-units? thing)
+	   (prepare-for-printing thing simplify)
+	   *last-expression-printed*)
+	  (else thing)))
+  (pp `(segment
+	from ,(normalize-knowledge (trip-segment-start trip-segment))
+	to   ,(normalize-knowledge (trip-segment-end trip-segment))
+	by   ,(normalize-knowledge (trip-segment-method trip-segment))
+	time ,(normalize-knowledge (trip-segment-time trip-segment))
+	cost ,(normalize-knowledge (trip-segment-cost trip-segment))
+	pain ,(normalize-knowledge (trip-segment-pain trip-segment)))))
+
+(define (print-cell-contents cell)
+  (if (nothing? (content cell))
+      (pp 'nothing)
+      (print-trip-segment (content cell))))
 
 ;;; Stub data for particular jobs
 (define (force-assoc item alist)
@@ -114,7 +137,6 @@
 		       (laguardia-airport . laguardia)
 		       (57th-street . laguardia)
 		       (met . laguardia))))
-;; ditto pick-station, pick-stop
 (propagatify pick-airport)
 
 (define (airport-lookup segment)
