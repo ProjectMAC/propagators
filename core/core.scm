@@ -28,7 +28,7 @@
       (let ((new-content (merge content increment)))
         (cond ((eq? new-content content) 'ok)
               ((contradictory? new-content)
-               (error "Ack! Inconsistency!"))
+               (error "Ack! Inconsistency!" me increment))
               (else (set! content new-content)
                     (alert-propagators neighbors)))))
     (define (new-neighbor! new-neighbor)
