@@ -75,22 +75,30 @@
   trip-segment?)
 
 ;;; Stub data for particular jobs
+(define (force-assoc item alist)
+  (let ((binding (assoc item alist)))
+    (if binding
+	(cdr binding)
+	(error "Expand the list!" item (map car alist)))))
 
 (define (distance-est-f trip-segment)
   ;;; Ha!
-  (cdr (assoc (list (trip-segment-start trip-segment)
-		    (trip-segment-end   trip-segment))
-	      `(((home met) . ,(& 400 kilo meter))
-		((home logan) . ,(& 8 kilo meter))
-		((logan laguardia) . ,(& 400 kilo meter))
-		((laguardia met) . ,(& 5 kilo meter))
-		((home south-station) . ,(& 6 kilo meter))
-		((south-station penn-station) . ,(& 400 kilo meter))
-		((penn-station met) . ,(& 1 kilo meter))
-		((home beaconsfield) . ,(& 100 meter))
-		((beaconsfield airport) . ,(& 8 kilo meter))
-		((airport logan) . ,(& 500 meter))
-		)))
+  (force-assoc (list (trip-segment-start trip-segment)
+		     (trip-segment-end   trip-segment))
+	       `(((home met) . ,(& 400 kilo meter))
+		 ((home logan) . ,(& 8 kilo meter))
+		 ((logan laguardia) . ,(& 400 kilo meter))
+		 ((laguardia met) . ,(& 5 kilo meter))
+		 ((home south-station) . ,(& 6 kilo meter))
+		 ((south-station penn-station) . ,(& 400 kilo meter))
+		 ((penn-station met) . ,(& 1 kilo meter))
+		 ((home beaconsfield) . ,(& 100 meter))
+		 ((beaconsfield airport) . ,(& 8 kilo meter))
+		 ((airport logan) . ,(& 500 meter))
+		 ((laguardia laguardia-airport) . ,(& 500 meter))
+		 ((laguardia-airport 57th-street) . ,(& 5 kilo meter))
+		 ((57th-street met) . ,(& 1 kilo meter))
+		 ))
   )
 
 (define (time-est-f trip-segment speed)
@@ -113,45 +121,48 @@
   (function->propagator-constructor (nary-unpacking same-city-f?)))
 
 (define (pick-airport place)
-  (cdr (assoc place '((home . logan)
-		      (met . laguardia)))))
+  (force-assoc place '((home . logan)
+		       (met . laguardia))))
 ;; ditto pick-station, pick-stop
 (propagatify pick-airport)
 
 (define (airport-lookup segment)
-  (cdr (assoc (cons (trip-segment-start segment)
-		    (trip-segment-end segment))
-	      `(((logan . laguardia) .
-		 ,(make-trip-segment 'logan 'laguardia
-		    (& 4 hour) (& 432 dollar) (& 215 crap) 'fly))))))
+  (force-assoc
+   (cons (trip-segment-start segment)
+	 (trip-segment-end segment))
+   `(((logan . laguardia) .
+      ,(make-trip-segment 'logan 'laguardia
+	(& 4 hour) (& 432 dollar) (& 215 crap) 'fly)))))
 (propagatify airport-lookup)
 
 (define (pick-station place)
-  (cdr (assoc place '((home . south-station)
-		      (met . penn-station)))))
+  (force-assoc place '((home . south-station)
+		       (met . penn-station))))
 (propagatify pick-station)
 
 (define (station-lookup segment)
-  (cdr (assoc (cons (trip-segment-start segment)
-		    (trip-segment-end segment))
-	      `(((south-station . penn-station) .
-		 ,(make-trip-segment 'south-station 'penn-station
-		    (& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train))))))
+  (force-assoc
+   (cons (trip-segment-start segment)
+	 (trip-segment-end segment))
+   `(((south-station . penn-station) .
+      ,(make-trip-segment 'south-station 'penn-station
+	(& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train)))))
 (propagatify station-lookup)
 
 (define (pick-stop place)
-  (cdr (assoc place '((home . beaconsfield)
-		      (logan . airport)
-		      (laguardia . ??)
-		      (met . ???)))))
+  (force-assoc place '((home . beaconsfield)
+		       (logan . airport)
+		       (laguardia . laguardia-airport)
+		       (met . 57th-street))))
 (propagatify pick-stop)
 
 (define (stop-lookup segment)
-  (cdr (assoc (cons (trip-segment-start segment)
-		    (trip-segment-end segment))
-	      `(((beaconsfield . airport) .
-		 ,(make-trip-segment 'beaconsfield 'airport
-		    (& 2 hour) (& 1.70 dollar) (& 15 crap) 'subway))))))
+  (force-assoc
+   (cons (trip-segment-start segment)
+	 (trip-segment-end segment))
+   `(((beaconsfield . airport) .
+      ,(make-trip-segment 'beaconsfield 'airport
+	(& 2 hour) (& 1.70 dollar) (& 15 crap) 'subway)))))
 (propagatify stop-lookup)
 
 ;;; Hack for numerical estimates.  I should really do this with
@@ -234,11 +245,20 @@
 	  ((or (nothing? (car to-check)) (nothing? (trip-segment-time (car to-check))))
 	   (lp best-time best-answer (+ current 1) (cdr to-check)))
 	  ((or (not best-time)
-	       (< (the-estimate (trip-segment-time (car to-check)))
-		  best-time))
+	       (unitable-<?
+		(the-estimate (trip-segment-time (car to-check)))
+		best-time))
 	   (lp (the-estimate (trip-segment-time (car to-check)))
 	       current
 	       (+ current 1)
 	       (cdr to-check)))
 	  (else
 	   (lp best-time best-answer (+ current 1) (cdr to-check))))))
+
+(define (strip-units thing)
+  (if (with-units? thing)
+      (cadr thing)
+      thing))
+
+(define (unitable-<? thing1 thing2)
+  (< (strip-units thing1) (strip-units thing2)))

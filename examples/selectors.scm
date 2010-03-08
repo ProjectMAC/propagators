@@ -44,7 +44,9 @@
 	(if best-method-index
 	    (if (estimate? (content (list-ref answers best-method-index)))
 		(add-content elaboree-method (make-estimate best-method-index))
-		(add-content final-method best-method-index)))))))
+		(if (every (lambda (x) (not (nothing? x)))
+			   (map content answers))
+		    (add-content final-method best-method-index))))))))
 
 (define (push-selector go? pushee method . targets)
   ;; Conditionally shove the contents of the pushee into the target
@@ -213,7 +215,7 @@
   (pass-through (p:stop-lookup segment) segment))
 
 (define plan-subway
-  (split-node fast-train-estimate (splitter p:pick-stop)
+  (split-node fast-subway-estimate (splitter p:pick-stop)
 	      plan-walk between-stops plan-walk))
 
 (define plan-trip
