@@ -15,7 +15,7 @@
   (lambda (go? segment)
     (compound-propagator (list go?)	; Only expand if go? has something
       (eq-label!
-       (lambda ()
+       (lambda () #;
 	 (pp `(planning a trip across 
 			,(if (nothing? (content segment))
 			     segment
@@ -59,7 +59,8 @@
 	  (if best-method-index
 	      (if (estimate? (trip-segment-time (content (list-ref answers best-method-index))))
 		  (begin
-		    (pp `(thinking about ,(content (list-ref answers best-method-index))))
+		    #;
+		    (pp `(thinking about ,(content (list-ref answers best-method-index)))) #;
 		    (pp (content (list-ref answers best-method-index)))
 		    (add-content elaboree-method (make-estimate best-method-index)))
 		  (add-content final-method best-method-index))))))
@@ -286,76 +287,12 @@
 (define plan-subway
   (delay (split-node fast-subway-estimate (splitter p:pick-stop)
 		     (force plan-trip) between-stops (force plan-trip))))
-#|
- (initialize-scheduler)
- (define-cell walk-to-met)
- (define-cell go?)
- (add-content walk-to-met (make-trip-segment-key 'start 'home 'end 'met))
- (plan-walk go? walk-to-met)
- (run)
- (pp (content walk-to-met))
-
- (initialize-scheduler)
- (define-cell fly-to-met)
- (add-content fly-to-met (make-trip-segment-key 'start 'home 'end 'met))
- (fast-air-estimate fly-to-met)
- (run)
- (pp (content fly-to-met))
-
- (initialize-scheduler)
- (define-cell subway-to-met)
- (add-content subway-to-met (make-trip-segment-key 'start 'home 'end 'met))
- (fast-subway-estimate subway-to-met)
- (run)
- (pp (content subway-to-met))
-
- (initialize-scheduler)
- (define-cell go?)
- (define-cell fly-to-met)
- (define-cell beginning)
- (define-cell middle)
- (define-cell end)
- (add-content fly-to-met (make-trip-segment-key 'start 'home 'end 'met))
- (airport-splitter go? fly-to-met beginning middle end)
- (run)
- (map pp (map content (list fly-to-met beginning middle end)))
-
- (initialize-scheduler)
- (define-cell go?)
- (define-cell fly-to-met)
- (add-content fly-to-met (make-trip-segment-key 'start 'home 'end 'met))
- (plan-air go? fly-to-met)
- (run)
- (pp (content fly-to-met))
-
- (initialize-scheduler)
- (define-cell go?)
- (define-cell train-to-met)
- (add-content train-to-met (make-trip-segment-key 'start 'home 'end 'met))
- (plan-train go? train-to-met)
- (run)
- (pp (content train-to-met))
-
- (initialize-scheduler)
- (define-cell go?)
- (define-cell subway-to-logan)
- (add-content subway-to-logan (make-trip-segment-key 'start 'home 'end 'logan))
- (plan-subway go? subway-to-logan)
- (run)
- (pp (content subway-to-logan))
-
- (initialize-scheduler)
- (define-cell go?)
- (add-content go? 'go-deep)
- (define-cell trip-to-met)
- (add-content trip-to-met (make-trip-segment-key 'start 'home 'end 'met))
- ((force plan-trip) go? trip-to-met)
- (run)
- (pp (content trip-to-met))
-|#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?
 
 ;;; Unit system hacking
-(define dollar ampere)
-(define crap ampere)
+(define dollar
+  (if (lexical-unbound? (the-environment) 'ampere)
+      'units-not-available
+      ampere))
+(define crap dollar)

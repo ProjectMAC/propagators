@@ -39,5 +39,10 @@
    "albatross-conundrum"
    ))
 
+(for-each
+ load-relative
+ '("selectors-data"
+   "selectors"))
+
 (maybe-warn-low-memory)
 (initialize-scheduler)

@@ -282,6 +282,10 @@
   estimate? estimate?)
 
 (define (maybe-units? thing)
+  ;; In case Mechanics isn't around
+  (define (with-units? x)
+    (and (pair? x)
+	 (eq? (car x) '*with-units*)))
   (or (number? thing)
       (with-units? thing)))
 
