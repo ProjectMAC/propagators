@@ -31,48 +31,9 @@
 (propagatify make-trip-segment-by-pain)
 (propagatify make-trip-segment-by-method)
 
-(define (trip-segment-merge trip-segment1 trip-segment2)
-  (let ((start-answer  (merge (trip-segment-start trip-segment1)
-			      (trip-segment-start trip-segment2)))
-	(end-answer    (merge (trip-segment-end trip-segment1)
-			      (trip-segment-end trip-segment2)))
-	(time-answer   (merge (trip-segment-time trip-segment1)
-			      (trip-segment-time trip-segment2)))
-	(cost-answer   (merge (trip-segment-cost trip-segment1)
-			      (trip-segment-cost trip-segment2)))
-	(pain-answer   (merge (trip-segment-pain trip-segment1)
-			      (trip-segment-pain trip-segment2)))
-	(method-answer (merge (trip-segment-method trip-segment1)
-			      (trip-segment-method trip-segment2))))
-    (cond ((and (eq? start-answer  (trip-segment-start trip-segment1))
-		(eq? end-answer    (trip-segment-end trip-segment1))
-		(eq? time-answer   (trip-segment-time trip-segment1))
-		(eq? cost-answer   (trip-segment-cost trip-segment1))
-		(eq? pain-answer   (trip-segment-pain trip-segment1))
-		(eq? method-answer (trip-segment-method trip-segment1)))
-	   trip-segment1)
-	  ((and (eq? start-answer  (trip-segment-start trip-segment2))
-		(eq? end-answer    (trip-segment-end trip-segment2))
-		(eq? time-answer   (trip-segment-time trip-segment2))
-		(eq? cost-answer   (trip-segment-cost trip-segment2))
-		(eq? pain-answer   (trip-segment-pain trip-segment2))
-		(eq? method-answer (trip-segment-method trip-segment2)))
-	   trip-segment2)
-	  (else
-	   (make-trip-segment start-answer end-answer time-answer
-			      cost-answer pain-answer method-answer)))))
-
-(defhandler merge trip-segment-merge trip-segment? trip-segment?)
-
-(defhandler contradictory?
-  (lambda (trip-segment)
-    (or (contradictory? (trip-segment-start  trip-segment))
-	(contradictory? (trip-segment-end    trip-segment))
-	(contradictory? (trip-segment-time   trip-segment))
-	(contradictory? (trip-segment-cost   trip-segment))
-	(contradictory? (trip-segment-pain   trip-segment))
-	(contradictory? (trip-segment-method trip-segment))))
-  trip-segment?)
+(slotful-information-type trip-segment? make-trip-segment
+  trip-segment-start trip-segment-end trip-segment-time
+  trip-segment-cost trip-segment-pain trip-segment-method)
 
 ;;; Stub data for particular jobs
 (define (force-assoc item alist)

@@ -39,6 +39,27 @@
 
 (defhandler merge pair-merge pair? pair?)
 
+;;; The generalization (though I don't know whether this strategy is right):
+(define (slotful-information-type predicate? constructor . accessors)
+  (define (slotful-merge thing1 thing2)
+    (let* ((slots1 (map (lambda (accessor) (accessor thing1))
+			accessors))
+	   (slots2 (map (lambda (accessor) (accessor thing2))
+			accessors))
+	   (submerges (map merge slots1 slots2))
+	   (ok1? (apply boolean/and (map eq? submerges slots1)))
+	   (ok2? (apply boolean/and (map eq? submerges slots2))))
+      (cond (ok1? thing1)
+	    (ok2? thing2)
+	    (else (apply constructor submerges)))))
+  (defhandler merge slotful-merge predicate? predicate?)
+  
+  (define (slotful-contradiction? thing)
+    (apply boolean/or (map contradictory? (map (lambda (accessor)
+						 (accessor thing))
+					       accessors))))
+  (defhandler contradictory? slotful-contradiction? predicate?))
+
 ;;; This strategy is presented in the text as an alternative to the
 ;;; preceding.  I choose not to enable it by default.
 #|
