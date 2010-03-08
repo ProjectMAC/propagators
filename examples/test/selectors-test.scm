@@ -1,7 +1,7 @@
 (in-test-group
  selectors
  
- (define-test ()
+ (define-test (walk-to-met)
    (interaction
     (initialize-scheduler)
     (define-cell go?)
@@ -13,7 +13,7 @@
     (check (with-units? (trip-segment-time (content walk-to-met))))
     (check (eq? 'just-walk (trip-segment-method (content walk-to-met))))))
 
- (define-test ()
+ (define-test (est-fly-to-met)
    (interaction
     (initialize-scheduler)
     (define-cell fly-to-met)
@@ -23,7 +23,7 @@
     (check (estimate? (trip-segment-time (content fly-to-met))))
     (check (eq? 'fly (trip-segment-method (content fly-to-met))))))
 
- (define-test ()
+ (define-test (est-subway-to-met)
    (interaction
     (initialize-scheduler)
     (define-cell subway-to-met)
@@ -34,7 +34,7 @@
     (check (estimate? (trip-segment-time (content subway-to-met))))
     (check (eq? 'subway (trip-segment-method (content subway-to-met))))))
 
- (define-test ()
+ (define-test (air-splitter)
    (interaction
     (initialize-scheduler)
     (define-cell go?)
@@ -53,7 +53,7 @@
 		   (map trip-segment-end
 			(map content (list beginning middle end)))))))
 
- (define-test ()
+ (define-test (fly-to-met)
    (interaction
     (initialize-scheduler)
     (define-cell go?)
@@ -65,7 +65,7 @@
     (check (with-units? (trip-segment-time (content fly-to-met))))
     (check (eq? 'fly (trip-segment-method (content fly-to-met))))))
 
- (define-test ()
+ (define-test (train-to-met)
    (interaction
     (initialize-scheduler)
     (define-cell go?)
@@ -77,7 +77,7 @@
     (check (with-units? (trip-segment-time (content train-to-met))))
     (check (eq? 'take-the-train (trip-segment-method (content train-to-met))))))
 
- (define-test ()
+ (define-test (subway-to-logan)
    (interaction
     (initialize-scheduler)
     (define-cell go?)
@@ -89,7 +89,7 @@
     (check (with-units? (trip-segment-time (content subway-to-logan))))
     (check (eq? 'subway (trip-segment-method (content subway-to-logan))))))
 
- (define-test ()
+ (define-test (trip-to-met)
    (interaction
     (initialize-scheduler)
     (define-cell go?)

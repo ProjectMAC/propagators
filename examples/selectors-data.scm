@@ -93,8 +93,11 @@
 
 (define (same-city-f? trip-segment)
   ;; Really same-subway-network?
-  (eq? (pick-airport (trip-segment-start trip-segment))
-       (pick-airport (trip-segment-end trip-segment))))
+  (if (and (not (nothing? (trip-segment-start trip-segment)))
+	   (not (nothing? (trip-segment-end trip-segment))))
+      (eq? (pick-airport (trip-segment-start trip-segment))
+	   (pick-airport (trip-segment-end trip-segment)))
+      nothing))
 
 (define same-city
   (function->propagator-constructor (nary-unpacking same-city-f?)))
