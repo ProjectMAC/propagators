@@ -172,7 +172,7 @@
       (compound-propagator (list go?)
 	(eq-label!
 	 (lambda ()
-	   ((constant (make-trip-segment-key 'method 'just-walk)) segment)
+	   ((constant (make-trip-segment-by-method 'just-walk)) segment)
 	   (pass-through
 	    (p:make-trip-segment-by-time
 	     (p:time-est segment (p:const (& 3 (/ mile hour)))))
@@ -180,21 +180,18 @@
 	   ;; TODO Fix this hack
 	   (pass-through (p:tag-not-estimate segment) segment)
 	   ;; Or more for food, etc if it takes a long time
-	   ((constant (make-trip-segment-key 'cost (& 0 dollar))) segment)
+	   ((constant (make-trip-segment-by-cost (& 0 dollar))) segment)
 	   ;; Or: Some fixed function of time
-	   ((constant (make-trip-segment-key 'pain (& 0 crap))) segment))
+	   ((constant (make-trip-segment-by-pain (& 0 crap))) segment))
 	 'name 'plan-walk
 	 'inputs (list go? segment)
 	 'outputs (list segment))))))
 
 (define-macro-propagator (fast-air-estimate segment)
-  ((constant (make-trip-segment-key 'method 'fly)) segment)
-  ((constant (make-trip-segment-key
-	      'time (make-estimate (& 1 day)))) segment)
-  ((constant (make-trip-segment-key
-	      'cost (make-estimate (& 500 dollar)))) segment)
-  ((constant (make-trip-segment-key
-	      'pain (make-estimate (& 200 crap)))) segment))
+  ((constant (make-trip-segment-by-method 'fly)) segment)
+  ((constant (make-trip-segment-by-time (make-estimate (& 1 day)))) segment)
+  ((constant (make-trip-segment-by-cost (make-estimate (& 500 dollar)))) segment)
+  ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap)))) segment))
 
 (define ((splitter p:pick-waypoint) go? segment beginning middle end)
   (pass-through (p:make-trip-segment-by-start (p:trip-segment-start segment))
@@ -225,7 +222,7 @@
 		     (force plan-trip) between-airports (force plan-trip))))
 
 (define-macro-propagator (fast-train-estimate segment)
-  ((constant (make-trip-segment-key 'method 'take-the-train)) segment)
+  ((constant (make-trip-segment-by-method 'take-the-train)) segment)
   ;; Plus two hours for to-from the station?
   ;; TODO Clean up which uses of time-est are actually estimates
   ;; and which are "hard"
@@ -234,9 +231,9 @@
     (p:+ (p:time-est segment (p:const (& 50 (/ mile hour))))
 	 (p:const (& 2 hour))))
    segment)
-  ((constant (make-trip-segment-key 'cost (make-estimate (& 50 dollar))))
+  ((constant (make-trip-segment-by-cost (make-estimate (& 50 dollar))))
    segment)
-  ((constant (make-trip-segment-key 'pain (make-estimate (& 25 crap))))
+  ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
 
 (define-macro-propagator (between-stations go? segment)
