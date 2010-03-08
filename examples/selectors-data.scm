@@ -162,7 +162,14 @@
 	 (trip-segment-end segment))
    `(((beaconsfield . airport) .
       ,(make-trip-segment 'beaconsfield 'airport
-	(& 2 hour) (& 1.70 dollar) (& 15 crap) 'subway)))))
+	(& 2 hour) (& 1.70 dollar) (& 15 crap) 'subway))
+     ((laguardia-airport . 57th-street) .
+      ,(make-trip-segment 'laguardia-airport '57th-street
+	(& 1 hour) (& 5 dollar) (& 20 crap) 'subway))
+     ((beaconsfield . 57th-street) . ; How do I represent impossibility?
+      ,(make-trip-segment 'beaconsfield '57th-street
+        (& (expt 10 10) hour) (& 0 dollar) (& 0 crap) 'subway))
+     )))
 (propagatify stop-lookup)
 
 ;;; Hack for numerical estimates.  I should really do this with
