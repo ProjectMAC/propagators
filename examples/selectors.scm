@@ -164,7 +164,10 @@
 	(eq-label!
 	 (lambda ()
 	   ((constant (make-trip-segment-key 'method 'just-walk)) segment)
-	   (time-est segment (p:const (& 3 (/ mile hour))) segment)
+	   (pass-through
+	    (p:make-trip-segment-by-time
+	     (p:time-est segment (p:const (& 3 (/ mile hour)))))
+	    segment)
 	   ;; TODO Fix this hack
 	   (pass-through (p:tag-not-estimate segment) segment)
 	   ;; Or more for food, etc if it takes a long time
@@ -217,7 +220,11 @@
   ;; Plus two hours for to-from the station?
   ;; TODO Clean up which uses of time-est are actually estimates
   ;; and which are "hard"
-  (time-est segment (p:const (& 50 (/ mile hour))) segment)
+  (pass-through
+   (p:make-trip-segment-by-time
+    (p:+ (p:time-est segment (p:const (& 50 (/ mile hour))))
+	 (p:const (& 2 hour))))
+   segment)
   ((constant (make-trip-segment-key 'cost (make-estimate (& 50 dollar))))
    segment)
   ((constant (make-trip-segment-key 'pain (make-estimate (& 25 crap))))
