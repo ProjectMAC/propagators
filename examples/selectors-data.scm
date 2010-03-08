@@ -124,14 +124,6 @@
    `(((logan . laguardia) .
       ,(make-trip-segment 'logan 'laguardia
 	(& 4 hour) (& 432 dollar) (& 215 crap) 'fly))
-     ;; TODO What's the right way to denote that one should not take
-     ;; a plane to get from logan to logan?
-     ((logan . logan) .
-      ,(make-trip-segment 'logan 'logan
-	(& 1 hour) (& 0 dollar) (& 0 crap) 'fly))
-     ((laguardia . laguardia) .
-      ,(make-trip-segment 'laguardia 'laguardia
-	(& 1 hour) (& 0 dollar) (& 0 crap) 'fly))
      )))
 (propagatify airport-lookup)
 
@@ -156,14 +148,6 @@
    `(((south-station . penn-station) .
       ,(make-trip-segment 'south-station 'penn-station
 	(& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train))
-     ;; TODO What's the right way to denote that one should not take
-     ;; an intercity train to get from penn-station to penn-station?
-     ((penn-station . penn-station) .
-      ,(make-trip-segment 'penn-station 'penn-station
-	(& 10 hour) (& 0 dollar) (& 0 crap) 'take-the-train))
-     ((south-station . south-station) .
-      ,(make-trip-segment 'south-station 'south-station
-	(& 10 hour) (& 0 dollar) (& 0 crap) 'take-the-train))
      )))
 (propagatify station-lookup)
 
