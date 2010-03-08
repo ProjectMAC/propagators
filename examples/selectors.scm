@@ -38,36 +38,52 @@
 
 (define (critic go? elaboree-method final-method . answers)
   ;; Choose the method that promises least pain
-  (propagator (cons go? answers)
-    (lambda ()
-      (let ((best-method-index (find-best-method (map content answers))))
-	(if best-method-index
-	    (if (estimate? (content (list-ref answers best-method-index)))
-		(add-content elaboree-method (make-estimate best-method-index))
-		(if (and (every trip-segment? (map content answers))
-			 (every (lambda (ans)
-				  (not (nothing? (trip-segment-time (content ans)))))
-				answers))
-		    (add-content final-method best-method-index))))))))
+  (define (the-propagator)
+    (let ((best-method-index (find-best-method (map content answers))))
+      (if best-method-index
+	  (if (estimate? (content (list-ref answers best-method-index)))
+	      (add-content elaboree-method (make-estimate best-method-index))
+	      (if (and (every trip-segment? (map content answers))
+		       (every (lambda (ans)
+				(not (nothing? (trip-segment-time (content ans)))))
+			      answers))
+		  (add-content final-method best-method-index))))))
+  (let ((inputs (cons go? answers)))
+    (eq-label! the-propagator 'name 'critic 'inputs inputs 'outputs (list elaboree-method final-method))
+    (eq-adjoin! elaboree-method 'shadow-connections the-propagator)
+    (eq-adjoin! elaboree-method 'shadow-connections the-propagator)
+    (propagator inputs the-propagator)))
 
 (define (push-selector go? pushee method . targets)
   ;; Conditionally shove the contents of the pushee into the target
   ;; indicated by the method
-  (propagator (list go? pushee method)
-    (lambda ()
-      (if (not (nothing? (content method)))
-	  (add-content (list-ref targets (method-index (content method)))
-		       (content pushee))))))
+  (let ((inputs (list go? pushee method))
+	(the-propagator
+	 (lambda ()
+	   (if (not (nothing? (content method)))
+	       (add-content (list-ref targets (method-index (content method)))
+			    (content pushee))))))
+    (eq-label! the-propagator
+     'name 'push-selector 'inputs inputs 'outputs targets)
+    (for-each (lambda (target)
+		(eq-adjoin! target 'shadow-connections push-selector))
+	      targets)
+    (propagator inputs the-propagator)))
 
 (define (pull-selector go? pullee method . targets)
   ;; Conditionally shove the contents of the target indicated by the
   ;; method into the pullee (and tag it with the identity of the
   ;; method?)
-  (propagator `(,go? ,method ,@targets)
-    (lambda ()
-      (if (not (nothing? (content method)))
-	  (add-content pullee
-		       (content (list-ref targets (content method))))))))
+  (let ((inputs `(,go? ,method ,@targets))
+	(the-propagator
+	 (lambda ()
+	   (if (not (nothing? (content method)))
+	       (add-content pullee
+			    (content (list-ref targets (content method))))))))
+    (eq-label! the-propagator
+     'name 'pull-selector 'inputs inputs 'outputs (list pullee))
+    (eq-adjoin! pullee 'shadow-connections the-propagator)
+    (propagator inputs the-propagator)))
 
 (define (plan-air go? segment pain answer)
   (fast-air-estimate segment pain answer)
@@ -113,7 +129,7 @@
    (split-node fast-subway-estimate (splitter p:pick-subway)
 	       plan-trip between-stops plan-trip))
 |#
-(define (answer-compounder go? out . subanswers)
+(define-macro-propagator (answer-compounder go? out . subanswers)
   (pass-through
    (p:make-trip-segment-by-start (p:trip-segment-start (car subanswers)))
    out)
@@ -140,7 +156,7 @@
   (pass-through go? subgo?))
 
 ;;; The actual specific planners
-(define (plan-walk go? segment)
+(define-macro-propagator (plan-walk go? segment)
   ((constant (make-trip-segment-key 'method 'just-walk)) segment)
   (time-est segment (p:const (& 3 (/ mile hour))) segment)
   ;; TODO Fix this hack
@@ -150,7 +166,7 @@
   ;; Or: Some fixed function of time
   ((constant (make-trip-segment-key 'pain (& 0 crap))) segment))
 
-(define (fast-air-estimate segment)
+(define-macro-propagator (fast-air-estimate segment)
   ((constant (make-trip-segment-key 'method 'fly)) segment)
   ((constant (make-trip-segment-key
 	      'time (make-estimate (& 1 day)))) segment)
@@ -173,7 +189,7 @@
   (pass-through (p:make-trip-segment-by-end   (p:trip-segment-end   segment))
 		end)) ;; Ditto stations, stops
 
-(define (between-airports go? segment)
+(define-macro-propagator (between-airports go? segment)
   ;; Complicated task-specific stuff stubbed...
   (pass-through (p:airport-lookup segment) segment))
 
@@ -181,7 +197,7 @@
   (split-node fast-air-estimate (splitter p:pick-airport)
 	      plan-walk between-airports plan-walk))
 
-(define (fast-train-estimate segment)
+(define-macro-propagator (fast-train-estimate segment)
   ((constant (make-trip-segment-key 'method 'take-the-train)) segment)
   ;; Plus two hours for to-from the station?
   ;; TODO Clean up which uses of time-est are actually estimates
@@ -192,7 +208,7 @@
   ((constant (make-trip-segment-key 'pain (make-estimate (& 25 crap))))
    segment))
 
-(define (between-stations go? segment)
+(define-macro-propagator (between-stations go? segment)
   ;; Complicated task-specific stuff stubbed...
   (pass-through (p:station-lookup segment) segment))
 
@@ -200,7 +216,7 @@
   (split-node fast-train-estimate (splitter p:pick-station)
 	      plan-walk between-stations plan-walk))
 
-(define (fast-subway-estimate segment)
+(define-macro-propagator (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer)
     (switch same-city? same-city-answer segment)
     ((constant (make-trip-segment-by-method 'subway)) same-city-answer)
@@ -212,7 +228,7 @@
      same-city-answer)
     (same-city segment same-city?)))
 
-(define (between-stops go? segment)
+(define-macro-propagator (between-stops go? segment)
   ;; Complicated task-specific stuff stubbed...
   (pass-through (p:stop-lookup segment) segment))
 
