@@ -31,7 +31,7 @@
 			   ((constant 'go-fast) opt-go?)
 			   (alternative opt-go? opt-segment)
 			   (list opt-go? opt-segment)))
-		       alternatives)))
+		       (map force alternatives))))
 	     (apply critic go? elaboree-method final-method (map cadr opt-cells))
 	     (apply push-selector go? go?     elaboree-method (map car opt-cells))
 	     ;; (apply push-selector go? segment elaboree-method (map cadr opt-cells))
@@ -40,9 +40,8 @@
        'inputs (list go? segment)
        'output (list segment)))))
 
-(define (plan-trip)
-  (force (delay (choice-node (plan-air) (plan-train)
-			     (plan-subway) (plan-walk)))))
+(define plan-trip
+  (delay (choice-node plan-air plan-train plan-subway plan-walk)))
 
 (define (critic go? elaboree-method final-method . answers)
   ;; Choose the method that promises least pain
@@ -158,21 +157,23 @@
   (pass-through (p:deep-only go?) subgo?))
 
 ;;; The actual specific planners
-(define ((plan-walk) go? segment)
-  (compound-propagator (list go?)
-    (eq-label!
-     (lambda ()
-       ((constant (make-trip-segment-key 'method 'just-walk)) segment)
-       (time-est segment (p:const (& 3 (/ mile hour))) segment)
-       ;; TODO Fix this hack
-       (pass-through (p:tag-not-estimate segment) segment)
-       ;; Or more for food, etc if it takes a long time
-       ((constant (make-trip-segment-key 'cost (& 0 dollar))) segment)
-       ;; Or: Some fixed function of time
-       ((constant (make-trip-segment-key 'pain (& 0 crap))) segment))
-     'name 'plan-walk
-     'inputs (list go? segment)
-     'outputs (list segment))))
+(define plan-walk
+  (delay 
+    (lambda (go? segment)
+      (compound-propagator (list go?)
+	(eq-label!
+	 (lambda ()
+	   ((constant (make-trip-segment-key 'method 'just-walk)) segment)
+	   (time-est segment (p:const (& 3 (/ mile hour))) segment)
+	   ;; TODO Fix this hack
+	   (pass-through (p:tag-not-estimate segment) segment)
+	   ;; Or more for food, etc if it takes a long time
+	   ((constant (make-trip-segment-key 'cost (& 0 dollar))) segment)
+	   ;; Or: Some fixed function of time
+	   ((constant (make-trip-segment-key 'pain (& 0 crap))) segment))
+	 'name 'plan-walk
+	 'inputs (list go? segment)
+	 'outputs (list segment))))))
 
 (define-macro-propagator (fast-air-estimate segment)
   ((constant (make-trip-segment-key 'method 'fly)) segment)
@@ -207,9 +208,9 @@
      'inputs (list go? segment)
      'outputs (list segment))))
 
-(define (plan-air)
-  (force (delay (split-node fast-air-estimate (splitter p:pick-airport)
-			    (plan-walk) between-airports (plan-walk)))))
+(define plan-air
+  (delay (split-node fast-air-estimate (splitter p:pick-airport)
+		     (force plan-trip) between-airports (force plan-trip))))
 
 (define-macro-propagator (fast-train-estimate segment)
   ((constant (make-trip-segment-key 'method 'take-the-train)) segment)
@@ -232,9 +233,9 @@
      'inputs (list go? segment)
      'outputs (list segment))))
 
-(define (plan-train)
-  (force (delay (split-node fast-train-estimate (splitter p:pick-station)
-			    (plan-walk) between-stations (plan-walk)))))
+(define plan-train
+  (delay (split-node fast-train-estimate (splitter p:pick-station)
+		     (force plan-trip) between-stations (force plan-trip))))
 
 (define-macro-propagator (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
@@ -267,9 +268,9 @@
      'inputs (list go? segment)
      'outputs (list segment))))
 
-(define (plan-subway)
-  (force (delay (split-node fast-subway-estimate (splitter p:pick-stop)
-			    (plan-walk) between-stops (plan-walk)))))
+(define plan-subway
+  (delay (split-node fast-subway-estimate (splitter p:pick-stop)
+		     (force plan-trip) between-stops (force plan-trip))))
 #|
  (initialize-scheduler)
  (define-cell walk-to-met)
@@ -333,7 +334,7 @@
  (add-content go? 'go-deep)
  (define-cell trip-to-met)
  (add-content trip-to-met (make-trip-segment-key 'start 'home 'end 'met))
- ((plan-trip) go? trip-to-met)
+ ((force plan-trip) go? trip-to-met)
  (run)
  (pp (content trip-to-met))
 |#
