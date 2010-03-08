@@ -54,9 +54,9 @@
 	  ((and (eq? start-answer  (trip-segment-start trip-segment2))
 		(eq? end-answer    (trip-segment-end trip-segment2))
 		(eq? time-answer   (trip-segment-time trip-segment2))
-		(eq? cost-answer   (trip-segment-cost trip-segment1))
-		(eq? pain-answer   (trip-segment-pain trip-segment1))
-		(eq? method-answer (trip-segment-method trip-segment1)))
+		(eq? cost-answer   (trip-segment-cost trip-segment2))
+		(eq? pain-answer   (trip-segment-pain trip-segment2))
+		(eq? method-answer (trip-segment-method trip-segment2)))
 	   trip-segment2)
 	  (else
 	   (make-trip-segment start-answer end-answer time-answer
