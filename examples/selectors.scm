@@ -39,9 +39,10 @@
        'name 'a-choice-node
        'inputs (list go? segment)
        'output (list segment)))))
-#;
-(define plan-trip
-  (choice-node plan-air plan-train plan-subway plan-walk))
+
+(define (plan-trip)
+  (force (delay (choice-node (plan-air) (plan-train)
+			     (plan-subway) (plan-walk)))))
 
 (define (critic go? elaboree-method final-method . answers)
   ;; Choose the method that promises least pain
@@ -129,19 +130,7 @@
        'name 'a-split-node
        'inputs (list go? segment)
        'outputs (list segment)))))
-#|
- (define plan-air
-   (split-node fast-air-estimate (splitter p:pick-airport)
-	       plan-trip between-airports plan-trip))
 
- (define plan-train
-   (split-node fast-train-estimate (splitter p:pick-station)
-	       plan-trip between-stations plan-trip))
-
- (define plan-subway
-   (split-node fast-subway-estimate (splitter p:pick-subway)
-	       plan-trip between-stops plan-trip))
-|#
 (define-macro-propagator (answer-compounder go? out . subanswers)
   (pass-through
    (p:make-trip-segment-by-start (p:trip-segment-start (car subanswers)))
@@ -169,7 +158,7 @@
   (pass-through (p:deep-only go?) subgo?))
 
 ;;; The actual specific planners
-(define (plan-walk go? segment)
+(define ((plan-walk) go? segment)
   (compound-propagator (list go?)
     (eq-label!
      (lambda ()
@@ -218,9 +207,9 @@
      'inputs (list go? segment)
      'outputs (list segment))))
 
-(define plan-air
-  (split-node fast-air-estimate (splitter p:pick-airport)
-	      plan-walk between-airports plan-walk))
+(define (plan-air)
+  (force (delay (split-node fast-air-estimate (splitter p:pick-airport)
+			    (plan-walk) between-airports (plan-walk)))))
 
 (define-macro-propagator (fast-train-estimate segment)
   ((constant (make-trip-segment-key 'method 'take-the-train)) segment)
@@ -243,9 +232,9 @@
      'inputs (list go? segment)
      'outputs (list segment))))
 
-(define plan-train
-  (split-node fast-train-estimate (splitter p:pick-station)
-	      plan-walk between-stations plan-walk))
+(define (plan-train)
+  (force (delay (split-node fast-train-estimate (splitter p:pick-station)
+			    (plan-walk) between-stations (plan-walk)))))
 
 (define-macro-propagator (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
@@ -278,12 +267,9 @@
      'inputs (list go? segment)
      'outputs (list segment))))
 
-(define plan-subway
-  (split-node fast-subway-estimate (splitter p:pick-stop)
-	      plan-walk between-stops plan-walk))
-
-(define plan-trip
-  (choice-node plan-air plan-train plan-subway plan-walk))
+(define (plan-subway)
+  (force (delay (split-node fast-subway-estimate (splitter p:pick-stop)
+			    (plan-walk) between-stops (plan-walk)))))
 #|
  (initialize-scheduler)
  (define-cell walk-to-met)
@@ -347,7 +333,7 @@
  (add-content go? 'go-deep)
  (define-cell trip-to-met)
  (add-content trip-to-met (make-trip-segment-key 'start 'home 'end 'met))
- (plan-trip go? trip-to-met)
+ ((plan-trip) go? trip-to-met)
  (run)
  (pp (content trip-to-met))
 |#
