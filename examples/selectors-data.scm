@@ -160,6 +160,11 @@
 (define-structure estimate
   value)
 
+(define (the-estimate thing)
+  (if (estimate? thing)
+      (estimate-value thing)
+      thing))
+
 (defhandler merge
   (lambda (estimate1 estimate2)
     (if (= (estimate-value estimate1)
@@ -214,3 +219,26 @@
 				trip-segment-method)))))
 	(else thing)))
 (propagatify tag-not-estimate)
+
+;; TODO What a hack!  My critic uses the estimate structure with a
+;; number inside to have a overridable "method to elaborate" cell.
+;; This also relies on consistent list indexing to work.
+(define method-index the-estimate)
+
+(define (find-best-method method-estimates)
+  (let lp ((best-time #f)
+	   (best-answer #f)
+	   (current 0)
+	   (to-check method-estimates))
+    (cond ((null? to-check) best-answer)
+	  ((or (nothing? (car to-check)) (nothing? (trip-segment-time (car to-check))))
+	   (lp best-time best-answer (+ current 1) (cdr to-check)))
+	  ((or (not best-time)
+	       (< (the-estimate (trip-segment-time (car to-check)))
+		  best-time))
+	   (lp (the-estimate (trip-segment-time (car to-check)))
+	       current
+	       (+ current 1)
+	       (cdr to-check)))
+	  (else
+	   (lp best-time best-answer (+ current 1) (cdr to-check))))))

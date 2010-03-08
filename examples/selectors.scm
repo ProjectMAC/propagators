@@ -13,35 +13,57 @@
 
 (define (choice-node . alternatives)
   (lambda (go? segment)
-    (let-cell method
+    (let-cells (elaboree-method final-method)
       (let ((opt-cells
 	     (map (lambda (alternative)
 		    (let-cells (opt-go? opt-segment)
+		      (pass-through
+		       (p:make-trip-segment-by-start
+			(p:trip-segment-start segment))
+		       opt-segment)
+		      (pass-through
+		       (p:make-trip-segment-by-end
+			(p:trip-segment-end segment))
+		       opt-segment)
 		      (alternative opt-go? opt-segment)
 		      (list opt-go? opt-segment)))
 		  alternatives)))
-	(apply critic go? method (map cadr opt-cells))
-	(apply push-selector go? go?     method (map car opt-cells))
-	(apply push-selector go? segment method (map cadr opt-cells))
-	(apply pull-selector go? segment method (map cadr opt-cells))))))
+	(apply critic go? elaboree-method final-method (map cadr opt-cells))
+	(apply push-selector go? go?     elaboree-method (map car opt-cells))
+	;; (apply push-selector go? segment elaboree-method (map cadr opt-cells))
+	(apply pull-selector go? segment final-method    (map cadr opt-cells))))))
 #;
 (define plan-trip
   (choice-node plan-air plan-train plan-subway plan-walk))
 
-(define (critic go? method . answers)
+(define (critic go? elaboree-method final-method . answers)
   ;; Choose the method that promises least pain
-  ...)
+  (propagator (cons go? answers)
+    (lambda ()
+      (let ((best-method-index (find-best-method (map content answers))))
+	(if best-method-index
+	    (if (estimate? (content (list-ref answers best-method-index)))
+		(add-content elaboree-method (make-estimate best-method-index))
+		(add-content final-method best-method-index)))))))
 
 (define (push-selector go? pushee method . targets)
   ;; Conditionally shove the contents of the pushee into the target
   ;; indicated by the method
-  ...)
+  (propagator (list go? pushee method)
+    (lambda ()
+      (if (not (nothing? (content method)))
+	  (add-content (list-ref targets (method-index (content method)))
+		       (content pushee))))))
 
 (define (pull-selector go? pullee method . targets)
   ;; Conditionally shove the contents of the target indicated by the
   ;; method into the pullee (and tag it with the identity of the
   ;; method?)
-  ...)
+  (propagator `(,go? ,method ,@targets)
+    (lambda ()
+      (if (not (nothing? (content method)))
+	  (add-content pullee
+		       (content (list-ref targets (content method))))))))
 
 (define (plan-air go? segment pain answer)
   (fast-air-estimate segment pain answer)
@@ -193,6 +215,9 @@
 (define plan-subway
   (split-node fast-train-estimate (splitter p:pick-stop)
 	      plan-walk between-stops plan-walk))
+
+(define plan-trip
+  (choice-node plan-air plan-train plan-subway plan-walk))
 #|
  (initialize-scheduler)
  (define-cell walk-to-met)
@@ -250,6 +275,14 @@
  (plan-subway go? subway-to-logan)
  (run)
  (pp (content subway-to-logan))
+
+ (initialize-scheduler)
+ (define-cell go?)
+ (define-cell trip-to-met)
+ (add-content trip-to-met (make-trip-segment-key 'start 'home 'end 'met))
+ (plan-trip go? trip-to-met)
+ (run)
+ (pp (content trip-to-met))
 |#
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?
