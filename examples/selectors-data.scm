@@ -102,7 +102,7 @@
 	(cdr binding)
 	(error "Expand the list!" item (map car alist)))))
 
-(define (distance-est-f trip-segment)
+(define (distance-est trip-segment)
   ;;; Ha!
   (if (eq? (trip-segment-start trip-segment)
 	   (trip-segment-end trip-segment))
@@ -148,7 +148,7 @@
 	((nothing? (trip-segment-end trip-segment))
 	 nothing)
 	(else
-	 (make-estimate (/ (distance-est-f trip-segment) speed)))))
+	 (make-estimate (/ (distance-est trip-segment) speed)))))
 (propagatify time-est)
 
 (define (same-city-f? trip-segment)
