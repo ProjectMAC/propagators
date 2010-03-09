@@ -141,7 +141,7 @@
 (define (constant value)
   (function->propagator-constructor
    #; (lambda () value)
-   (eq-label! (lambda () value) 'name `(const ,value))))
+   (eq-label! (lambda () value) 'name `(constant ,value))))
 
 ;;; Propagators that defer the construction of their bodies, as one
 ;;; mechanism of abstraction.
