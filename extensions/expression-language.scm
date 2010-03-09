@@ -61,38 +61,68 @@
 ;;;   ce:foo for the expression-oriented constraint-propagator version of foo
 
 
+(define p:constant constant)
 (define (e:constant value)
   (let-cell answer
     ((constant value) answer)
     answer))
+(define p:+ adder)
 (define e:+ (functionalize adder))
+(define p:- subtractor)
 (define e:- (functionalize subtractor))
+(define p:* multiplier)
 (define e:* (functionalize multiplier))
+(define p:/ divider)
 (define e:/ (functionalize divider))
+(define p:abs absolute-value)
 (define e:abs (functionalize absolute-value))
+(define p:square squarer)
 (define e:square (functionalize squarer))
+(define p:sqrt sqrter)
 (define e:sqrt (functionalize sqrter))
+(define p:= =?)
 (define e:= (functionalize =?))
+(define p:< <?)
 (define e:< (functionalize <?))
+(define p:> >?)
 (define e:> (functionalize >?))
+(define p:<= <=?)
 (define e:<= (functionalize <=?))
+(define p:>= >=?)
 (define e:>= (functionalize >=?))
+(define p:not inverter)
 (define e:not (functionalize inverter))
+(define p:and conjoiner)
 (define e:and (functionalize conjoiner))
+(define p:or disjoiner)
 (define e:or (functionalize disjoiner))
+(define p:switch switch)
 (define e:switch (functionalize switch))
+(define p:amb binary-amb)
 (define (e:amb)
   (let-cell answer
     (binary-amb answer)
     answer))
 
+(define-syntax propagatify
+  (sc-macro-transformer
+   (lambda (form use-env)
+     (let* ((propagatee-name (cadr form))
+	    (propagator-name (symbol 'p: propagatee-name))
+	    (expression-oriented-name (symbol 'e: propagatee-name)))
+       `(begin
+	  (define ,propagator-name
+	    (function->propagator-constructor
+	     (nary-unpacking
+	      (name! ,(close-syntax propagatee-name use-env) ',propagatee-name))))
+	  (define ,expression-oriented-name
+	    (functionalize ,propagator-name)))))))
+
 (define (flat-function->propagator-expression f)
   (functionalize (function->propagator-constructor (nary-unpacking f))))
 
-(define e:eq? (flat-function->propagator-expression eq?))
-(name! eq? 'eq?)
-(define e:expt (flat-function->propagator-expression expt))
-(name! expt 'expt)
+(propagatify eq?)
+(propagatify expt)
 
 (define c:+ (functionalize sum-constraint))
 (define c:* (functionalize product-constraint))
