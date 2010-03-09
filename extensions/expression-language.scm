@@ -60,7 +60,6 @@
 ;;;   cp:foo for the constraint-propagator version of foo
 ;;;   ce:foo for the expression-oriented constraint-propagator version of foo
 
-
 (define p:constant constant)
 (define (e:constant value)
   (let-cell answer
@@ -124,22 +123,30 @@
 (propagatify eq?)
 (propagatify expt)
 
-(define (c:== . args)
-  (let ((lead (car args)))
-    (for-each (lambda (arg)
-		(identity-constraint lead arg))
-	      (cdr args))
-    lead))
-
 (define c:+ sum-constraint)
 (define ce:+ (functionalize sum-constraint))
 (define c:* product-constraint)
 (define ce:* (functionalize product-constraint))
 (define c:not not-constraint)
 (define ce:not (functionalize not-constraint))
-(define c:identity identity-constraint)
-(define ce:identity (functionalize identity-constraint))
 ;; (define c:and and-constraint)
 ;; (define ce:and (functionalize and-constraint))
 ;; (define c:or or-constraint)
 ;; (define ce:or (functionalize or-constraint))
+
+(define (p:== . args)
+  (let ((target (car (last-pair args))))
+    (for-each (lambda (arg)
+		(pass-through arg target))
+	      (except-last-pair args))
+    target))
+(define e:== (functionalize p:==))
+
+(define (c:== . args)
+  (let ((lead (car args)))
+    (for-each (lambda (arg)
+		(identity-constraint lead arg))
+	      (cdr args))
+    lead))
+(define ce:== (functionalize c:==))
+
