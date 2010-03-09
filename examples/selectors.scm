@@ -4,11 +4,10 @@
       (eq-label!
        (lambda ()
 	 (newline)
-	 (pp `(planning a trip across 
-			,(if (nothing? (content segment))
-			     segment
-			     (cons (trip-segment-start (content segment))
-				   (trip-segment-end (content segment))))))
+	 (pp `(planning a trip 
+			,@(if (nothing? (content segment))
+			      '(unknown)
+			      (trip-segment-endpoints (content segment)))))
 	 (let-cells (elaboree-method final-method)
 	   (let ((opt-cells
 		  (map (lambda (alternative)
@@ -43,9 +42,7 @@
 (define (critic go? elaboree-method final-method . answers)
   ;; Choose the method that promises least pain
   (define (the-propagator)
-    (newline)
-    (pp 'considering-estimates)
-    (for-each print-cell-contents answers)
+    (print-trip-segment-group (map content answers))
     (if (and (every trip-segment? (map content answers))
 	     (every (lambda (ans)
 		      (not (nothing? (trip-segment-time (content ans)))))
@@ -61,7 +58,7 @@
 		    (add-content elaboree-method
 				 (make-estimate best-method-index)))
 		  (begin
-		    (pp `(decided on ,(trip-segment-method
+		    (pp `(decided to ,(trip-segment-method
 				       best-method-answer)))
 		    (add-content final-method best-method-index)))))
 	(pp 'waiting-for-more-estimates)))
