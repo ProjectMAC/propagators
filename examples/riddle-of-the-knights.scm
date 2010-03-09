@@ -23,26 +23,23 @@
   (sc-macro-transformer
    (lambda (form use-env)
      (let* ((propagatee-name (cadr form))
-	    (new-name (symbol 'p: propagatee-name))
-	    (new-name2 (symbol 'e: propagatee-name)))
-       `(begin
-	  (define ,new-name
-	    (flat-function->propagator-expression
-	     (name! ,(close-syntax propagatee-name use-env) ',propagatee-name)))
-	  (define ,new-name2 ,new-name))))))
+	    (new-name (symbol 'e: propagatee-name)))
+       `(define ,new-name
+	  (flat-function->propagator-expression
+	   (name! ,(close-syntax propagatee-name use-env) ',propagatee-name)))))))
 
 (define-macro-propagator (conditional-wire control end1 end2)
   (switch control end1 end2)
   (switch control end2 end1))
 
 (define-macro-propagator (guess-link cell1 cell2)
-  (let ((control (p:amb)))
+  (let ((control (e:amb)))
     (conditional-wire control cell1 cell2)
     control))
 
 (define-macro-propagator (quadratic-guess-bijection cells1 cells2)
   (define (not-all-off . cells)
-    (require (reduce p:or #f cells)))
+    (require (reduce e:or #f cells)))
   (let ((controls
 	 (map (lambda (cell1)
 		(map (lambda (cell2)
@@ -200,7 +197,7 @@
     (or (get key cell-table)
 	(error "No owner for" key))))
 
-(define p:knight-maker
+(define e:knight-maker
   (functionalize (function->propagator-constructor make-knight)))
 
 (define (build-network)
@@ -208,15 +205,15 @@
 	  (map (lambda (foo) (make-named-cell 'knight)) knights))
 	 (knight-name-cells
 	  (map (lambda (name)
-		 (p:knight-maker name nothing nothing))
+		 (e:knight-maker name nothing nothing))
 	       names))
 	 (knight-shield-cells
 	  (map (lambda (shield)
-		 (p:knight-maker nothing shield nothing))
+		 (e:knight-maker nothing shield nothing))
 	       shields))
 	 (knight-horse-cells
 	  (map (lambda (horse)
-		 (p:knight-maker nothing nothing horse))
+		 (e:knight-maker nothing nothing horse))
 	       horses))
 	 (cell-table
 	  (append
@@ -225,12 +222,12 @@
 	   (map cons shields knight-shield-cells)
 	   (map cons horses knight-horse-cells)))
 	 (cell-of (cell-grabber cell-table))
-	 (p:horse-of (lambda (thing)
-		       (p:knight-horse (cell-of thing))))
-	 (p:shield-of (lambda (thing)
-			(p:knight-shield (cell-of thing))))
-	 (p:name-of (lambda (thing)
-		      (p:knight-name (cell-of thing)))))
+	 (e:horse-of (lambda (thing)
+		       (e:knight-horse (cell-of thing))))
+	 (e:shield-of (lambda (thing)
+			(e:knight-shield (cell-of thing))))
+	 (e:name-of (lambda (thing)
+		      (e:knight-name (cell-of thing)))))
     ;; This is how the depth-first version of this program specified
     ;; its knights-{shields|horses|names} bijections.
     #|
@@ -256,15 +253,15 @@
     (quadratic-guess-bijection knight-cells knight-shield-cells)
     (quadratic-guess-bijection knight-cells knight-horse-cells)
     (for-each (lambda (knight shield)
-		(require (p:eq? shield (p:shield-of knight))))
+		(require (e:eq? shield (e:shield-of knight))))
 	      '(    k0 k1 k2 k4 k7 k8 k9)
 	      (list s1 s2 s4 s5 s6 s8 s9))
     (for-each (lambda (knight horse)
-		(require (p:eq? horse (p:horse-of knight))))
+		(require (e:eq? horse (e:horse-of knight))))
 	      '(    k2 k5 k8 k9)
 	      (list h6 h7 h8 h9))
     (for-each (lambda (knight name)
-		(require (p:eq? name (p:name-of knight))))
+		(require (e:eq? name (e:name-of knight))))
 	      '(k1 k3 k4 k5)
 	      '(sir-gerard sir-harold sir-emilio sir-almeric))
     |#
@@ -293,29 +290,29 @@
 	  (list h6 h7 h8 h9))
      knight-cells knight-horse-cells)
     ;; Document
-    (require (p:plumed? (p:horse-of 'sir-gerard)))
-    (require (p:not (p:eq? (p:shield-shape (p:shield-of 'sir-almeric))
-			   (p:shield-shape (p:shield-of 'sir-jules)))))
-    (require (p:eq? (p:shield-pattern (p:shield-of 'sir-almeric))
-		    (p:shield-pattern (p:shield-of 'sir-jules))))
+    (require (e:plumed? (e:horse-of 'sir-gerard)))
+    (require (e:not (e:eq? (e:shield-shape (e:shield-of 'sir-almeric))
+			   (e:shield-shape (e:shield-of 'sir-jules)))))
+    (require (e:eq? (e:shield-pattern (e:shield-of 'sir-almeric))
+		    (e:shield-pattern (e:shield-of 'sir-jules))))
 					; Embedded
-    (require (p:eq? 'cross (p:shield-pattern (p:shield-of 'sir-gerard))))
-    (require (p:black? (p:horse-of 'sir-sigismund)))
-    (require (p:white? (p:horse-of 'sir-balthus)))
+    (require (e:eq? 'cross (e:shield-pattern (e:shield-of 'sir-gerard))))
+    (require (e:black? (e:horse-of 'sir-sigismund)))
+    (require (e:white? (e:horse-of 'sir-balthus)))
     
     ;; Tapestry
-    (require (p:red-reined? (p:horse-of s0)))
-    (require (p:eq? h0 (p:horse-of 'sir-caspar)))
-    (require (p:eq? h2 (p:horse-of 'sir-gawain)))
-    (require (p:white? (p:horse-of s3)))
-    (require (p:red-reined? (p:horse-of 'k7)))
-    (require (p:red-reined? (p:horse-of s7)))
+    (require (e:red-reined? (e:horse-of s0)))
+    (require (e:eq? h0 (e:horse-of 'sir-caspar)))
+    (require (e:eq? h2 (e:horse-of 'sir-gawain)))
+    (require (e:white? (e:horse-of s3)))
+    (require (e:red-reined? (e:horse-of 'k7)))
+    (require (e:red-reined? (e:horse-of s7)))
     
     ;; Horse-pattern
     (for-each (lambda (horse)
-		(require (p:or (p:eq? (p:horse-pattern horse) 'none)
-			       (p:eq? (p:horse-pattern horse)
-				      (p:shield-pattern (p:shield-of horse))))))
+		(require (e:or (e:eq? (e:horse-pattern horse) 'none)
+			       (e:eq? (e:horse-pattern horse)
+				      (e:shield-pattern (e:shield-of horse))))))
 	      horses) 
     knight-cells))
 

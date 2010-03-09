@@ -63,7 +63,7 @@
     (define-cell end)
     (add-content go? 'go-deep)
     (add-content fly-to-met (make-trip-segment-key 'start 'home 'end 'met))
-    ((splitter p:pick-airport) go? fly-to-met beginning middle end)
+    ((splitter e:pick-airport) go? fly-to-met beginning middle end)
     (run)
     (check (equal? '(home logan laguardia)
 		   (map trip-segment-start

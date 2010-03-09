@@ -93,11 +93,6 @@
 (name! eq? 'eq?)
 (define e:expt (flat-function->propagator-expression expt))
 (name! expt 'expt)
-(define p:eq? e:eq?)
-(define p:expt e:expt)
-(define p:or e:or)
-(define p:not e:not)
-(define p:amb e:amb)
 
 (define c:+ (functionalize sum-constraint))
 (define c:* (functionalize product-constraint))

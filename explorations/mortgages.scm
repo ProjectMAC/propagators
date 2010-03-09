@@ -42,7 +42,7 @@
 ;;; the rate and the term.
 (define (mortgage<->payment mortgage-amt interest-rate term payment)
   (identity-constraint
-   (c:* mortgage-amt (p:expt interest-rate term))
+   (c:* mortgage-amt (e:expt interest-rate term))
    (c:* payment
-	(p:/ (p:- (p:expt interest-rate term) 1)
-	     (p:- interest-rate 1)))))
+	(e:/ (e:- (e:expt interest-rate term) 1)
+	     (e:- interest-rate 1)))))
