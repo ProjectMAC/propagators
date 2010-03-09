@@ -23,10 +23,13 @@
   (sc-macro-transformer
    (lambda (form use-env)
      (let* ((propagatee-name (cadr form))
-	    (new-name (symbol 'p: propagatee-name)))
-       `(define ,new-name
-	  (flat-function->propagator-expression
-	   (name! ,(close-syntax propagatee-name use-env) ',propagatee-name)))))))
+	    (new-name (symbol 'p: propagatee-name))
+	    (new-name2 (symbol 'e: propagatee-name)))
+       `(begin
+	  (define ,new-name
+	    (flat-function->propagator-expression
+	     (name! ,(close-syntax propagatee-name use-env) ',propagatee-name)))
+	  (define ,new-name2 ,new-name))))))
 
 (define-macro-propagator (conditional-wire control end1 end2)
   (switch control end1 end2)

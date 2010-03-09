@@ -35,20 +35,20 @@
 (plunker (potential n0t1))
 
 (define Pv
-  ((voltage-source (p:const 6))
+  ((voltage-source (e:constant 6))
    n1t1 n0t1))
 
-(define R1 (p:const 4))
+(define R1 (e:constant 4))
 
 (define PR1
   ((linear-resistor R1) n1t2 n2t1))
 
-(define R2 (p:const 2))
+(define R2 (e:constant 2))
 
 (define PR2
   ((linear-resistor R2) n2t2 n0t2))
 
-(define power (p:+ Pv (p:+ PR1 PR2)))
+(define power (e:+ Pv (e:+ PR1 PR2)))
 
 ;;; A slice
 

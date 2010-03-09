@@ -18,6 +18,7 @@
 ;;; ----------------------------------------------------------------------
 
 (for-each load-relative
-  '("multiple-dwelling-test"
+  '("smoke-test"
+    "multiple-dwelling-test"
     "recursive-sqrt-test"
     "sudoku-test"))

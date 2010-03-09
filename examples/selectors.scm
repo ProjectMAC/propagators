@@ -32,12 +32,12 @@
 		  (map (lambda (alternative)
 			 (let-cells (opt-go? opt-segment)
 			   (pass-through
-			    (p:make-trip-segment-by-start
-			     (p:trip-segment-start segment))
+			    (e:make-trip-segment-by-start
+			     (e:trip-segment-start segment))
 			    opt-segment)
 			   (pass-through
-			    (p:make-trip-segment-by-end
-			     (p:trip-segment-end segment))
+			    (e:make-trip-segment-by-end
+			     (e:trip-segment-end segment))
 			    opt-segment)
 			   ((constant 'go-fast) opt-go?)
 			   (alternative opt-go? opt-segment)
@@ -142,31 +142,31 @@
 
 (define-macro-propagator (answer-compounder go? out . subanswers)
   (pass-through
-   (p:make-trip-segment-by-start
-    (p:trip-segment-start (car subanswers)))
+   (e:make-trip-segment-by-start
+    (e:trip-segment-start (car subanswers)))
    out)
   (pass-through
-   (p:make-trip-segment-by-end
-    (p:trip-segment-end (car (last-pair subanswers))))
+   (e:make-trip-segment-by-end
+    (e:trip-segment-end (car (last-pair subanswers))))
    out)
   (pass-through
-   (p:make-trip-segment-by-time
-    (reduce p:+ (p:const 0) (map p:trip-segment-time subanswers)))
+   (e:make-trip-segment-by-time
+    (reduce e:+ (e:constant 0) (map e:trip-segment-time subanswers)))
    out)
   (pass-through
-   (p:make-trip-segment-by-cost
-    (reduce p:+ (p:const 0) (map p:trip-segment-cost subanswers)))
+   (e:make-trip-segment-by-cost
+    (reduce e:+ (e:constant 0) (map e:trip-segment-cost subanswers)))
    out)
   (pass-through
-   (p:make-trip-segment-by-pain
-    (reduce p:+ (p:const 0) (map p:trip-segment-pain subanswers)))
+   (e:make-trip-segment-by-pain
+    (reduce e:+ (e:constant 0) (map e:trip-segment-pain subanswers)))
    out)
   ;; TODO Do the method correctly; incl the waypoints, etc.
   )
 
 (define (forwarder go? subgo?)
   ;; If the "go" signal is suitably "go-deep", forward it.
-  (pass-through (p:deep-only go?) subgo?))
+  (pass-through (e:deep-only go?) subgo?))
 
 ;;; The actual specific planners
 (define plan-walk
@@ -177,11 +177,11 @@
 	 (lambda ()
 	   ((constant (make-trip-segment-by-method 'just-walk)) segment)
 	   (pass-through
-	    (p:make-trip-segment-by-time
-	     (p:time-est segment (p:const (& 3 (/ mile hour)))))
+	    (e:make-trip-segment-by-time
+	     (e:time-est segment (e:constant (& 3 (/ mile hour)))))
 	    segment)
 	   ;; TODO Fix this hack
-	   (pass-through (p:tag-not-estimate segment) segment)
+	   (pass-through (e:tag-not-estimate segment) segment)
 	   ;; Or more for food, etc if it takes a long time
 	   ((constant (make-trip-segment-by-cost (& 0 dollar))) segment)
 	   ;; Or: Some fixed function of time
@@ -220,20 +220,20 @@
   ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap))))
    segment))
 
-(define ((splitter p:pick-waypoint) go? segment beginning middle end)
-  (pass-through (p:make-trip-segment-by-start (p:trip-segment-start segment))
+(define ((splitter e:pick-waypoint) go? segment beginning middle end)
+  (pass-through (e:make-trip-segment-by-start (e:trip-segment-start segment))
 		beginning)
   (let-cell (first-waypoint)
-    (pass-through (p:pick-waypoint (p:trip-segment-start segment))
+    (pass-through (e:pick-waypoint (e:trip-segment-start segment))
 		  first-waypoint)
-    (pass-through (p:make-trip-segment-by-end first-waypoint) beginning)
-    (pass-through (p:make-trip-segment-by-start first-waypoint) middle))
+    (pass-through (e:make-trip-segment-by-end first-waypoint) beginning)
+    (pass-through (e:make-trip-segment-by-start first-waypoint) middle))
   (let-cell (last-waypoint)
-    (pass-through (p:make-trip-segment-by-end last-waypoint) middle)
-    (pass-through (p:make-trip-segment-by-start last-waypoint) end)
-    (pass-through (p:pick-waypoint (p:trip-segment-end segment))
+    (pass-through (e:make-trip-segment-by-end last-waypoint) middle)
+    (pass-through (e:make-trip-segment-by-start last-waypoint) end)
+    (pass-through (e:pick-waypoint (e:trip-segment-end segment))
 		  last-waypoint))
-  (pass-through (p:make-trip-segment-by-end   (p:trip-segment-end   segment))
+  (pass-through (e:make-trip-segment-by-end   (e:trip-segment-end   segment))
 		end))
 
 (define-macro-propagator (between-airports go? segment)
@@ -241,13 +241,13 @@
     (eq-label!
      (lambda ()
        ;; Complicated task-specific stuff stubbed...
-       (pass-through (p:airport-lookup segment) segment))
+       (pass-through (e:airport-lookup segment) segment))
      'name 'between-airports
      'inputs (list go? segment)
      'outputs (list segment))))
 
 (define plan-air
-  (delay (split-node 'plan-air fast-air-estimate (splitter p:pick-airport)
+  (delay (split-node 'plan-air fast-air-estimate (splitter e:pick-airport)
 		     (force plan-trip) between-airports (force plan-trip))))
 
 (define-macro-propagator (fast-train-estimate segment)
@@ -276,9 +276,9 @@
   ;; TODO Clean up which uses of time-est are actually estimates
   ;; and which are "hard"
   (pass-through
-   (p:make-trip-segment-by-time
-    (p:+ (p:time-est segment (p:const (& 50 (/ mile hour))))
-	 (p:const (& 2 hour))))
+   (e:make-trip-segment-by-time
+    (e:+ (e:time-est segment (e:constant (& 50 (/ mile hour))))
+	 (e:constant (& 2 hour))))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 50 dollar))))
    segment)
@@ -290,13 +290,13 @@
     (eq-label!
      (lambda ()
        ;; Complicated task-specific stuff stubbed...
-       (pass-through (p:station-lookup segment) segment))
+       (pass-through (e:station-lookup segment) segment))
      'name 'between-stations
      'inputs (list go? segment)
      'outputs (list segment))))
 
 (define plan-train
-  (delay (split-node 'plan-train fast-train-estimate (splitter p:pick-station)
+  (delay (split-node 'plan-train fast-train-estimate (splitter e:pick-station)
 		     (force plan-trip) between-stations (force plan-trip))))
 
 (define-macro-propagator (fast-subway-estimate segment)
@@ -334,13 +334,13 @@
     (eq-label!
      (lambda ()
        ;; Complicated task-specific stuff stubbed...
-       (pass-through (p:stop-lookup segment) segment))
+       (pass-through (e:stop-lookup segment) segment))
      'name 'between-stops
      'inputs (list go? segment)
      'outputs (list segment))))
 
 (define plan-subway
-  (delay (split-node 'plan-subway fast-subway-estimate (splitter p:pick-stop)
+  (delay (split-node 'plan-subway fast-subway-estimate (splitter e:pick-stop)
 		     (force plan-trip) between-stops (force plan-trip))))
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?

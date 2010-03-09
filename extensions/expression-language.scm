@@ -26,7 +26,7 @@
 (define (->cell thing)
   (if (or (implicit-cell? thing) (cell? thing))
       thing
-      (p:const thing)))
+      (e:constant thing)))
 
 (define (functionalize propagator #!optional num-outputs)
   (if (default-object? num-outputs)
@@ -54,27 +54,34 @@
 	;; TODO Maybe (reverse outputs) here?
 	(apply values outputs))))
 
-(define (p:const value)
+;;; Naming convention:
+;;;   p:foo  for the propagator version of foo
+;;;   e:foo  for the expression-oriented propagator version of foo
+;;;   cp:foo for the constraint-propagator version of foo
+;;;   ce:foo for the expression-oriented constraint-propagator version of foo
+
+
+(define (e:constant value)
   (let-cell answer
     ((constant value) answer)
     answer))
-(define p:+ (functionalize adder))
-(define p:- (functionalize subtractor))
-(define p:* (functionalize multiplier))
-(define p:/ (functionalize divider))
-(define p:abs (functionalize absolute-value))
-(define p:square (functionalize squarer))
-(define p:sqrt (functionalize sqrter))
-(define p:= (functionalize =?))
-(define p:< (functionalize <?))
-(define p:> (functionalize >?))
-(define p:<= (functionalize <=?))
-(define p:>= (functionalize >=?))
-(define p:not (functionalize inverter))
-(define p:and (functionalize conjoiner))
-(define p:or (functionalize disjoiner))
-(define p:switch (functionalize switch))
-(define (p:amb)
+(define e:+ (functionalize adder))
+(define e:- (functionalize subtractor))
+(define e:* (functionalize multiplier))
+(define e:/ (functionalize divider))
+(define e:abs (functionalize absolute-value))
+(define e:square (functionalize squarer))
+(define e:sqrt (functionalize sqrter))
+(define e:= (functionalize =?))
+(define e:< (functionalize <?))
+(define e:> (functionalize >?))
+(define e:<= (functionalize <=?))
+(define e:>= (functionalize >=?))
+(define e:not (functionalize inverter))
+(define e:and (functionalize conjoiner))
+(define e:or (functionalize disjoiner))
+(define e:switch (functionalize switch))
+(define (e:amb)
   (let-cell answer
     (binary-amb answer)
     answer))
@@ -82,10 +89,15 @@
 (define (flat-function->propagator-expression f)
   (functionalize (function->propagator-constructor (nary-unpacking f))))
 
-(define p:eq? (flat-function->propagator-expression eq?))
+(define e:eq? (flat-function->propagator-expression eq?))
 (name! eq? 'eq?)
-(define p:expt (flat-function->propagator-expression expt))
+(define e:expt (flat-function->propagator-expression expt))
 (name! expt 'expt)
+(define p:eq? e:eq?)
+(define p:expt e:expt)
+(define p:or e:or)
+(define p:not e:not)
+(define p:amb e:amb)
 
 (define c:+ (functionalize sum-constraint))
 (define c:* (functionalize product-constraint))

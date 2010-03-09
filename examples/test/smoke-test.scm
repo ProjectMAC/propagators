@@ -1,5 +1,5 @@
 ;;; ----------------------------------------------------------------------
-;;; Copyright 2009-2010 Gerald Jay Sussman and Alexey Radul.
+;;; Copyright 2010 Alexey Radul.
 ;;; ----------------------------------------------------------------------
 ;;; This file is part of Propagator Network Prototype.
 ;;; 
@@ -17,54 +17,22 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(initialize-scheduler)
+(in-test-group
+ smoke
 
-(define n0 (node 2))
-(define n0t1 (car n0))
-(define n0t2 (cadr n0))
-
-(define n1 (node 2))
-(define n1t1 (car n1))
-(define n1t2 (cadr n1))
-
-(define n2 (node 2))
-(define n2t1 (car n2))
-(define n2t2 (cadr n2))
-
-; (ground n0)
-(plunker (potential n0t1))
-
-(define Pv
-  ((voltage-source (e:constant 6))
-   n1t1 n0t1))
-
-(define PR1
-  ((linear-resistor (e:constant 4))
-   n1t2 n2t1))
-
-(define PR2
-  ((linear-resistor (e:constant 2))
-   n2t2 n0t2))
-
-(define power (e:+ Pv (e:+ PR1 PR2)))
-
-(plunker (potential n2t1))
-
-(run)
-
-(pp (content (potential n2t1)))
-#|
-#[:symbolic 15]
-(expression (+ 2 x43))
-(metadata #[:symbolic-metadata 16])
-|#
-
-(pec (symbolic-expression (content (current n2t2))))
-#| Result:
-1
-|#
-
-(pec (symbolic-expression (content power)))
-#| Result:
-0
-|#
+ ;; Testing that constructing the networks used in the slow examples works
+ (define-each-check
+   (build-network)
+   (build-albatross-network)
+   (parse-puzzle
+    '("X O  OO   "
+      "   O    OO"
+      "X XO  O   "
+      "   X XO   "
+      "OOO  X OX "
+      "      X X "
+      " X  O    O"
+      "     XO   "
+      " OOO OXOO "
+      "      O   ")))
+ )
