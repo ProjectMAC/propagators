@@ -41,8 +41,8 @@
 ;;; to compute the payment from the principal or vice versa, given
 ;;; the rate and the term.
 (define (mortgage<->payment mortgage-amt interest-rate term payment)
-  (identity-constraint
-   (c:* mortgage-amt (e:expt interest-rate term))
-   (c:* payment
-	(e:/ (e:- (e:expt interest-rate term) 1)
-	     (e:- interest-rate 1)))))
+  (c:==
+   (ce:* mortgage-amt (e:expt interest-rate term))
+   (ce:* payment
+	 (e:/ (e:- (e:expt interest-rate term) 1)
+	      (e:- interest-rate 1)))))
