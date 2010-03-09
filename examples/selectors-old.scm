@@ -1,14 +1,23 @@
-(define (plan-trip source destination method)
-  (let-cells (cost time annoyance)
-    (air-travel      source destination method cost time annoyance)
-    (train-travel    source destination method cost time annoyance)
-    (intercity-bus-travel source destination method cost time annoyance)
-    (car-travel      source destination method cost time annoyance)
-    (subway-travel   source destination method cost time annoyance)
-    (city-bus-travel source destination method cost time annoyance)
-    (taxi-travel     source destination method cost time annoyance)
-    (bicycle-travel  source destination method cost time annoyance)
-    (walking-travel  source destination method cost time annoyance)))
+;;; ----------------------------------------------------------------------
+;;; Copyright 2010 Alexey Radul.
+;;; ----------------------------------------------------------------------
+;;; This file is part of Propagator Network Prototype.
+;;; 
+;;; Propagator Network Prototype is free software; you can redistribute it and/or modify
+;;; it under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation, either version 3 of the License, or
+;;; (at your option) any later version.
+;;; 
+;;; Propagator Network Prototype is distributed in the hope that it will be useful,
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;; 
+;;; You should have received a copy of the GNU General Public License
+;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
+;;; ----------------------------------------------------------------------
+
+;;; An idea for a shared resource
 
 (define (doit go-worldview input output build-it)
   ;; The input is a bunch of conditional input information.  The
