@@ -17,7 +17,7 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (choice-node . alternatives)
+(define (choice-node name . alternatives)
   (lambda (go? segment)
     (compound-propagator (list go?)	; Only expand if go? has something
       (eq-label!
@@ -51,12 +51,12 @@
 		    (map cadr opt-cells))
 	     (apply pull-selector go? segment final-method
 		    (map cadr opt-cells)))))
-       'name 'a-choice-node
+       'name name
        'inputs (list go? segment)
        'output (list segment)))))
 
 (define plan-trip
-  (delay (choice-node plan-air plan-train plan-subway plan-walk)))
+  (delay (choice-node 'plan-trip plan-air plan-train plan-subway plan-walk)))
 
 (define (critic go? elaboree-method final-method . answers)
   ;; Choose the method that promises least pain
@@ -121,7 +121,7 @@
     (eq-adjoin! pullee 'shadow-connections the-propagator)
     (propagator inputs the-propagator)))
 
-(define (split-node estimator segment-splitter . stages)
+(define (split-node name estimator segment-splitter . stages)
   (lambda (go? segment)
     (compound-propagator (list go?) ; Only expand if go? has something
       (eq-label!
@@ -136,7 +136,7 @@
 		     stages)))
 	   (apply answer-compounder go? segment (map cadr stage-cells))
 	   (apply segment-splitter go? segment (map cadr stage-cells))))
-       'name 'a-split-node
+       'name name
        'inputs (list go? segment)
        'outputs (list segment)))))
 
@@ -247,7 +247,7 @@
      'outputs (list segment))))
 
 (define plan-air
-  (delay (split-node fast-air-estimate (splitter p:pick-airport)
+  (delay (split-node 'plan-air fast-air-estimate (splitter p:pick-airport)
 		     (force plan-trip) between-airports (force plan-trip))))
 
 (define-macro-propagator (fast-train-estimate segment)
@@ -296,7 +296,7 @@
      'outputs (list segment))))
 
 (define plan-train
-  (delay (split-node fast-train-estimate (splitter p:pick-station)
+  (delay (split-node 'plan-train fast-train-estimate (splitter p:pick-station)
 		     (force plan-trip) between-stations (force plan-trip))))
 
 (define-macro-propagator (fast-subway-estimate segment)
@@ -340,7 +340,7 @@
      'outputs (list segment))))
 
 (define plan-subway
-  (delay (split-node fast-subway-estimate (splitter p:pick-stop)
+  (delay (split-node 'plan-subway fast-subway-estimate (splitter p:pick-stop)
 		     (force plan-trip) between-stops (force plan-trip))))
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?
