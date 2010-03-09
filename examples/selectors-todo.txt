@@ -16,8 +16,11 @@ Add more metadata for pictures.
 - Better names for split nodes and choice nodes
 Draw pictures.
 
+Debugger desideratum: a "logic analyzer" that would let me observe the
+increments that get added to some cell (or cells) over time, and to
+watch what merge does with them.
+
 Create a file for ideas about the merging-language.
-Crunch todo.org
 
 "Infrastructure for making it easier to make critic-selector structures"
 
