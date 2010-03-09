@@ -9,6 +9,10 @@ the annoyance from the method, and control the search with arbitrary
 criteria.
 
 Normalize use of expression style?  Including the pass-throughs?
+- p:foo for the propagator version of foo
+- e:foo for the expression-oriented propagator version of foo
+- cp:foo for the constraint-propagator version of foo
+- ce:foo for the expression-oriented constraint-propagator version of foo
 Prettify the program for display.
 
 Add more metadata for pictures.
