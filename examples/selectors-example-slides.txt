@@ -1,0 +1,146 @@
+(planning a trip from home to met)
+
+(considering estimates from home to met)
+(by fly time (estimated (& 7 hour)) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated (& 7. hour)) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated eternity) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& 82.8 hour) cost (& 0 dollar) pain (& 0 crap))
+(thinking about take-the-train)
+
+(planning a trip from home to south-station)
+
+(planning a trip from penn-station to met)
+
+(considering estimates from home to south-station)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time unknown cost (& 0 dollar) pain (& 0 crap))
+waiting-for-more-estimates
+
+(considering estimates from penn-station to met)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time unknown cost (& 0 dollar) pain (& 0 crap))
+waiting-for-more-estimates
+
+(considering estimates from penn-station to met)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (estimated (& .2 hour)) cost (& 0 dollar) pain (& 0 crap))
+(thinking about just-walk)
+
+(considering estimates from penn-station to met)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& .2 hour) cost (& 0 dollar) pain (& 0 crap))
+(decided to just-walk)
+
+(considering estimates from home to south-station)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& 1.2 hour) cost (& 0 dollar) pain (& 0 crap))
+(thinking about subway)
+
+(planning a trip from home to beaconsfield)
+
+(planning a trip from south-station-under to south-station)
+
+(considering estimates from south-station-under to south-station)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (estimated (& 0. hour)) cost (& 0 dollar) pain (& 0 crap))
+(thinking about just-walk)
+
+(considering estimates from home to beaconsfield)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (estimated (& 0. hour)) cost (& 0 dollar) pain (& 0 crap))
+(thinking about just-walk)
+
+(considering estimates from south-station-under to south-station)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& 0. hour) cost (& 0 dollar) pain (& 0 crap))
+(decided to just-walk)
+
+(considering estimates from home to beaconsfield)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& 0. hour) cost (& 0 dollar) pain (& 0 crap))
+(decided to just-walk)
+
+(considering estimates from home to south-station)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (& 1. hour) cost (& 1.7 dollar) pain (& 15 crap))
+(by just-walk time (& 1.2 hour) cost (& 0 dollar) pain (& 0 crap))
+(decided to subway)
+
+(considering estimates from home to met)
+(by fly time (estimated (& 7 hour)) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (& 6.2 hour) cost (& 81.7 dollar) pain (& 40 crap))
+(by subway time (estimated eternity) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& 82.8 hour) cost (& 0 dollar) pain (& 0 crap))
+(thinking about fly)
+
+(planning a trip from home to logan)
+
+(planning a trip from laguardia to met)
+
+;;;...
+
+(considering estimates from laguardia to met)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& 1. hour) cost (& 0 dollar) pain (& 0 crap))
+(thinking about subway)
+
+(considering estimates from home to logan)
+(by fly time (estimated eternity) cost (estimated (& 500 dollar)) pain (estimated (& 200 crap)))
+(by take-the-train
+    time (estimated eternity) cost (estimated (& 50 dollar)) pain (estimated (& 25 crap)))
+(by subway time (estimated (& 1 hour)) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& 1.7 hour) cost (& 0 dollar) pain (& 0 crap))
+(thinking about subway)
+
+(planning a trip from laguardia to laguardia-airport)
+
+(planning a trip from 57th-street to met)
+
+(planning a trip from home to beaconsfield)
+
+(planning a trip from airport to logan)
+ 
+;;;...
+
+(considering estimates from home to met)
+(by fly time (& 6.7 hour) cost (& 432 dollar) pain (& 215 crap))
+(by take-the-train time (& 6.2 hour) cost (& 81.7 dollar) pain (& 40 crap))
+(by subway
+    time (estimated eternity) cost (estimated (& 2 dollar)) pain (estimated (& 25 crap)))
+(by just-walk time (& 82.8 hour) cost (& 0 dollar) pain (& 0 crap))
+(decided to take-the-train)
+;Value: done

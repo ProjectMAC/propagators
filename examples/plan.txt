@@ -1,0 +1,94 @@
+Big problem is how to build critic-selector architecture in such a way
+that it can be easily extended as new requirements arise.
+
+Critical idea is to organize such a program as a collection of data
+repositories, each about a particular subject matter, and a network of
+agents that unify the information in neighboring repositories to make
+a coherent model of the world.
+
+It is important to build standards that enable the addition of
+repositories and agents as needed.
+
+
+Alexey has constructed, a small example illustrating how such a
+critic-selector model may be constructed for a particular microworld. 
+This particular model has only two levels, but it is an appropriate 
+playground to help us identify the barriers to make bigger and more
+powerful such models, maintaining the flexibility that we will need
+for systems where the details emerge only after considerable structure
+is constructed.
+
+In this case the micro world is modeling the deliberative process
+whereby Alexey might determine an acceptable travel plan to go from
+Alexey's house in Brookline to the Metropolitan Opera House in
+Manhattan.  
+
+Of course, this is a solved problem, using well-known optimization 
+methods, such as Dijkstra's algorithm.  But we want our model to have
+psychological reality, and not to be an optimal special-purpose
+algorithm for just this kind of problem.  Rather it is intended to 
+emulate the incremental elaboration of alternative plans, under the
+watchful eyes of critics that can shut down any elaboration for an
+arbitrary reason (e.g. "You won't get me to go to Newark!")
+
+<Here is a demo of Alexey's model.>
+
+    A few slides of the execution
+
+
+<Structure of the demo program.>
+
+    Cognitive Architecture
+
+	 The critic layer
+
+	 The selector of alternative plans, 
+
+	 The splitter of plans
+
+	    There are specialized elaborators for each kind of plan.
+
+
+    Program Architecture
+
+         Builder of network
+
+         Propagators of travel data
+
+         Scheduling of work
+
+
+<Some example snippets>
+
+
+The propagator infrastructure
+
+    Cells and Propagators
+
+    Simple example execution
+
+    Reversability
+
+    Merging and information monotonicity
+
+    Dependencies
+
+    Hypotheticals and world-views
+
+    Backtracking
+
+
+Summary
+
+    Thinking of software as hardware
+
+        Wiring diagrams
+
+        Locality of data with processing
+
+        Processing proportional to data repositories        
+
+
+This infrastructure captures all of the known paradigms of
+programming in such a way that they can coexist and cooperate 
+to form a large system that retains flexibility.
