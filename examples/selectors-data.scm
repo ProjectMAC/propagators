@@ -34,6 +34,8 @@
 (slotful-information-type trip-segment? make-trip-segment
   trip-segment-start trip-segment-end trip-segment-time
   trip-segment-cost trip-segment-pain trip-segment-method)
+
+;;; Printing trip segments out for wallpaper
 
 (define (normalize-knowledge thing)
   (cond ((nothing? thing)
@@ -74,6 +76,7 @@
   (for-each pp (map trip-segment-content trip-segments)))
 
 ;;; Stub data for particular jobs
+
 (define (force-assoc item alist)
   (let ((binding (assoc item alist)))
     (if binding
