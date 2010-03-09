@@ -36,6 +36,7 @@
     "metadata"
     "core"
     "generic-definitions"
+    "standard-propagators"
     "intervals"
     "premises"
     "supported-values"
