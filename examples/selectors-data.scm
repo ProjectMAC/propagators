@@ -55,14 +55,14 @@
   `(from ,(normalize-knowledge (trip-segment-start trip-segment))
     to   ,(normalize-knowledge (trip-segment-end trip-segment))))
 
-(define (print-trip-segment-content trip-segment)
+(define (trip-segment-content trip-segment)
   (if (nothing? trip-segment)
-      (pp 'nothing)
+      'nothing
       (fluid-let ((flonum-unparser-cutoff '(absolute 1 normal)))
-	(pp `(by   ,(normalize-knowledge (trip-segment-method trip-segment))
-	      time ,(normalize-knowledge (trip-segment-time trip-segment))
-	      cost ,(normalize-knowledge (trip-segment-cost trip-segment))
-	      pain ,(normalize-knowledge (trip-segment-pain trip-segment)))))))
+	`(by   ,(normalize-knowledge (trip-segment-method trip-segment))
+	  time ,(normalize-knowledge (trip-segment-time trip-segment))
+	  cost ,(normalize-knowledge (trip-segment-cost trip-segment))
+	  pain ,(normalize-knowledge (trip-segment-pain trip-segment))))))
 
 (define (print-trip-segment-group trip-segments)
   (define (group-endpoints trip-segments)
@@ -71,7 +71,7 @@
 	'(unknown)))
   (newline)
   (pp `(considering estimates ,@(group-endpoints trip-segments)))
-  (for-each print-trip-segment-content trip-segments))
+  (for-each pp (map trip-segment-content trip-segments)))
 
 ;;; Stub data for particular jobs
 (define (force-assoc item alist)
