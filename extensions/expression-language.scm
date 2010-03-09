@@ -97,11 +97,18 @@
 (define e:or (functionalize disjoiner))
 (define p:switch switch)
 (define e:switch (functionalize switch))
+
 (define p:amb binary-amb)
 (define (e:amb)
   (let-cell answer
     (binary-amb answer)
     answer))
+(define p:require require)
+(define p:forbid forbid)
+;; The expression versions of require and forbid are kinda dumb, but
+;; provided anyway
+(define e:require (functionalize p:require))
+(define e:forbid (functionalize p:forbid))
 
 (define-syntax propagatify
   (sc-macro-transformer
