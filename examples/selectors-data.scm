@@ -89,10 +89,20 @@
     (if (any trip-segment? trip-segments)
 	(trip-segment-endpoints (find trip-segment? trip-segments))
 	'(unknown)))
-  (newline)
-  (pp `(considering estimates ,@(group-endpoints trip-segments)))
+  (snewline)
+  (spp `(considering estimates ,@(group-endpoints trip-segments)))
   (fluid-let ((flonum-unparser-cutoff '(absolute 1 normal)))
-    (for-each pp (map trip-segment-content trip-segments))))
+    (for-each spp (map trip-segment-content trip-segments))))
+
+(define *selectors-wallp* #f)
+
+(define (spp thing)
+  (if *selectors-wallp*
+      (pp thing)))
+
+(define (snewline)
+  (if *selectors-wallp*
+      (newline)))
 
 ;;; Stub data for particular jobs
 

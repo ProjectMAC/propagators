@@ -22,11 +22,11 @@
     (compound-propagator (list go?)	; Only expand if go? has something
       (eq-label!
        (lambda ()
-	 (newline)
-	 (pp `(planning a trip 
-			,@(if (nothing? (content segment))
-			      '(unknown)
-			      (trip-segment-endpoints (content segment)))))
+	 (snewline)
+	 (spp `(planning a trip 
+			 ,@(if (nothing? (content segment))
+			       '(unknown)
+			       (trip-segment-endpoints (content segment)))))
 	 (let-cells (elaboree-method final-method)
 	   (let ((opt-cells
 		  (map (lambda (alternative)
@@ -68,15 +68,15 @@
 	  (if best-method-index
 	      (if (estimate? (trip-segment-time best-method-answer))
 		  (begin
-		    (pp `(thinking about ,(trip-segment-method
-					   best-method-answer)))
+		    (spp `(thinking about ,(trip-segment-method
+					    best-method-answer)))
 		    (add-content elaboree-method
 				 (make-estimate best-method-index)))
 		  (begin
-		    (pp `(decided to ,(trip-segment-method
-				       best-method-answer)))
+		    (spp `(decided to ,(trip-segment-method
+					best-method-answer)))
 		    (add-content final-method best-method-index)))))
-	(pp 'waiting-for-more-estimates)))
+	(spp 'waiting-for-more-estimates)))
   (let ((inputs (cons go? answers)))
     (eq-label! the-propagator
      'name 'critic 'inputs inputs
