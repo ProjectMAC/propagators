@@ -151,16 +151,14 @@
 	 (make-estimate (/ (distance-est trip-segment) speed)))))
 (propagatify time-est)
 
-(define (same-city-f? trip-segment)
+(define (same-city? trip-segment)
   ;; Really same-subway-network?
   (if (and (not (nothing? (trip-segment-start trip-segment)))
 	   (not (nothing? (trip-segment-end trip-segment))))
       (eq? (pick-airport (trip-segment-start trip-segment))
 	   (pick-airport (trip-segment-end trip-segment)))
       nothing))
-
-(define same-city
-  (function->propagator-constructor (nary-unpacking same-city-f?)))
+(propagatify same-city?)
 
 (define (pick-airport place)
   (force-assoc place '((home . logan)

@@ -176,7 +176,7 @@
 
 (define-macro-propagator (fast-air-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
-    (same-city segment same-city?)
+    (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
     (conditional-writer same-city? segment same-city-answer intercity-answer)
     (fast-incity-air-estimate same-city-answer)
@@ -234,7 +234,7 @@
 
 (define-macro-propagator (fast-train-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
-    (same-city segment same-city?)
+    (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
     (conditional-writer same-city? segment same-city-answer intercity-answer)
     (fast-incity-train-estimate same-city-answer)
@@ -282,7 +282,7 @@
 
 (define-macro-propagator (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
-    (same-city segment same-city?)
+    (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
     (conditional-writer same-city? segment same-city-answer intercity-answer)
     (fast-incity-subway-estimate same-city-answer)
