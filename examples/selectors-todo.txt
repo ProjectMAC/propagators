@@ -8,27 +8,9 @@ Pull the annoyance out of the computation, and make the critics deduce
 the annoyance from the method, and control the search with arbitrary
 criteria.
 
-Normalize use of expression style?  Including the pass-throughs?
-- p:foo for the propagator version of foo
-- e:foo for the expression-oriented propagator version of foo
-- cp:foo for the constraint-propagator version of foo
-- ce:foo for the expression-oriented constraint-propagator version of foo
 Prettify the program for display.
 
 Add more metadata for pictures.
 - Better grouping of subfunctions
 - Better names for split nodes and choice nodes
 Draw pictures.
-
-Debugger desideratum: a "logic analyzer" that would let me observe the
-increments that get added to some cell (or cells) over time, and to
-watch what merge does with them.
-
-Create a file for ideas about the merging-language.
-
-"Infrastructure for making it easier to make critic-selector structures"
-
-"The fact that you can add an arbitary critic or selector; pieces are
-autonomous"
-
-
