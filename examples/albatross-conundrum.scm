@@ -30,12 +30,6 @@
 		   (deck-supply deck))))))
   name commander treasure supply)
 
-(define deck-names '(poop quarter main gun lower))
-(define commanders '(draconio bosun scurvy kraken windlass))
-(define treasures
-  '(casket-of-magenta tamarind-jewels galliard-lute calypso-figure goldenhall-talisman))
-(define supplies '(ropes spare-sails rum biscuits firearms))
-
 (propagatify deck-name)
 (propagatify deck-commander)
 (propagatify deck-treasure)
@@ -46,32 +40,14 @@
 
 (specify-flat deck?)
 
-(define (deck-merge deck1 deck2)
-  (let ((name-answer (merge (deck-name deck1) (deck-name deck2)))
-	(commander-answer (merge (deck-commander deck1) (deck-commander deck2)))
-	(treasure-answer (merge (deck-treasure deck1) (deck-treasure deck2)))
-	(supply-answer (merge (deck-supply deck1) (deck-supply deck2))))
-    (cond ((and (eq? name-answer (deck-name deck1))
-		(eq? commander-answer (deck-commander deck1))
-		(eq? treasure-answer (deck-treasure deck1))
-		(eq? supply-answer (deck-supply deck1)))
-	   deck1)
-	  ((and (eq? name-answer (deck-name deck2))
-		(eq? commander-answer (deck-commander deck2))
-		(eq? treasure-answer (deck-treasure deck2))
-		(eq? supply-answer (deck-supply deck2)))
-	   deck2)
-	  (else
-	   (make-deck name-answer commander-answer treasure-answer supply-answer)))))
+(slotful-information-type deck? make-deck
+  deck-name deck-commander deck-treasure deck-supply)
 
-(defhandler merge deck-merge deck? deck?)
-
-(defhandler contradictory?
-  (lambda (deck) (or (contradictory? (deck-name deck))
-		     (contradictory? (deck-commander deck))
-		     (contradictory? (deck-treasure deck))
-		     (contradictory? (deck-supply deck))))
-  deck?)
+(define deck-names '(poop quarter main gun lower))
+(define commanders '(draconio bosun scurvy kraken windlass))
+(define treasures
+  '(casket-of-magenta tamarind-jewels galliard-lute calypso-figure goldenhall-talisman))
+(define supplies '(ropes spare-sails rum biscuits firearms))
 
 (define (build-albatross-network)
   (let* ((deck-cells
