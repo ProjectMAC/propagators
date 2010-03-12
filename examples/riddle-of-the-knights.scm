@@ -140,51 +140,49 @@
      'knight (lambda (knight)
 	       (list (knight-name knight)
 		     (knight-shield knight)
-		     (knight-horse knight))))))
+		     (knight-horse knight)))))
+   (constructor make-knight)
+   (constructor make-knight-from-name (name))
+   (constructor make-knight-from-shield (shield))
+   (constructor make-knight-from-horse (horse)))
   (name nothing)
   (shield nothing)
   (horse nothing))
-(name! make-knight 'make-knight)
 
 (propagatify knight-name)
 (propagatify knight-shield)
 (propagatify knight-horse)
 
+(propagatify make-knight-from-name)
+(propagatify make-knight-from-shield)
+(propagatify make-knight-from-horse)
+
 (slotful-information-type knight? make-knight
   knight-name knight-shield knight-horse)
-
-(define (get thing map)
-  (let ((cell (assq thing map)))
-    (and cell (cdr cell))))
 
 (specify-flat knight?)
 (specify-flat shield?)
 (specify-flat horse?)
 (specify-flat symbol?)
 
+(define (get thing map)
+  (let ((cell (assq thing map)))
+    (and cell (cdr cell))))
+
 (define (cell-grabber cell-table)
   (lambda (key)
     (or (get key cell-table)
 	(error "No owner for" key))))
-
-(define e:knight-maker
-  (functionalize (function->propagator-constructor make-knight)))
-
+
 (define (build-network)
   (let* ((knight-cells
 	  (map (lambda (foo) (make-named-cell 'knight)) knights))
 	 (knight-name-cells
-	  (map (lambda (name)
-		 (e:knight-maker name nothing nothing))
-	       names))
+	  (map e:make-knight-from-name names))
 	 (knight-shield-cells
-	  (map (lambda (shield)
-		 (e:knight-maker nothing shield nothing))
-	       shields))
+	  (map e:make-knight-from-shield shields))
 	 (knight-horse-cells
-	  (map (lambda (horse)
-		 (e:knight-maker nothing nothing horse))
-	       horses))
+	  (map e:make-knight-from-horse horses))
 	 (cell-table
 	  (append
 	   (map cons knights knight-cells)
