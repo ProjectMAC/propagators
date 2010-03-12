@@ -27,16 +27,26 @@
 	     (list (deck-name deck)
 		   (deck-commander deck)
 		   (deck-treasure deck)
-		   (deck-supply deck))))))
-  name commander treasure supply)
+		   (deck-supply deck)))))
+   (constructor make-deck)
+   (constructor make-deck-from-name (name))
+   (constructor make-deck-from-commander (commander))
+   (constructor make-deck-from-treasure (treasure))
+   (constructor make-deck-from-supply (supply)))
+  (name nothing)
+  (commander nothing)
+  (treasure nothing)
+  (supply nothing))
 
 (propagatify deck-name)
 (propagatify deck-commander)
 (propagatify deck-treasure)
 (propagatify deck-supply)
 
-(define e:make-deck (functionalize (function->propagator-constructor make-deck)))
-(name! make-deck 'make-deck)
+(propagatify make-deck-from-name)
+(propagatify make-deck-from-commander)
+(propagatify make-deck-from-treasure)
+(propagatify make-deck-from-supply)
 
 (specify-flat deck?)
 
@@ -51,21 +61,13 @@
 
 (define (build-albatross-network)
   (let* ((deck-cells
-	  (map (lambda (name)
-		 (e:make-deck name nothing nothing nothing))
-	       deck-names))
+	  (map e:make-deck-from-name deck-names))
 	 (deck-commander-cells
-	  (map (lambda (commander)
-		 (e:make-deck nothing commander nothing nothing))
-	       commanders))
+	  (map e:make-deck-from-commander commanders))
 	 (deck-treasure-cells
-	  (map (lambda (treasure)
-		 (e:make-deck nothing nothing treasure nothing))
-	       treasures))
+	  (map e:make-deck-from-treasure treasures))
 	 (deck-supply-cells
-	  (map (lambda (supply)
-		 (e:make-deck nothing nothing nothing supply))
-	       supplies))
+	  (map e:make-deck-from-supply supplies))
 	 (cell-table
 	  (append
 	   (map cons deck-names deck-cells)
