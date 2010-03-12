@@ -10,4 +10,5 @@ cd ../extensions
 ./run-tests
 
 cd ../examples
-exec ./run-tests
+./run-tests
+exec ./run-mechanics-tests
