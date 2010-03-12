@@ -99,7 +99,6 @@
 (propagatify black?)
 (propagatify red-reined?)
 (propagatify plumed?)
-
 
 (define-structure
   (shield (print-procedure
@@ -142,37 +141,17 @@
 	       (list (knight-name knight)
 		     (knight-shield knight)
 		     (knight-horse knight))))))
-  name
-  shield
-  horse)
+  (name nothing)
+  (shield nothing)
+  (horse nothing))
 (name! make-knight 'make-knight)
 
 (propagatify knight-name)
 (propagatify knight-shield)
 (propagatify knight-horse)
 
-(define (knight-merge knight1 knight2)
-  (let ((name-answer (merge (knight-name knight1) (knight-name knight2)))
-	(shield-answer (merge (knight-shield knight1) (knight-shield knight2)))
-	(horse-answer (merge (knight-horse knight1) (knight-horse knight2))))
-    (cond ((and (eq? name-answer (knight-name knight1))
-		(eq? shield-answer (knight-shield knight1))
-		(eq? horse-answer (knight-horse knight1)))
-	   knight1)
-	  ((and (eq? name-answer (knight-name knight2))
-		(eq? shield-answer (knight-shield knight2))
-		(eq? horse-answer (knight-horse knight2)))
-	   knight2)
-	  (else
-	   (make-knight name-answer shield-answer horse-answer)))))
-
-(defhandler merge knight-merge knight? knight?)
-
-(defhandler contradictory?
-  (lambda (knight) (or (contradictory? (knight-name knight))
-		       (contradictory? (knight-shield knight))
-		       (contradictory? (knight-horse knight))))
-  knight?)
+(slotful-information-type knight? make-knight
+  knight-name knight-shield knight-horse)
 
 (define (get thing map)
   (let ((cell (assq thing map)))
