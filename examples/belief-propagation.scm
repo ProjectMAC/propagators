@@ -72,6 +72,8 @@
 (propagatify pointwise-sum-poduct)
 
 (define-propagator-macro (factor-props factor terminals)
+  ;; TODO define crunch-the-factor to arrange the order of arguments
+  ;; so that the apply in pointwise-sum-poduct will work.
   (for-each
    (lambda (index)
      (let* ((terminal (list-ref terminals index))
