@@ -41,7 +41,7 @@
 
 (for-each
  load-relative
- '("selectors/selectors-data"
+ '("selectors/data"
    "selectors/selectors"))
 
 (maybe-warn-low-memory)
