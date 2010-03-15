@@ -41,8 +41,8 @@
 
 (for-each
  load-relative
- '("selectors-data"
-   "selectors"))
+ '("selectors/selectors-data"
+   "selectors/selectors"))
 
 (maybe-warn-low-memory)
 (initialize-scheduler)
