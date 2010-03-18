@@ -200,7 +200,7 @@
   (let ((burglary (make-node 2))
 	(earthquake (make-node 2))
 	(alarm (make-node 3))
-	(john-calls (make-node 1))
+	(john-calls (make-node 2))
 	(mary-calls (make-node 1)))
     (let ((nodes (list burglary earthquake alarm john-calls mary-calls))
 	  (names '(burglary earthquake alarm john-calls mary-calls)))
@@ -232,14 +232,32 @@
 	 ((#f) . .01))
        (get-terminal alarm 2)
        (get-terminal mary-calls 0))
+      ;; Evidence: John called.
+      (conditional-probability-table
+       '((() . 1))
+       (get-terminal john-calls 1))
       nodes)))
 
-(define (burglary-marginals evidence)
+(define (burglary-marginals)
   (initialize-scheduler)
   (let ((nodes (build-burglary-network)))
     (run)
     (for-each pp (map content (map node-marginal nodes)))
     nodes))
+
+#|
+ (burglary-marginals)
+ #[message 829]
+ (alist ((#t . 1.6283729946769937e-2) (#f . .98371627005323)))
+ #[message 830]
+ (alist ((#t . 1.1394968773811182e-2) (#f . .9886050312261888)))
+ #[message 831]
+ (alist ((#t . .04343771179992706) (#f . .9565622882000729)))
+ #[message 832]
+ (alist ((#t . 1.) (#f . 0.)))
+ #[message 833]
+ (alist ((#t . .03997202114194967) (#f . .9600279788580504)))
+|#
 
 #;
 (fluid-let ((prop:cell-label
