@@ -46,7 +46,7 @@
 
 (propagatify pointwise-product)
 
-(define-propagator-macro (variable support factor-terminals)
+(define-macro-propagator (variable support factor-terminals)
   (for-each
    (lambda (terminal)
      (let ((other-terminals (delq terminal factor-terminals)))
@@ -55,7 +55,7 @@
 			 ,(terminal-factor terminal)))))
    factor-terminals))
 
-(define (pointwise-sum-poduct factor support . messages)
+(define (pointwise-sum-product factor support . messages)
   (define (sum-product points-chosen messages-left)
     (if (null? messages-left)
 	(apply factor (reverse points-chosen))
@@ -69,11 +69,24 @@
 	  (cons point (sum-product (list point) messages)))
 	support)))
 
-(propagatify pointwise-sum-poduct)
+(propagatify pointwise-sum-product)
 
-(define-propagator-macro (factor-props factor terminals)
-  ;; TODO define crunch-the-factor to arrange the order of arguments
-  ;; so that the apply in pointwise-sum-poduct will work.
+(define-macro-propagator (factor-props factor terminals)
+  ;; Ugh.  The factor comes in as a lisp procedure, because 
+  ;; currying it the way I want is easier in lisp.
+  (define (crunch-the-factor index factor)
+    (define (splice lst index value)
+      (append
+       (take lst index)
+       (list value)
+       (drop lst index)))
+    (define (fixed-factor . values) 
+      (let ((other-terminal-values (except-last-pair values))
+	    (value-at-index (car (last-pair values))))
+	(apply factor (splice other-terminal-values index value-at-index))))
+    (let-cell factor-cell
+      (add-content factor-cell fixed-factor)
+      factor-cell))
   (for-each
    (lambda (index)
      (let* ((terminal (list-ref terminals index))
@@ -89,3 +102,85 @@
   support
   variable
   factor)
+
+;;; Here lives the burglary-earthquake example
+
+(define-structure (node (constructor %make-node))
+  support
+  terminals)
+
+(define (make-node num-terminals)
+  (let-cell support
+    (%make-node
+     support
+     (map (lambda (index)
+	    (let-cells (variable factor)
+	      (make-terminal support variable factor)))
+	  (iota num-terminals)))))
+
+(define (get-terminal node index)
+  (list-ref (node-terminals node) index))
+
+(define (variable-at-node node)
+  (variable (node-support node) (node-terminals node)))
+
+(define (conditional-probability-table alist . terminals)
+  (define (normalize-cpt alist)
+    ;; This is the place where we assume that the output node is
+    ;; Boolean, and the given cpt lists the probability of it being
+    ;; true.
+    (apply
+     append
+     (map (lambda (row)
+	    (let ((non-output-values (car row))
+		  (prob-output-true (cdr row)))
+	      `(((,@non-output-values #t) . ,prob-output-true)
+		((,@non-output-values #f) . ,(- 1 prob-output-true)))))
+	  alist)))
+  (let ((nalist (normalize-cpt alist)))
+    (define (factor . values)
+      (force-assoc values nalist))
+    (factor-props factor terminals)))
+
+(define (build-burglary-network)
+  (let ((burglary (make-node 2))
+	(earthquake (make-node 2))
+	(alarm (make-node 3))
+	(john-calls (make-node 1))
+	(mary-calls (make-node 1)))
+    (let ((nodes (list burglary earthquake alarm john-calls mary-calls)))
+      (define (boolean-support node)
+	(add-content (node-support node) (list #t #f)))
+      (for-each boolean-support nodes)
+      (conditional-probability-table
+       '((() . .001))
+       (get-terminal burglary 0))
+      (conditional-probability-table
+       '((() . .002))
+       (get-terminal earthquake 0))
+      (conditional-probability-table
+       '(((#t #t) . .95)
+	 ((#t #f) . .94)
+	 ((#f #t) . .29)
+	 ((#f #f) . .001))
+       (get-terminal burglary 1)
+       (get-terminal earthquake 1)
+       (get-terminal alarm 0))
+      (conditional-probability-table
+       '(((#t) . .90)
+	 ((#f) . .05))
+       (get-terminal alarm 1)
+       (get-terminal john-calls 0))
+      (conditional-probability-table
+       '(((#t) . .70)
+	 ((#f) . .01))
+       (get-terminal alarm 2)
+       (get-terminal mary-calls 0))
+      nodes)))
+
+(define (burglary-marginals evidence)
+  (initialize-scheduler)
+  (let ((nodes (build-burglary-network)))
+    (run)
+    (for-each pp nodes)
+    nodes))
