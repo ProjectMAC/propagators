@@ -56,7 +56,7 @@
 
 (propagatify normalize-message)
 
-(define-macro-propagator (variable support marginal factor-terminals)
+(define (variable support marginal factor-terminals)
   (for-each
    (lambda (terminal)
      (let ((other-terminals (delq terminal factor-terminals)))
@@ -77,11 +77,48 @@
 		    (* (cdr point-value)
 		       (sum-product (cons (car point-value) points-chosen)
 				    (cdr messages-left))))
-		  (message->alist (car messages))))))
+		  (message->alist (car messages-left))))))
   (make-message
    (map (lambda (point)
 	  (cons point (sum-product (list point) messages)))
 	support)))
+
+#|
+ ;;; If John sends no influence to the John-Alarm factor, then the
+ ;;; john-alarm factor should send no influence to the alarm variable.
+ (pp
+  (pointwise-sum-product
+   (lambda (alarm john)
+     (force-assoc
+      (list alarm john)
+      '(((#t #t) . .9)
+	((#t #f) . .09999999999999998)
+	((#f #t) . .05)
+	((#f #f) . .95))))
+   (list #t #f) ; Alarm's support
+   (make-message '((#t . 1) (#f . 1))))) ; Message from John
+ #[message 712]
+ (alist ((#t . 1.) (#f . 1.))) ; Message to Alarm
+
+ (pp
+  (pointwise-sum-product
+   (lambda (earthquake burglary alarm)
+     (force-assoc
+      (list burglary earthquake alarm)
+      '(((#t #t #t) . .95)
+	((#t #t #f) . 5.0000000000000044e-2)
+	((#t #f #t) . .94)
+	((#t #f #f) . .06000000000000005)
+	((#f #t #t) . .29)
+	((#f #t #f) . .71)
+	((#f #f #t) . .001)
+	((#f #f #f) . .999))))
+   (list #t #f)				     ; Earthquake's support
+   (make-message '((#t . .001) (#f . .999))) ; Message from burglary
+   (make-message '((#t . 1)    (#f . 1)))))  ; Message from alarm
+ #[message 818]
+ (alist ((#t . 1.) (#f . 1.))) ; Message to earthquake
+|#
 
 (propagatify pointwise-sum-product)
 
@@ -95,8 +132,8 @@
        (list value)
        (drop lst index)))
     (define (fixed-factor . values) 
-      (let ((other-terminal-values (except-last-pair values))
-	    (value-at-index (car (last-pair values))))
+      (let ((other-terminal-values (cdr values))
+	    (value-at-index (car values)))
 	(apply factor (splice other-terminal-values index value-at-index))))
     (let-cell factor-cell
       (add-content factor-cell fixed-factor)
@@ -129,15 +166,17 @@
     (%make-node
      support marginal
      (map (lambda (index)
-	    (let-cells (variable factor)
-	      (make-terminal support variable factor)))
+	    (let-cells (to-variable to-factor)
+	      (make-terminal support to-variable to-factor)))
 	  (iota num-terminals)))))
 
 (define (get-terminal node index)
   (list-ref (node-terminals node) index))
 
-(define (variable-at-node node)
-  (variable (node-support node) (node-marginal node) (node-terminals node)))
+(define (variable-at-node node name)
+  (with-network-group (network-group-named name)
+    (lambda ()
+      (variable (node-support node) (node-marginal node) (node-terminals node)))))
 
 (define (conditional-probability-table alist . terminals)
   (define (normalize-cpt alist)
@@ -163,11 +202,12 @@
 	(alarm (make-node 3))
 	(john-calls (make-node 1))
 	(mary-calls (make-node 1)))
-    (let ((nodes (list burglary earthquake alarm john-calls mary-calls)))
+    (let ((nodes (list burglary earthquake alarm john-calls mary-calls))
+	  (names '(burglary earthquake alarm john-calls mary-calls)))
       (define (boolean-support node)
 	(add-content (node-support node) (list #t #f)))
       (for-each boolean-support nodes)
-      (for-each variable-at-node nodes)
+      (for-each variable-at-node nodes names)
       (conditional-probability-table
        '((() . .001))
        (get-terminal burglary 0))
@@ -200,3 +240,8 @@
     (run)
     (for-each pp (map content (map node-marginal nodes)))
     nodes))
+
+#;
+(fluid-let ((prop:cell-label
+	      (lambda (var) (cons (name var) (if (message? (content var)) (message-alist (content var)) (name (content var)))))))
+   (prop:dot:show-graph))
