@@ -152,6 +152,7 @@
       (define (boolean-support node)
 	(add-content (node-support node) (list #t #f)))
       (for-each boolean-support nodes)
+      (for-each variable-at-node nodes)
       (conditional-probability-table
        '((() . .001))
        (get-terminal burglary 0))
