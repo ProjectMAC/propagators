@@ -46,14 +46,28 @@
 
 (propagatify pointwise-product)
 
-(define-macro-propagator (variable support factor-terminals)
+(define (normalize-message message)
+  (let ((constant (sum (map cdr (message-alist message)))))
+    (make-message
+     (map (lambda (pair)
+	    (cons (car pair)
+		  (/ (cdr pair) constant)))
+	  (message-alist message)))))
+
+(propagatify normalize-message)
+
+(define-macro-propagator (variable support marginal factor-terminals)
   (for-each
    (lambda (terminal)
      (let ((other-terminals (delq terminal factor-terminals)))
        (apply p:pointwise-product
 	      `(,support ,@(map terminal-variable other-terminals)
 			 ,(terminal-factor terminal)))))
-   factor-terminals))
+   factor-terminals)
+  (p:normalize-message
+   (apply e:pointwise-product
+	  support (map terminal-variable factor-terminals))
+   marginal))
 
 (define (pointwise-sum-product factor support . messages)
   (define (sum-product points-chosen messages-left)
@@ -107,12 +121,13 @@
 
 (define-structure (node (constructor %make-node))
   support
+  marginal
   terminals)
 
 (define (make-node num-terminals)
-  (let-cell support
+  (let-cells (support marginal)
     (%make-node
-     support
+     support marginal
      (map (lambda (index)
 	    (let-cells (variable factor)
 	      (make-terminal support variable factor)))
@@ -122,7 +137,7 @@
   (list-ref (node-terminals node) index))
 
 (define (variable-at-node node)
-  (variable (node-support node) (node-terminals node)))
+  (variable (node-support node) (node-marginal node) (node-terminals node)))
 
 (define (conditional-probability-table alist . terminals)
   (define (normalize-cpt alist)
@@ -183,5 +198,5 @@
   (initialize-scheduler)
   (let ((nodes (build-burglary-network)))
     (run)
-    (for-each pp nodes)
+    (for-each pp (map content (map node-marginal nodes)))
     nodes))
