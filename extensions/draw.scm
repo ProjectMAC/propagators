@@ -90,14 +90,15 @@
 ;;; will write the graph structure of the whole propagator network to
 ;;; the file "frob.graphml" in graphml format, which can then be
 ;;; viewed with yEd (if that program is available).
-
-
+
 ;;; TODO:
 ;;; Detect absence of desired external programs.
-;;; Dump subgroup data for closures ??
-;;; - Implement draw-closure (in addition to draw-graph)?
+;;; Write a handful of useful procedures to fluid bind draw:cell-label to
 ;;; Dump subgroup data for nested expressions
-;;; Dump snapshots of values (maybe user-configurable views on them?)
+;;; Dump port data (this compound box takes these inputs and then
+;;;   routes them to these sub-boxes)
+;;; Dump subgroup data for closures ??
+;;; - Implement (draw:show-graph some-closure)
 ;;; Dump animations of the progress of values over time
 ;;; - ddb searches; recursions
 ;;; Draw pictures of all the interesting propagator networks.
