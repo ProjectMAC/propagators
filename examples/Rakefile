@@ -23,14 +23,14 @@ end
 
 def dot_dump command, filename
   task "#{filename}.dot" do
-    scheme "(initialize-scheduler) #{command} (prop:dot:write-graph-to-file \"#{filename}.dot\")"
+    scheme "(initialize-scheduler) #{command} (draw:write-graph-to-file \"#{filename}.dot\")"
   end
   task "dot-graphs" => "#{filename}.dot"
 end
 
 def graphml_dump command, filename
   task "#{filename}.graphml" do
-    scheme "(initialize-scheduler) #{command} (fluid-let ((make-dot-writer make-graphml-writer)) (prop:dot:write-graph-to-file \"#{filename}.graphml\"))"
+    scheme "(initialize-scheduler) #{command} (fluid-let ((draw:format (quote graphml))) (draw:write-graph-to-file \"#{filename}.graphml\"))"
   end
   task "graphmls" => "#{filename}.graphml"
   task :pictures => "#{filename}.graphml"
