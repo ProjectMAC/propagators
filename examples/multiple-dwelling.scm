@@ -52,3 +52,32 @@
  *number-of-calls-to-fail*
  ;Value: 63
 |#
+
+;;; Here's how you write the same program in expression style
+(define (multiple-dwelling-expressions)
+  (let-cells ((baker    (e:one-of 1 2 3 4 5))
+	      (cooper   (e:one-of 1 2 3 4 5))
+	      (fletcher (e:one-of 1 2 3 4 5))
+	      (miller   (e:one-of 1 2 3 4 5))
+	      (smith    (e:one-of 1 2 3 4 5)))
+    (require-distinct
+     (list baker cooper fletcher miller smith))
+    (forbid (e:= baker 5))
+    (forbid (e:= cooper 1))
+    (forbid (e:= fletcher 5))
+    (forbid (e:= fletcher 1))
+    (require (e:> miller cooper))
+    (forbid (e:= 1 (e:abs (e:- fletcher smith))))
+    (forbid (e:= 1 (e:abs (e:- fletcher cooper))))
+    (list baker cooper fletcher miller smith)))
+
+#|
+ (initialize-scheduler)
+ (define answers (multiple-dwelling-expressions))
+ (run)
+ (map v&s-value (map tms-query (map content answers)))
+ ;Value: '(3 2 4 5 1)
+
+ *number-of-calls-to-fail*
+ ;Value: 63
+|#
