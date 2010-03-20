@@ -40,7 +40,7 @@
 
 ;;; Here's another fun way to play:
 #;
- (fluid-let ((make-dot-writer make-graphml-writer))
+ (fluid-let ((draw:make-writer make-graphml-writer))
    (draw:write-graph-to-file "frob.graphml"))
 ;;; That draws stuff in gramphml.  (I'll fix this interface soon, I
 ;;; promise).
@@ -80,10 +80,14 @@
 (define (draw:write-graph #!optional start output-port)
   (if (default-object? output-port)
       (set! output-port (current-output-port)))
-  (let ((writer (make-dot-writer output-port)))
+  (let ((writer (draw:make-writer output-port)))
     ((writer 'write-graph)
      (lambda ()
        (draw:walk-graph writer start)))))
+
+(define (draw:make-writer output-port)
+  ;; This is not inlined because of load order considerations.
+  (make-dot-writer output-port))
 
 (define (draw:walk-graph writer #!optional start)
   (let ((visited (make-eq-hash-table))
