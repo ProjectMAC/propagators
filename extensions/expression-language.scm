@@ -21,7 +21,7 @@
 
 (define %% (list 'the-implicit-cell))
 (define (implicit-cell? thing)
-  (eq? thing 'the-implicit-cell))
+  (eq? thing %%))
 
 (define (->cell thing)
   (if (or (implicit-cell? thing) (cell? thing))
