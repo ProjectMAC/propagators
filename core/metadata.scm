@@ -20,12 +20,21 @@
 (declare (usual-integrations))
 
 (define-structure network-group
-  elements)
+  elements
+  names)
 
 (define *current-network-group* #f)
 
 (define (network-group-named name)
-  (eq-put! (make-network-group '()) 'name name))
+  (name! (make-network-group '() (make-eq-hash-table)) name))
+
+(define (name-in-group! group thing name)
+  (hash-table/put! (network-group-names group) thing name)
+  thing)
+
+(define (name-in-group group thing)
+  (and group
+       (hash-table/get (network-group-names group) thing #f)))
 
 (define (network-register thing)
   (if (memq thing (network-group-elements *current-network-group*))
@@ -79,6 +88,17 @@
   (or (eq-get propagator 'outputs)
       (eq-get propagator 'neighbors)
       '()))
+
+(define (name-locally! thing name)
+  (name-in-group! *current-network-group* thing name))
+
+(define name
+  (let ((name name))
+    (lambda (thing)
+      (let ((group-name (name-in-group (network-group-of thing) thing)))
+	(if group-name
+	    (name group-name)
+	    (name thing))))))
 
 (define (cell-connections cell)
   ;; The neighbors are the ones that need to be woken up; the
