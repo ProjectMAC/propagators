@@ -206,12 +206,12 @@
 
 (define ((splitter e:pick-waypoint) go? segment beginning middle end)
   (p:make-trip-segment-by-start (e:trip-segment-start segment) beginning)
-  (let-cell (first-waypoint)
+  (let-cell first-waypoint
     (pass-through (e:pick-waypoint (e:trip-segment-start segment))
 		  first-waypoint)
     (p:make-trip-segment-by-end first-waypoint beginning)
     (p:make-trip-segment-by-start first-waypoint middle))
-  (let-cell (last-waypoint)
+  (let-cell last-waypoint
     (p:make-trip-segment-by-end last-waypoint middle)
     (p:make-trip-segment-by-start last-waypoint end)
     (pass-through (e:pick-waypoint (e:trip-segment-end segment))

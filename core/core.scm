@@ -62,45 +62,78 @@
   (eq-get thing 'cell))
 
 (define (make-named-cell name)
-  (eq-put! (make-cell) 'name name))
+  (name! (make-cell) name))
 
 ;;; Convenience macros for defining new cells.
 
-;; (define-cell foo) exands into
-;; (define foo (make-named-cell 'foo))
+;; (define-cell foo form)
+;; is the same as
+;; (define foo form)
+;; except it grabs the name foo and associates it with the
+;; object (presumably a cell) that form constructs.
+;;
+;; for the frequent case when you want a fresh cell
+;; (define-cell foo)
+;; expands into
+;; (define-cell foo (make-named-cell 'foo))
+;; The metadata is then available two ways.
 (define-syntax define-cell
   (syntax-rules ()
+    ((define-cell symbol form)
+     (define symbol (name-locally! form 'symbol)))
     ((define-cell symbol)
-     (define symbol (make-named-cell 'symbol)))))
+     (define-cell symbol (make-named-cell 'symbol)))))
 
+;; (let-cells ((foo foo-form)
+;;             (bar bar-form)
+;;             (baz baz-form))
+;;   stuff)
+;; is the same as 
+;; (let ((foo foo-form)
+;;       (bar bar-form)
+;;       (baz baz-form))
+;;   stuff)
+;; except that it captures the names foo bar and baz
+;; and associates them with the objects (presumably cells)
+;; that the corresponding forms return.
+;;
+;; for the frequent case when you want fresh cells
 ;; (let-cells (foo bar baz)
 ;;   stuff)
 ;; expands into
-;; (let ((foo (make-cell-named 'foo))
-;;       (bar (make-cell-named 'bar))
-;;       (baz (make-cell-named 'baz)))
+;; (let-cells ((foo (make-named-cell 'foo))
+;;             (bar (make-named-cell 'bar))
+;;             (baz (make-named-cell 'baz)))
 ;;   stuff)
+;; The metadata is then available two ways.
+;; TODO Is there a way to get syntax-rules to let me mix these two
+;; forms, namely write
+;; (let-cells ((foo foo-form)
+;;             bar
+;;             (baz baz-form))
+;;   stuff)
+;; and have the right thing happen?
 (define-syntax let-cells
   (syntax-rules ()
+    ((let-cells ((cell-name cell-form) ...)
+       form ...)
+     (let ((cell-name (name-locally! cell-form 'cell-name)) ...)
+       form ...))
     ((let-cells (cell-name ...)
        form ...)
-     (let ((cell-name (make-named-cell 'cell-name))...)
+     (let-cells ((cell-name (make-named-cell 'cell-name))...)
        form ...))))
 
 ;; This version is a grammatical convenience if there is only one
-;; cell.  The name either may or may not be enclosed in parens.
-;; (let-cell (foo) stuff) and (let-cell foo stuff) are both ok and
-;; equivalent to (let-cells (foo) stuff), which reads a bit more
-;; awkwardly.
+;; cell.  (let-cell (foo foo-form) stuff) and (let-cell foo stuff) are
+;; both ok and equivalent to (let-cells ((foo foo-form)) stuff) and
+;; (let-cells (foo) stuff), respectively, which are more awkward to
+;; read.
 (define-syntax let-cell
   (syntax-rules ()
-    ((let-cell (cell-name)
+    ((let-cell cell-binding
        form ...)
-     (let-cells (cell-name)
-       form ...))
-    ((let-cell cell-name
-       form ...)
-     (let-cells (cell-name)
+     (let-cells (cell-binding)
        form ...))))
 
 ;;; Propagators
