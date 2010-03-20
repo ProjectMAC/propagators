@@ -41,7 +41,7 @@
 
 (for-each load-relative
  '("environments"
-   "prop-dot"
+   "draw"
    "dot-writer"
    "graphml-writer"))
 
