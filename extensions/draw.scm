@@ -24,7 +24,7 @@
 ;;; (draw:show-graph)
 ;;;   Dumps the whole current network in dot format, runs the dot
 ;;;   graph layout engine over it, and displays the resulting svg file
-;;;   with eog.  Fails confusingly if dot or eog are not available.
+;;;   with eog.  Errors out if dot or eog are not available.
 ;;; 
 ;;; (draw:show-graph <thing>)
 ;;;   As above, but shows the portion of the network identified by
@@ -92,7 +92,6 @@
 ;;; viewed with yEd (if that program is available).
 
 ;;; TODO:
-;;; Detect absence of desired external programs.
 ;;; Write a handful of useful procedures to fluid bind draw:cell-label to
 ;;; Dump subgroup data for nested expressions
 ;;; Dump port data (this compound box takes these inputs and then
@@ -113,7 +112,7 @@
      ;; subprocesses, but it is "available for those who are willing
      ;; to read the source code."  More on this in an email exchange
      ;; with Taylor titled "Happy New Year, and a Question"
-     (run-shell-command
+     (force-run-shell-command
       (string-append "eog " (->namestring svg-pathname))))))
 
 (define (draw:draw-graph-to-file pathname #!optional start drawer)
@@ -122,10 +121,16 @@
   (call-with-temporary-file-pathname
    (lambda (graph-pathname)
      (draw:write-graph-to-file graph-pathname start)
-     (run-shell-command
+     (force-run-shell-command
       (string-append
        drawer " " (->namestring graph-pathname)
        " -Tsvg -o " (->namestring pathname))))))
+
+(define (force-run-shell-command command)
+  (let ((status (run-shell-command command)))
+    (if (= 0 status)
+	'ok
+	(error "Shell command failed" command))))
 
 (define (draw:write-graph-to-file pathname #!optional start)
   (call-with-output-file pathname
