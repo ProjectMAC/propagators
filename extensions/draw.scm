@@ -17,9 +17,83 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-;;; Code to visualize propagator networks as graphs.
+;;;; Code to visualize propagator networks as graphs.
+
+;;; Uses:
+;;; 
+;;; (draw:show-graph)
+;;;   Dumps the whole current network in dot format, runs the dot
+;;;   graph layout engine over it, and displays the resulting svg file
+;;;   with eog.  Fails confusingly if dot or eog are not available.
+;;; 
+;;; (draw:show-graph <thing>)
+;;;   As above, but shows the portion of the network identified by
+;;;   <thing>.  If <thing> is a cell or a propagator, draws the
+;;;   connected component containing that cell or propagator.  If
+;;;   <thing> is a network group, draws the elements that are part of
+;;;   that network group.
+;;; 
+;;; (draw:show-graph <thing> <drawing-program>)
+;;;   As above, but uses the specified drawing program (indicated as a
+;;;   string) instead of dot.  As of the present writing, the graphviz
+;;;   system ships with the programs dot, neato, twopi, circo, and
+;;;   fdp, which embody different graph layout algorithms.
+;;; 
+;;; (draw:draw-graph-to-file <filename>)
+;;; (draw:draw-graph-to-file <filename> <thing>)
+;;; (draw:draw-graph-to-file <filename> <thing> <drawing-program>)
+;;;   Saves the graph layout output in the given <filename>, but does
+;;;   not display it.  Same treatment of <thing> as above.
+;;; 
+;;; (draw:write-graph)
+;;; (draw:write-graph <thing>)
+;;; (draw:write-graph <thing> <output-port>)
+;;; (draw:write-graph-to-file <filename>)
+;;; (draw:write-graph-to-file <filename> <thing>)
+;;; (draw:write-graph-to-string)
+;;; (draw:write-graph-to-string <thing>)
+;;;   Writes the graph to the specified output location (either the
+;;;   standard output, or the given port, or the given file, or a
+;;;   fresh string it then returns).  Does not process the output with
+;;;   any external programs.
+;;; 
+;;; The behavior of the above can be modulated by fluid-letting
+;;; several variables:
+;;; 
+;;; draw:cell-label
+;;;   A procedure that accepts a cell and emits a structure that will
+;;;   be passed through write-to-string to generate the label that
+;;;   cell should have in the output.  Defaults to the procedure name.
+;;; 
+;;; draw:propagator-label
+;;;   A procedure that accepts a propagator and emits a structure that
+;;;   will be passed through write-to-string to generate the label
+;;;   that cell should have in the output.  Defaults to name.
+;;; 
+;;; draw:format
+;;;   A symbol that specifies the output format.  Currently supported
+;;;   formats are:
+;;;   dot, for the graphviz suite (this is the default)
+;;;   graphml, for yEd
+;;; 
+;;; For example,
+#;
+ (fluid-let ((draw:cell-label
+	      (lambda (var) (cons (name var) (content var)))))
+   (draw:show-graph))
+;;; will display the network, laid out with dot, but including the
+;;; contents of all cells in addition to their names.
+;;; 
+#;
+ (fluid-let ((draw:format 'graphml))
+   (draw:write-graph-to-file "frob.graphml"))
+;;; will write the graph structure of the whole propagator network to
+;;; the file "frob.graphml" in graphml format, which can then be
+;;; viewed with yEd (if that program is available).
+
 
 ;;; TODO:
+;;; Detect absence of desired external programs.
 ;;; Dump subgroup data for closures ??
 ;;; - Implement draw-closure (in addition to draw-graph)?
 ;;; Dump subgroup data for nested expressions
@@ -29,21 +103,6 @@
 ;;; Draw pictures of all the interesting propagator networks.
 ;;; Explore various graph drawing engines: graphviz, JGraph, others.
 ;;;   http://www2.research.att.com/~volinsky/Graphs/slides/north.pdf
-
-;;; Here's a cute way to use this:
-#;
- (fluid-let ((draw:cell-label
-	      (lambda (var) (cons (name var) (content var)))))
-   (draw:show-graph))
-;;; That draws a picture of the network and lists the contents
-;;; of the cells (with write-to-string).
-
-;;; Here's another fun way to play:
-#;
- (fluid-let ((draw:make-writer make-graphml-writer))
-   (draw:write-graph-to-file "frob.graphml"))
-;;; That draws stuff in gramphml.  (I'll fix this interface soon, I
-;;; promise).
 
 (define (draw:show-graph #!optional start drawing-program)
   (call-with-temporary-file-pathname
@@ -85,9 +144,14 @@
      (lambda ()
        (draw:walk-graph writer start)))))
 
+(define draw:format 'dot)
+
 (define (draw:make-writer output-port)
-  ;; This is not inlined because of load order considerations.
-  (make-dot-writer output-port))
+  ((case draw:format
+     ((dot) make-dot-writer)
+     ((graphml) make-graphml-writer)
+     (else (error "Unsupported drawing format" draw:format)))
+   output-port))
 
 (define (draw:walk-graph writer #!optional start)
   (let ((visited (make-eq-hash-table))
