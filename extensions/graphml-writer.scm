@@ -59,7 +59,7 @@
     (if (default-object? write-contents)
 	(write-string "/>" output-port)
 	(begin (write-string ">" output-port)
-	       (prop:dot:indented write-contents)
+	       (draw:indented write-contents)
 	       (write-string "</" output-port)
 	       (write-string tag output-port)
 	       (write-string ">" output-port))))
@@ -74,7 +74,7 @@
 
   (define (write-node node)
     (write-tag
-     "node" `((id . ,(prop:dot:node-id node)))
+     "node" `((id . ,(draw:node-id node)))
      (lambda ()
        (write-tag
 	"data" '((key . "d3"))
@@ -86,7 +86,7 @@
 	     (write-tag
 	      "y:NodeLabel" '()
 	      (lambda ()
-		(write-data (prop:dot:node-label node))))
+		(write-data (draw:node-label node))))
 	     (write-tag
 	      "y:Shape" `((type . ,(compute-node-shape node)))))))))))
 
@@ -140,7 +140,7 @@
 	write-contents))))
 
   (define (write-indentation)
-    (repeat prop:dot:indentation-level
+    (repeat draw:indentation-level
 	    (lambda ()
 	      (write-string "  " output-port))))
 

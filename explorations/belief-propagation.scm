@@ -260,6 +260,6 @@
 |#
 
 #;
-(fluid-let ((prop:cell-label
+(fluid-let ((draw:cell-label
 	      (lambda (var) (cons (name var) (if (message? (content var)) (message-alist (content var)) (name (content var)))))))
-   (prop:dot:show-graph))
+   (draw:show-graph))

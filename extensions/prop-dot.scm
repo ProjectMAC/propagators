@@ -34,23 +34,23 @@
 
 ;;; Here's a cute way to use this:
 #;
- (fluid-let ((prop:cell-label
+ (fluid-let ((draw:cell-label
 	      (lambda (var) (cons (name var) (content var)))))
-   (prop:dot:show-graph))
+   (draw:show-graph))
 ;;; That draws a picture of the network and lists the contents
 ;;; of the cells (with write-to-string).
 
 ;;; Here's another fun way to play:
 #;
  (fluid-let ((make-dot-writer make-graphml-writer))
-   (prop:dot:write-graph-to-file "frob.graphml"))
+   (draw:write-graph-to-file "frob.graphml"))
 ;;; That draws stuff in gramphml.  (I'll fix this interface soon, I
 ;;; promise).
 
-(define (prop:dot:show-graph #!optional start drawing-program)
+(define (draw:show-graph #!optional start drawing-program)
   (call-with-temporary-file-pathname
    (lambda (svg-pathname)
-     (prop:dot:draw-graph-to-file svg-pathname start drawing-program)
+     (draw:draw-graph-to-file svg-pathname start drawing-program)
      ;; TODO There is, in principle, support for asynchronous
      ;; subprocesses, but it is "available for those who are willing
      ;; to read the source code."  More on this in an email exchange
@@ -58,36 +58,36 @@
      (run-shell-command
       (string-append "eog " (->namestring svg-pathname))))))
 
-(define (prop:dot:draw-graph-to-file pathname #!optional start drawer)
+(define (draw:draw-graph-to-file pathname #!optional start drawer)
   (if (default-object? drawer)
       (set! drawer "dot"))
   (call-with-temporary-file-pathname
    (lambda (graph-pathname)
-     (prop:dot:write-graph-to-file graph-pathname start)
+     (draw:write-graph-to-file graph-pathname start)
      (run-shell-command
       (string-append
        drawer " " (->namestring graph-pathname)
        " -Tsvg -o " (->namestring pathname))))))
 
-(define (prop:dot:write-graph-to-file pathname #!optional start)
+(define (draw:write-graph-to-file pathname #!optional start)
   (call-with-output-file pathname
     (lambda (output-port)
-      (prop:dot:write-graph start output-port))))
+      (draw:write-graph start output-port))))
 
-(define (prop:dot:write-graph-to-string #!optional start)
+(define (draw:write-graph-to-string #!optional start)
   (call-with-output-string
    (lambda (output-port)
-     (prop:dot:write-graph start output-port))))
+     (draw:write-graph start output-port))))
 
-(define (prop:dot:write-graph #!optional start output-port)
+(define (draw:write-graph #!optional start output-port)
   (if (default-object? output-port)
       (set! output-port (current-output-port)))
   (let ((writer (make-dot-writer output-port)))
     ((writer 'write-graph)
      (lambda ()
-       (prop:dot:walk-graph writer start)))))
+       (draw:walk-graph writer start)))))
 
-(define (prop:dot:walk-graph writer #!optional start)
+(define (draw:walk-graph writer #!optional start)
   (let ((visited (make-eq-hash-table))
 	(defer-edges? #f)
 	(deferred-edges '()))
@@ -111,12 +111,12 @@
       (write-edge name output index))
 
     (define (write-edges propagator accessor write-edge)
-      (let ((name (prop:dot:node-id propagator))
+      (let ((name (draw:node-id propagator))
 	    (number-edges? (< 1 (length (accessor propagator)))))
         (let loop ((cells (accessor propagator)) (index 0))
           (if (pair? cells)
               (let ((cell (car cells)))
-                (write-edge (prop:dot:node-id cell) name (if number-edges? index ""))
+                (write-edge (draw:node-id cell) name (if number-edges? index ""))
                 (loop (cdr cells) (+ index 1)))))))
 
     (define (write-propagator-apex propagator)
@@ -175,7 +175,7 @@
 
     (dispatch start)))
 
-(define (prop:dot:node-id node)
+(define (draw:node-id node)
   (define (node-type-string node)
     (cond ((cell? node) "cell-")
 	  ((propagator? node) "prop-")
@@ -183,19 +183,19 @@
 	   (error "Unknown node type" node))))
   (string-append (node-type-string node) (write-to-string (hash node))))
 
-(define (prop:dot:node-label node)
+(define (draw:node-label node)
   (write-to-string
-   (cond ((cell? node) (prop:cell-label node))
-	 ((propagator? node) (prop:propagator-label node))
+   (cond ((cell? node) (draw:cell-label node))
+	 ((propagator? node) (draw:propagator-label node))
 	 (else
 	  (error "Unnameable node type" node)))))
 
-(define prop:dot:indentation-level 0)
+(define draw:indentation-level 0)
 
-(define (prop:dot:indented thunk)
-  (fluid-let ((prop:dot:indentation-level
-	       (+ prop:dot:indentation-level 1)))
+(define (draw:indented thunk)
+  (fluid-let ((draw:indentation-level
+	       (+ draw:indentation-level 1)))
     (thunk)))
 
-(define prop:propagator-label name)
-(define prop:cell-label name)
+(define draw:propagator-label name)
+(define draw:cell-label name)

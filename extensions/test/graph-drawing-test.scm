@@ -52,7 +52,7 @@
     (define-cell foo)
     (define-cell bar)
     (pass-through foo bar)
-    (prop:dot:write-graph-to-string foo)
+    (draw:write-graph-to-string foo)
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
@@ -63,8 +63,8 @@
   \"cell-14\" [label=\"bar\", shape=\"ellipse\" ];
 }
 " (out)))
-    (check (equal? (prop:dot:write-graph-to-string foo)
-		   (prop:dot:write-graph-to-string (list foo bar))))))
+    (check (equal? (draw:write-graph-to-string foo)
+		   (draw:write-graph-to-string (list foo bar))))))
 
  (define-each-check
    (< (memory-loss-from (repeated 100 make-eq-hash-table)) 2)
@@ -98,7 +98,7 @@
       (lambda ()
 	(define-cell bar)
 	(pass-through foo bar)))
-    (prop:dot:write-graph-to-string *current-network-group*)
+    (draw:write-graph-to-string *current-network-group*)
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;
@@ -120,7 +120,7 @@
     (define-cell foo)
     (define-cell bar)
     (identity-constraint foo bar)
-    (prop:dot:write-graph-to-string)
+    (draw:write-graph-to-string)
     (check (equal? ;; TODO Make this not depend on the hash numbers!
 "digraph G {
   ratio=fill;

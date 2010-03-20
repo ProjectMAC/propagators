@@ -21,7 +21,7 @@
   (define (write-graph write-contents)
     (write-string "digraph G {" output-port)
     (newline output-port)
-    (prop:dot:indented
+    (draw:indented
      (lambda ()
        (write-options)
        (write-contents)))
@@ -54,8 +54,8 @@
 
   (define (write-node node)
     (do-write-node
-     (prop:dot:node-id node)
-     `(("label" . ,(prop:dot:node-label node))
+     (draw:node-id node)
+     `(("label" . ,(draw:node-label node))
        ("shape" . ,(node-shape node)))))
 
   (define (write-edge source-name target-name label)
@@ -79,7 +79,7 @@
     (write-string " { " output-port)
     (write-subgraph-attributes `(("label" . ,(write-to-string label))))
     (newline output-port)
-    (prop:dot:indented write-contents)
+    (draw:indented write-contents)
     (write-indentation)
     (write-string "}" output-port)
     (newline output-port))
@@ -109,7 +109,7 @@
 		  attributes)))
 
   (define (write-indentation)
-    (repeat prop:dot:indentation-level
+    (repeat draw:indentation-level
 	    (lambda ()
 	      (write-string "  " output-port))))
 
