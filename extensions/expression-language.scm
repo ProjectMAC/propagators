@@ -62,7 +62,7 @@
 
 (define p:constant constant)
 (define (e:constant value)
-  (let-cell answer
+  (let ((answer (make-named-cell 'cell)))
     ((constant value) answer)
     answer))
 (define p:+ adder)
@@ -100,7 +100,7 @@
 
 (define p:amb binary-amb)
 (define (e:amb)
-  (let-cell answer
+  (let ((answer (make-named-cell 'cell)))
     (binary-amb answer)
     answer))
 (define p:require require)
