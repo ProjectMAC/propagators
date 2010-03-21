@@ -139,6 +139,18 @@
 }
 " (out)))))
 
+ (define-test (macrology-smoke)
+   (let-cells ((foo (make-cell))
+	       bar
+	       (baz (make-cell)))
+     (check (eq? 'foo (name foo)))
+     (check (not (eq-get foo 'name)))
+     (check (eq? 'bar (name bar)))
+     (check (eq? 'bar (eq-get bar 'name)))
+     (check (eq? 'baz (name baz)))
+     (check (not (eq-get baz 'name)))
+     ))
+
  ;; TODO Add a test of drawing networks with expanded and unexpanded
  ;; compound propagators.
 
