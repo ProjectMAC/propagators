@@ -140,6 +140,7 @@
 " (out)))))
 
  (define-test (macrology-smoke)
+   (initialize-scheduler)
    (let-cells ((foo (make-cell))
 	       bar
 	       (baz (make-cell)))
@@ -152,6 +153,7 @@
      ))
 
  (define-test (more-macrology-smoke)
+   (initialize-scheduler)
    (define-macro-propagator (frobnicate frob)
      (check (not (network-group-contains? *current-network-group* frob)))
      (check (eq? 'frob (local-name frob)))
@@ -163,6 +165,7 @@
    (frobnicate foo))
 
  (define-test (expression-substructure-test)
+   (initialize-scheduler)
    (define-macro-propagator (frobnicate frob)
      (let* ((first-internal (e:+ frob frob))
 	    (second-internal (e:+ frob first-internal)))
