@@ -53,6 +53,11 @@
 (define (network-group-of thing)
   (eq-get thing 'network-group))
 
+(define (network-group-contains? group thing)
+  (or (eq? group (network-group-of thing))
+      (and (network-group-of thing)
+	   (network-group-contains? group (network-group-of thing)))))
+
 (define (in-network-group group thunk)
   (if group
       (fluid-let ((*current-network-group* group))
@@ -91,6 +96,9 @@
 
 (define (name-locally! thing name)
   (name-in-group! *current-network-group* thing name))
+
+(define (local-name thing)
+  (name-in-group *current-network-group* thing))
 
 (define name
   (let ((name name))
