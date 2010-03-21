@@ -106,13 +106,9 @@
 ;;             (baz (make-named-cell 'baz)))
 ;;   stuff)
 ;; The metadata is then available two ways.
-;; TODO Is there a way to get syntax-rules to let me mix these two
-;; forms, namely write
-;; (let-cells ((foo foo-form)
-;;             bar
-;;             (baz baz-form))
-;;   stuff)
-;; and have the right thing happen?
+;;
+;; The following would suffice for the above.
+#;
 (define-syntax let-cells
   (syntax-rules ()
     ((let-cells ((cell-name cell-form) ...)
@@ -122,6 +118,44 @@
     ((let-cells (cell-name ...)
        form ...)
      (let-cells ((cell-name (make-named-cell 'cell-name))...)
+       form ...))))
+
+;; The much more horrible macro below allows the two use patterns
+;; above to mix, as follows,
+;; (let-cells ((foo foo-form)
+;;             bar
+;;             (baz baz-form))
+;;   stuff)
+;; and have the right thing happen.
+(define-syntax let-cells
+  (syntax-rules ()
+    ((let-cells (cell-binding ...)
+       form ...)
+     (let-cells "process-clauses"
+       (cell-binding ...)
+       ()
+       form ...))
+    ((let-cells "process-clauses"
+       ()
+       ((cell-name cell-form) ...)
+       form ...)
+     (let ((cell-name (name-locally! cell-form 'cell-name)) ...)
+       form ...))
+    ((let-cells "process-clauses"
+       ((cell-name cell-form) clause ...)
+       (done-clause ...)
+       form ...)
+     (let-cells "process-clauses"
+       (clause ...)
+       ((cell-name cell-form) done-clause ...)
+       form ...))
+    ((let-cells "process-clauses"
+       (cell-name clause ...)
+       (done-clause ...)
+       form ...)
+     (let-cells "process-clauses"
+       (clause ...)
+       ((cell-name (make-named-cell 'cell-name)) done-clause ...)
        form ...))))
 
 ;; This version is a grammatical convenience if there is only one
