@@ -68,10 +68,11 @@
 
 (define-syntax define-macro-propagator
   (syntax-rules ()
-    ((_ (name arg-from ...) body-form ...)
-     (define (name arg-from ...)
+    ((define-macro-propagator (name arg-form ...) body-form ...)
+     (define (name arg-form ...)
        (with-network-group (network-group-named 'name)
 	 (lambda ()
+	   (name-locally! arg-form 'arg-form) ...
 	   body-form ...))))
     ((_ name body-form ...)
      (define name
