@@ -35,7 +35,7 @@
     (define inputs (map ->cell args))
     (define outputs '())
     (define (manufacture-cell)
-      (let-cell cell
+      (let ((cell (make-named-cell 'cell)))
 	(set! outputs (cons cell outputs))
 	cell))
     (define implicit-cells-present? (any implicit-cell? inputs))

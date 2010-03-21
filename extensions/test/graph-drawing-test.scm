@@ -162,6 +162,41 @@
    (check (eq? 'foo (local-name foo)))
    (frobnicate foo))
 
+ (define-test (expression-substructure-test)
+   (define-macro-propagator (frobnicate frob)
+     (let* ((first-internal (e:+ frob frob))
+	    (second-internal (e:+ frob first-internal)))
+       (let-cells ((sum second-internal))
+	 (let ((the-expression-substructure
+		(network-group-expression-substructure *current-network-group*)))
+	   ;; sum is shown because it has a name
+	   (check (memq sum the-expression-substructure))
+	   ;; frob is now shown because it's not part of the group at all
+	   (check (not (memq frob the-expression-substructure)))
+	   ;; first-internal is hidden becuase it's internal to an expression
+	   (check (not (memq first-internal the-expression-substructure)))
+	   (check (= 1 (length (filter cell? the-expression-substructure))))
+	   ;; all the propagators are hidden because they abut on expressions
+	   (check (= 0 (length (filter propagator? the-expression-substructure))))
+	   ;; TODO get the names right
+	   #;
+	   (check
+	    (equal? '(+ frob (+ frob frob))
+		    (name (car (filter network-group?
+				       the-expression-substructure)))))
+	   (let ((the-subgroup-structure
+		  (network-group-expression-substructure
+		   (car (filter network-group? the-expression-substructure)))))
+	     ;; But inside the generated subgroup, the internal cell
+	     ;; and the propagators it connects are explicit.
+	     (check (memq first-internal the-subgroup-structure))
+	     (check (= 2 (length (filter propagator? the-subgroup-structure))))
+	     (check (= 1 (length (filter cell? the-subgroup-structure))))
+	     (check (= 0 (length (filter network-group? the-subgroup-structure))))
+	     )))))
+   (frobnicate (e:constant 2))
+   )
+
  ;; TODO Add a test of drawing networks with expanded and unexpanded
  ;; compound propagators.
 
