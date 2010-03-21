@@ -55,5 +55,6 @@ picture "(define-cell f) (define-cell c) (define-cell k) (fahrenheit-celsius f c
 picture "(define-cell fall-time) (define-cell building-height) (define-cell barometer-height) (define-cell barometer-shadow) (define-cell building-shadow) (fall-duration fall-time building-height) (similar-triangles barometer-shadow barometer-height building-shadow building-height)", "barometer"
 picture "(define-cell x) (define-cell sqrt-x) (sqrt-network x sqrt-x) (add-content x 2) (run)", "recursive-sqrt"
 picture "(multiple-dwelling)", "multiple-dwelling"
+picture "(multiple-dwelling-expressions)", "multiple-dwelling-expressions"
 picture "(build-network)", "riddle-of-the-knights"
 picture "(build-albatross-network)", "albatross-conundrum"
