@@ -151,6 +151,15 @@
      (check (not (eq-get baz 'name)))
      ))
 
+ (define-test (more-macrology-smoke)
+   (define-macro-propagator (frobnicate frob)
+     (check (eq? 'frob (local-name frob)))
+     (check (eq? 'foo (name frob))))
+   (define-cell foo)
+   (check (eq? 'foo (name foo)))
+   (check (eq? 'foo (local-name foo)))
+   (frobnicate foo))
+
  ;; TODO Add a test of drawing networks with expanded and unexpanded
  ;; compound propagators.
 
