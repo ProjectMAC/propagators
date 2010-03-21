@@ -176,8 +176,12 @@
 			  (else (per-element (cdr elements))))))))))
     (let ((pair-to-merge (find-pair-to-merge)))
       (if pair-to-merge
-	  (loop (cons (append (car pair-to-merge)
-			      (cdr pair-to-merge))
+	  (loop (cons (delete-duplicates
+		       ;; I don't get why I need this delete-duplicates,
+		       ;; but without it the substructure mysteriously
+		       ;; repeats elements.
+		       (append (car pair-to-merge)
+			       (cdr pair-to-merge)))
 		      (delq (car pair-to-merge)
 			    (delq (cdr pair-to-merge)
 				  target-subgroups)))
