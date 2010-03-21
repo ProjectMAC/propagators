@@ -218,7 +218,7 @@
       (fluid-let ((defer-edges? #t))
 	((writer 'write-cluster) (hash group) (name group)
 	 (lambda ()
-	   (for-each traverse (network-group-elements group)))))
+	   (for-each traverse (network-group-expression-substructure group)))))
       (if (not defer-edges?)
 	  (dump-deferred-edges)))
 
