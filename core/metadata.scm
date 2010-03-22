@@ -171,6 +171,7 @@
 	     ;; just tag them at functionalization time because
 	     ;; functionalize sees the propagator constructor, but
 	     ;; these things are the constructed propagators.
+	     #;
 	     (pp (list (name thing)
 		       (hash thing)
 		       (map (lambda (c)
@@ -199,12 +200,12 @@
 		   (eq? cell (hash-table/get functionalized-tags thing #f)))
 		 elements)))
     (for-each functionalized-tag! elements)
-    (pp (hash-table->alist functionalized-tags))
+    #; (pp (hash-table->alist functionalized-tags))
     (let loop ((head (find (lambda (thing)
 			     (and (not (cell? thing))
 				  (not (functionalized? thing))))
 			   elements)))
-      (pp `(,(name head) ,(hash head)))
+      #; (pp `(,(name head) ,(hash head)))
       (if (cell? head)
 	  (if (and (memq head elements)
 		   (eq-get head 'subexprs))
