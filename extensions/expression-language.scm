@@ -22,6 +22,7 @@
 (define %% (list 'the-implicit-cell))
 (define (implicit-cell? thing)
   (eq? thing %%))
+(name! %% '%%)
 
 (define (->cell thing)
   (if (or (implicit-cell? thing) (cell? thing))
@@ -37,6 +38,7 @@
     (define (manufacture-cell)
       (let ((cell (make-named-cell 'cell)))
 	(set! outputs (cons cell outputs))
+	(eq-put! cell 'subexprs inputs)
 	cell))
     (define implicit-cells-present? (any implicit-cell? inputs))
     (define true-inputs
@@ -64,6 +66,7 @@
 (define (e:constant value)
   (let ((answer (make-named-cell 'cell)))
     ((constant value) answer)
+    (eq-put! answer 'subexprs '())
     answer))
 (define p:+ adder)
 (define e:+ (functionalize adder))
@@ -102,6 +105,7 @@
 (define (e:amb)
   (let ((answer (make-named-cell 'cell)))
     (binary-amb answer)
+    (eq-put! answer 'subexprs '())
     answer))
 (define p:require require)
 (define p:forbid forbid)

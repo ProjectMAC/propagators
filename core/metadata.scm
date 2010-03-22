@@ -116,6 +116,9 @@
 	  (or (eq-get cell 'shadow-connections)
 	      '())))
 
+;;; Oof!
+;;; TODO Figure out a theory of what this steaming pile is doing
+;;; and refactor it.
 (define (network-group-expression-substructure group)
   ;; Produce the collection of cells, propagators, network groups, and
   ;; expression network groups that should be visible at this group
@@ -146,7 +149,71 @@
     (or (connected-to-cell? thing1 thing2)
 	(connected-to-cell? thing2 thing1)))
   (define (make-subgroup elements)
-    (make-network-group elements (make-eq-hash-table)))
+    (name!
+     (make-network-group elements (make-eq-hash-table))
+     (compute-expression-name elements)))
+  (define (compute-expression-name elements)
+    (define functionalized-tags (make-eq-hash-table))
+    (define (connections-of thing)
+      (if (cell? thing)
+	  (cell-connections thing)
+	  (filter (lambda (other)
+		    (connected? thing other))
+		  (delete-duplicates
+		   (append (network-group-elements group)
+			   ;; TODO Oops!  Travesing keys of a weak table!
+			   (hash-table/key-list (network-group-names group)))))))
+    (define (functionalized-to thing)
+      (and (not (cell? thing))
+	   (let ((connections (connections-of thing)))
+	     ;; TODO Heuristic, and only works on single-output
+	     ;; functionalized things.  It wouldn't have worked to
+	     ;; just tag them at functionalization time because
+	     ;; functionalize sees the propagator constructor, but
+	     ;; these things are the constructed propagators.
+	     (pp (list (name thing)
+		       (hash thing)
+		       (map (lambda (c)
+			      (list (name c) (hash c)
+				    (and (eq-get c 'subexprs)
+					 (map (lambda (s)
+						(list (name s) (hash s)))
+					      (eq-get c 'subexprs)))))
+			    connections)))
+	     (any (lambda (connection)
+		    (and (eq-get connection 'subexprs)
+			 (lset= eq? (eq-get connection 'subexprs)
+				(delq connection connections))
+			 connection))
+		  connections))))
+    (define (functionalized-tag! thing)
+      (let ((target (functionalized-to thing)))
+	(if target
+	    (hash-table/put! functionalized-tags thing target))))
+    (define (functionalized? thing)
+      (memq (hash-table/get functionalized-tags thing #f)
+	    elements))
+    (define (functionalized-to-me cell)
+      (and (cell? cell)
+	   (find (lambda (thing)
+		   (eq? cell (hash-table/get functionalized-tags thing #f)))
+		 elements)))
+    (for-each functionalized-tag! elements)
+    (pp (hash-table->alist functionalized-tags))
+    (let loop ((head (find (lambda (thing)
+			     (and (not (cell? thing))
+				  (not (functionalized? thing))))
+			   elements)))
+      (pp `(,(name head) ,(hash head)))
+      (if (cell? head)
+	  (if (and (memq head elements)
+		   (eq-get head 'subexprs))
+	      (cons (name (functionalized-to-me head))
+		    (map loop (eq-get head 'subexprs)))
+	      (name-in-group group head))
+	  (cons (name head) (map loop (lset-intersection eq?
+					(connections-of head)
+					elements))))))
   (let loop ((target-subgroups
 	      (map list (filter should-hide?
 				(network-group-elements group))))
