@@ -3,7 +3,9 @@ Massage:
 - Write a "new propagator programmer" guide?
 
 - Tease apart Scmutils stuff from Scheme stuff?
-- Extract prop-dot into support/; abstract propagator stuff away from it?
+- Extract draw.scm & co. into support/; abstract propagator stuff away from it?
+- Does expression-language.scm deserve to be part of core?
+  - How many things do I want to rewrite in expression style?
 - Add the appropriate elisp file for nice highlighting and indentation
 - Concept diagram?  (All the way down to test-manager/, MIT Scheme,
   and Scheme?)  With concept dependencies, "how to know what
@@ -17,7 +19,6 @@ Massage:
   - do-puzzle has wallpaper and is suitable for the repl
 - Is voltage-divider* an example or an extension or a test of an extension?
   - Is electric-parts.scm an extension or an example?  bridge-rectifier?
-- Draw all the example networks; and all the networks made by the examples/
 - Can I get away with
   (in-test-group mumble (load "mumble-test"))
   being the standard way to do things?

@@ -93,7 +93,6 @@
 
 ;;; TODO:
 ;;; Write a handful of useful procedures to fluid bind draw:cell-label to
-;;; Dump subgroup data for nested expressions
 ;;; Dump port data (this compound box takes these inputs and then
 ;;;   routes them to these sub-boxes)
 ;;; Dump subgroup data for closures ??
