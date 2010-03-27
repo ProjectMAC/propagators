@@ -354,6 +354,8 @@
     (virtual-copies->alist (content gcd-a-b))
     (produces `((,repl-frame . 17)))
     ))
+ ;; TODO ((if mumble fact fib) 4) by frame; by tms premise?
+ ;; TODO rename call-site to static-call-site; move closure arg to front;
+ ;; split environments file into environments and closures
  ;; TODO (lambda (x) (lambda (y) (+ x y))); compose; (repeat f n)
-
 )

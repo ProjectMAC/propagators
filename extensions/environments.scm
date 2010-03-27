@@ -95,12 +95,14 @@
 	   (frame-occurs? copy-set frame))
 	 (frame-ancestors frame)))
 
+;; See environments.tex for the meaning of "acceptable".
 (define (acceptable-frame? frame copy-sets)
   (apply boolean/and
    (map (lambda (copy-set)
 	  (<= 1 (ancestral-occurrence-count copy-set frame)))
 	copy-sets)))
 
+;; See environments.tex for the meaning of "good".
 (define (good-frame? frame copy-sets)
   (and (acceptable-frame? frame copy-sets)
        (not (apply boolean/or
