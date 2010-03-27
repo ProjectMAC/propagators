@@ -117,8 +117,9 @@
    (define repl-frame  (make-frame '()))
    (define-cell out-squaree)
    (define-cell out-square)
-   (call-site (list out-squaree out-square)
-	      (make-closure (list in-squaree in-square) '() '()))
+   (static-call-site 
+    (make-closure (list in-squaree in-square) '() '())
+    (list out-squaree out-square))
    (add-content out-squaree
      (alist->virtual-copies `((,repl-frame . 4))))
    (add-content out-square
@@ -156,14 +157,14 @@
    (vc:switch control one in-n!)
    (vc:switch not-control in-n n-again)
    (vc:subtractor n-again one n-1)
-   (call-site (list n-1 n-1!) fact)
+   (static-call-site fact (list n-1 n-1!))
    (vc:multiplier n-1! in-n in-n!)
 
    ;; Use
    (define repl-frame  (make-frame '()))
    (define-cell out-n)
    (define-cell out-n!)
-   (call-site (list out-n out-n!) fact)
+   (static-call-site fact (list out-n out-n!))
    (add-content out-n  (alist->virtual-copies `((,repl-frame . 4))))
    (add-content out-n! (alist->virtual-copies `((,repl-frame . ,nothing))))
    (run)
@@ -208,7 +209,7 @@
    (vc:switch not-done out-again out)
    (vc:subtractor n-again one n-1)
    (vc:multiplier accum-again n-again recur-accum)
-   (call-site (list recur-accum n-1 out-again) fact-iter-loop)
+   (static-call-site fact-iter-loop (list recur-accum n-1 out-again))
 
    ;; Definition of iterative factorial start
    (define-cell n)
@@ -218,13 +219,13 @@
      (make-closure (list n n!) (list init-accum) '()))
 
    ((vc:const 1) init-accum)
-   (call-site (list init-accum n n!) fact-iter-loop)
+   (static-call-site fact-iter-loop (list init-accum n n!))
 
    ;; Use
    (define repl-frame (make-frame '()))
    (define-cell my-n)
    (define-cell my-n!)
-   (call-site (list my-n my-n!) fact-start)
+   (static-call-site fact-start (list my-n my-n!))
    (add-content my-n  (alist->virtual-copies `((,repl-frame . 5))))
    (add-content my-n! (alist->virtual-copies `((,repl-frame . ,nothing))))
    (run)
@@ -262,16 +263,16 @@
     (vc:switch not-recur one fib-n)
     (vc:switch recur in-n n-again)
     (vc:subtractor n-again one n-1)
-    (call-site (list n-1 fib-n-1) fib)
+    (static-call-site fib (list n-1 fib-n-1))
     (vc:subtractor n-again two n-2)
-    (call-site (list n-2 fib-n-2) fib)
+    (static-call-site fib (list n-2 fib-n-2))
     (vc:adder fib-n-1 fib-n-2 fib-n)
 
     ;; Use
     (define repl-frame (make-frame '()))
     (define-cell my-n)
     (define-cell my-fib-n)
-    (call-site (list my-n my-fib-n) fib)
+    (static-call-site fib (list my-n my-fib-n))
     (add-content my-n  (alist->virtual-copies `((,repl-frame . 5))))
     (add-content my-fib-n (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)
@@ -298,16 +299,16 @@
 	(vc:switch not-recur one fib-n)
 	(vc:switch recur in-n n-again)
 	(vc:subtractor n-again one n-1)
-	(call-site (list n-1 fib-n-1) fib)
+	(static-call-site fib (list n-1 fib-n-1))
 	(vc:subtractor n-again two n-2)
-	(call-site (list n-2 fib-n-2) fib)
+	(static-call-site fib (list n-2 fib-n-2))
 	(vc:adder fib-n-1 fib-n-2 fib-n)
 	fib))
 
     (define repl-frame (make-frame '()))
     (define-cell n)
     (define-cell fib-n)
-    (call-site (list n fib-n) fib)
+    (static-call-site fib (list n fib-n))
     (add-content n  (alist->virtual-copies `((,repl-frame . 4))))
     (add-content fib-n (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)
@@ -337,8 +338,8 @@
 	(vc:switch not-recur a gcd)
 	(vc:switch recur a a-again)
 	(vc:switch recur b b-again)
-	(call-site (list a-again b-again a-quot-b a-mod-b) quot-rem)
-	(call-site (list b-again a-mod-b gcd-again) euclid)
+	(static-call-site quot-rem (list a-again b-again a-quot-b a-mod-b))
+	(static-call-site euclid (list b-again a-mod-b gcd-again))
 	(vc:switch recur gcd-again gcd)
 	euclid))
 
@@ -346,7 +347,7 @@
     (define-cell a)
     (define-cell b)
     (define-cell gcd-a-b)
-    (call-site (list a b gcd-a-b) euclid)
+    (static-call-site euclid (list a b gcd-a-b))
     (add-content a (alist->virtual-copies `((,repl-frame . ,(* 17 3)))))
     (add-content b (alist->virtual-copies `((,repl-frame . ,(* 17 5)))))
     (add-content gcd-a-b (alist->virtual-copies `((,repl-frame . ,nothing))))
@@ -355,7 +356,5 @@
     (produces `((,repl-frame . 17)))
     ))
  ;; TODO ((if mumble fact fib) 4) by frame; by tms premise?
- ;; TODO rename call-site to static-call-site; move closure arg to front;
- ;; split environments file into environments and closures
  ;; TODO (lambda (x) (lambda (y) (+ x y))); compose; (repeat f n)
 )

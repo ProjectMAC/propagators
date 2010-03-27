@@ -31,6 +31,7 @@
 
 (for-each load-relative-compiled
  '("expression-language"
+   "environments"
    "electric-parts"
    "solve"
    "inequalities"
@@ -40,7 +41,7 @@
    "test-utils"))
 
 (for-each load-relative
- '("environments"
+ '("closures"
    "draw"
    "dot-writer"
    "graphml-writer"))
