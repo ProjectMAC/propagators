@@ -19,6 +19,27 @@
 
 (declare (usual-integrations))
 
+(define fact-cl
+  (let-cells (in-n in-n!
+	      zero control not-control one n-again n-1 n-1! empty)
+
+    (define fact-cl
+      (make-closure
+       (list in-n in-n!)
+       (list zero control not-control one n-again n-1 n-1! empty)
+       '()))				; No global environment yet
+
+    ((vc:const 0) zero)
+    ((vc:const 1) one)
+    (vc:=? in-n zero control)
+    (vc:inverter control not-control)
+    (vc:switch control one in-n!)
+    (vc:switch not-control in-n n-again)
+    (vc:subtractor n-again one n-1)
+    (static-call-site fact-cl (list n-1 n-1!))
+    (vc:multiplier n-1! in-n in-n!)
+    fact-cl))
+
 (define fib-cl
   (let-cells (in-n fib-n one two recur not-recur
 		   n-again n-1 n-2 fib-n-1 fib-n-2)
