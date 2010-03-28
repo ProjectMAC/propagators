@@ -324,7 +324,7 @@
     (define-cell a)
     (define-cell b)
     (define-cell gcd-a-b)
-    (static-call-site euclid (list a b gcd-a-b))
+    (static-call-site euclid-cl (list a b gcd-a-b))
     (add-content a (alist->virtual-copies `((,repl-frame . ,(* 17 3)))))
     (add-content b (alist->virtual-copies `((,repl-frame . ,(* 17 5)))))
     (add-content gcd-a-b (alist->virtual-copies `((,repl-frame . ,nothing))))

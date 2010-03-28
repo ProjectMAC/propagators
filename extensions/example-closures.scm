@@ -19,16 +19,16 @@
 
 (declare (usual-integrations))
 
-(define quot-rem
+(define quot-rem-cl
   (let-cells (dividend divisor quot rem)
     (vc:quotient dividend divisor quot)
     (vc:remainder dividend divisor rem)
     (make-closure (list dividend divisor quot rem) '() '())))
 
-(define euclid
+(define euclid-cl
   (let-cells (a b gcd zero recur not-recur
 		a-again b-again a-mod-b a-quot-b gcd-again)
-    (define euclid
+    (define euclid-cl
       (make-closure 
        (list a b gcd)
        (list zero recur not-recur a-again b-again a-mod-b a-quot-b gcd-again)
@@ -39,7 +39,7 @@
     (vc:switch not-recur a gcd)
     (vc:switch recur a a-again)
     (vc:switch recur b b-again)
-    (static-call-site quot-rem (list a-again b-again a-quot-b a-mod-b))
-    (static-call-site euclid (list b-again a-mod-b gcd-again))
+    (static-call-site quot-rem-cl (list a-again b-again a-quot-b a-mod-b))
+    (static-call-site euclid-cl (list b-again a-mod-b gcd-again))
     (vc:switch recur gcd-again gcd)
-    euclid))
+    euclid-cl))
