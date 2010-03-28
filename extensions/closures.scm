@@ -386,7 +386,7 @@
 	      (map (lambda (frame-content)
 		     (cons (car frame-content)
 			   (make-closure
-			    boundary interior (list (cdr frame-content)))))
+			    boundary interior (list (car frame-content)))))
 		   (virtual-copies->alist (content output)))))))
      'name 'closure-emitter
      'inputs (list output)
