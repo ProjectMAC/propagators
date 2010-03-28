@@ -17,35 +17,29 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
+(declare (usual-integrations))
 
-(define (load-relative filename)
-  (self-relatively (lambda () (load filename))))
+(define quot-rem
+  (let-cells (dividend divisor quot rem)
+    (vc:quotient dividend divisor quot)
+    (vc:remainder dividend divisor rem)
+    (make-closure (list dividend divisor quot rem) '() '())))
 
-(load-relative "../core/load.scm")
-
-(for-each load-relative-compiled
- '("expression-language"
-   "environments"
-   "electric-parts"
-   "solve"
-   "inequalities"
-   "symbolics"
-   "symbolics-ineq"
-   "functional-reactivity"
-   "test-utils"))
-
-(for-each load-relative
- '("closures"
-   "example-closures"
-   "draw"
-   "dot-writer"
-   "graphml-writer"))
-
-(maybe-warn-low-memory)
-(initialize-scheduler)
+(define euclid
+  (let-cells (a b gcd zero recur not-recur
+		a-again b-again a-mod-b a-quot-b gcd-again)
+    (define euclid
+      (make-closure 
+       (list a b gcd)
+       (list zero recur not-recur a-again b-again a-mod-b a-quot-b gcd-again)
+       '()))
+    ((vc:const 0) zero)
+    (vc:=? b zero not-recur)
+    (vc:inverter not-recur recur)
+    (vc:switch not-recur a gcd)
+    (vc:switch recur a a-again)
+    (vc:switch recur b b-again)
+    (static-call-site quot-rem (list a-again b-again a-quot-b a-mod-b))
+    (static-call-site euclid (list b-again a-mod-b gcd-again))
+    (vc:switch recur gcd-again gcd)
+    euclid))

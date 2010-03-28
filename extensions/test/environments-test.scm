@@ -319,29 +319,6 @@
  (define-test (euclid)
    (interaction
     (initialize-scheduler)
-    (define quot-rem
-      (let-cells (dividend divisor quot rem)
-	(vc:quotient dividend divisor quot)
-	(vc:remainder dividend divisor rem)
-	(make-closure (list dividend divisor quot rem) '() '())))
-    (define euclid
-      (let-cells (a b gcd zero recur not-recur
-		    a-again b-again a-mod-b a-quot-b gcd-again)
-	(define euclid
-	  (make-closure 
-	   (list a b gcd)
-	   (list zero recur not-recur a-again b-again a-mod-b a-quot-b gcd-again)
-	   '()))
-	((vc:const 0) zero)
-	(vc:=? b zero not-recur)
-	(vc:inverter not-recur recur)
-	(vc:switch not-recur a gcd)
-	(vc:switch recur a a-again)
-	(vc:switch recur b b-again)
-	(static-call-site quot-rem (list a-again b-again a-quot-b a-mod-b))
-	(static-call-site euclid (list b-again a-mod-b gcd-again))
-	(vc:switch recur gcd-again gcd)
-	euclid))
 
     (define repl-frame (make-frame '()))
     (define-cell a)
