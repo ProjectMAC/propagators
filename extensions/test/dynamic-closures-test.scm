@@ -87,7 +87,15 @@
     (run)
     (virtual-copies->alist (content answer))
     (produces `((,repl-frame . 7)))
-    ;; TODO Try another y
+
+    (define-cell outer-y2)
+    (define-cell answer2)
+    (dynamic-call-site lambda-y (list outer-y2 answer2))
+    (add-content outer-y2 (alist->virtual-copies `((,repl-frame . 7))))
+    (add-content answer2 (alist->virtual-copies `((,repl-frame . ,nothing))))
+    (run)
+    (virtual-copies->alist (content answer2))
+    (produces `((,repl-frame . 11)))
     ))
 
  (define-test (compose)
