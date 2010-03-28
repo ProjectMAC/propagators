@@ -111,6 +111,10 @@
     ;; Hm.  It seems that it's ok to make lots of images, provided I
     ;; am careful not to generate occurrences in the callee that
     ;; do not correspond to occurrences that exist in the caller.
+    ;; On the other hand, perfect consistency with the "extra identity
+    ;; propagators" interpretation of physical copies would seem to
+    ;; suggest that I only create one image, and copy down from
+    ;; parents (and back up, in the case of outputs).
     (map (lambda (parent)
 	   (frame-map-get frame-map parent))
 	 (frame-parents key))
@@ -118,6 +122,13 @@
     ;; frames without incoming parents, then I could choose to attach
     ;; these only to such frames, instead of to all of them.
     (frame-map-default-parents frame-map))))
+
+(define (simple-ensure-mapping frame-map key #!optional parents)
+  (if (default-object? parents)
+      (set! parents (frame-map-default-parents frame-map)))
+  (if (mapping-available? frame-map key)
+      frame-map
+      (frame-map-bind frame-map key (make-frame parents))))
 
 ;;;; Call Sites
 
@@ -139,6 +150,20 @@
       (add-content frame-map-cell frame-map)
       (interior-copier frame-map-cell outside-cells interior-cells)
       (map (lambda (outside-cell inside-cell)
+	     ;; It's not clear whether independent frame mappers are
+	     ;; the right thing.  The "extra identity propagators"
+	     ;; interpretation of physical copies would, I think,
+	     ;; rather suggest that there be one map-keeper for the
+	     ;; entire outside, and it ensure that good frames in the
+	     ;; outside have images in the inside.  On the other hand,
+	     ;; perhaps this is ok, because the interior copier is the
+	     ;; one that's actually responsible for creating those
+	     ;; occurrences on the inside of the abstraction
+	     ;; (including the boundary), and as long as it does the
+	     ;; right thing, extra bindings in the frame map don't
+	     ;; hurt anyone.  But then, the inward transfer (and
+	     ;; outward transfer) would also need to be done on a
+	     ;; whole-boundary basis?
 	     (map-keeper outside-cell frame-map-cell)
 	     (inward-transferrer frame-map-cell inside-cell outside-cell)
 	     (outward-transferrer frame-map-cell inside-cell outside-cell))
@@ -266,3 +291,76 @@
 	 (map (lambda (frame)
 		(cons frame nothing))
 	      (map cdr (select-submap frame-map right-frames)))))))
+
+;;;; Dynamic call sites
+
+(define (dynamic-call-site closure-cell outside-cells)
+  (let ((frame-map-cell (make-named-cell 'frame-map))
+	(frame-map (make-frame-map '() '())))
+    (add-content frame-map-cell frame-map)
+    (propagator (cons* frame-map-cell closure-cell outside-cells)
+      (eq-label!
+       (lambda ()
+	 (do-the-dynamic-do frame-map-cell closure-cell outside-cells))
+       'name 'dynamic-call-manager
+       'inputs (cons* frame-map-cell closure-cell outside-cells)
+       ;; These outputs are not really right.  It has i/o with the
+       ;; cells in the closure; and which of the boundary cells are
+       ;; actually written also depends on which closures flow in.
+       'outputs (cons* frame-map-cell outside-cells)))))
+
+(define (do-the-dynamic-do frame-map-cell closure-cell outside-cells)
+  (define (update-map frame parents)
+    (add-content frame-map-cell
+      (simple-ensure-mapping (content frame-map-cell frame parents))))
+  (define (build-interior-occurrences closure target-frame)
+    (for-each (lambda (cell)
+		(add-content cell (alist->virtual-copies
+				   `((,target-frame . ,nothing)))))
+	      (closure-interior closure)))
+  (define (transfer-inward frame target-frame outside-cells inside-cells)
+    (for-each
+     (lambda (out-cell in-cell)
+       (add-content in-cell
+	 (alist->virtual-copies
+	  `((,target-frame .
+			   ,(full-frame-content (content out-cell) frame))))))
+     outside-cells
+     inside-cells))
+  (define (transfer-outward frame target-frame outside-cells inside-cells)
+    (for-each
+     (lambda (out-cell in-cell)
+       (add-content out-cell
+	 (alist->virtual-copies
+	  `((,(the-occurring-parent frame (content out-cell)) .
+	     ,(full-frame-content (content in-cell) target-frame))))))
+     outside-cells
+     inside-cells))
+  (if (or (nothing? (content closure-cell))
+	  (any nothing? (map content outside-cells)))
+      'done
+      (for-each
+       (lambda (frame)
+	 (let ((closure (full-frame-content (content closure-cell) frame)))
+	   ;; TODO At this point, closure is an arbitrary partial
+	   ;; information structure, presumably over closures.  To do this
+	   ;; properly, I would need to unpack it.  The contents of the
+	   ;; outside-cells I can just transfer, however.
+	   (if (or (nothing? closure)
+		   (every nothing?
+			  (map (lambda (vcs)
+				 (direct-frame-content vcs frame))
+			       (map content outside-cells))))
+	       'done
+	       (begin
+		 (update-map frame (closure-default-parents closure))
+		 (let ((target-frame (frame-map-get (content frame-map-cell) frame)))
+		   (build-interior-occurrences closure target-frame)
+		   (transfer-inward
+		    frame target-frame outside-cells (closure-inside closure))
+		   (transfer-outward
+		    frame target-frame outside-cells (closure-inside closure)))
+		 ))
+	   ))
+       (good-frames (cons (content closure-cell)
+			  (map content outside-cells))))))
