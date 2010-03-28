@@ -38,4 +38,28 @@
     (virtual-copies->alist (content gcd-a-b))
     (produces `((,repl-frame . 17)))))
 
+ (define-test (closure-switching)
+   (interaction
+    (initialize-scheduler)
+    
+    (define repl-frame-a (make-frame '()))
+    (define repl-frame-b (make-frame '()))
+    (define-cell question)
+    (define-cell answer)
+    (define-cell closure)
+    (dynamic-call-site closure (list question answer))
+    (add-content question 
+      (alist->virtual-copies
+       `((,repl-frame-a . 4) (,repl-frame-b . 4))))
+    (add-content answer 
+      (alist->virtual-copies
+       `((,repl-frame-a . ,nothing) (,repl-frame-b . ,nothing))))
+    (add-content closure 
+      (alist->virtual-copies
+       `((,repl-frame-a . ,fact-cl) (,repl-frame-b . ,fib-cl))))
+    (run)
+    (virtual-copies->alist (content answer))
+    (produces `((,repl-frame-a . 24) (,repl-frame-b . 5)))
+    ))
+
  )
