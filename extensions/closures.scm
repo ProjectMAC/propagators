@@ -372,8 +372,31 @@
 		 ;; do for now.
 		 (for-each (lambda (cell)
 			     (new-neighbor! cell self))
-			   (closure-inside closure))
-		 ))
-	   ))
+			   (closure-inside closure))))))
        (good-frames (cons (content closure-cell)
 			  (map content outside-cells))))))
+
+(define (closure-emitter boundary interior output)
+  (propagator output
+    (eq-label!
+     (lambda ()
+       (if (not (nothing? (content output)))
+	   (add-content output
+	     (alist->virtual-copies
+	      (map (lambda (frame-content)
+		     (cons (car frame-content)
+			   (make-closure
+			    boundary interior (list (cdr frame-content)))))
+		   (virtual-copies->alist (content output)))))))
+     'name 'closure-emitter
+     'inputs (list output)
+     'outputs (list output))))
+
+(define (merge-closures cl1 cl2)
+  (if (and (equal? (closure-interior cl1) (closure-interior cl2))
+	   (equal? (closure-inside cl1) (closure-inside cl2))
+	   (equal? (closure-default-parents cl1) (closure-default-parents cl2)))
+      cl1
+      the-contradiction))
+
+(defhandler merge merge-closures closure? closure?)

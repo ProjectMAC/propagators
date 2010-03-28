@@ -311,6 +311,5 @@
     (virtual-copies->alist (content gcd-a-b))
     (produces `((,repl-frame . 17)))
     ))
- ;; TODO ((if mumble fact fib) 4) by frame; by tms premise?
  ;; TODO (lambda (x) (lambda (y) (+ x y))); compose; (repeat f n)
 )
