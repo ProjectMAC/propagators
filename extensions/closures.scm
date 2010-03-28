@@ -300,8 +300,11 @@
     (add-content frame-map-cell frame-map)
     (propagator (cons* frame-map-cell closure-cell outside-cells)
       (eq-label!
-       (lambda ()
-	 (do-the-dynamic-do frame-map-cell closure-cell outside-cells))
+       (letrec ((the-propagator
+		 (lambda ()
+		   (do-the-dynamic-do
+		    frame-map-cell closure-cell outside-cells the-propagator))))
+	 the-propagator)
        'name 'dynamic-call-manager
        'inputs (cons* frame-map-cell closure-cell outside-cells)
        ;; These outputs are not really right.  It has i/o with the
@@ -309,7 +312,7 @@
        ;; actually written also depends on which closures flow in.
        'outputs (cons* frame-map-cell outside-cells)))))
 
-(define (do-the-dynamic-do frame-map-cell closure-cell outside-cells)
+(define (do-the-dynamic-do frame-map-cell closure-cell outside-cells self)
   (define (update-map frame parents)
     (add-content frame-map-cell
       (simple-ensure-mapping (content frame-map-cell) frame parents)))
@@ -360,6 +363,16 @@
 		    frame target-frame outside-cells (closure-inside closure))
 		   (transfer-outward
 		    frame target-frame outside-cells (closure-inside closure)))
+		 ;; TODO Wow, what a hack!  But yes, the transfer
+		 ;; outward portion of this does need to wake up when
+		 ;; the interior of the closure gets an answer.  I
+		 ;; should separate that out, and make it properly
+		 ;; conditioned on the closure remaining the same, and
+		 ;; everything, but this conservative extension will
+		 ;; do for now.
+		 (for-each (lambda (cell)
+			     (new-neighbor! cell self))
+			   (closure-inside closure))
 		 ))
 	   ))
        (good-frames (cons (content closure-cell)
