@@ -287,7 +287,7 @@
     (define repl-frame (make-frame '()))
     (define-cell n)
     (define-cell fib-n)
-    (static-call-site fib (list n fib-n))
+    (static-call-site fib-cl (list n fib-n))
     (add-content n  (alist->virtual-copies `((,repl-frame . 4))))
     (add-content fib-n (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)

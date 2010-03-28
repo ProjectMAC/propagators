@@ -19,10 +19,10 @@
 
 (declare (usual-integrations))
 
-(define fib
+(define fib-cl
   (let-cells (in-n fib-n one two recur not-recur
 		   n-again n-1 n-2 fib-n-1 fib-n-2)
-    (define fib
+    (define fib-cl
       (make-closure
        (list in-n fib-n)
        (list one two recur not-recur n-again n-1 n-2 fib-n-1 fib-n-2)
@@ -35,11 +35,11 @@
     (vc:switch not-recur one fib-n)
     (vc:switch recur in-n n-again)
     (vc:subtractor n-again one n-1)
-    (static-call-site fib (list n-1 fib-n-1))
+    (static-call-site fib-cl (list n-1 fib-n-1))
     (vc:subtractor n-again two n-2)
-    (static-call-site fib (list n-2 fib-n-2))
+    (static-call-site fib-cl (list n-2 fib-n-2))
     (vc:adder fib-n-1 fib-n-2 fib-n)
-    fib))
+    fib-cl))
 
 (define quot-rem-cl
   (let-cells (dividend divisor quot rem)
