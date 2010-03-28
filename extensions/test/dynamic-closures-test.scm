@@ -65,6 +65,7 @@
 
  (define-test (lambda-smoke)
    (interaction
+    (initialize-scheduler)
     (define-cell lambda-x)
     (let-cells (x x-out)
       (let-cells (y y-out)
@@ -85,6 +86,48 @@
 	      (list lambda-x lambda-y answer))
     (run)
     (virtual-copies->alist (content answer))
-    (produces `((,repl-frame . 7)))))
+    (produces `((,repl-frame . 7)))
+    ;; TODO Try another y
+    ))
+
+ (define-test (compose)
+   (interaction
+    (initialize-scheduler)
+    (define-cell compose)
+    (let-cells (f g compose-out)
+      (let-cells (arg composition-out intermediate)
+	(dynamic-call-site g (list arg intermediate))
+	(dynamic-call-site f (list intermediate composition-out))
+	(closure-emitter
+	 (list arg composition-out) (list intermediate) compose-out))
+      (closure-emitter (list f g compose-out) '() compose))
+
+    (define-cell double)
+    (let-cells (x out)
+      (vc:adder x x out)
+      (closure-emitter (list x out) '() double))
+    
+    (define-cell square)
+    (let-cells (x out)
+      (vc:multiplier x x out)
+      (closure-emitter (list x out) '() square))
+    
+    (define-cell square-double)
+    (dynamic-call-site compose (list square double square-double))
+
+    (define-cell x)
+    (define-cell answer)
+    (dynamic-call-site square-double (list x answer))
+    
+    (define repl-frame (make-frame '()))
+    (for-each
+     (lambda (cell)
+       (add-content cell (alist->virtual-copies `((,repl-frame . ,nothing)))))
+     (list compose double square square-double x answer))
+    (add-content x (alist->virtual-copies `((,repl-frame . 4))))
+    (run)
+    (virtual-copies->alist (content answer))
+    (produces `((,repl-frame . 64)))))
+ 
 
  )
