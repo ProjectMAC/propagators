@@ -135,7 +135,21 @@
     (add-content x (alist->virtual-copies `((,repl-frame . 4))))
     (run)
     (virtual-copies->alist (content answer))
-    (produces `((,repl-frame . 64)))))
- 
+    (produces `((,repl-frame . 64)))
 
+    (define-cell double-square)
+    (dynamic-call-site compose (list double square double-square))
+
+    (define-cell x2)
+    (define-cell answer2)
+    (dynamic-call-site double-square (list x2 answer2))
+
+    (add-content x2 (alist->virtual-copies `((,repl-frame . 4))))
+    (add-content double-square
+      (alist->virtual-copies `((,repl-frame . ,nothing))))
+    (add-content answer2 (alist->virtual-copies `((,repl-frame . ,nothing))))
+    (run)
+    (virtual-copies->alist (content answer2))
+    (produces `((,repl-frame . 32)))
+    ))
  )
