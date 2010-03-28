@@ -152,4 +152,61 @@
     (virtual-copies->alist (content answer2))
     (produces `((,repl-frame . 32)))
     ))
+
+  (define-test (repeat)
+   (interaction
+    (initialize-scheduler)
+    (define-cell compose)
+    (let-cells (f g compose-out)
+      (let-cells (arg composition-out intermediate)
+	(dynamic-call-site g (list arg intermediate))
+	(dynamic-call-site f (list intermediate composition-out))
+	(closure-emitter
+	 (list arg composition-out) (list intermediate) compose-out))
+      (closure-emitter (list f g compose-out) '() compose))
+
+
+    (define-cell repeat)
+    (let-cells (f n repeat-out
+		recur? not-recur? f-again n-again f-n-1 one n-1 out-again)
+      ((vc:const 1) one)
+      (vc:=? n one not-recur?)
+      (vc:inverter not-recur? recur?)
+      (vc:switch not-recur? f repeat-out)
+      (vc:switch recur? f f-again)
+      (vc:switch recur? n n-again)
+      (vc:switch recur? out-again repeat-out)
+      (vc:subtractor n-again one n-1)
+      (dynamic-call-site repeat (list f-again n-1 f-n-1))
+      (dynamic-call-site compose (list f-n-1 f-again out-again))
+      (closure-emitter
+       (list f n repeat-out) 
+       (list recur? not-recur? f-again n-again f-n-1 one n-1 out-again)
+       repeat))
+
+    (define-cell double)
+    (let-cells (x out)
+      (vc:adder x x out)
+      (closure-emitter (list x out) '() double))
+
+    (define-cell n)
+    (define-cell n-double)
+    (dynamic-call-site repeat (list double n n-double))
+    
+    (define-cell x)
+    (define-cell answer)
+    (dynamic-call-site n-double (list x answer))
+
+    (define repl-frame (make-frame '()))
+    (for-each
+     (lambda (cell)
+       (add-content cell (alist->virtual-copies `((,repl-frame . ,nothing)))))
+     (list compose repeat double n n-double x answer))
+    (add-content x (alist->virtual-copies `((,repl-frame . 1))))
+    (add-content n (alist->virtual-copies `((,repl-frame . 4))))
+    (run)
+    (virtual-copies->alist (content answer))
+    (produces `((,repl-frame . 16)))
+    ))
+
  )

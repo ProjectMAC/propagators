@@ -171,6 +171,11 @@
 (defhandler merge
   (with-equality virtual-copy-merge v-c-equal?)
   virtual-copies? virtual-copies?)
+
+(defhandler contradictory?
+  (lambda (vcs)
+    (any contradictory? (map cdr (virtual-copies->alist vcs))))
+  virtual-copies?)
 
 ;;;; Propagator Machinery
 

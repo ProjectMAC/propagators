@@ -311,5 +311,4 @@
     (virtual-copies->alist (content gcd-a-b))
     (produces `((,repl-frame . 17)))
     ))
- ;; TODO (repeat f n)
 )
