@@ -68,7 +68,7 @@
     (define-cell lambda-x)
     (let-cells (x x-out)
       (let-cells (y y-out)
-	(adder x y y-out)
+	(vc:adder x y y-out)
 	(closure-emitter (list y y-out) '() x-out))
       (closure-emitter (list x x-out) '() lambda-x))
     (define-cell outer-x)
@@ -85,6 +85,6 @@
 	      (list lambda-x lambda-y answer))
     (run)
     (virtual-copies->alist (content answer))
-    (produces '())))
+    (produces `((,repl-frame . 7)))))
 
  )
