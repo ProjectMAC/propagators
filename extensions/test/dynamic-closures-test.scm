@@ -17,13 +17,25 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(for-each load-relative
-  '("inequality-test"
-    "symbolics-test"
-    "symbolics-ineq-test"
-    "voltage-divider-test"
-    "bridge-rectifier-test"
-    "functional-reactive-test"
-    "environments-test"
-    "dynamic-closures-test"
-    "graph-drawing-test"))
+(in-test-group
+ dynamic-closures
+
+ (define-test (smoke)
+   (interaction
+    (initialize-scheduler)
+
+    (define repl-frame (make-frame '()))
+    (define-cell a)
+    (define-cell b)
+    (define-cell gcd-a-b)
+    (define-cell euclid-cell)
+    (dynamic-call-site euclid-cell (list a b gcd-a-b))
+    (add-content a (alist->virtual-copies `((,repl-frame . ,(* 17 3)))))
+    (add-content b (alist->virtual-copies `((,repl-frame . ,(* 17 5)))))
+    (add-content euclid-cell (alist->virtual-copies `((,repl-frame . ,euclid))))
+    (add-content gcd-a-b (alist->virtual-copies `((,repl-frame . ,nothing))))
+    (run)
+    (virtual-copies->alist (content gcd-a-b))
+    (produces `((,repl-frame . 17)))))
+
+ )

@@ -312,7 +312,7 @@
 (define (do-the-dynamic-do frame-map-cell closure-cell outside-cells)
   (define (update-map frame parents)
     (add-content frame-map-cell
-      (simple-ensure-mapping (content frame-map-cell frame parents))))
+      (simple-ensure-mapping (content frame-map-cell) frame parents)))
   (define (build-interior-occurrences closure target-frame)
     (for-each (lambda (cell)
 		(add-content cell (alist->virtual-copies
