@@ -57,12 +57,20 @@
 ;;; Printing trip segments out for wallpaper
 
 (define (normalize-knowledge thing)
+  (define (with-units->list-structure with-units)
+    ;; Handling an interface change suffered by prepare-for-printing
+    ;; across versions of ScmUtils.
+    (let ((putative-list-structure
+	   (prepare-for-printing thing simplify)))
+      (if (pair? putative-list-structure)
+	  putative-list-structure
+	  (putative-list-structure))))
   (cond ((nothing? thing)
 	 'unknown)
 	((estimate? thing)
 	 `(estimated ,(normalize-knowledge (estimate-value thing))))
 	((with-units? thing)
-	 (let ((val (prepare-for-printing thing simplify)))
+	 (let ((val (with-units->list-structure thing)))
 	   (case (caddr val)
 	     ((ampere) `(& ,(cadr val) dollar))
 	     ((kilogram) `(& ,(cadr val) crap))
