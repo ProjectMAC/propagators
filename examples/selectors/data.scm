@@ -61,7 +61,8 @@
     ;; Handling an interface change suffered by prepare-for-printing
     ;; across versions of ScmUtils.
     (let ((putative-list-structure
-	   (prepare-for-printing thing simplify)))
+	   (begin (prepare-for-printing thing simplify)
+		  *last-expression-printed*)))
       (if (pair? putative-list-structure)
 	  putative-list-structure
 	  (putative-list-structure))))
