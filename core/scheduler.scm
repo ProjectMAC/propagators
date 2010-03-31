@@ -117,10 +117,12 @@
   #f)
 (define alert-propagator alert-propagators)
 
+(define (all-propagators)
+  (ordered-key-list *propagators-ever-alerted*
+		    *propagators-ever-alerted-list*))
+
 (define (alert-all-propagators!)
-  (alert-propagators
-   (ordered-key-list *propagators-ever-alerted*
-                     *propagators-ever-alerted-list*)))
+  (alert-propagators (all-propagators)))
 
 (define (the-alerted-propagators)
   (ordered-key-list *alerted-propagators*
