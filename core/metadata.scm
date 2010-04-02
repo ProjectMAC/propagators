@@ -115,7 +115,7 @@
   (append (neighbors cell)
 	  (or (eq-get cell 'shadow-connections)
 	      '())))
-
+
 ;;; Oof!
 ;;; TODO Figure out a theory of what this steaming pile is doing
 ;;; and refactor it.
@@ -261,3 +261,67 @@
 		  (map car hidable-elements)
 		  shown-elements))))
   )
+
+;;; Stuff for automatically determining the i/o characteristics of a
+;;; compound box by expanding it out (in a sandbox) and looking at the
+;;; i/o characteristics of its structure.
+
+(define *interesting-cells* #f)
+
+(define (compute-aggregate-metadata prop-ctor arg-cells)
+  ;; This check is here to keep recursive compounds from computing
+  ;; their internal metadata forever.  The reason this is ok is that
+  ;; to learn the metadata of an unexpanded box, I only need to
+  ;; observe what propagators want to attach to its interior boundary,
+  ;; not to the entire interior.
+  (if (or (not *interesting-cells*)
+	  (not (null? (lset-intersection eq?
+                        *interesting-cells* arg-cells))))
+      (do-compute-aggregate-metadata prop-ctor arg-cells)
+      '()))
+
+(define (do-compute-aggregate-metadata prop-ctor arg-cells)
+  ;; Assumes the prop-ctor is stateless!
+  (with-independent-scheduler
+   (lambda ()
+     (let ((test-cell-map (map (lambda (arg)
+				 (cons arg (make-cell)))
+			       arg-cells)))
+       (fluid-let ((*interesting-cells* (map cdr test-cell-map)))
+	 (apply prop-ctor (map cdr test-cell-map)))
+       (let* ((the-props (all-propagators))
+	      (inputs (apply append (map (lambda (prop)
+					   (or (eq-get prop 'inputs)
+					       '()))
+					 the-props)))
+	      (outputs (apply append (map (lambda (prop)
+					    (or (eq-get prop 'outputs)
+						'()))
+					  the-props)))
+	      (my-inputs (map car
+			      (filter (lambda (arg-test)
+					(memq (cdr arg-test) inputs))
+				      test-cell-map)))
+	      (my-outputs (map car
+			       (filter (lambda (arg-test)
+					 (memq (cdr arg-test) outputs))
+				       test-cell-map)))
+	      (constructed-objects ;; Should only be one
+	       (filter (lambda (x) (not (cell? x)))
+		       (network-group-elements *current-network-group*))))
+	 `(name ,(name (car constructed-objects))
+	   inputs ,my-inputs outputs ,my-outputs))))))
+
+(define (with-independent-scheduler thunk)
+  ;; TODO This really belongs split across scheduler.scm,
+  ;; metadata.scm, and search.scm in core.
+  (fluid-let ((*alerted-propagators* #f)
+	      (*alerted-propagator-list* #f)
+	      (*abort-process* #f)
+	      (*last-value-of-run* #f)
+	      (*propagators-ever-alerted* #f)
+	      (*propagators-ever-alerted-list* #f)
+	      (*current-network-group* #f)
+	      (*number-of-calls-to-fail* #f))
+    (initialize-scheduler)
+    (thunk)))

@@ -93,6 +93,14 @@
 	   (name-locally! arg-form 'arg-form) ...
 	   body-form ...))))))
 
+(define-syntax define-compound-propagator
+  (syntax-rules ()
+    ((define-compound-propagator (name arg-form ...) body-form ...)
+     (define name
+       (compoundify-propagator-constructor
+	(named-macro-propagator (name arg-form ...)
+	  body-form ...))))))
+
 (define-macro-propagator (conditional control if-true if-false output)
   (let-cell not-control
     (inverter control not-control)

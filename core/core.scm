@@ -229,6 +229,16 @@
 			 to-build)))))))
     (eq-clone! to-build test)
     (propagator neighbors test)))
+
+(define (compoundify-propagator-constructor prop-ctor)
+  (lambda args
+    ;; TODO Can I autodetect "inputs" that should not trigger
+    ;; construction?
+    (compound-propagator args
+     (apply eq-label!
+      (lambda ()
+	(apply prop-ctor args))
+      (compute-aggregate-metadata prop-ctor args)))))
 
 ;;; Merging, and the basic data types.
 
