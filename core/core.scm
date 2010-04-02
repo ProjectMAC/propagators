@@ -225,8 +225,7 @@
 			;; The act of expansion makes the compound
 			;; itself uninteresting
 			(network-unregister test)
-			(with-network-group (network-group-named (name to-build))
-			 to-build)))))))
+			(to-build)))))))
     (eq-clone! to-build test)
     (propagator neighbors test)))
 
