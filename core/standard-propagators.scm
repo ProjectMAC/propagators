@@ -72,16 +72,25 @@
 (define-syntax define-macro-propagator
   (syntax-rules ()
     ((define-macro-propagator (name arg-form ...) body-form ...)
-     (define (name arg-form ...)
-       (with-network-group (network-group-named 'name)
-	 (lambda ()
-	   (name-locally! arg-form 'arg-form) ...
-	   body-form ...))))
+     (define name
+       (named-macro-propagator (name arg-form ...)
+	 body-form ...)))
     ;; N.B. This is the clause that will match dot-notation argument lists
-    ((_ name body-form ...)
+    ((define-macro-propagator name body-form ...)
      (define name
        (with-network-group (network-group-named 'name)
 	 (lambda ()
+	   body-form ...))))))
+
+;;; TODO Should this be called propagator-lambda?
+;;; What about the compound version?
+(define-syntax named-macro-propagator
+  (syntax-rules ()
+    ((named-macro-propagator (name arg-form ...) body-form ...)
+     (named-lambda (name arg-form ...)
+       (with-network-group (network-group-named 'name)
+	 (lambda ()
+	   (name-locally! arg-form 'arg-form) ...
 	   body-form ...))))))
 
 (define-macro-propagator (conditional control if-true if-false output)
