@@ -21,18 +21,33 @@
 ;;; with nontrivial partial information structures.
 (define (direct-call-site closure-cell arg-cells)
   (propagator closure-cell
-    (lambda ()
-      ;; TODO Deal with other partial information types!
-      (if (nothing? (content closure-cell))
-	  'ok
-	  (let ((closure (content closure-cell)))
-	    ;; Do I need to memoize this?  Not if I can rely on the
-	    ;; closure-cell only poking me once (when the closure
-	    ;; shows up).
+    ;; TODO Hm.  There doesn't seem to be any good way to arrange this
+    ;; metadata.  One of the reasons for ugly pictures coming out of
+    ;; this is that the closure that gets called will generally add
+    ;; its own metadata, so the picture ends up reflecting several
+    ;; stages of elaboration: call sites, and the procedures that got
+    ;; called, and, if the network were higher-order, the call-sites
+    ;; and procedures those ended up expanding into, etc.  There is
+    ;; also no hint which closure-constructed box came from which call
+    ;; site.
+    (eq-label!
+     (lambda ()
+       ;; TODO Deal with other partial information types!
+       (if (nothing? (content closure-cell))
+	   'ok
+	   (let ((closure (content closure-cell)))
+	     ;; Do I need to memoize this?  Not if I can rely on the
+	     ;; closure-cell only poking me once (when the closure
+	     ;; shows up).
 
-	    ;; This assumes that the closure itself will be a compound
-	    ;; propagator if appropriate
-	    (apply closure arg-cells))))))
+	     ;; This assumes that the closure itself will be a compound
+	     ;; propagator if appropriate
+	     (apply closure arg-cells))))
+     'name 'direct-call
+     ;; TODO This i/o metadata is just a guess about how the closure
+     ;; will act.
+     'inputs (cons closure-cell (except-last-pair arg-cells))
+     'outputs (last-pair arg-cells))))
 
 ;;; "lambda" for the propagator language is just a constant propagator
 ;;; that emits the desired Scheme closure into the needed cell.  That
