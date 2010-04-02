@@ -41,7 +41,8 @@
    "test-utils"))
 
 (for-each load-relative
- '("closures"
+ '("physical-copies"
+   "closures"
    "example-closures"
    "draw"
    "dot-writer"

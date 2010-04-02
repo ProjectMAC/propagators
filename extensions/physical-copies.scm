@@ -1,5 +1,5 @@
 ;;; ----------------------------------------------------------------------
-;;; Copyright 2009-2010 Alexey Radul.
+;;; Copyright 2010 Alexey Radul.
 ;;; ----------------------------------------------------------------------
 ;;; This file is part of Propagator Network Prototype.
 ;;; 
@@ -17,14 +17,25 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(for-each load-relative
-  '("inequality-test"
-    "symbolics-test"
-    "symbolics-ineq-test"
-    "voltage-divider-test"
-    "bridge-rectifier-test"
-    "functional-reactive-test"
-    "physical-copies-test"
-    "environments-test"
-    "dynamic-closures-test"
-    "graph-drawing-test"))
+;;; This is "apply" for propagators, except it does not yet play well
+;;; with nontrivial partial information structures.
+(define (direct-call-site closure-cell arg-cells)
+  (propagator closure-cell
+    (lambda ()
+      ;; TODO Deal with other partial information types!
+      (if (nothing? (content closure-cell))
+	  'ok
+	  (let ((closure (content closure-cell)))
+	    ;; Do I need to memoize this?  Not if I can rely on the
+	    ;; closure-cell only poking me once (when the closure
+	    ;; shows up).
+
+	    ;; This assumes that the closure itself will be a compound
+	    ;; propagator if appropriate
+	    (apply closure arg-cells))))))
+
+;;; "lambda" for the propagator language is just a constant propagator
+;;; that emits the desired Scheme closure into the needed cell.  That
+;;; closure probably wants to be made with the named-macro-propagator
+;;; macro from core/standard-propagators.scm, in order to collect
+;;; the appropriate metadata.
