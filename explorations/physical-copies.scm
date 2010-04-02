@@ -98,6 +98,7 @@
     (subtractor n-again one n-1)
     (physical-call-site repeat-cell (list f-again n-1 f-n-1))
     (physical-call-site compose-cell (list f-n-1 f-again out-again))))
+;;; TODO Oops!  Clobbers the thunk-repeating utility.
 (define repeat (compoundify-propagator-constructor m-repeat))
 (define-cell repeat-cell)
 (add-content repeat-cell repeat)
