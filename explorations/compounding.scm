@@ -26,35 +26,65 @@
 	(apply prop-ctor args))
       (compute-aggregate-metadata prop-ctor args)))))
 
+(define *interesting-cells* #f)
+
 (define (compute-aggregate-metadata prop-ctor arg-cells)
+  ;; This check is here to keep recursive compounds from computing
+  ;; their internal metadata forever.  The reason this is ok is that
+  ;; to learn the metadata of an unexpanded box, I only need to
+  ;; observe what propagators want to attach to its interior boundary,
+  ;; not to the entire interior.
+  (if (or (not *interesting-cells*)
+	  (not (null? (lset-intersection eq?
+                        *interesting-cells* arg-cells))))
+      (do-compute-aggregate-metadata prop-ctor arg-cells)
+      '()))
+
+(define (do-compute-aggregate-metadata prop-ctor arg-cells)
   ;; Assumes the prop-ctor is stateless!
   (with-independent-scheduler
    (lambda ()
      (let ((test-cell-map (map (lambda (arg)
 				 (cons arg (make-cell)))
 			       arg-cells)))
-       (apply prop-ctor (map cdr test-cell-map))
+       (fluid-let ((*interesting-cells* (map cdr test-cell-map)))
+	 (apply prop-ctor (map cdr test-cell-map)))
        (let* ((the-props (all-propagators))
 	      (inputs (apply append (map (lambda (prop)
-					   (eq-get prop 'inputs))
+					   (or (eq-get prop 'inputs)
+					       '()))
 					 the-props)))
 	      (outputs (apply append (map (lambda (prop)
-					    (eq-get prop 'outputs))
+					    (or (eq-get prop 'outputs)
+						'()))
 					  the-props)))
 	      (my-inputs (map car
 			      (filter (lambda (arg-test)
-					(memq (cdr arg-test) inputs)))))
+					(memq (cdr arg-test) inputs))
+				      test-cell-map)))
 	      (my-outputs (map car
 			       (filter (lambda (arg-test)
-					 (memq (cdr arg-test) outputs)))))
+					 (memq (cdr arg-test) outputs))
+				       test-cell-map)))
 	      (constructed-objects ;; Should only be one
 	       (filter (lambda (x) (not (cell? x)))
 		       (network-group-elements *current-network-group*))))
 	 `(name ,(name (car constructed-objects))
 	   inputs ,my-inputs outputs ,my-outputs))))))
 
-(define (compute-aggregate-metadata foo bar)
-  '()) ;; TODO Stub, awaiting with-independent-scheduler
+(define (with-independent-scheduler thunk)
+  ;; TODO This really belongs split across scheduler.scm,
+  ;; metadata.scm, and search.scm in core.
+  (fluid-let ((*alerted-propagators* #f)
+	      (*alerted-propagator-list* #f)
+	      (*abort-process* #f)
+	      (*last-value-of-run* #f)
+	      (*propagators-ever-alerted* #f)
+	      (*propagators-ever-alerted-list* #f)
+	      (*current-network-group* #f)
+	      (*number-of-calls-to-fail* #f))
+    (initialize-scheduler)
+    (thunk)))
 
 (define-macro-propagator (m-heron-step x g h)
   (let-cells (x/g g+x/g two)
