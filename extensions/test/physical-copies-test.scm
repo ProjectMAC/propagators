@@ -183,4 +183,38 @@
     (content answer3)
     (produces 16)
     ))
+
+ (define-test (tms-over-closures)
+   (interaction
+    (initialize-scheduler)
+
+    (define-cell double
+      (e:constant
+       (named-macro-propagator (double x out)
+	 (adder x x out))))
+
+    (define-cell square
+      (e:constant
+       (named-macro-propagator (square x out)
+	 (multiplier x x out))))
+
+    (define-cell control)
+    (define-cell func)
+    (conditional control double square func)
+    (define-cell x (e:constant 3))
+    (define-cell answer)
+    (call-site func (list x answer))
+
+    (add-content control (make-tms (supported #t '(fred))))
+    (run)
+    (content answer)
+    (produces #(tms (#(supported 6 (fred)))))
+
+    (kick-out! 'fred)
+    (add-content control (make-tms (supported #f '(bob))))
+    (run)
+    (content answer)
+    (produces #(tms (#(supported 9 (bob))
+		     #(supported 6 (fred)))))
+    ))
 )
