@@ -54,3 +54,34 @@
 ;;; closure probably wants to be made with the named-macro-propagator
 ;;; macro from core/standard-propagators.scm, in order to collect
 ;;; the appropriate metadata.
+
+;;; Here is a version that does (I think) do the right thing for
+;;; interesting partial information types; at least those that have a
+;;; good generic-bind method defined on them.  This uses the strategy
+;;; of copying the argument cells and identifying them with the formal
+;;; parameter cells, so that the identification can be made
+;;; conditional on the partialness of the information about the
+;;; closure.  I think I got that part right.
+
+(define (call-site closure-cell arg-cells)
+  (define done-closures '())
+  (define (done? closure)
+    (memq closure done-closures))
+  (define (attach closure)
+    (set! done-closures (cons closure done-closures))
+    (let-cells (pass? key)
+      (add-content key closure)
+      (p:eq? closure-cell key pass?)
+      (apply closure (map (lambda (arg)
+			    (let-cell arg-copy
+			      (conditional-wire pass? arg arg-copy)
+			      arg-copy))
+			  arg-cells))
+      unspecific))
+  (propagator closure-cell
+    (lambda ()
+      (generic-bind (content closure-cell)
+	(lambda (closure)
+	  (if (done? closure)
+	      unspecific
+	      (attach closure)))))))
