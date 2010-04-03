@@ -121,3 +121,14 @@
     (if (< upto (car primes))
 	(car primes)
 	(force-prime-numbers (force (cdr primes))))))
+
+;;; For stabilizing the string values of printouts that include hash
+;;; numbers.
+(define (force-hash-number number)
+  (let loop ((the-hash-number (hash (list 'foo))))
+    (cond ((> the-hash-number number)
+	   (error "Cannot set hash number to" number))
+	  ((= the-hash-number number)
+	   'done)
+	  (else (loop (hash (list 'foo)))))))
+

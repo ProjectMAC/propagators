@@ -48,19 +48,20 @@
 
  (define-test (drawing-smoke)
    (interaction
+    (force-hash-number 200)
     (initialize-scheduler)
     (define-cell foo)
     (define-cell bar)
     (pass-through foo bar)
     (draw:write-graph-to-string foo)
-    (check (equal? ;; TODO Make this not depend on the hash numbers!
+    (check (equal?
 "digraph G {
   ratio=fill;
-  \"cell-12\" [label=\"foo\", shape=\"ellipse\" ];
-  \"prop-13\" [label=\"identity\", shape=\"box\" ];
-  \"cell-12\" -> \"prop-13\" [label=\"\" ];
-  \"prop-13\" -> \"cell-14\" [label=\"\" ];
-  \"cell-14\" [label=\"bar\", shape=\"ellipse\" ];
+  \"cell-201\" [label=\"foo\", shape=\"ellipse\" ];
+  \"prop-202\" [label=\"identity\", shape=\"box\" ];
+  \"cell-201\" -> \"prop-202\" [label=\"\" ];
+  \"prop-202\" -> \"cell-203\" [label=\"\" ];
+  \"cell-203\" [label=\"bar\", shape=\"ellipse\" ];
 }
 " (out)))
     (check (equal? (draw:write-graph-to-string foo)
@@ -92,6 +93,7 @@
 
  (define-test (grouped-drawing)
    (interaction
+    (force-hash-number 214)
     (initialize-scheduler)
     (define-cell foo)
     (with-network-group (network-group-named 'subgroup)
@@ -99,43 +101,44 @@
 	(define-cell bar)
 	(pass-through foo bar)))
     (draw:write-graph-to-string *current-network-group*)
-    (check (equal? ;; TODO Make this not depend on the hash numbers!
+    (check (equal?
 "digraph G {
   ratio=fill;
-  subgraph cluster_15 { label=\"top-group\"; 
-    subgraph cluster_16 { label=\"subgroup\"; 
-      \"prop-17\" [label=\"identity\", shape=\"box\" ];
-      \"cell-19\" [label=\"bar\", shape=\"ellipse\" ];
+  subgraph cluster_215 { label=\"top-group\"; 
+    subgraph cluster_216 { label=\"subgroup\"; 
+      \"prop-217\" [label=\"identity\", shape=\"box\" ];
+      \"cell-219\" [label=\"bar\", shape=\"ellipse\" ];
     }
-    \"cell-18\" [label=\"foo\", shape=\"ellipse\" ];
+    \"cell-218\" [label=\"foo\", shape=\"ellipse\" ];
   }
-  \"cell-18\" -> \"prop-17\" [label=\"\" ];
-  \"prop-17\" -> \"cell-19\" [label=\"\" ];
+  \"cell-218\" -> \"prop-217\" [label=\"\" ];
+  \"prop-217\" -> \"cell-219\" [label=\"\" ];
 }
 " (out)))))
 
  (define-test (grouped-drawing-2)
    (interaction
+    (force-hash-number 239)
     (initialize-scheduler)
     (define-cell foo)
     (define-cell bar)
     (identity-constraint foo bar)
     (draw:write-graph-to-string)
-    (check (equal? ;; TODO Make this not depend on the hash numbers!
+    (check (equal?
 "digraph G {
   ratio=fill;
-  subgraph cluster_20 { label=\"top-group\"; 
-    subgraph cluster_21 { label=\"identity-constraint\"; 
-      \"prop-22\" [label=\"identity\", shape=\"box\" ];
-      \"prop-25\" [label=\"identity\", shape=\"box\" ];
+  subgraph cluster_240 { label=\"top-group\"; 
+    subgraph cluster_241 { label=\"identity-constraint\"; 
+      \"prop-242\" [label=\"identity\", shape=\"box\" ];
+      \"prop-245\" [label=\"identity\", shape=\"box\" ];
     }
-    \"cell-23\" [label=\"bar\", shape=\"ellipse\" ];
-    \"cell-24\" [label=\"foo\", shape=\"ellipse\" ];
+    \"cell-243\" [label=\"bar\", shape=\"ellipse\" ];
+    \"cell-244\" [label=\"foo\", shape=\"ellipse\" ];
   }
-  \"cell-23\" -> \"prop-22\" [label=\"\" ];
-  \"prop-22\" -> \"cell-24\" [label=\"\" ];
-  \"cell-24\" -> \"prop-25\" [label=\"\" ];
-  \"prop-25\" -> \"cell-23\" [label=\"\" ];
+  \"cell-243\" -> \"prop-242\" [label=\"\" ];
+  \"prop-242\" -> \"cell-244\" [label=\"\" ];
+  \"cell-244\" -> \"prop-245\" [label=\"\" ];
+  \"prop-245\" -> \"cell-243\" [label=\"\" ];
 }
 " (out)))))
 
