@@ -113,6 +113,10 @@
     (switch control input if-true)
     (switch not-control input if-false)))
 
+(define-macro-propagator (conditional-wire control end1 end2)
+  (switch control end1 end2)
+  (switch control end2 end1))
+
 (define-macro-propagator (sum-constraint a1 a2 sum)
   (adder a1 a2 sum)
   (subtractor sum a1 a2)

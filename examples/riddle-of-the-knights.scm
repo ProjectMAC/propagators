@@ -19,10 +19,6 @@
 
 (declare (usual-integrations make-cell))
 
-(define-macro-propagator (conditional-wire control end1 end2)
-  (switch control end1 end2)
-  (switch control end2 end1))
-
 (define-macro-propagator (guess-link cell1 cell2)
   (let ((control (e:amb)))
     (conditional-wire control cell1 cell2)
