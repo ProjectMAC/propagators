@@ -21,7 +21,6 @@
 
 (declare (usual-integrations make-cell))
 
-
 ;;;; Basic scheduling system
 
 ;;; This scheduler maintains a list of jobs that need to be run.  Each
@@ -56,7 +55,7 @@
 ;;;   (alert-all-propagators!)    reschedule all jobs ever scheduled
 ;;;   (run)                       run scheduled jobs until done
 ;;;   (abort-process x)           terminate the run returning x
-
+
 (define *alerted-propagators*)
 (define *alerted-propagator-list*)
 (define *abort-process*)
@@ -116,7 +115,7 @@
    (listify propagators))
   #f)
 (define alert-propagator alert-propagators)
-
+
 (define (all-propagators)
   (ordered-key-list *propagators-ever-alerted*
 		    *propagators-ever-alerted-list*))
