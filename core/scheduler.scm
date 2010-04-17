@@ -57,75 +57,42 @@
 ;;;   (abort-process x)           terminate the run returning x
 
 (define *alerted-propagators*)
-(define *alerted-propagator-list*)
 (define *abort-process*)
 (define *last-value-of-run*)
 (define *propagators-ever-alerted*)
-(define *propagators-ever-alerted-list*)
 
 (define (initialize-scheduler)
   (clear-alerted-propagators!)
   (set! *abort-process* #f)
   (set! *last-value-of-run* 'done)
-  (set! *propagators-ever-alerted* (make-eq-hash-table))
-  (set! *propagators-ever-alerted-list*
-        (list '*propagators-ever-alerted-list*))
+  (set! *propagators-ever-alerted* (make-eq-oset))
   'ok)
 
 (define (any-propagators-alerted?)
-  (< 0 (hash-table/count *alerted-propagators*)))
+  (< 0 (oset-count *alerted-propagators*)))
 
 (define (clear-alerted-propagators!)
-  (set! *alerted-propagators* (make-strong-eq-hash-table))
-  (set! *alerted-propagator-list* (list '*alerted-propagator-list*)))
-
-;; Turning this off makes the order in which propagators are run vary
-;; chaotically.  That is not supposed to cause trouble in principle,
-;; but a reproducible run order can be valuable for debugging the
-;; infrastructure.  The chaotic variation also causes variations in the 
-;; *number-of-calls-to-fail* when doing dependency directed backtracking.
-(define *reproducible-run-order* #t)
-
-(define (order-preserving-insert thing table lst)
-  (hash-table/lookup
-   table
-   thing
-   (lambda (value) 'ok)
-   (lambda ()
-     (hash-table/put! table thing #t)
-     (push! lst thing))))
-
-(define (push! headed-list thing)
-  (set-cdr! headed-list (cons thing (cdr headed-list))))
-
-(define (ordered-key-list table lst)
-  (if *reproducible-run-order*
-      (list-copy (cdr lst))
-      (hash-table/key-list table)))
+  (set! *alerted-propagators* (make-eq-oset)))
 
 (define (alert-propagators propagators)
   (for-each
    (lambda (propagator)
      (if (not (procedure? propagator))
          (error "Alerting a non-procedure" propagator))
-     (order-preserving-insert
-      propagator *propagators-ever-alerted* *propagators-ever-alerted-list*)
-     (order-preserving-insert
-      propagator *alerted-propagators* *alerted-propagator-list*))
+     (oset-insert *propagators-ever-alerted* propagator)
+     (oset-insert *alerted-propagators* propagator))
    (listify propagators))
   #f)
 (define alert-propagator alert-propagators)
 
 (define (all-propagators)
-  (ordered-key-list *propagators-ever-alerted*
-		    *propagators-ever-alerted-list*))
+  (oset-members *propagators-ever-alerted*))
 
 (define (alert-all-propagators!)
   (alert-propagators (all-propagators)))
 
 (define (the-alerted-propagators)
-  (ordered-key-list *alerted-propagators*
-                    *alerted-propagator-list*))
+  (oset-members *alerted-propagators*))
 
 (define (with-process-abortion thunk)
   (call-with-current-continuation

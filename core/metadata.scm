@@ -316,11 +316,9 @@
   ;; TODO This really belongs split across scheduler.scm,
   ;; metadata.scm, and search.scm in core.
   (fluid-let ((*alerted-propagators* #f)
-	      (*alerted-propagator-list* #f)
 	      (*abort-process* #f)
 	      (*last-value-of-run* #f)
 	      (*propagators-ever-alerted* #f)
-	      (*propagators-ever-alerted-list* #f)
 	      (*current-network-group* #f)
 	      (*number-of-calls-to-fail* #f))
     (initialize-scheduler)

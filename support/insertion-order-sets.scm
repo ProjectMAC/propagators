@@ -27,7 +27,7 @@
   table
   list)
 
-(define (make-oset)
+(define (make-eq-oset)
   (make-insertion-order-set (make-strong-eq-hash-table) '()))
 
 ;; Turning this off makes the order in which propagators are run vary
