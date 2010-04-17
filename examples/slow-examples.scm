@@ -52,7 +52,9 @@
      " | O O O   O X-O-O-\ \n"
      "+|+|+|+|+ +|+ + + +|+\n"
      " \-/ \-/   \-O-----/ \n"
-     "+ + + + + + + + + + +\n"))))
+     "+ + + + + + + + + + +\n"))
+   *number-of-calls-to-fail*
+   (produces 457)))
 
 (define-test (medium-masyu)
   (interaction
@@ -89,7 +91,9 @@
      " X---O-\ O \-\ \---X     | | \-\ O O \n"
      "+ + + +|+|+ +|+ + + + + +|+|+ +|+|+|+\n"
      "       \-/   \-O---------X X---/ \-/ \n"
-     "+ + + + + + + + + + + + + + + + + + +\n"))))
+     "+ + + + + + + + + + + + + + + + + + +\n"))
+   *number-of-calls-to-fail*
+   (produces 855)))
 
 #;
 (define-test (large-masyu)
@@ -132,7 +136,8 @@
        #(knight sir-caspar    ,s6 ,h0)
        #(knight sir-jules     ,s8 ,h8)
        #(knight sir-balthus   ,s9 ,h9))
-     (map v&s-value (map tms-query (show-time find-solution)))))))
+     (map v&s-value (map tms-query (show-time find-solution)))))
+   (check (= 922 *number-of-calls-to-fail*))))
 
 (in-test-group
  albatross-conundrum
@@ -144,7 +149,8 @@
        #(deck main draconio calypso-figure firearms)
        #(deck gun scurvy casket-of-magenta ropes)
        #(deck lower kraken goldenhall-talisman spare-sails))
-     (map v&s-value (map tms-query (show-time find-albatross-solution)))))))
+     (map v&s-value (map tms-query (show-time find-albatross-solution)))))
+   (check (= 1425 *number-of-calls-to-fail*))))
 
 ;;; This one is too slow even for the slow-examples!
 #;
