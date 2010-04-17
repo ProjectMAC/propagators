@@ -140,29 +140,31 @@
 	    ((eq? message 'done?) (not (any-alerted?)))))
     me))
 
+(define (round-robin-policy propagators-left)
+  (let ((temp (oset-members propagators-left)))
+    (oset-clear! propagators-left)
+    (for-each (lambda (propagator)
+		(propagator))
+	      temp)))
+
+(define (stack-policy propagators-left)
+  ((oset-pop! propagators-left)))
+
 (define (make-round-robin-scheduler)
-  (make-oset-scheduler
-   (lambda (propagators-left)
-     (let ((temp (oset-members propagators-left)))
-       (oset-clear! propagators-left)
-       (for-each (lambda (propagator)
-		   (propagator))
-		 temp)))))
+  (make-oset-scheduler round-robin-policy))
 
 (define (make-stack-scheduler)
-  (make-oset-scheduler
-   (lambda (propagators-left)
-     ((oset-pop! propagators-left)))))
+  (make-oset-scheduler stack-policy))
 
-(define (make-two-stack-scheduler)
+(define (make-fast-slow-scheduler fast-policy slow-policy)
   (let ((propagators-left (make-eq-oset))
 	(slow-propagators (make-eq-oset)))
     (define (run-alerted)
       (cond ((any-normal?)
-	     ((oset-pop! propagators-left))
+	     (fast-policy propagators-left)
 	     (run-alerted))
 	    ((any-slow?)
-	     ((oset-pop! slow-propagators))
+	     (slow-policy slow-propagators)
 	     (run-alerted))
 	    (else 'done)))
 
@@ -196,3 +198,12 @@
 
 (define (tag-slow! thing)
   (eq-put! thing 'slow #t))
+
+(define (make-two-stack-scheduler)
+  (make-fast-slow-scheduler stack-policy stack-policy))
+
+(define (make-robin-stack-scheduler)
+  (make-fast-slow-scheduler round-robin-policy stack-policy))
+
+(define (make-two-robin-scheduler)
+  (make-fast-slow-scheduler round-robin-policy round-robin-policy))

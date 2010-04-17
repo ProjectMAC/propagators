@@ -29,7 +29,9 @@
 	(thunk)))
     (list make-round-robin-scheduler
 	  make-stack-scheduler
-	  make-two-stack-scheduler)))
+	  make-two-stack-scheduler
+	  make-robin-stack-scheduler
+	  make-two-robin-scheduler)))
 
  (define-test (smoke)
    (with-every-scheduler
@@ -44,4 +46,5 @@
 	(check (= 1 (length (all-propagators))))
 	(run)
 	(check (= 1 run-count))
-	(check (= 1 (length (all-propagators)))))))))
+	(check (= 1 (length (all-propagators))))
+	(pp make-scheduler))))))
