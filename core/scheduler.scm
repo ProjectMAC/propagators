@@ -61,8 +61,12 @@
 (define *last-value-of-run*)
 (define *propagators-ever-alerted*)
 
+;; This is a mutation point, if one wants to play with different kinds
+;; of schedulers.  The default is round-robin, below.
+(define (make-scheduler) (make-round-robin-scheduler))
+
 (define (initialize-scheduler)
-  (set! *scheduler* (make-round-robin-scheduler))
+  (set! *scheduler* (make-scheduler))
   (set! *abort-process* #f)
   (set! *last-value-of-run* 'done)
   (set! *propagators-ever-alerted* (make-eq-oset))
