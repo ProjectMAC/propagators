@@ -18,7 +18,8 @@
 ;;; ----------------------------------------------------------------------
 
 (for-each load-relative
-  '("core-test"
+  '("scheduler-test"
+    "core-test"
     "dependencies-test"
     "partial-compounds-test"
     "switches-test"
