@@ -13,6 +13,7 @@
 	   '((0 0 0 0) (0 0 0 0) (0 0 0 0) (0 3 0 0)))))))))
 
  (define-test (solve-smoke)
+   (initialize-scheduler)
    (check
     (equal?
      "3124\n2431\n1243\n4312\n"
