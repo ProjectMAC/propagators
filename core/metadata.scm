@@ -17,7 +17,7 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(declare (usual-integrations cell?))
+(declare (usual-integrations make-cell cell?))
 
 (define-structure network-group
   elements

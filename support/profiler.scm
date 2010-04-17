@@ -97,7 +97,7 @@
 ;;; I wonder whether there's a more general structure for computing
 ;;; things about the execution of something than just timing it...
 
-(declare (usual-integrations))
+(declare (usual-integrations make-cell cell?))
 
 ;;; The statistics data structure is a trie, with an extra
 ;;; optimization to small integer keys (for histograms).  Every node

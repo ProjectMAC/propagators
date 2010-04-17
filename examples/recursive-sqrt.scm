@@ -17,7 +17,7 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(declare (usual-integrations make-cell))
+(declare (usual-integrations make-cell cell?))
 
 (define-compound-propagator (heron-step x g h)
   (let-cells (x/g g+x/g two)

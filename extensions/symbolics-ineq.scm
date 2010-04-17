@@ -27,7 +27,7 @@
 ;;; (i.e. the expression is nothing), and will only be present in that
 ;;; case.
 
-(declare (usual-integrations))
+(declare (usual-integrations make-cell cell?))
 
 (define-structure symb-ineq
   expression

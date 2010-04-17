@@ -19,7 +19,7 @@
 ;;; <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(declare (usual-integrations make-cell))
+(declare (usual-integrations make-cell cell?))
 
 (define conser (function->propagator-constructor cons))
 

@@ -19,7 +19,7 @@
 
 ;;;; Fully-virtual environments.  See environments.tex.
 
-(declare (usual-integrations))
+(declare (usual-integrations make-cell cell?))
 
 ;;;; Frames
 

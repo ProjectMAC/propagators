@@ -20,7 +20,7 @@
 ;;;; Closures for fully-virtual environments.  See environments.scm
 ;;;; and environments.tex.
 
-(declare (usual-integrations))
+(declare (usual-integrations make-cell cell?))
 
 ;;;; Frame Maps
 

@@ -19,7 +19,7 @@
 ;;; <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(declare (usual-integrations make-cell))
+(declare (usual-integrations make-cell cell?))
 
 ;;; This is an extended example of using the propagator network system
 ;;; described in "Propagation Networks", by Alexey Radul.

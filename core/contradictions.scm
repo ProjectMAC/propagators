@@ -19,7 +19,7 @@
 ;;; <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(declare (usual-integrations make-cell))
+(declare (usual-integrations make-cell cell?))
 
 (define (tms-merge tms1 tms2)
   (let ((candidate (tms-assimilate tms1 tms2)))

@@ -17,7 +17,7 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(declare (usual-integrations))
+(declare (usual-integrations make-cell cell?))
 
 (define fact-cl
   (let-cells (in-n in-n!
