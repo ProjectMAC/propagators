@@ -22,15 +22,26 @@
 (in-test-group
  scheduler
 
+ (define (with-every-scheduler thunk)
+   (for-each
+    (lambda (scheduler)
+      (fluid-let ((make-scheduler scheduler))
+	(thunk)))
+    (list make-round-robin-scheduler
+	  make-stack-scheduler
+	  make-two-stack-scheduler)))
+
  (define-test (smoke)
-   (let ((run-count 0))
-     (define (run-me)
-       (set! run-count (+ run-count 1)))
-     (initialize-scheduler)
-     (check (= 0 (length (all-propagators))))
-     (check (= 0 run-count))
-     (alert-propagators run-me)
-     (check (= 1 (length (all-propagators))))
-     (run)
-     (check (= 1 run-count))
-     (check (= 1 (length (all-propagators)))))))
+   (with-every-scheduler
+    (lambda ()
+      (let ((run-count 0))
+	(define (run-me)
+	  (set! run-count (+ run-count 1)))
+	(initialize-scheduler)
+	(check (= 0 (length (all-propagators))))
+	(check (= 0 run-count))
+	(alert-propagators run-me)
+	(check (= 1 (length (all-propagators))))
+	(run)
+	(check (= 1 run-count))
+	(check (= 1 (length (all-propagators)))))))))
