@@ -166,3 +166,46 @@
 	    ((eq? message 'clear!) (clear!))
 	    ((eq? message 'done?) (not (any-alerted?)))))
     me))
+
+(define (make-two-stack-scheduler)
+  (let ((propagators-left (make-eq-oset))
+	(slow-propagators (make-eq-oset)))
+    (define (run-alerted)
+      (cond ((any-normal?)
+	     ((oset-pop! propagators-left))
+	     (run-alerted))
+	    ((any-slow?)
+	     ((oset-pop! slow-propagators))
+	     (run-alerted))
+	    (else 'done)))
+
+    (define (alert-one propagator)
+      (if (tagged-slow? propagator)
+	  (oset-insert slow-propagators propagator)
+	  (oset-insert propagators-left propagator)))
+
+    (define (clear!)
+      (oset-clear! propagators-left)
+      (oset-clear! slow-propagators))
+
+    (define (any-alerted?)
+      (or (any-normal?) (any-slow?)))
+
+    (define (any-normal?)
+      (< 0 (oset-count propagators-left)))
+
+    (define (any-slow?)
+      (< 0 (oset-count slow-propagators)))
+
+    (define (me message)
+      (cond ((eq? message 'run) (run-alerted))
+	    ((eq? message 'alert-one) alert-one)
+	    ((eq? message 'clear!) (clear!))
+	    ((eq? message 'done?) (not (any-alerted?)))))
+    me))
+
+(define (tagged-slow? thing)
+  (eq-get thing 'slow))
+
+(define (tag-slow! thing)
+  (eq-put! thing 'slow #t))
