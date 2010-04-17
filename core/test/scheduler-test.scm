@@ -44,7 +44,11 @@
 	(check (= 0 run-count))
 	(alert-propagators run-me)
 	(check (= 1 (length (all-propagators))))
-	(run)
+	;; Running actually runs
+	(check (eq? 'done (run)))
 	(check (= 1 run-count))
 	(check (= 1 (length (all-propagators))))
-	(pp make-scheduler))))))
+	;; No spurious reruns
+	(check (eq? 'done (run)))
+	(check (= 1 run-count))
+	(check (= 1 (length (all-propagators)))))))))
