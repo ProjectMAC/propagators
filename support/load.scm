@@ -35,6 +35,7 @@
   '("profiler"
     "eq-properties"
     "generic-system"
+    "insertion-order-sets"
     "utils"
     "test-utils"))
 
