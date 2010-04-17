@@ -127,3 +127,31 @@
   (if (any-propagators-alerted?)
       (set! *last-value-of-run* (with-process-abortion run-alerted)))
   *last-value-of-run*)
+
+(define (make-round-robin-scheduler)
+  (let ((propagators-left (make-eq-oset)))
+    (define (run-alerted)
+      (let ((temp (oset-members propagators-left)))
+	(clear)
+	(for-each (lambda (propagator)
+		    (propagator))
+		  temp))
+      (if (any-alerted?)
+	  (run-alerted)
+	  'done))
+
+    (define (alert-one propagator)
+      (oset-insert propagators-left propagator))
+
+    (define (clear)
+      (oset-clear! propagators-left))
+
+    (define (any-alerted?)
+      (< 0 (oset-count propagators-left)))
+
+    (define (me message)
+      (cond ((eq? message 'run-alerted) run-alerted)
+	    ((eq? message 'alert-one) alert-one)
+	    ((eq? message 'clear) clear)
+	    ((eq? message 'any-alerted?) any-alerted?)))
+    me))
