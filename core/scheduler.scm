@@ -56,23 +56,17 @@
 ;;;   (run)                       run scheduled jobs until done
 ;;;   (abort-process x)           terminate the run returning x
 
-(define *alerted-propagators*)
+(define *scheduler*)
 (define *abort-process*)
 (define *last-value-of-run*)
 (define *propagators-ever-alerted*)
 
 (define (initialize-scheduler)
-  (clear-alerted-propagators!)
+  (set! *scheduler* (make-round-robin-scheduler))
   (set! *abort-process* #f)
   (set! *last-value-of-run* 'done)
   (set! *propagators-ever-alerted* (make-eq-oset))
   'ok)
-
-(define (any-propagators-alerted?)
-  (< 0 (oset-count *alerted-propagators*)))
-
-(define (clear-alerted-propagators!)
-  (set! *alerted-propagators* (make-eq-oset)))
 
 (define (alert-propagators propagators)
   (for-each
@@ -80,19 +74,16 @@
      (if (not (procedure? propagator))
          (error "Alerting a non-procedure" propagator))
      (oset-insert *propagators-ever-alerted* propagator)
-     (oset-insert *alerted-propagators* propagator))
+     ((*scheduler* 'alert-one) propagator))
    (listify propagators))
   #f)
 (define alert-propagator alert-propagators)
-
+
 (define (all-propagators)
   (oset-members *propagators-ever-alerted*))
 
 (define (alert-all-propagators!)
   (alert-propagators (all-propagators)))
-
-(define (the-alerted-propagators)
-  (oset-members *alerted-propagators*))
 
 (define (with-process-abortion thunk)
   (call-with-current-continuation
@@ -107,32 +98,24 @@
       (ppc `(calling abort-process with ,value and ,*abort-process*)))
   (if *abort-process*
       ;; if the propagator is running
-      (begin (clear-alerted-propagators!)
+      (begin (*scheduler* 'clear!)
              (*abort-process* value))
       ;; if the user is setting up state
-      (begin (clear-alerted-propagators!)
+      (begin (*scheduler* 'clear!)
              (set! *last-value-of-run* value))))
 
-(define (run-alerted)
-  (let ((temp (the-alerted-propagators)))
-    (clear-alerted-propagators!)
-    (for-each (lambda (propagator)
-                (propagator))
-              temp))
-  (if (any-propagators-alerted?)
-      (run-alerted)
-      'done))
-
 (define (run)
-  (if (any-propagators-alerted?)
-      (set! *last-value-of-run* (with-process-abortion run-alerted)))
+  (define (do-run)
+    (*scheduler* 'run))
+  (if (not (*scheduler* 'done?))
+      (set! *last-value-of-run* (with-process-abortion do-run)))
   *last-value-of-run*)
 
 (define (make-round-robin-scheduler)
   (let ((propagators-left (make-eq-oset)))
     (define (run-alerted)
       (let ((temp (oset-members propagators-left)))
-	(clear)
+	(clear!)
 	(for-each (lambda (propagator)
 		    (propagator))
 		  temp))
@@ -143,15 +126,15 @@
     (define (alert-one propagator)
       (oset-insert propagators-left propagator))
 
-    (define (clear)
+    (define (clear!)
       (oset-clear! propagators-left))
 
     (define (any-alerted?)
       (< 0 (oset-count propagators-left)))
 
     (define (me message)
-      (cond ((eq? message 'run-alerted) run-alerted)
+      (cond ((eq? message 'run) (run-alerted))
 	    ((eq? message 'alert-one) alert-one)
-	    ((eq? message 'clear) clear)
-	    ((eq? message 'any-alerted?) any-alerted?)))
+	    ((eq? message 'clear!) (clear!))
+	    ((eq? message 'done?) (not (any-alerted?)))))
     me))

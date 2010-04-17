@@ -315,7 +315,7 @@
 (define (with-independent-scheduler thunk)
   ;; TODO This really belongs split across scheduler.scm,
   ;; metadata.scm, and search.scm in core.
-  (fluid-let ((*alerted-propagators* #f)
+  (fluid-let ((*scheduler* #f)
 	      (*abort-process* #f)
 	      (*last-value-of-run* #f)
 	      (*propagators-ever-alerted* #f)
