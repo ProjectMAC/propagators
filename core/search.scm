@@ -21,6 +21,8 @@
 
 (declare (usual-integrations make-cell))
 
+(define *false-premise-starts-out* #t)
+
 (define (binary-amb cell)
   (let ((true-premise (make-hypothetical))
         (false-premise (make-hypothetical)))
@@ -44,6 +46,9 @@
                 (pairwise-resolve reasons-against-true
                                   reasons-against-false))))))
     (eq-label! amb-choose 'name 'amb-choose 'outputs (list cell))
+    (if *false-premise-starts-out*
+	;; Let's have the false premise start unbelieved.
+	(mark-premise-out! false-premise))
     ((constant (make-tms
                 (list (supported #t (list true-premise))
                       (supported #f (list false-premise)))))

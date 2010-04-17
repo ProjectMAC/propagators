@@ -54,7 +54,7 @@
      " \-/ \-/   \-O-----/ \n"
      "+ + + + + + + + + + +\n"))
    *number-of-calls-to-fail*
-   (produces 457)))
+   (produces (if *false-premise-starts-out* 439 457))))
 
 (define-test (medium-masyu)
   (interaction
@@ -93,7 +93,7 @@
      "       \-/   \-O---------X X---/ \-/ \n"
      "+ + + + + + + + + + + + + + + + + + +\n"))
    *number-of-calls-to-fail*
-   (produces 855)))
+   (produces (if *false-premise-starts-out* 930 855))))
 
 #;
 (define-test (large-masyu)
@@ -137,7 +137,8 @@
        #(knight sir-jules     ,s8 ,h8)
        #(knight sir-balthus   ,s9 ,h9))
      (map v&s-value (map tms-query (show-time find-solution)))))
-   (check (= 922 *number-of-calls-to-fail*))))
+   (check (= *number-of-calls-to-fail*
+	     (if *false-premise-starts-out* 894 922)))))
 
 (in-test-group
  albatross-conundrum
