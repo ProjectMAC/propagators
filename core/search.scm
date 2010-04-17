@@ -46,6 +46,9 @@
                 (pairwise-resolve reasons-against-true
                                   reasons-against-false))))))
     (eq-label! amb-choose 'name 'amb-choose 'outputs (list cell))
+    ;; This only affects run order, and only in some experimental
+    ;; schedulers
+    (tag-slow! amb-choose)
     (if *false-premise-starts-out*
 	;; Let's have the false premise start unbelieved.
 	(mark-premise-out! false-premise))
