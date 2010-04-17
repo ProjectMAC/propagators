@@ -46,6 +46,20 @@
      (hash-table/put! (oset-table oset) thing #t)
      (set-oset-list! oset (cons thing (oset-list oset))))))
 
+(define (oset-peek oset)
+  (if (= 0 (oset-count oset))
+      (error "Peeking empty oset" oset))
+  (if *reproducible-order*
+      (car (oset-list oset))
+      ;; TODO Really randomize this?
+      (car (hash-table/key-list (oset-table oset)))))
+
+(define (oset-pop! oset)
+  (let ((answer (oset-peek oset)))
+    (hash-table/remove! (oset-table oset) answer)
+    (set-oset-list! oset (cdr (oset-list oset)))
+    answer))
+
 (define (oset-members oset)
   (if *reproducible-order*
       (list-copy (oset-list oset))

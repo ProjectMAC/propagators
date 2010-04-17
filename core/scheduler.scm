@@ -142,3 +142,27 @@
 	    ((eq? message 'clear!) (clear!))
 	    ((eq? message 'done?) (not (any-alerted?)))))
     me))
+
+(define (make-stack-scheduler)
+  (let ((propagators-left (make-eq-oset)))
+    (define (run-alerted)
+      (if (any-alerted?)
+	  (begin ((oset-pop! propagators-left))
+		 (run-alerted))
+	  'done))
+
+    (define (alert-one propagator)
+      (oset-insert propagators-left propagator))
+
+    (define (clear!)
+      (oset-clear! propagators-left))
+
+    (define (any-alerted?)
+      (< 0 (oset-count propagators-left)))
+
+    (define (me message)
+      (cond ((eq? message 'run) (run-alerted))
+	    ((eq? message 'alert-one) alert-one)
+	    ((eq? message 'clear!) (clear!))
+	    ((eq? message 'done?) (not (any-alerted?)))))
+    me))
