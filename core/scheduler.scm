@@ -115,16 +115,13 @@
       (set! *last-value-of-run* (with-process-abortion do-run)))
   *last-value-of-run*)
 
-(define (make-round-robin-scheduler)
+(define (make-oset-scheduler policy)
   (let ((propagators-left (make-eq-oset)))
     (define (run-alerted)
-      (let ((temp (oset-members propagators-left)))
-	(clear!)
-	(for-each (lambda (propagator)
-		    (propagator))
-		  temp))
       (if (any-alerted?)
-	  (run-alerted)
+	  (begin
+	    (policy propagators-left)
+	    (run-alerted))
 	  'done))
 
     (define (alert-one propagator)
@@ -142,30 +139,20 @@
 	    ((eq? message 'clear!) (clear!))
 	    ((eq? message 'done?) (not (any-alerted?)))))
     me))
+
+(define (make-round-robin-scheduler)
+  (make-oset-scheduler
+   (lambda (propagators-left)
+     (let ((temp (oset-members propagators-left)))
+       (oset-clear! propagators-left)
+       (for-each (lambda (propagator)
+		   (propagator))
+		 temp)))))
 
 (define (make-stack-scheduler)
-  (let ((propagators-left (make-eq-oset)))
-    (define (run-alerted)
-      (if (any-alerted?)
-	  (begin ((oset-pop! propagators-left))
-		 (run-alerted))
-	  'done))
-
-    (define (alert-one propagator)
-      (oset-insert propagators-left propagator))
-
-    (define (clear!)
-      (oset-clear! propagators-left))
-
-    (define (any-alerted?)
-      (< 0 (oset-count propagators-left)))
-
-    (define (me message)
-      (cond ((eq? message 'run) (run-alerted))
-	    ((eq? message 'alert-one) alert-one)
-	    ((eq? message 'clear!) (clear!))
-	    ((eq? message 'done?) (not (any-alerted?)))))
-    me))
+  (make-oset-scheduler
+   (lambda (propagators-left)
+     ((oset-pop! propagators-left)))))
 
 (define (make-two-stack-scheduler)
   (let ((propagators-left (make-eq-oset))
