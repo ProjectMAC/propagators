@@ -144,9 +144,11 @@
 	(Re  (resistor))
 	(Cin (capacitor))
 	(Cout (capacitor))
-	(Q (NPN-bjt)))
-    (let ((+rail (node (the top Rb1) (the top Rc)))
-	  (-rail (node (the bottom Rb2) (the bottom Re)))
+	(Q (NPN-bjt))
+	(+rail (make-cell))
+	(-rail (make-cell)))
+    (let ((+rail-node (node (the top Rb1) (the top Rc) (wire +rail)))
+	  (-rail-node (node (the bottom Rb2) (the bottom Re) (wire -rail)))
 	  (en (node (the top Re) (the emitter Q)))
 	  (cn (node (the bottom Rc) (the top Cout) (the collector Q)))
 	  (bn (node (the bottom Rb1) (the top Rb2) (the base Q)
@@ -158,7 +160,11 @@
 				       (the resistance Rb2)))
 	    (output-impedance ...)
 	    (power (sum (map (the power) (list Rb1 Rb2 Rc Re Cin Cout Q)))))
-	(voltage-divider-slice Rb1 Rb2)))))
+	(voltage-divider-slice Rb1 Rb2)
+	(inspectable-object
+	 Rb1 Rb2 Rc Re Cin Cout Q +rail -rail sigin sigout
+	 gain input-impedance output-impedance power ; Also nodes?
+	 )))))
 
 (define (breadboard)
   (let ((VCC (bias-voltage-source))
@@ -170,3 +176,21 @@
 	  (+V (node (the top VCC) (the +rail amp)))
 	  (in (node (the top vin) (the sigin amp)))
 	  (out (node (the top vout) (the sigout amp)))))))
+
+(define (ce-amplifier)
+  (let ((+rail-node (node))
+	(-rail-node (node))
+	(en (node))
+	(cn (node))
+	(bn (node)))
+    (let ((Rb1 (resistor (wire +rail-node) (wire bn)))
+	  (Rb2 (resistor bn -rail-node))
+	  (Rc  (resistor +rail-node cn))
+	  (Re  (resistor en -rail-node))
+	  (Cin (capacitor sigin bn))
+	  (Cout (capacitor cn sigout))
+	  (Q   (NPN-bjt en bn cn))))))
+
+;;; It seems that there is no good way to avoid naming the terminals.
+;;; The nodes are not like cells --- they desperately need to know how
+;;; many things are attached to them.
