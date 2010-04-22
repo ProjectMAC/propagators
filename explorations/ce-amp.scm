@@ -56,6 +56,31 @@
      )
     ))
 
+;;; Is this another way to write the same thing as the preceding form?
+(define (ce-amplifier +rail -rail sigin sigout)
+  (let-nodes (en bn cn)
+    (let-cells (input-impedance output-impedance maximum-output-swing gain)
+      (let ((Rb1 (named resistor 'Rb1)) ; This means Rb1 can be used many times
+	    (Rb2 (named resistor 'Rb2))
+	    (Rc  (named resistor 'Rc))
+	    (Re  (named resistor 'Re))
+	    (Cin (named capacitor 'Cin))
+	    (Cout (named capacitor 'Cout))
+	    (Q   (named NPN-bjt 'Q)))
+	(Rb1 +rail bn)
+	(Rb2 bn -rail)
+	(Rc  +rail cn)
+	(Re  en -rail)
+	(Cin sigin bn)
+	(Cout cn sigout)
+	(Q NPN-bjt)
+	(= gain (/ (the resistance Rc) (the resistance Re)))
+	(= input-impedance (parallel (the resistance Rb1)
+				     (the resistance Rb2)))
+	(= output-impedance ...)
+	(voltage-divider-slice Rb1 Rb2)
+	))))
+
 (define (breadboard)
   (circuit (+V gnd in out) ()
     (parts
