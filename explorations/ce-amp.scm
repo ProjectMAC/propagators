@@ -40,7 +40,8 @@
      (= input-impedance
 	(parallel (the resistance Rb1)
 		  (the resistance Rb2)))
-     (= output-impedance ...))
+     (= output-impedance
+	(the resistance Rc)))
     
     (hint
      (s1 (slice voltage-divider Rb1 Rb2)))
