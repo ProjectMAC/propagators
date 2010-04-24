@@ -185,18 +185,67 @@
 				(list name ...)))))
 
 (define (e:inspectable-object-func names things)
-  (e:constant
-   (make-element-descriptor
-    (map cons names things))))
+  (let ((answer (make-cell)))
+    (propagator things
+      (lambda ()
+	(add-content answer
+	  (make-element-descriptor
+	   (map cons names (map content things))))))
+    (for-each
+     (lambda (name thing)
+       (propagator answer
+	 (lambda ()
+	   (if (nothing? (content answer))
+	       'ok
+	       (add-content thing
+		 (element-descriptor-lookup name (content answer)))))))
+     names things)
+    answer))
 
 (define-structure element-descriptor
   alist)
+
+(define (merge-element-descriptors ed1 ed2)
+  (make-element-descriptor
+   (merge-alist (element-descriptor-alist ed1)
+		(element-descriptor-alist ed2))))
+
+(define (element-descriptor-equal? ed1 ed2)
+  (same-alist? (element-descriptor-alist ed1)
+	       (element-descriptor-alist ed2)))
+
+(define (same-alist? alist1 alist2)
+  (lset= (lambda (pair1 pair2)
+	   (and (eq? (car pair1) (car pair2))
+		(equivalent? (cdr pair1) (cdr pair2))))
+	 alist1 alist2))
+
+(define (merge-alist alist1 alist2)
+  (let ((keys (lset-union eq? (map car alist1) (map car alist2))))
+    (define (get key alist)
+      (let ((binding (assq key alist)))
+	(if binding
+	    (cdr binding)
+	    nothing)))
+    (map (lambda (key)
+	   (merge (get key alist1) (get key alist2)))
+	 keys)))
+
+(defhandler merge
+  (with-equality merge-element-descriptors element-descriptor-equal?)
+  element-descriptor? element-descriptor?)
 
 (define (element-descriptor-lookup name desc)
   (let ((mumble (assq name (element-descriptor-alist desc))))
     (if mumble
 	(cdr mumble)
-	(error "Name not found" name desc))))
+	nothing)))
+
+(define (filter-element-descriptor names desc)
+  (make-element-descriptor
+   (filter (lambda (pair)
+	     (not (memq (car pair) names)))
+	   (element-descriptor-alist desc))))
 
 (define-syntax e:append-inspectable-object
   (syntax-rules ()
@@ -206,13 +255,29 @@
 
 (define (e:append-inspectable-object-func sub-object names things)
   (let ((answer (make-cell)))
-    (propagator sub-object
+    (propagator (cons sub-object things)
       (lambda ()
 	(if (nothing? (content sub-object))
 	    'ok
 	    (add-content answer
-              (append-inspectable-object (content sub-object)
-					 (map cons names things))))))
+              (append-inspectable-object
+	       (content sub-object)
+	       (map cons names (map content things)))))))
+    (for-each
+     (lambda (name thing)
+       (propagator answer
+	 (lambda ()
+	   (if (nothing? (content answer))
+	       'ok
+	       (add-content thing
+		 (element-descriptor-lookup name (content answer)))))))
+     names things)
+    (propagator answer
+      (lambda ()
+	(if (nothing? (content answer))
+	    'ok
+	    (add-content sub-object
+              (filter-element-descriptor names (content answer))))))
     answer))
 
 (define (append-inspectable-object sub-object new-names)
@@ -234,6 +299,10 @@
 	    'ok
 	    (add-content answer
               (element-descriptor-lookup name (content thing))))))
+    (propagator answer
+      (lambda ()
+	(add-content thing
+          (make-element-descriptor `((,name . ,(content answer)))))))
     answer))
 
 (define (resistor-circuit)
