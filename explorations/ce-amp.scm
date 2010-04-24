@@ -166,7 +166,7 @@
     (c:+ current it2 (e:constant 0))
     (let-cells ((voltage (e:- et1 et2)))
       (c:* current voltage power)
-      (e:append-inspectable-object
+      (ce:append-inspectable-object
        (vic voltage current)
        t1 t2 power voltage current))))
 
@@ -177,33 +177,42 @@
     (lambda (v i)
       (c:== strength v)
       (e:inspectable-object strength))))
-
-(define-syntax e:inspectable-object
-  (syntax-rules ()
-    ((_ name ...)
-     (e:inspectable-object-func (list 'name ...)
-				(list name ...)))))
-
-(define (e:inspectable-object-func names things)
-  (let ((answer (make-cell)))
-    (propagator things
-      (lambda ()
-	(add-content answer
-	  (make-element-descriptor
-	   (map cons names (map content things))))))
-    (for-each
-     (lambda (name thing)
-       (propagator answer
-	 (lambda ()
-	   (if (nothing? (content answer))
-	       'ok
-	       (add-content thing
-		 (element-descriptor-lookup name (content answer)))))))
-     names things)
-    answer))
-
+
 (define-structure element-descriptor
   alist)
+
+(define (make-element-descriptor-from . names)
+  (lambda items
+    (make-element-descriptor (map cons names items))))
+
+(define (element-descriptor-lookup name desc)
+  (let ((mumble (assq name (element-descriptor-alist desc))))
+    (if mumble
+	(cdr mumble)
+	nothing)))
+
+(define (element-descriptor-get name)
+  (lambda (ed)
+    (element-descriptor-lookup name ed)))
+
+(define (append-element-descriptor ed1 ed2)
+  (make-element-descriptor
+   (append (element-descriptor-alist ed1)
+	   (element-descriptor-alist ed2))))
+
+(define (filter-element-descriptor names)
+  (lambda (desc)
+    (make-element-descriptor
+     (filter (lambda (pair)
+	       (memq (car pair) names))
+	     (element-descriptor-alist desc)))))
+
+(define (filter-out-element-descriptor names)
+  (lambda (desc)
+    (make-element-descriptor
+     (filter (lambda (pair)
+	       (not (memq (car pair) names)))
+	     (element-descriptor-alist desc)))))
 
 (define (merge-element-descriptors ed1 ed2)
   (make-element-descriptor
@@ -234,55 +243,51 @@
 (defhandler merge
   (with-equality merge-element-descriptors element-descriptor-equal?)
   element-descriptor? element-descriptor?)
+
+(define (function->unpacking->propagator-constructor f)
+  (function->propagator-constructor
+   (nary-unpacking f)))
 
-(define (element-descriptor-lookup name desc)
-  (let ((mumble (assq name (element-descriptor-alist desc))))
-    (if mumble
-	(cdr mumble)
-	nothing)))
-
-(define (filter-element-descriptor names desc)
-  (make-element-descriptor
-   (filter (lambda (pair)
-	     (not (memq (car pair) names)))
-	   (element-descriptor-alist desc))))
-
-(define-syntax e:append-inspectable-object
+(define-syntax e:inspectable-object
   (syntax-rules ()
-    ((_ sub-object name ...)
-     (e:append-inspectable-object-func sub-object (list 'name ...)
-				       (list name ...)))))
+    ((_ name ...)
+     (e:inspectable-object-func (list 'name ...)
+				(list name ...)))))
 
-(define (e:append-inspectable-object-func sub-object names things)
+(define (e:inspectable-object-func names things)
   (let ((answer (make-cell)))
-    (propagator (cons sub-object things)
-      (lambda ()
-	(if (nothing? (content sub-object))
-	    'ok
-	    (add-content answer
-              (append-inspectable-object
-	       (content sub-object)
-	       (map cons names (map content things)))))))
+    (apply
+     (function->unpacking->propagator-constructor
+      (apply make-element-descriptor-from names))
+     (append things (list answer)))
     (for-each
      (lambda (name thing)
-       (propagator answer
-	 (lambda ()
-	   (if (nothing? (content answer))
-	       'ok
-	       (add-content thing
-		 (element-descriptor-lookup name (content answer)))))))
+       ((function->unpacking->propagator-constructor
+	 (element-descriptor-get name))
+	answer thing))
      names things)
-    (propagator answer
-      (lambda ()
-	(if (nothing? (content answer))
-	    'ok
-	    (add-content sub-object
-              (filter-element-descriptor names (content answer))))))
     answer))
 
-(define (append-inspectable-object sub-object new-names)
-  (make-element-descriptor
-   (append new-names (element-descriptor-alist sub-object))))
+(define-syntax ce:append-inspectable-object
+  (syntax-rules ()
+    ((_ sub-object name ...)
+     (ce:append-inspectable-object-func
+      (list 'name ...)
+      sub-object
+      (e:inspectable-object name ...)))))
+
+(define (ce:append-inspectable-object-func names sub-object addition)
+  (let ((answer (make-cell)))
+    ((function->unpacking->propagator-constructor
+      append-element-descriptor)
+     sub-object addition answer)
+    ((function->unpacking->propagator-constructor
+      (filter-element-descriptor names))
+     answer addition)
+    ((function->unpacking->propagator-constructor
+      (filter-out-element-descriptor names))
+     answer sub-object)
+    answer))
 
 (define-syntax the
   (syntax-rules ()
@@ -293,16 +298,12 @@
 
 (define (the-func name thing)
   (let ((answer (make-cell)))
-    (propagator thing
-      (lambda ()
-	(if (nothing? (content thing))
-	    'ok
-	    (add-content answer
-              (element-descriptor-lookup name (content thing))))))
-    (propagator answer
-      (lambda ()
-	(add-content thing
-          (make-element-descriptor `((,name . ,(content answer)))))))
+    ((function->unpacking->propagator-constructor
+      (element-descriptor-get name))
+     thing answer)
+    ((function->unpacking->propagator-constructor
+      (make-element-descriptor-from name))
+     answer thing)
     answer))
 
 (define (resistor-circuit)
