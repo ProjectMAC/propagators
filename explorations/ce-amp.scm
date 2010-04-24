@@ -178,12 +178,19 @@
       (c:== strength v)
       (e:inspectable-object strength))))
 
-(define-structure element-descriptor
+(define-structure
+  (element-descriptor
+   (print-procedure
+    (simple-unparser-method
+     'e-d (lambda (ed)
+	    (element-descriptor-alist ed)))))
   alist)
 
 (define (make-element-descriptor-from . names)
-  (lambda items
-    (make-element-descriptor (map cons names items))))
+  (name!
+   (lambda items
+     (make-element-descriptor (map cons names items)))
+   `(make-element-descriptor-from ,@names)))
 
 (define (element-descriptor-lookup name desc)
   (let ((mumble (assq name (element-descriptor-alist desc))))
@@ -192,27 +199,34 @@
 	nothing)))
 
 (define (element-descriptor-get name)
-  (lambda (ed)
-    (element-descriptor-lookup name ed)))
+  (name!
+   (lambda (ed)
+     (element-descriptor-lookup name ed))
+   `(element-descriptor-get ,name)))
 
 (define (append-element-descriptor ed1 ed2)
   (make-element-descriptor
    (append (element-descriptor-alist ed1)
 	   (element-descriptor-alist ed2))))
+(propagatify append-element-descriptor)
 
 (define (filter-element-descriptor names)
-  (lambda (desc)
-    (make-element-descriptor
-     (filter (lambda (pair)
-	       (memq (car pair) names))
-	     (element-descriptor-alist desc)))))
+  (name!
+   (lambda (desc)
+     (make-element-descriptor
+      (filter (lambda (pair)
+		(memq (car pair) names))
+	      (element-descriptor-alist desc))))
+   `(filter-for ,@names)))
 
 (define (filter-out-element-descriptor names)
-  (lambda (desc)
-    (make-element-descriptor
-     (filter (lambda (pair)
-	       (not (memq (car pair) names)))
-	     (element-descriptor-alist desc)))))
+  (name!
+   (lambda (desc)
+     (make-element-descriptor
+      (filter (lambda (pair)
+		(not (memq (car pair) names)))
+	      (element-descriptor-alist desc))))
+   `(filter-out ,@names)))
 
 (define (merge-element-descriptors ed1 ed2)
   (make-element-descriptor
@@ -255,7 +269,7 @@
 				(list name ...)))))
 
 (define (e:inspectable-object-func names things)
-  (let ((answer (make-cell)))
+  (let ((answer (make-named-cell 'cell)))
     (apply
      (function->unpacking->propagator-constructor
       (apply make-element-descriptor-from names))
@@ -277,10 +291,8 @@
       (e:inspectable-object name ...)))))
 
 (define (ce:append-inspectable-object-func names sub-object addition)
-  (let ((answer (make-cell)))
-    ((function->unpacking->propagator-constructor
-      append-element-descriptor)
-     sub-object addition answer)
+  (let ((answer (make-named-cell 'cell)))
+    (p:append-element-descriptor sub-object addition answer)
     ((function->unpacking->propagator-constructor
       (filter-element-descriptor names))
      answer addition)
@@ -297,7 +309,7 @@
      (the-func 'name (the form ...)))))
 
 (define (the-func name thing)
-  (let ((answer (make-cell)))
+  (let ((answer (make-named-cell 'cell)))
     ((function->unpacking->propagator-constructor
       (element-descriptor-get name))
      thing answer)
@@ -323,6 +335,11 @@
 
 (define-structure
   (terminal
+   (print-procedure
+    (simple-unparser-method
+     'terminal (lambda (terminal)
+		 (list (terminal-potential terminal)
+		       (terminal-current terminal)))))
    (constructor make-terminal)
    (constructor make-terminal-from-potential (potential))
    (constructor make-terminal-from-current (current)))
