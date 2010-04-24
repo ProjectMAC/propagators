@@ -164,7 +164,7 @@
 	      (et2 (ce:potential t2))
 	      (it2 (ce:current t2)))
     (c:+ current it2 (e:constant 0))
-    (let-cells ((voltage (e:- et1 et2)))
+    (let-cells ((voltage (ce:+ et2 %% et1)))
       (c:* current voltage power)
       (ce:append-inspectable-object
        (vic voltage current)
