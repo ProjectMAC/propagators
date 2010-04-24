@@ -138,4 +138,115 @@
 		     (the -rail amp)))
 	  (+V (node (the t1 VCC) (the +rail amp)))
 	  (in (node (the t1 vin) (the sigin amp)))
-	  (out (node (the t1 vout) (the sigout amp)))))))
+	  (out (node (the t1 vout) (the sigout amp))))
+      (e:inspectable-object VCC vin vout amp gnd +V in out))))
+
+(define (resistor #!optional t1 t2 resistance power)
+  (if (default-object? resistance)
+      (set! resistance (make-cell)))
+  (two-terminal-device t1 t2 power
+    ;; TODO Properly propagatify this?
+    (lambda (v i)
+      (c:* i resistance v)
+      (e:inspectable-object resistance))))
+
+(define (two-terminal-device #!optional t1 t2 power vic)
+  (if (default-object? t1)
+      (set! t1 (make-cell)))
+  (if (default-object? t2)
+      (set! t2 (make-cell)))
+  (if (default-object? vic)
+      (set! vic (make-cell)))
+  (if (default-object? power)
+      (set! power (make-cell)))
+  (let-cells ((et1 (ce:potential t1))
+	      (current (ce:current t1))
+	      (et2 (ce:potential t2))
+	      (it2 (ce:current t2)))
+    (c:+ current it2 (e:constant 0))
+    (let-cells ((voltage (e:- et1 et2)))
+      (c:* current voltage power)
+      (e:append-inspectable-object
+       (vic voltage current)
+       t1 t2 power voltage current))))
+
+(define (voltage-source #!optional t1 t2 strength power)
+  (if (default-object? strength)
+      (set! strength (make-cell)))
+  (two-terminal-device t1 t2 power
+    (lambda (v i)
+      (c:== strength v)
+      (e:inspectable-object strength))))
+
+(define-syntax e:inspectable-object
+  (syntax-rules ()
+    ((_ name ...)
+     (e:inspectable-object-func (list 'name ...)
+				(list name ...)))))
+
+(define (e:inspectable-object-func names things)
+  (e:constant
+   (make-element-descriptor
+    (map cons names things))))
+
+(define-structure element-descriptor
+  alist)
+
+(define (element-descriptor-lookup name desc)
+  (let ((mumble (assq name (element-descriptor-alist desc))))
+    (if mumble
+	(cdr mumble)
+	(error "Name not found" name desc))))
+
+(define-syntax e:append-inspectable-object
+  (syntax-rules ()
+    ((_ sub-object name ...)
+     (e:append-inspectable-object-func sub-object (list 'name ...)
+				       (list name ...)))))
+
+(define (e:append-inspectable-object-func sub-object names things)
+  (let ((answer (make-cell)))
+    (propagator sub-object
+      (lambda ()
+	(if (nothing? (content sub-object))
+	    'ok
+	    (add-content answer
+              (append-inspectable-object (content sub-object)
+					 (map cons names things))))))
+    answer))
+
+(define (append-inspectable-object sub-object new-names)
+  (make-element-descriptor
+   (append new-names (element-descriptor-alist sub-object))))
+
+(define-syntax the
+  (syntax-rules ()
+    ((_ thing)
+     thing)
+    ((_ name form ...)
+     (the-func 'name (the form ...)))))
+
+(define (the-func name thing)
+  (let ((answer (make-cell)))
+    (propagator thing
+      (lambda ()
+	(if (nothing? (content thing))
+	    'ok
+	    (add-content answer
+              (element-descriptor-lookup name (content thing))))))
+    answer))
+
+(define (resistor-circuit)
+  (let-cells ((R (resistor))
+	      (V (voltage-source)))
+    (let-cells ((n1 (node (the t1 V) (the t1 R)))
+		(n2 (node (the t2 V) (the t2 R))))
+      ((constant 6) (the strength V))
+      ((constant 0) (the potential n2))
+      (e:inspectable-object R V n1 n2))))
+
+(define (node . terminals)
+  ((constant 0) (reduce ce:+ (e:constant 0) (map ce:current terminals)))
+  (let-cell potential
+    (apply c:== potential (map ce:potential terminals))
+    (e:inspectable-object potential)))
