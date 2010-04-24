@@ -250,3 +250,33 @@
   (let-cell potential
     (apply c:== potential (map ce:potential terminals))
     (e:inspectable-object potential)))
+
+(define-structure
+  (terminal
+   (constructor make-terminal)
+   (constructor make-terminal-from-potential (potential))
+   (constructor make-terminal-from-current (current)))
+  (potential nothing)
+  (current nothing))
+
+(slotful-information-type
+ terminal? make-terminal terminal-potential terminal-current)
+
+(propagatify terminal-potential)
+(propagatify terminal-current)
+
+(propagatify make-terminal)
+(propagatify make-terminal-from-potential)
+(propagatify make-terminal-from-current)
+
+(define (c:potential terminal potential)
+  (p:terminal-potential terminal potential)
+  (p:make-terminal-from-potential potential terminal))
+
+(define ce:potential (functionalize c:potential))
+
+(define (c:current terminal current)
+  (p:terminal-current terminal current)
+  (p:make-terminal-from-current current terminal))
+
+(define ce:current (functionalize c:current))
