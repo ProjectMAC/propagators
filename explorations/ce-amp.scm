@@ -271,7 +271,7 @@
 (define (e:inspectable-object-func names things)
   (let ((answer (make-named-cell 'cell)))
     (apply
-     (function->unpacking->propagator-constructor
+     (function->propagator-constructor
       (apply make-element-descriptor-from names))
      (append things (list answer)))
     (for-each
@@ -313,7 +313,7 @@
     ((function->unpacking->propagator-constructor
       (element-descriptor-get name))
      thing answer)
-    ((function->unpacking->propagator-constructor
+    ((function->propagator-constructor
       (make-element-descriptor-from name))
      answer thing)
     answer))
