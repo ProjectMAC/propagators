@@ -228,7 +228,7 @@
 	    (cdr binding)
 	    nothing)))
     (map (lambda (key)
-	   (merge (get key alist1) (get key alist2)))
+	   (cons key (merge (get key alist1) (get key alist2))))
 	 keys)))
 
 (defhandler merge
