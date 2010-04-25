@@ -44,22 +44,25 @@
  ;Value: 2
 |#
 
+(define (terminal-equivalence ok? t1 t2)
+  (conditional-wire ok? (ce:current t1) (ce:current t2))
+  (conditional-wire ok? (ce:potential t1) (ce:potential t2)))
 
 (define (voltage-divider-slice R1 R2)
-  ;; 1. Need to make this contingent on zeroness of output current
-  ;; or maybe approximately correct based on residual current.
-  ;; 2. Also need to verify that (the t2 R1) and (the t1 R2) have 
-  ;; a node in common.
+  ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
+  ;; in common.
   (let-cells ((Requiv (resistor))
 	      (ok? (e:= (e:+ (e:terminal-current (the t2 R1))
 			     (e:terminal-current (the t1 R2)))
 			0)))
-    ((constant #t) ok?)
+    ;; Maybe this should really be guessing the value of the output
+    ;; current...  And applying this model if it's zero...
+    (binary-amb ok?)
     (c:+ (the resistance R1)
 	 (the resistance R2)
 	 (the resistance Requiv))
-    (conditional-wire ok? (the t1 R1) (the t1 Requiv))
-    (conditional-wire ok? (the t2 R2) (the t2 Requiv))))
+    (terminal-equivalence ok? (the t1 R1) (the t1 Requiv))
+    (terminal-equivalence ok? (the t2 R2) (the t2 Requiv))))
 
 (define (voltage-divider-circuit)
   (let-cells ((R1 (resistor))
