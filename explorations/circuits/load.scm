@@ -27,7 +27,7 @@
 (define (load-relative filename)
   (self-relatively (lambda () (load filename))))
 
-(load-relative "../extensions/load.scm")
+(load-relative "../../extensions/load.scm")
 
 (for-each load-relative
  '("infrastructure"
