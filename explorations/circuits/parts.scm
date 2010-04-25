@@ -17,11 +17,26 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
+(define-structure 
+  (node-premise (type vector) (named 'node-premise)
+                (print-procedure #f) (safe-accessors #t))
+  name)
+
 (define (node . terminals)
-  ((constant 0) (reduce ce:+ (e:constant 0) (map ce:current terminals)))
-  (let-cell potential
+  (define name #!default)
+  (if (and (not (null? terminals))
+	   (not (cell? (car terminals))))
+      (begin (set! name (car terminals))
+	     (set! terminals (cdr terminals))))
+  (let-cells (potential
+	      (residual
+	       (reduce ce:+ (e:constant 0) (map ce:current terminals)))
+	      capped?)
+    (add-content capped?
+      (make-tms (supported #t (list (make-node-premise name)))))
     (apply c:== potential (map ce:potential terminals))
-    (e:inspectable-object potential)))
+    (conditional-wire capped? residual (e:constant 0))
+    (e:inspectable-object potential residual capped?)))
 
 (define (two-terminal-device #!optional t1 t2 power vic)
   (if (default-object? t1)
