@@ -20,8 +20,8 @@
 (define (resistor-circuit)
   (let-cells ((R (resistor))
 	      (V (voltage-source)))
-    (let-cells ((n1 (node (the t1 V) (the t1 R)))
-		(n2 (node (the t2 V) (the t2 R))))
+    (let-cells ((n1 (node 'n1 (the t1 V) (the t1 R)))
+		(n2 (node 'n2 (the t2 V) (the t2 R))))
       ((constant 3) (the resistance R))
       ((constant 6) (the strength V))
       ((constant 0) (the potential n2))
@@ -41,20 +41,42 @@
  ;Value: done
 
  (content answer)
- ;Value: 2
+ ;Value: #(tms (#(supported 2 ()))) ; Doesn't depend on KCL!
+
+ (define-cell source-current (the current V test))
+ ;Value: source-current
+
+ (run)
+ ;Value: done
+
+ (content source-current)
+ ;Value 24: #(tms (#(supported -2 (#(node-premise n1))) #(supported -2 (#(node-premise n2)))))
+
 |#
+
+(define (assert p #!optional irritant)
+  (if (not p)
+      (error "Assertion failed" irritant)))
 
 (define (terminal-equivalence ok? t1 t2)
   (conditional-wire ok? (ce:current t1) (ce:current t2))
   (conditional-wire ok? (ce:potential t1) (ce:potential t2)))
 
-(define (voltage-divider-slice R1 R2)
+(define (voltage-divider-slice R1 node R2)
   ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
   ;; in common.
+  (define (allow-discrepancy capped-cell)
+    (let ((premises
+	   (apply append
+		  (map v&s-support
+		       (tms-values (content capped-cell))))))
+      (assert (= 1 (length premises)))
+      (assert (node-premise? (car premises)))
+      (kick-out! (car premises))))
   (let-cells ((Requiv (resistor))
-	      (ok? (e:= (e:+ (e:terminal-current (the t2 R1))
-			     (e:terminal-current (the t1 R2)))
-			0)))
+	      (ok? (e:< (e:abs (the residual node))
+			(e:abs (e:* 1e-2 (the current R1))))))
+    (allow-discrepancy (the capped? node))
     ;; Maybe this should really be guessing the value of the output
     ;; current...  And applying this model if it's zero...
     (binary-amb ok?)
@@ -93,9 +115,15 @@
  (content answer)
  ;Value: #(*the-nothing*)
 
- (voltage-divider-slice (the R1 test) (the R2 test))
+ (voltage-divider-slice (the R1 test) (the n2 test) (the R2 test))
+ ;Value: #f
+
  (run)
+ ;Value: done
+ 
  (content answer)
+ ;Value 34: #(tms (#(supported 4 (#(hypothetical)))))
+
  
 |#
 
