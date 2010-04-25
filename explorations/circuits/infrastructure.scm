@@ -17,6 +17,20 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
+
+(define-syntax propagatify-direct
+  (sc-macro-transformer
+   (lambda (form use-env)
+     (let* ((propagatee-name (cadr form))
+	    (propagator-name (symbol 'p: propagatee-name))
+	    (expression-oriented-name (symbol 'e: propagatee-name)))
+       `(begin
+	  (define ,propagator-name
+	    (function->propagator-constructor
+	     (name! ,(close-syntax propagatee-name use-env) ',propagatee-name)))
+	  (define ,expression-oriented-name
+	    (functionalize ,propagator-name)))))))
+
 (define-structure
   (terminal
    (safe-accessors #t)
@@ -37,9 +51,9 @@
 (propagatify terminal-potential)
 (propagatify terminal-current)
 
-(propagatify make-terminal)
-(propagatify make-terminal-from-potential)
-(propagatify make-terminal-from-current)
+(propagatify-direct make-terminal)
+(propagatify-direct make-terminal-from-potential)
+(propagatify-direct make-terminal-from-current)
 
 (define (c:potential terminal potential)
   (p:terminal-potential terminal potential)
