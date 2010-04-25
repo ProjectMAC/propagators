@@ -197,8 +197,11 @@
   (eq-get thing 'slow))
 
 (define (tag-slow! thing)
-  (eq-put! thing 'slow #t))
+  (eq-put! thing 'slow #t)
+  thing)
 
+;;; These schedulers were much worse than round-robin on the slow
+;;; examples when tagging amb-choose propagators as slow.
 (define (make-two-stack-scheduler)
   (make-fast-slow-scheduler stack-policy stack-policy))
 
