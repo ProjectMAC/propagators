@@ -127,3 +127,52 @@
  
 |#
 
+(define (voltage-divider-circuit-2)
+  (let-cells ((R1 (resistor))
+	      (R2 (resistor))
+	      (load (resistor))
+	      (V (voltage-source)))
+    (let-cells ((n1 (node (the t1 V) (the t1 R1)))
+		(n2 (node (the t2 R1) (the t1 R2) (the t1 load)))
+		(n3 (node (the t2 V) (the t2 R2) (the t2 load))))
+      ((constant 2) (the resistance R1))
+      ((constant 4) (the resistance R2))
+      ((constant 1000) (the resistance load))
+      ((constant 6) (the strength V))
+      ((constant 0) (the potential n3))
+      (e:inspectable-object R1 R2 load V n1 n2 n3))))
+
+#|
+ (initialize-scheduler)
+ ;Value: 0
+
+ (define-cell test (voltage-divider-circuit-2))
+ ;Value: test
+
+ (define-cell answer (the potential n2 test))
+ ;Value: answer
+
+ (run)
+ ;Value: done
+
+ (content answer)
+ ;Value: #(*the-nothing*)
+
+ (voltage-divider-slice (the R1 test) (the n2 test) (the R2 test))
+ ;Value: #f
+
+ (run)
+ ;Value: done
+ 
+ (content answer)
+ ;Value 34: #(tms (#(supported 4 (#(hypothetical)))))
+
+ (define-cell load-current (the current load test))
+
+ (run)
+
+ (content load-current)
+ ;Value 36: #(tms (#(supported 1/250 (#(hypothetical)))))
+
+|#
+
