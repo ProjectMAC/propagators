@@ -19,6 +19,7 @@
 
 (define-structure
   (terminal
+   (safe-accessors #t)
    (print-procedure
     (simple-unparser-method
      'terminal (lambda (terminal)
@@ -54,6 +55,7 @@
 
 (define-structure
   (element-descriptor
+   (safe-accessors #t)
    (print-procedure
     (simple-unparser-method
      'e-d (lambda (ed)
