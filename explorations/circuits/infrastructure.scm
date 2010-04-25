@@ -1,0 +1,174 @@
+(define-structure
+  (terminal
+   (print-procedure
+    (simple-unparser-method
+     'terminal (lambda (terminal)
+		 (list (terminal-potential terminal)
+		       (terminal-current terminal)))))
+   (constructor make-terminal)
+   (constructor make-terminal-from-potential (potential))
+   (constructor make-terminal-from-current (current)))
+  (potential nothing)
+  (current nothing))
+
+(slotful-information-type
+ terminal? make-terminal terminal-potential terminal-current)
+
+(propagatify terminal-potential)
+(propagatify terminal-current)
+
+(propagatify make-terminal)
+(propagatify make-terminal-from-potential)
+(propagatify make-terminal-from-current)
+
+(define (c:potential terminal potential)
+  (p:terminal-potential terminal potential)
+  (p:make-terminal-from-potential potential terminal))
+
+(define ce:potential (functionalize c:potential))
+
+(define (c:current terminal current)
+  (p:terminal-current terminal current)
+  (p:make-terminal-from-current current terminal))
+
+(define ce:current (functionalize c:current))
+
+(define-structure
+  (element-descriptor
+   (print-procedure
+    (simple-unparser-method
+     'e-d (lambda (ed)
+	    (element-descriptor-alist ed)))))
+  alist)
+
+(define (make-element-descriptor-from . names)
+  (name!
+   (lambda items
+     (make-element-descriptor (map cons names items)))
+   `(make-element-descriptor-from ,@names)))
+
+(define (element-descriptor-lookup name desc)
+  (let ((mumble (assq name (element-descriptor-alist desc))))
+    (if mumble
+	(cdr mumble)
+	nothing)))
+
+(define (element-descriptor-get name)
+  (name!
+   (lambda (ed)
+     (element-descriptor-lookup name ed))
+   `(element-descriptor-get ,name)))
+
+(define (append-element-descriptor ed1 ed2)
+  (make-element-descriptor
+   (append (element-descriptor-alist ed1)
+	   (element-descriptor-alist ed2))))
+(propagatify append-element-descriptor)
+
+(define (filter-element-descriptor names)
+  (name!
+   (lambda (desc)
+     (make-element-descriptor
+      (filter (lambda (pair)
+		(memq (car pair) names))
+	      (element-descriptor-alist desc))))
+   `(filter-for ,@names)))
+
+(define (filter-out-element-descriptor names)
+  (name!
+   (lambda (desc)
+     (make-element-descriptor
+      (filter (lambda (pair)
+		(not (memq (car pair) names)))
+	      (element-descriptor-alist desc))))
+   `(filter-out ,@names)))
+
+(define (merge-element-descriptors ed1 ed2)
+  (make-element-descriptor
+   (merge-alist (element-descriptor-alist ed1)
+		(element-descriptor-alist ed2))))
+
+(define (element-descriptor-equal? ed1 ed2)
+  (same-alist? (element-descriptor-alist ed1)
+	       (element-descriptor-alist ed2)))
+
+(define (same-alist? alist1 alist2)
+  (lset= (lambda (pair1 pair2)
+	   (and (eq? (car pair1) (car pair2))
+		(equivalent? (cdr pair1) (cdr pair2))))
+	 alist1 alist2))
+
+(define (merge-alist alist1 alist2)
+  (let ((keys (lset-union eq? (map car alist1) (map car alist2))))
+    (define (get key alist)
+      (let ((binding (assq key alist)))
+	(if binding
+	    (cdr binding)
+	    nothing)))
+    (map (lambda (key)
+	   (cons key (merge (get key alist1) (get key alist2))))
+	 keys)))
+
+(defhandler merge
+  (with-equality merge-element-descriptors element-descriptor-equal?)
+  element-descriptor? element-descriptor?)
+
+(define (function->unpacking->propagator-constructor f)
+  (function->propagator-constructor
+   (nary-unpacking f)))
+
+(define-syntax e:inspectable-object
+  (syntax-rules ()
+    ((_ name ...)
+     (e:inspectable-object-func (list 'name ...)
+				(list name ...)))))
+
+(define (e:inspectable-object-func names things)
+  (let ((answer (make-named-cell 'cell)))
+    (apply
+     (function->propagator-constructor
+      (apply make-element-descriptor-from names))
+     (append things (list answer)))
+    (for-each
+     (lambda (name thing)
+       ((function->unpacking->propagator-constructor
+	 (element-descriptor-get name))
+	answer thing))
+     names things)
+    answer))
+
+(define-syntax ce:append-inspectable-object
+  (syntax-rules ()
+    ((_ sub-object name ...)
+     (ce:append-inspectable-object-func
+      (list 'name ...)
+      sub-object
+      (e:inspectable-object name ...)))))
+
+(define (ce:append-inspectable-object-func names sub-object addition)
+  (let ((answer (make-named-cell 'cell)))
+    (p:append-element-descriptor sub-object addition answer)
+    ((function->unpacking->propagator-constructor
+      (filter-element-descriptor names))
+     answer addition)
+    ((function->unpacking->propagator-constructor
+      (filter-out-element-descriptor names))
+     answer sub-object)
+    answer))
+
+(define-syntax the
+  (syntax-rules ()
+    ((_ thing)
+     thing)
+    ((_ name form ...)
+     (the-func 'name (the form ...)))))
+
+(define (the-func name thing)
+  (let ((answer (make-named-cell 'cell)))
+    ((function->unpacking->propagator-constructor
+      (element-descriptor-get name))
+     thing answer)
+    ((function->propagator-constructor
+      (make-element-descriptor-from name))
+     answer thing)
+    answer))
