@@ -79,6 +79,9 @@
     ;; Maybe this should really be guessing the value of the output
     ;; current...  And applying this model if it's zero...
     (binary-amb ok?)
+    ;; TODO This assumes that this slice is the only one interested in
+    ;; fiddling with the node's cap.
+    (c:not ok? (the capped? node))
     (c:+ (the resistance R1)
 	 (the resistance R2)
 	 (the resistance Requiv))
