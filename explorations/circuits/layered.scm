@@ -122,6 +122,10 @@
 (attach-layer-method merge
   (with-equality (binary-layered-unpacking merge) layered-equal?))
 
+(define-method generic-match ((pattern <vector>) (object rtd:layered))
+  (generic-match
+   pattern (list->vector (cons 'layered (layered-alist object)))))
+
 (define (in-layer name diagram)
   (lambda args
     (apply diagram
