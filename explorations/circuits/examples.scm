@@ -50,8 +50,7 @@
  ;Value: done
 
  (content source-current)
- ;Value 24: #(tms (#(supported -2 (#(node-premise n1))) #(supported -2 (#(node-premise n2)))))
-
+ ;Value 24: #(tms (#(supported -2 (#(node-premise n2))) #(supported -2 (#(node-premise n1)))))
 |#
 
 (define (assert p #!optional irritant)
@@ -123,8 +122,6 @@
  
  (content answer)
  ;Value 34: #(tms (#(supported 4 (#(hypothetical)))))
-
- 
 |#
 
 (define (voltage-divider-circuit-2)
@@ -173,7 +170,6 @@
 
  (content load-current)
  ;Value 36: #(tms (#(supported 1/250 (#(hypothetical)))))
-
 |#
 
 (define (resistor-circuit-2)
@@ -210,5 +206,4 @@
 
  (content source-current)
  ;Value 335: #[layered 335 (bias . #(tms (#(supported -2 (#(node-premise n2))) #(supported -2 (#(node-premise n1)))))) (incremental . #(tms (#(supported 0 (#(node-premise n2))) #(supported 0 (#(node-premise n1))))))]
-
 |#
