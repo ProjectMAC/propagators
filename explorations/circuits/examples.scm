@@ -210,3 +210,93 @@
  (content source-current)
  ;Value 335: #[layered 335 (bias . #(tms (#(supported -2 (#(node-premise n2))) #(supported -2 (#(node-premise n1)))))) (incremental . #(tms (#(supported 0 (#(node-premise n2))) #(supported 0 (#(node-premise n1))))))]
 |#
+
+(define (ce-amplifier #!optional sigin sigout +rail -rail)
+  (if (default-object? +rail)
+      (set! +rail (make-cell)))
+  (if (default-object? -rail)
+      (set! -rail (make-cell)))
+  (if (default-object? sigin)
+      (set! sigin (make-cell)))
+  (if (default-object? sigout)
+      (set! sigout (make-cell)))
+  (let-cells ((Rb1 (resistor))
+	      (Rb2 (resistor))
+	      (Rc  (resistor))
+	      (Re  (resistor))
+	      (Cin (capacitor sigin))
+	      (Cout (capacitor sigout))
+	      (Q (infinite-beta-bjt))
+	      (+rail-w (short-circuit +rail))
+	      (-rail-w (short-circuit -rail)))
+    (let-cells ((+rail-node (node (the t1 Rb1) (the t1 Rc) (the t2 +rail-w)))
+		(-rail-node (node (the t2 Rb2) (the t2 Re) (the t2 -rail-w)))
+		(en (node (the t1 Re) (the emitter Q)))
+		(cn (node (the t2 Rc) (the t2 Cout) (the collector Q)))
+		(bn (node (the t2 Rb1) (the t1 Rb2) (the base Q)
+			  (the t2 Cin))))
+      (let-cells ((gain (ce:* (the resistance Re) %% (the resistance Rc)))
+		  (input-impedance (ce:parallel (the resistance Rb1)
+						(the resistance Rb2)))
+		  (output-impedance (the resistance Rc))#;
+		  (power (sum (map (lambda (x) (the power x))
+				   (list Rb1 Rb2 Rc Re Cin Cout Q)))))
+	#; (voltage-divider-slice Rb1 bn Rb2)
+	(e:inspectable-object
+	 Rb1 Rb2 Rc Re Cin Cout Q +rail -rail sigin sigout
+	 gain input-impedance output-impedance #;power ; Also nodes?
+	 )))))
+
+(define (breadboard)
+  (let ((VCC (bias-voltage-source))
+	(vin (signal-voltage-source))
+	(vout (open-circuit))
+	(amp (ce-amplifier)))
+    (let ((gnd (node (the t2 VCC) (the t2 vin) (the t2 vout)
+		     (the -rail amp)))
+	  (+V (node (the t1 VCC) (the +rail amp)))
+	  (in (node (the t1 vin) (the sigin amp)))
+	  (out (node (the t1 vout) (the sigout amp))))
+      ((constant 0) (the potential gnd))
+      (e:inspectable-object VCC vin vout amp gnd +V in out))))
+
+(define (ce:parallel resistance1 resistance2)
+  (ce:* (ce:+ resistance1 resistance2) %% (ce:* resistance1 resistance2)))
+
+#|
+ (initialize-scheduler)
+ (define-cell test (breadboard))
+
+ (add-content (the resistance Rb1 amp test) 51000)
+ (add-content (the resistance Rb2 amp test) 10000)
+ (add-content (the resistance Re amp test) 1000)
+ (add-content (the capacitance Cin amp test) 10e-6)
+ (add-content (the capacitance Cout amp test) 10e-6)
+ #;
+ (add-content (the input-impedance amp test)
+	      (lambda (z)
+		(> (magnitude z) (& 5000 ohm))))
+
+ (define-cell Rc-resistance (the resistance Rc amp test))
+ (add-content Rc-resistance 5000)
+
+ (define-cell gain (the gain amp test))
+ #; (add-content gain 5)
+
+
+ (add-content (the strength VCC test) 15)
+ (add-content (the strength vin test) 1/10)
+
+ (define-cell output (the voltage vout test))
+ (define-cell Q-power (the power Q amp test))
+     
+ (run)
+
+ #; (content Rc-resistance)
+ ;;; Should be about (& 5000 ohm)
+ (content gain)
+ ;;; Should be about 5
+
+ (content output)
+ (content Q-power)
+|#
