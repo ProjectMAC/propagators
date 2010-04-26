@@ -176,3 +176,39 @@
 
 |#
 
+(define (resistor-circuit-2)
+  (let-cells ((R (resistor))
+	      (V (bias-voltage-source)))
+    (let-cells ((n1 (node 'n1 (the t1 V) (the t1 R)))
+		(n2 (node 'n2 (the t2 V) (the t2 R))))
+      ((constant 3) (the resistance R))
+      ((constant 6) (the strength V))
+      ((constant 0) (the potential n2))
+      (e:inspectable-object R V n1 n2))))
+
+#|
+ (initialize-scheduler)
+ ;Value: 0
+
+ (define-cell test (resistor-circuit-2))
+ ;Value: test
+
+ (define-cell answer (the current R test))
+ ;Value: answer
+
+ (run)
+ ;Value: done
+
+ (content answer)
+ ;Value 334: #[layered 334 (bias . #(tms (#(supported 2 ())))) (incremental . #(tms (#(supported 0 ()))))]
+
+ (define-cell source-current (the current V test))
+ ;Value: source-current
+
+ (run)
+ ;Value: done
+
+ (content source-current)
+ ;Value 335: #[layered 335 (bias . #(tms (#(supported -2 (#(node-premise n2))) #(supported -2 (#(node-premise n1)))))) (incremental . #(tms (#(supported 0 (#(node-premise n2))) #(supported 0 (#(node-premise n1))))))]
+
+|#
