@@ -18,8 +18,8 @@
 ;;; ----------------------------------------------------------------------
 
 (define-structure 
-  (node-premise (type vector) (named 'node-premise)
-                (print-procedure #f) (safe-accessors #t))
+  (kcl-premise (type vector) (named 'kcl-premise)
+	       (print-procedure #f) (safe-accessors #t))
   name)
 
 (define (node . terminals)
@@ -33,7 +33,7 @@
 	       (reduce ce:+ (e:constant 0) (map ce:current terminals)))
 	      capped?)
     (add-content capped?
-      (make-tms (supported #t (list (make-node-premise name)))))
+      (make-tms (supported #t (list (make-kcl-premise name)))))
     (apply c:== potential (map ce:potential terminals))
     (conditional-wire capped? residual (e:constant 0))
     (e:inspectable-object potential residual capped?)))

@@ -34,8 +34,8 @@
     (run)
 
     (content source-current)
-    (produces #(tms (#(supported -2 (#(node-premise n2)))
-		     #(supported -2 (#(node-premise n1))))))
+    (produces #(tms (#(supported -2 (#(kcl-premise n2)))
+		     #(supported -2 (#(kcl-premise n1))))))
     ))
 
  (define-test (true-voltage-divider)
@@ -92,9 +92,9 @@
 
     (content source-current)
     (produces
-     #(layered (bias . #(tms (#(supported -2 (#(node-premise n2)))
-			      #(supported -2 (#(node-premise n1))))))
-	       (incremental . #(tms (#(supported 0 (#(node-premise n2)))
-				     #(supported 0 (#(node-premise n1))))))))
+     #(layered (bias . #(tms (#(supported -2 (#(kcl-premise n2)))
+			      #(supported -2 (#(kcl-premise n1))))))
+	       (incremental . #(tms (#(supported 0 (#(kcl-premise n2)))
+				     #(supported 0 (#(kcl-premise n1))))))))
     ))
  )

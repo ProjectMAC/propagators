@@ -50,7 +50,7 @@
  ;Value: done
 
  (content source-current)
- ;Value 24: #(tms (#(supported -2 (#(node-premise n2))) #(supported -2 (#(node-premise n1)))))
+ ;Value 24: #(tms (#(supported -2 (#(kcl-premise n2))) #(supported -2 (#(kcl-premise n1)))))
 |#
 
 (define (assert p #!optional irritant)
@@ -70,7 +70,7 @@
 		  (map v&s-support
 		       (tms-values (content capped-cell))))))
       (assert (= 1 (length premises)))
-      (assert (node-premise? (car premises)))
+      (assert (kcl-premise? (car premises)))
       (kick-out! (car premises))))
   (let-cells ((Requiv (resistor))
 	      (ok? (e:< (e:abs (the residual node))
@@ -208,7 +208,7 @@
  ;Value: done
 
  (content source-current)
- ;Value 335: #[layered 335 (bias . #(tms (#(supported -2 (#(node-premise n2))) #(supported -2 (#(node-premise n1)))))) (incremental . #(tms (#(supported 0 (#(node-premise n2))) #(supported 0 (#(node-premise n1))))))]
+ ;Value 335: #[layered 335 (bias . #(tms (#(supported -2 (#(kcl-premise n2))) #(supported -2 (#(kcl-premise n1)))))) (incremental . #(tms (#(supported 0 (#(kcl-premise n2))) #(supported 0 (#(kcl-premise n1))))))]
 |#
 
 (define-macro-propagator (ce-amplifier)
