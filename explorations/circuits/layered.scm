@@ -122,6 +122,13 @@
 (attach-layer-method merge
   (with-equality (binary-layered-unpacking merge) layered-equal?))
 
+(defhandler contradictory?
+  (lambda (layered)
+    (any (lambda (pair)
+	   (contradictory? (cdr pair)))
+	 (layered-alist layered)))
+  layered?)
+
 (define-method generic-match ((pattern <vector>) (object rtd:layered))
   (generic-match
    pattern (list->vector (cons 'layered (layered-alist object)))))
