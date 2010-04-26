@@ -94,3 +94,9 @@
     (use-all
      (in-layer 'bias (voltage-source-vic strength))
      (in-layer 'incremental short-circuit-vic))))
+
+(define (signal-voltage-source #!optional t1 t2 strength power)
+  (two-terminal-device t1 t2 power
+    (use-all
+     (in-layer 'incremental (voltage-source-vic strength))
+     (in-layer 'bias short-circuit-vic))))
