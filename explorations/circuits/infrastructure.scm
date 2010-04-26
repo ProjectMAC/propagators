@@ -83,10 +83,7 @@
    `(make-element-descriptor-from ,@names)))
 
 (define (element-descriptor-lookup name desc)
-  (let ((mumble (assq name (element-descriptor-alist desc))))
-    (if mumble
-	(cdr mumble)
-	nothing)))
+  (information-assq name (element-descriptor-alist desc)))
 
 (define (element-descriptor-get name)
   (name!
@@ -126,23 +123,6 @@
 (define (element-descriptor-equal? ed1 ed2)
   (same-alist? (element-descriptor-alist ed1)
 	       (element-descriptor-alist ed2)))
-
-(define (same-alist? alist1 alist2)
-  (lset= (lambda (pair1 pair2)
-	   (and (eq? (car pair1) (car pair2))
-		(equivalent? (cdr pair1) (cdr pair2))))
-	 alist1 alist2))
-
-(define (merge-alist alist1 alist2)
-  (let ((keys (lset-union eq? (map car alist1) (map car alist2))))
-    (define (get key alist)
-      (let ((binding (assq key alist)))
-	(if binding
-	    (cdr binding)
-	    nothing)))
-    (map (lambda (key)
-	   (cons key (merge (get key alist1) (get key alist2))))
-	 keys)))
 
 (defhandler merge
   (with-equality merge-element-descriptors element-descriptor-equal?)
