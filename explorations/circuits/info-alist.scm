@@ -17,23 +17,21 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
+(define (information-assq key alist)
+  (let ((binding (assq key alist)))
+    (if binding
+	(cdr binding)
+	nothing)))
 
-(define (load-relative filename)
-  (self-relatively (lambda () (load filename))))
+(define (same-alist? alist1 alist2)
+  (lset= (lambda (pair1 pair2)
+	   (and (eq? (car pair1) (car pair2))
+		(equivalent? (cdr pair1) (cdr pair2))))
+	 alist1 alist2))
 
-(load-relative "../../extensions/load.scm")
-
-(for-each load-relative
- '("info-alist"
-   "infrastructure"
-   "parts"
-   "examples"))
-
-(maybe-warn-low-memory)
-(initialize-scheduler)
+(define (merge-alist alist1 alist2)
+  (let ((keys (lset-union eq? (map car alist1) (map car alist2))))
+    (define get information-assq)
+    (map (lambda (key)
+	   (cons key (merge (get key alist1) (get key alist2))))
+	 keys)))
