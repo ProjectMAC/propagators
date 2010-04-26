@@ -67,10 +67,30 @@
       (c:* i resistance v)
       (e:inspectable-object resistance))))
 
-(define (voltage-source #!optional t1 t2 strength power)
+(define (voltage-source-vic #!optional strength)
   (if (default-object? strength)
       (set! strength (make-cell)))
+  (lambda (v i)
+    (c:== strength v)
+    (e:inspectable-object strength)))
+
+(define (short-circuit-vic v i)
+  ((constant 0) v)
+  (e:inspectable-object))
+
+(define (voltage-source #!optional t1 t2 strength power)
+  (two-terminal-device t1 t2 power (voltage-source-vic strength)))
+
+(define (use-all . functions)
+  (lambda args
+    ;; TODO Fix this poor handling of the inspectable objects
+    ;; produced by the various layer functions
+    (car (map (lambda (f)
+		(apply f args))
+	      functions))))
+
+(define (bias-voltage-source #!optional t1 t2 strength power)
   (two-terminal-device t1 t2 power
-    (lambda (v i)
-      (c:== strength v)
-      (e:inspectable-object strength))))
+    (use-all
+     (in-layer 'bias (voltage-source-vic strength))
+     (in-layer 'incremental short-circuit-vic))))
