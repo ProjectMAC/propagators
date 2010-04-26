@@ -32,6 +32,7 @@
 (for-each load-relative
  '("info-alist"
    "infrastructure"
+   "layered"
    "parts"
    "examples"))
 
