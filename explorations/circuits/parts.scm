@@ -43,6 +43,7 @@
       (set! t1 (make-cell)))
   (if (default-object? t2)
       (set! t2 (make-cell)))
+  ;; TODO Flush this: vic is not (currently) supposed to be a cell
   (if (default-object? vic)
       (set! vic (make-cell)))
   (if (default-object? power)
