@@ -62,11 +62,11 @@
 
 (define (layered-coercing f)
   (lambda (layered thing)
-    (f (make-layered
+    (f layered
+       (make-layered
 	(map (lambda (name)
 	       (cons name thing))
-	     (map car (layered-alist layered))))
-       layered)))
+	     (map car (layered-alist layered)))))))
 
 (define (flipping f)
   (lambda (a b)
