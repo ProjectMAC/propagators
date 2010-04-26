@@ -79,6 +79,10 @@
   ((constant 0) v)
   (e:inspectable-object))
 
+(define (open-circuit-vic v i)
+  ((constant 0) i)
+  (e:inspectable-object))
+
 (define (voltage-source #!optional t1 t2 strength power)
   (two-terminal-device t1 t2 power (voltage-source-vic strength)))
 
@@ -101,3 +105,55 @@
     (use-all
      (in-layer 'incremental (voltage-source-vic strength))
      (in-layer 'bias short-circuit-vic))))
+
+(define (short-circuit #!optional t1 t2)
+  (two-terminal-device t1 t2 #!default short-circuit-vic))
+
+(define (open-circuit #!optional t1 t2)
+  (two-terminal-device t1 t2 #!default open-circuit-vic))
+
+(define (capacitor #!optional t1 t2 capacitance power)
+  (two-terminal-device t1 t2 power
+    (use-all
+     (in-layer 'bias open-circuit-vic)
+     (in-layer 'incremental short-circuit-vic))))
+
+(define (inductor #!optional t1 t2 inductance power)
+  (two-terminal-device t1 t2 power
+    (use-all
+     (in-layer 'incremental open-circuit-vic)
+     (in-layer 'bias short-circuit-vic))))
+
+(define (three-terminal-device #!optional common control controlled power vic)
+  (if (default-object? power)
+      (set! power (make-cell)))
+  (let-cells ((e-common (ce:potential common))
+	      (i-common (ce:current common))
+	      (e-control (ce:potential control))
+	      (i-control (ce:current control))
+	      (e-controlled (ce:potential controlled))
+	      (i-controlled (ce:current controlled)))
+    (c:+ (ce:+ i-common i-control) i-controlled (e:constant 0))
+    (let-cells ((control-voltage (ce:+ e-common %% e-control))
+		(controlled-voltage (ce:+ e-common %% e-controlled)))
+      (c:+ (ce:* control-voltage i-control)
+	   (ce:* controlled-voltage i-controlled)
+	   power)
+      (ce:append-inspectable-object
+       (vic control-voltage i-control controlled-voltage i-controlled)
+       common control controlled power))))
+
+(define (infinite-beta-bjt #!optional emitter base collector)
+  (if (default-object? emitter)
+      (set! emitter (make-cell)))
+  (if (default-object? base)
+      (set! base (make-cell)))
+  (if (default-object? collector)
+      (set! collector (make-cell)))
+  (three-terminal-device emitter base collector #!default
+    (lambda (control-voltage control-current
+	     controlled-voltage controlled-current)
+      ((in-layer 'bias (constant 0.6)) control-voltage)
+      ((in-layer 'incremental (constant 0)) control-voltage)
+      ((constant 0) control-current)
+      (e:inspectable-object emitter base collector))))
