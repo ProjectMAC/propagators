@@ -17,7 +17,7 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (resistor-circuit)
+(define-macro-propagator (resistor-circuit)
   (let-cells ((R (resistor))
 	      (V (voltage-source)))
     (let-cells ((n1 (node 'n1 (the t1 V) (the t1 R)))
@@ -57,11 +57,11 @@
   (if (not p)
       (error "Assertion failed" irritant)))
 
-(define (terminal-equivalence ok? t1 t2)
+(define-macro-propagator (terminal-equivalence ok? t1 t2)
   (conditional-wire ok? (ce:current t1) (ce:current t2))
   (conditional-wire ok? (ce:potential t1) (ce:potential t2)))
 
-(define (voltage-divider-slice R1 node R2)
+(define-macro-propagator (voltage-divider-slice R1 node R2)
   ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
   ;; in common.
   (define (allow-discrepancy capped-cell)
@@ -88,7 +88,7 @@
     (terminal-equivalence ok? (the t1 R1) (the t1 Requiv))
     (terminal-equivalence ok? (the t2 R2) (the t2 Requiv))))
 
-(define (voltage-divider-circuit)
+(define-macro-propagator (voltage-divider-circuit)
   (let-cells ((R1 (resistor))
 	      (R2 (resistor))
 	      (V (voltage-source)))
@@ -127,7 +127,7 @@
  ;Value 34: #(tms (#(supported 4 (#(hypothetical)))))
 |#
 
-(define (voltage-divider-circuit-2)
+(define-macro-propagator (voltage-divider-circuit-2)
   (let-cells ((R1 (resistor))
 	      (R2 (resistor))
 	      (load (resistor))
@@ -175,7 +175,7 @@
  ;Value 36: #(tms (#(supported 1/250 (#(hypothetical)))))
 |#
 
-(define (resistor-circuit-2)
+(define-macro-propagator (resistor-circuit-2)
   (let-cells ((R (resistor))
 	      (V (bias-voltage-source)))
     (let-cells ((n1 (node 'n1 (the t1 V) (the t1 R)))
@@ -211,43 +211,42 @@
  ;Value 335: #[layered 335 (bias . #(tms (#(supported -2 (#(node-premise n2))) #(supported -2 (#(node-premise n1)))))) (incremental . #(tms (#(supported 0 (#(node-premise n2))) #(supported 0 (#(node-premise n1))))))]
 |#
 
-(define (ce-amplifier #!optional sigin sigout +rail -rail)
-  (if (default-object? +rail)
-      (set! +rail (make-cell)))
-  (if (default-object? -rail)
-      (set! -rail (make-cell)))
-  (if (default-object? sigin)
-      (set! sigin (make-cell)))
-  (if (default-object? sigout)
-      (set! sigout (make-cell)))
+(define-macro-propagator (ce-amplifier)
   (let-cells ((Rb1 (resistor))
 	      (Rb2 (resistor))
 	      (Rc  (resistor))
 	      (Re  (resistor))
-	      (Cin (capacitor sigin))
-	      (Cout (capacitor sigout))
+	      (Cin (capacitor))
+	      (Cout (capacitor))
 	      (Q (infinite-beta-bjt))
-	      (+rail-w (short-circuit +rail))
-	      (-rail-w (short-circuit -rail)))
-    (let-cells ((+rail-node (node (the t1 Rb1) (the t1 Rc) (the t2 +rail-w)))
-		(-rail-node (node (the t2 Rb2) (the t2 Re) (the t2 -rail-w)))
+	      (+rail-w (short-circuit))
+	      (-rail-w (short-circuit)))
+    (let-cells ((+rail-node 
+		 (node (the t1 Rb1) (the t1 Rc) (the t2 +rail-w)))
+		(-rail-node
+		 (node (the t2 Rb2) (the t2 Re) (the t2 -rail-w)))
 		(en (node (the t1 Re) (the emitter Q)))
 		(cn (node (the t2 Rc) (the t2 Cout) (the collector Q)))
 		(bn (node (the t2 Rb1) (the t1 Rb2) (the base Q)
 			  (the t2 Cin))))
-      (let-cells ((gain (ce:* (the resistance Re) %% (the resistance Rc)))
+      (let-cells ((+rail (the t1 +rail-w))
+		  (-rail (the t1 -rail-w))
+		  (sigin (the t1 Cin))
+		  (sigout (the t1 Cout))
+		  (gain (ce:* (the resistance Re) %% (the resistance Rc)))
 		  (input-impedance (ce:parallel (the resistance Rb1)
 						(the resistance Rb2)))
-		  (output-impedance (the resistance Rc))#;
+		  (output-impedance (the resistance Rc)) #;
 		  (power (sum (map (lambda (x) (the power x))
-				   (list Rb1 Rb2 Rc Re Cin Cout Q)))))
-	#; (voltage-divider-slice Rb1 bn Rb2)
-	(e:inspectable-object
-	 Rb1 Rb2 Rc Re Cin Cout Q +rail -rail sigin sigout
-	 gain input-impedance output-impedance #;power ; Also nodes?
-	 )))))
+		  (list Rb1 Rb2 Rc Re Cin Cout Q)))))
+		  #; (voltage-divider-slice Rb1 bn Rb2)
+		  (e:inspectable-object
+		   Rb1 Rb2 Rc Re Cin Cout Q +rail -rail sigin sigout
+		   gain input-impedance output-impedance #;power
+					; Also nodes?
+		   )))))
 
-(define (breadboard)
+(define-macro-propagator (breadboard)
   (let ((VCC (bias-voltage-source))
 	(vin (signal-voltage-source))
 	(vout (open-circuit))
@@ -260,7 +259,7 @@
       ((constant 0) (the potential gnd))
       (e:inspectable-object VCC vin vout amp gnd +V in out))))
 
-(define (ce:parallel resistance1 resistance2)
+(define-macro-propagator (ce:parallel resistance1 resistance2)
   (ce:* (ce:+ resistance1 resistance2) %% (ce:* resistance1 resistance2)))
 
 #|

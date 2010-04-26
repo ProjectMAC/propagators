@@ -38,42 +38,32 @@
     (conditional-wire capped? residual (e:constant 0))
     (e:inspectable-object potential residual capped?)))
 
-(define (two-terminal-device #!optional t1 t2 power vic)
-  (if (default-object? t1)
-      (set! t1 (make-cell)))
-  (if (default-object? t2)
-      (set! t2 (make-cell)))
-  ;; TODO Flush this: vic is not (currently) supposed to be a cell
-  (if (default-object? vic)
-      (set! vic (make-cell)))
-  (if (default-object? power)
-      (set! power (make-cell)))
-  (let-cells ((et1 (ce:potential t1))
-	      (current (ce:current t1))
-	      (et2 (ce:potential t2))
-	      (it2 (ce:current t2)))
-    (c:+ current it2 (e:constant 0))
-    (let-cells ((voltage (ce:+ et2 %% et1)))
-      (c:* current voltage power)
-      (ce:append-inspectable-object
-       (vic voltage current)
-       t1 t2 power voltage current))))
+(define (two-terminal-device vic)
+  (let-cells (t1 t2 power)
+    (let-cells ((et1 (ce:potential t1))
+		(current (ce:current t1))
+		(et2 (ce:potential t2))
+		(it2 (ce:current t2)))
+      (c:+ current it2 (e:constant 0))
+      (let-cells ((voltage (ce:+ et2 %% et1)))
+	(c:* current voltage power)
+	(ce:append-inspectable-object
+	 (vic voltage current)
+	 t1 t2 power voltage current)))))
 
-(define (resistor #!optional t1 t2 resistance power)
-  (if (default-object? resistance)
-      (set! resistance (make-cell)))
-  (two-terminal-device t1 t2 power
-    ;; TODO Properly propagatify this?
+(define-macro-propagator (resistor)
+  (let-cell resistance
+    (two-terminal-device
+     ;; TODO Properly propagatify this?
+     (lambda (v i)
+       (c:* i resistance v)
+       (e:inspectable-object resistance)))))
+
+(define (voltage-source-vic)
+  (let-cell strength
     (lambda (v i)
-      (c:* i resistance v)
-      (e:inspectable-object resistance))))
-
-(define (voltage-source-vic #!optional strength)
-  (if (default-object? strength)
-      (set! strength (make-cell)))
-  (lambda (v i)
-    (c:== strength v)
-    (e:inspectable-object strength)))
+      (c:== strength v)
+      (e:inspectable-object strength))))
 
 (define (short-circuit-vic v i)
   ((constant 0) v)
@@ -83,8 +73,8 @@
   ((constant 0) i)
   (e:inspectable-object))
 
-(define (voltage-source #!optional t1 t2 strength power)
-  (two-terminal-device t1 t2 power (voltage-source-vic strength)))
+(define-macro-propagator (voltage-source)
+  (two-terminal-device (voltage-source-vic)))
 
 (define (use-all . functions)
   (lambda args
@@ -94,40 +84,39 @@
 		(apply f args))
 	      functions))))
 
-(define (bias-voltage-source #!optional t1 t2 strength power)
-  (two-terminal-device t1 t2 power
+(define-macro-propagator (bias-voltage-source)
+  (two-terminal-device
     (use-all
-     (in-layer 'bias (voltage-source-vic strength))
+     (in-layer 'bias (voltage-source-vic))
      (in-layer 'incremental short-circuit-vic))))
 
-(define (signal-voltage-source #!optional t1 t2 strength power)
-  (two-terminal-device t1 t2 power
+(define-macro-propagator (signal-voltage-source)
+  (two-terminal-device
     (use-all
-     (in-layer 'incremental (voltage-source-vic strength))
+     (in-layer 'incremental (voltage-source-vic))
      (in-layer 'bias short-circuit-vic))))
 
-(define (short-circuit #!optional t1 t2)
-  (two-terminal-device t1 t2 #!default short-circuit-vic))
+(define-macro-propagator (short-circuit)
+  (two-terminal-device short-circuit-vic))
 
-(define (open-circuit #!optional t1 t2)
-  (two-terminal-device t1 t2 #!default open-circuit-vic))
+(define-macro-propagator (open-circuit)
+  (two-terminal-device open-circuit-vic))
 
-(define (capacitor #!optional t1 t2 capacitance power)
-  (two-terminal-device t1 t2 power
+(define-macro-propagator (capacitor)
+  (two-terminal-device
     (use-all
      (in-layer 'bias open-circuit-vic)
      (in-layer 'incremental short-circuit-vic))))
 
-(define (inductor #!optional t1 t2 inductance power)
-  (two-terminal-device t1 t2 power
+(define-macro-propagator (inductor)
+  (two-terminal-device
     (use-all
      (in-layer 'incremental open-circuit-vic)
      (in-layer 'bias short-circuit-vic))))
 
-(define (three-terminal-device #!optional common control controlled power vic)
-  (if (default-object? power)
-      (set! power (make-cell)))
-  (let-cells ((e-common (ce:potential common))
+(define (three-terminal-device common control controlled vic)
+  (let-cells (power
+	      (e-common (ce:potential common))
 	      (i-common (ce:current common))
 	      (e-control (ce:potential control))
 	      (i-control (ce:current control))
@@ -143,17 +132,12 @@
        (vic control-voltage i-control controlled-voltage i-controlled)
        common control controlled power))))
 
-(define (infinite-beta-bjt #!optional emitter base collector)
-  (if (default-object? emitter)
-      (set! emitter (make-cell)))
-  (if (default-object? base)
-      (set! base (make-cell)))
-  (if (default-object? collector)
-      (set! collector (make-cell)))
-  (three-terminal-device emitter base collector #!default
-    (lambda (control-voltage control-current
-	     controlled-voltage controlled-current)
-      ((in-layer 'bias (constant 0.6)) control-voltage)
-      ((in-layer 'incremental (constant 0)) control-voltage)
-      ((constant 0) control-current)
-      (e:inspectable-object emitter base collector))))
+(define-macro-propagator (infinite-beta-bjt)
+  (let-cells (emitter base collector)
+   (three-terminal-device emitter base collector
+     (lambda (control-voltage control-current
+			      controlled-voltage controlled-current)
+       ((in-layer 'bias (constant 0.6)) control-voltage)
+       ((in-layer 'incremental (constant 0)) control-voltage)
+       ((constant 0) control-current)
+       (e:inspectable-object emitter base collector)))))
