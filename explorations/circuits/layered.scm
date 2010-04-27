@@ -69,10 +69,12 @@
 (define (layered-coercing f)
   (lambda (layered thing)
     (f layered
-       (make-layered
-	(map (lambda (name)
-	       (cons name thing))
-	     (map car (layered-alist layered)))))))
+       (if (layered? thing)
+	   thing
+	   (make-layered
+	    (map (lambda (name)
+		   (cons name thing))
+		 (map car (layered-alist layered))))))))
 
 (define (flipping f)
   (lambda (a b)
@@ -118,6 +120,19 @@
 	 (v&s? (car (tms-values thing)))
 	 (layered? (v&s-value (car (tms-values thing)))))))
 
+(defhandler generic-flatten
+  (lambda (layered)
+    (make-layered
+     (map (lambda (binding)
+	    (cons (car binding)
+		  (if (layered? (cdr binding))
+		      (layered-lookup (car binding) (cdr binding))
+		      (cdr binding))))
+	  (layered-alist layered))))
+  (lambda (thing)
+    (and (layered? thing)
+	 (any layered? (map cdr (layered-alist thing))))))
+
 ;;; TODO Install this in the base system?
 (define generic-switch (make-generic-operator 2 'g-switch switch-function))
 (define switch
@@ -135,9 +150,9 @@
 (for-each
  (lambda (operation)
    (defhandler operation
-     (unary-layered-unpacking operation)
+     (unary-layered-unpacking (nary-unpacking operation))
      layered?))
- (list generic-not))
+ (list generic-not generic-abs))
 
 (defhandler contradictory?
   (lambda (layered)
