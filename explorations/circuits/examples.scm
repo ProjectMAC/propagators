@@ -243,7 +243,7 @@
 		  (e:inspectable-object
 		   Rb1 Rb2 Rc Re Cin Cout Q +rail -rail sigin sigout
 		   gain input-impedance output-impedance #;power
-					; Also nodes?
+		   en bn cn +rail-node -rail-node
 		   )))))
 
 (define-macro-propagator (breadboard)
@@ -296,6 +296,53 @@
  (content gain)
  ;;; Should be about 5
 
+ (content output)
+ (content Q-power)
+|#
+
+(define-macro-propagator (bias-voltage-divider-slice R1 node R2)
+  ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
+  ;; in common.
+  (define (allow-discrepancy capped-cell)
+    (let ((premises
+	   (apply append
+		  (map v&s-support
+		       (tms-values (content capped-cell))))))
+      (assert (= 1 (length premises)))
+      (assert (kcl-premise? (car premises)))
+      (kick-out! (car premises))))
+  (let-cells ((Requiv (resistor))
+	      (ok? (e:< ((ce:layered-get 'bias) (e:abs (the residual node)))
+			((ce:layered-get 'bias) (e:abs (e:* 1e-2 (the current R1))))))
+	      (node-cap (the capped? node)))
+    (allow-discrepancy node-cap)
+    ;; Maybe this should really be guessing the value of the output
+    ;; current...  And applying this model if it's zero...
+    (binary-amb ok?)
+    ;; TODO This assumes that this slice is the only one interested in
+    ;; fiddling with the node's cap.
+    (c:not ok? ((ce:layered-get 'bias) node-cap))
+    (add-content node-cap (make-layered `((incremental . #t))))
+    (c:+ (the resistance R1)
+	 (the resistance R2)
+	 (the resistance Requiv))
+    (conditional-wire
+     ok? ((ce:layered-get 'bias) (ce:potential (the t1 R1)))
+     (ce:potential (the t1 Requiv)))
+    (conditional-wire
+     ok? ((ce:layered-get 'bias) (ce:current (the t1 R1)))
+     (ce:current (the t1 Requiv)))
+    (conditional-wire
+     ok? ((ce:layered-get 'bias) (ce:potential (the t2 R2)))
+     (ce:potential (the t2 Requiv)))
+    (conditional-wire
+     ok? ((ce:layered-get 'bias) (ce:current (the t2 R2)))
+     (ce:current (the t2 Requiv)))
+    (e:inspectable-object Requiv ok? node-cap)))
+
+#|
+ (define-cell slice (bias-voltage-divider-slice (the Rb1 amp test) (the bn amp test) (the Rb2 amp test)))
+ (run)
  (content output)
  (content Q-power)
 |#
