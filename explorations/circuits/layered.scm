@@ -60,6 +60,12 @@
       (make-layered (alist-f (layered-alist layered1)
 			     (layered-alist layered2))))))
 
+(define (unary-layered-unpacking f)
+  (lambda (layered)
+    (make-layered
+     ((unary-alist-unpacking f)
+      (layered-alist layered)))))
+
 (define (layered-coercing f)
   (lambda (layered thing)
     (f layered
@@ -112,15 +118,26 @@
 	 (v&s? (car (tms-values thing)))
 	 (layered? (v&s-value (car (tms-values thing)))))))
 
+;;; TODO Install this in the base system?
+(define generic-switch (make-generic-operator 2 'g-switch switch-function))
+(define switch
+  (function->propagator-constructor (nary-unpacking switch-function)))
 
 (for-each
  (lambda (operation)
    (attach-layer-method operation
      (binary-layered-unpacking (nary-unpacking operation))))
- (list generic-+ generic-- generic-* generic-/))
+ (list generic-+ generic-- generic-* generic-/ generic-switch))
 
 (attach-layer-method merge
   (with-equality (binary-layered-unpacking merge) layered-equal?))
+
+(for-each
+ (lambda (operation)
+   (defhandler operation
+     (unary-layered-unpacking operation)
+     layered?))
+ (list generic-not))
 
 (defhandler contradictory?
   (lambda (layered)
