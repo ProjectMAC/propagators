@@ -20,6 +20,20 @@
 (in-test-group
  circuits
 
+ (define-each-check
+   (generic-match
+    #(layered ((bias . 0)) 0)
+    (merge 0 (make-layered `((bias . ,nothing)))))
+   (generic-match
+    #(layered ((incremental . 0) (bias . 0)) 0)
+    (merge (merge 0 (make-layered `((bias . ,nothing))))
+	   (make-layered `((incremental . ,nothing)))))
+   (generic-match
+    #(layered ((incremental . 0) (bias . 0)) 0)
+    (merge 0 (merge (make-layered `((bias . ,nothing)))
+		    (make-layered `((incremental . ,nothing))))))
+   )
+
  (define-test (simple-resistor)
    (interaction
     (initialize-scheduler)

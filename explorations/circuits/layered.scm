@@ -177,7 +177,12 @@
 
 (define-method generic-match ((pattern <vector>) (object rtd:layered))
   (generic-match
-   pattern (list->vector (cons 'layered (layered-alist object)))))
+   pattern (list->vector
+	    (cons 'layered
+		  (if (not (nothing? (layered-base object)))
+		      (list (layered-alist object)
+			    (layered-base object))
+		      (layered-alist object))))))
 
 (define (in-layer name diagram)
   (lambda args
