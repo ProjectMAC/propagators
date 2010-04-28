@@ -31,6 +31,7 @@
                (error "Ack! Inconsistency!" me increment)
 	       'this-is-not-a-tail-call)
               (else (set! content new-content)
+		    (eq-adjoin! content 'visited-cells me)
                     (alert-propagators neighbors)))))
     (define (new-neighbor! new-neighbor)
       (if (not (memq new-neighbor neighbors))

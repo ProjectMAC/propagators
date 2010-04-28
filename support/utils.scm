@@ -112,6 +112,11 @@
 (define (name! thing name)
   (eq-put! thing 'name name))
 
+(define (select-by-name the-name things)
+  (filter (lambda (thing)
+	    (equal? the-name (name thing)))
+	  things))
+
 (define make-generic-operator
   (let ((make-generic-operator make-generic-operator))
     (named-lambda (make-generic-operator arity #!optional name default-operation)
