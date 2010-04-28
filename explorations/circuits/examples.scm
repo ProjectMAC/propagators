@@ -245,19 +245,19 @@
 		  (e:inspectable-object
 		   Rb1 Rb2 Rc Re Cin Cout Q +rail -rail sigin sigout
 		   gain input-impedance output-impedance #;power
-		   en bn cn +rail-node -rail-node
+		   en bn cn +rail-node -rail-node +rail-w -rail-w
 		   )))))
 
 (define-macro-propagator (breadboard)
-  (let ((VCC (bias-voltage-source))
-	(vin (signal-voltage-source))
-	(vout (open-circuit))
-	(amp (ce-amplifier)))
-    (let ((gnd (node 'gnd (the t2 VCC) (the t2 vin) (the t2 vout)
-		     (the -rail amp)))
-	  (+V (node '+V (the t1 VCC) (the +rail amp)))
-	  (in (node 'in (the t1 vin) (the sigin amp)))
-	  (out (node 'out (the t1 vout) (the sigout amp))))
+  (let-cells ((VCC (bias-voltage-source))
+	      (vin (signal-voltage-source))
+	      (vout (open-circuit))
+	      (amp (ce-amplifier)))
+    (let-cells ((gnd (node 'gnd (the t2 VCC) (the t2 vin) (the t2 vout)
+			   (the -rail amp)))
+		(+V (node '+V (the t1 VCC) (the +rail amp)))
+		(in (node 'in (the t1 vin) (the sigin amp)))
+		(out (node 'out (the t1 vout) (the sigout amp))))
       ((constant 0) (the potential gnd))
       (e:inspectable-object VCC vin vout amp gnd +V in out))))
 
@@ -348,3 +348,61 @@
  (content output)
  (content Q-power)
 |#
+
+(define-macro-propagator (bias-voltage-divider-slice R1 node R2)
+  ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
+  ;; in common.
+  (define (allow-discrepancy capped-cell done-cell)
+    (define (collect-premises thing)
+      (cond ((tms? thing)
+	     (delete-duplicates
+	      (apply append (map v&s-support (tms-values thing))) eq?))
+	    ((layered? thing)
+	     (delete-duplicates
+	      (apply append (map collect-premises
+				 (map cdr (layered-alist thing)))) eq?))
+	    (else '())))
+    ((function->propagator-constructor
+      (name!
+       (lambda (cap)
+	 (let ((premises (filter kcl-premise? (collect-premises cap))))
+	   (if (null? premises)
+	       nothing
+	       (begin
+		 (assert (= 1 (length premises)))
+		 (pp (map kcl-premise-name premises))
+		 (kick-out! (car premises))
+		 #t))))
+       'discrepancy-allower))
+     capped-cell done-cell))
+  (let-cells ((Requiv (resistor))
+	      (ok? (e:< ((ce:layered-get 'bias) (e:abs (the residual node)))
+			((ce:layered-get 'bias) (e:abs (e:* 1e-2 (the current R1))))))
+	      (node-cap (the capped? node))
+	      discrepancy-allowed?
+	      go?)
+    (allow-discrepancy node-cap discrepancy-allowed?)
+    (p:and ok? discrepancy-allowed? go?)
+    ;; Maybe this should really be guessing the value of the output
+    ;; current...  And applying this model if it's zero...
+    (binary-amb ok?)
+    ;; TODO This assumes that this slice is the only one interested in
+    ;; fiddling with the node's cap.
+    (c:not go? ((ce:layered-get 'bias) node-cap))
+    (add-content node-cap (make-layered `((incremental . #t))))
+    (c:+ (the resistance R1)
+	 (the resistance R2)
+	 (the resistance Requiv))
+    (conditional-wire
+     go? ((ce:layered-get 'bias) (ce:potential (the t1 R1)))
+     (ce:potential (the t1 Requiv)))
+    (conditional-wire
+     go? ((ce:layered-get 'bias) (ce:current (the t1 R1)))
+     (ce:current (the t1 Requiv)))
+    (conditional-wire
+     go? ((ce:layered-get 'bias) (ce:potential (the t2 R2)))
+     (ce:potential (the t2 Requiv)))
+    (conditional-wire
+     go? ((ce:layered-get 'bias) (ce:current (the t2 R2)))
+     (ce:current (the t2 Requiv)))
+    (e:inspectable-object Requiv ok? node-cap discrepancy-allowed? go?)))
