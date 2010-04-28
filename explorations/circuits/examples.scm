@@ -17,6 +17,8 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
+(declare (usual-integrations make-cell cell?))
+
 (define-macro-propagator (resistor-circuit)
   (let-cells ((R (resistor))
 	      (V (voltage-source)))
@@ -222,12 +224,12 @@
 	      (+rail-w (short-circuit))
 	      (-rail-w (short-circuit)))
     (let-cells ((+rail-node 
-		 (node (the t1 Rb1) (the t1 Rc) (the t2 +rail-w)))
+		 (node '+railn (the t1 Rb1) (the t1 Rc) (the t2 +rail-w)))
 		(-rail-node
-		 (node (the t2 Rb2) (the t2 Re) (the t2 -rail-w)))
-		(en (node (the t1 Re) (the emitter Q)))
-		(cn (node (the t2 Rc) (the t2 Cout) (the collector Q)))
-		(bn (node (the t2 Rb1) (the t1 Rb2) (the base Q)
+		 (node '-railn (the t2 Rb2) (the t2 Re) (the t2 -rail-w)))
+		(en (node 'en (the t1 Re) (the emitter Q)))
+		(cn (node 'cn (the t2 Rc) (the t2 Cout) (the collector Q)))
+		(bn (node 'bn (the t2 Rb1) (the t1 Rb2) (the base Q)
 			  (the t2 Cin))))
       (let-cells ((+rail (the t1 +rail-w))
 		  (-rail (the t1 -rail-w))
@@ -251,11 +253,11 @@
 	(vin (signal-voltage-source))
 	(vout (open-circuit))
 	(amp (ce-amplifier)))
-    (let ((gnd (node (the t2 VCC) (the t2 vin) (the t2 vout)
+    (let ((gnd (node 'gnd (the t2 VCC) (the t2 vin) (the t2 vout)
 		     (the -rail amp)))
-	  (+V (node (the t1 VCC) (the +rail amp)))
-	  (in (node (the t1 vin) (the sigin amp)))
-	  (out (node (the t1 vout) (the sigout amp))))
+	  (+V (node '+V (the t1 VCC) (the +rail amp)))
+	  (in (node 'in (the t1 vin) (the sigin amp)))
+	  (out (node 'out (the t1 vout) (the sigout amp))))
       ((constant 0) (the potential gnd))
       (e:inspectable-object VCC vin vout amp gnd +V in out))))
 

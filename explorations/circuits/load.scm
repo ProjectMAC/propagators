@@ -29,7 +29,7 @@
 
 (load-relative "../../extensions/load.scm")
 
-(for-each load-relative
+(for-each load-relative-compiled
  '("info-alist"
    "infrastructure"
    "layered"
