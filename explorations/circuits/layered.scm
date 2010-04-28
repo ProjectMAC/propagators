@@ -21,14 +21,25 @@
 
 (define-structure
   (layered
+   (constructor %make-layered)
    (print-procedure
     (simple-unparser-method
      'layered (lambda (layered)
-		(layered-alist layered)))))
-  alist)
+		(if (not (nothing? (layered-base layered)))
+		    (list (layered-alist layered)
+			  (layered-base layered))
+		    (layered-alist layered))))))
+  alist
+  (base nothing))
+
+(define (make-layered alist #!optional base)
+  (if (default-object? base)
+      (set! base nothing))
+  (%make-layered alist base))
 
 (define (layered-lookup name layered)
-  (information-assq name (layered-alist layered)))
+  (merge (information-assq name (layered-alist layered))
+	 (layered-base layered)))
 
 (define (layered-get name)
   (name!
@@ -57,30 +68,29 @@
   (functionalize (cp:layered-get name)))
 
 (define (binary-layered-unpacking f)
-  (let ((alist-f (binary-alist-unpacking f)))
-    (lambda (layered1 layered2)
-      (make-layered (alist-f (layered-alist layered1)
-			     (layered-alist layered2))))))
+  (lambda (layered1 layered2)
+    (let ((alist1 (layered-alist layered1))
+	  (alist2 (layered-alist layered2)))
+      (let ((keys (lset-union eq? (map car alist1) (map car alist2))))
+	(make-layered
+	 (map (lambda (key)
+		(cons key (f (layered-lookup key layered1)
+			     (layered-lookup key layered2))))
+	      keys)
+	 (f (layered-base layered1)
+	    (layered-base layered2)))))))
 
 (define (unary-layered-unpacking f)
   (lambda (layered)
     (make-layered
      ((unary-alist-unpacking f)
-      (layered-alist layered)))))
+      (layered-alist layered))
+     (f (layered-base layered)))))
 
-(define (layered-coercing f)
-  (lambda (layered thing)
-    (f layered
-       (if (layered? thing)
-	   thing
-	   (make-layered
-	    (map (lambda (name)
-		   (cons name thing))
-		 (map car (layered-alist layered))))))))
-
-(define (flipping f)
-  (lambda (a b)
-    (f b a)))
+(define (->layered thing)
+  (cond ((layered? thing)
+	 thing)
+	(else (make-layered '() thing))))
 
 (define (layer-coercable? thing)
   (or (flat? thing)
@@ -92,17 +102,19 @@
   (defhandler operation
     method layered? layered?)
   (defhandler operation
-    (layered-coercing method)
+    (coercing ->layered method)
     layered? layer-coercable?)
   (defhandler operation
-    (flipping (layered-coercing (flipping method)))
+    (coercing ->layered method)
     layer-coercable? layered?))
 
 (define (layered-equal? thing1 thing2)
   (and (layered? thing1)
        (layered? thing2)
        (same-alist? (layered-alist thing1)
-		    (layered-alist thing2))))
+		    (layered-alist thing2))
+       (equivalent? (layered-base thing1)
+		    (layered-base thing2))))
 
 (defhandler generic-flatten
   (lambda (tms)
