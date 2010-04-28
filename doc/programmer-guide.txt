@@ -1,19 +1,27 @@
-PROGRAMMING
+======================================================================
+		     Programming with Propagators
+======================================================================
 
 
-MAKING PROPAGATOR NETWORKS
+Making Propagator Networks
+======================================================================
 
 The "read and macroexpand" phase of the propagator
 system is the "read and eval" phase of the host Scheme;
 with the understanding that all Scheme variables that
 get bound to cells are propagator variables, and
-all Scheme variables that get bound to other crap
+all Scheme variables that get bound to other Scheme objects
 are "macros" from the perspective of the propagator
 system.
 
-The "macro system" is much more developed than the language itself.
-In Scheme, + is a variable that's bound to a procedure.  In the
-propagator system, p:+ is a piece of syntax.
+This "macro system" is therefore much more developed than the
+propagator language itself, so such "macros" are still needed for many
+purposes.  Perhaps the most egregious example is the predefined
+procedures: in Scheme, + is a variable that's bound to a procedure,
+whereas in the propagator system, the corresponding object p:+ is a
+piece of syntax (that is, p:+ is not a cell that holds a propagator
+abstraction that adds, but is a Scheme procedure that directly makes
+such a propagator.  More on this below).
 
 let-cell
 let-cells
@@ -43,10 +51,12 @@ ce: ditto e:
 (e: foo %% bar)  ==>  (let-cell new (p: foo new bar) new)
 
 
-MAKING NEW COMPOUND PROPAGATORS
+Making New Compound Propagators
+======================================================================
 
 
-MAKING NEW PRIMITIVE PROPAGATORS
+Making New Primitive Propagators
+======================================================================
 
 (Almost) All the p:, e:, c:, and ce: are defined in
 extensions/expression-language.scm
@@ -57,13 +67,15 @@ defines
 p:eq? and e:eq?
 
 
-MAKING NEW PARTIAL INFORMATION TYPES
+Making New Partial Information Types
+======================================================================
 
 - Making cells deal with them
 - Making existing propagators support them
 
 
-DEBUGGING
+Debugging
+======================================================================
 
 The metadata that gets tracked
 How to make sure that your network tracks it well
