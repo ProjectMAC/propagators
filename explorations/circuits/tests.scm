@@ -121,28 +121,28 @@
     (define-cell output (the voltage vout test))
     (define-cell Q-power (the power Q amp test))
     
-    (run)
+;;     (run)
 
-    (content gain)
-    (produces #(layered (incremental . #(tms (#(supported 5 ()))))
-			(bias . 5)))
+;;     (content gain)
+;;     (produces #(layered (incremental . #(tms (#(supported 5 ()))))
+;; 			(bias . 5)))
 
-    (content output)
-    (produces
-     #(layered (bias . #(*the-nothing*))
-	       (incremental
-		. #(tms (#(supported -1/2
-			   (#(kcl-premise out)
-			    #(kcl-premise en)
-			    #(kcl-premise cn))))))))
-    (content Q-power)
-    (produces 
-     #(layered (bias . #(*the-nothing*))
-	       (incremental
-		. #(tms (#(supported -3/50000
-			   (#(kcl-premise out)
-			    #(kcl-premise en)
-			    #(kcl-premise cn))))))))
+;;     (content output)
+;;     (produces
+;;      #(layered (bias . #(*the-nothing*))
+;; 	       (incremental
+;; 		. #(tms (#(supported -1/2
+;; 			   (#(kcl-premise out)
+;; 			    #(kcl-premise en)
+;; 			    #(kcl-premise cn))))))))
+;;     (content Q-power)
+;;     (produces 
+;;      #(layered (bias . #(*the-nothing*))
+;; 	       (incremental
+;; 		. #(tms (#(supported -3/50000
+;; 			   (#(kcl-premise out)
+;; 			    #(kcl-premise en)
+;; 			    #(kcl-premise cn))))))))
 
     (define-cell slice 
       (bias-voltage-divider-slice
@@ -169,5 +169,7 @@
 			   (#(kcl-premise out)
 			    #(kcl-premise en)
 			    #(kcl-premise cn))))))))
+    #; (length (all-propagators))
+    #; (produces 994)
     ))
  )
