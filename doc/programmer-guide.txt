@@ -1,4 +1,7 @@
-Programming:
+PROGRAMMING
+
+
+MAKING PROPAGATOR NETWORKS
 
 The "read and macroexpand" phase of the propagator
 system is the "read and eval" phase of the host Scheme;
@@ -40,6 +43,11 @@ ce: ditto e:
 (e: foo %% bar)  ==>  (let-cell new (p: foo new bar) new)
 
 
+MAKING NEW COMPOUND PROPAGATORS
+
+
+MAKING NEW PRIMITIVE PROPAGATORS
+
 (Almost) All the p:, e:, c:, and ce: are defined in
 extensions/expression-language.scm
 
@@ -47,3 +55,17 @@ Also the propagatify macro makes more of them
 (propagatify eq?)
 defines
 p:eq? and e:eq?
+
+
+MAKING NEW PARTIAL INFORMATION TYPES
+
+- Making cells deal with them
+- Making existing propagators support them
+
+
+DEBUGGING
+
+The metadata that gets tracked
+How to make sure that your network tracks it well
+How to draw pictures
+How to wander around using the metadata
