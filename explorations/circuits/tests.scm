@@ -158,6 +158,9 @@
 ;; 			    #(kcl-premise en)
 ;; 			    #(kcl-premise cn))))))))
 
+    ;; The slice can be added either inside the circuit or
+    ;; after the fact like this
+    #;
     (define-cell slice 
       (bias-voltage-divider-slice
        (the Rb1 amp test) (the bn amp test) (the Rb2 amp test)))

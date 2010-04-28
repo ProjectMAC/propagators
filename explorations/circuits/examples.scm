@@ -241,7 +241,7 @@
 		  (output-impedance (the resistance Rc)) #;
 		  (power (sum (map (lambda (x) (the power x))
 		  (list Rb1 Rb2 Rc Re Cin Cout Q)))))
-		  #; (voltage-divider-slice Rb1 bn Rb2)
+		  (bias-voltage-divider-slice Rb1 bn Rb2)
 		  (e:inspectable-object
 		   Rb1 Rb2 Rc Re Cin Cout Q +rail -rail sigin sigout
 		   gain input-impedance output-impedance #;power
