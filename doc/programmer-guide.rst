@@ -39,10 +39,21 @@ rather than to be even more convinced.
 .. _`Art of the Propagator`: http://dspace.mit.edu/handle/1721.1/44215
 .. _`Propagation Networks`: http://dspace.mit.edu/handle/1721.1/49525
 
-Hello World
+Getting Started
 ======================================================================
 
-Check out the README for 
+Scheme-Propagators is implemented in `MIT/GNU Scheme`_, which you will
+need in order to use it.  Start up your Scheme and load the main entry
+file with ``(load "load")``.  This gives you a read-eval-print loop
+(traditionally called a REPL for short) for both the
+Scheme-Propagators system and the underlying Scheme implementation.
+Check out the README for more on this.
+
+.. _`MIT/GNU Scheme`: http://www.gnu.org/software/mit-scheme/
+
+Once you've got your REPL, you can start typing away at it to create
+propagator networks, give them inputs, ask them to do computations,
+and look at the results.
 
 Here's a little propagator example that adds two and three to get
 five::
