@@ -123,22 +123,25 @@ to have.
 Making Propagator Networks
 ======================================================================
 
-The "read and macroexpand" phase of the propagator
-system is the "read and eval" phase of the host Scheme;
-with the understanding that all Scheme variables that
-get bound to cells are propagator variables, and
-all Scheme variables that get bound to other Scheme objects
-are "macros" from the perspective of the propagator
-system.
+The "read and syntax" phase of the Scheme-Propagators is the "read and
+eval" phase of the host Scheme; with the understanding that all Scheme
+variables that get bound to cells are propagator variables, and all
+Scheme variables that get bound to other Scheme objects are "syntax"
+from the perspective of Scheme-Propagators.
 
-This "macro system" is therefore much more developed than the
-propagator language itself, so such "macros" are still needed for many
-purposes.  Perhaps the most egregious example is the predefined
-procedures: in Scheme, + is a variable that's bound to a procedure,
-whereas in the propagator system, the corresponding object p:+ is a
-piece of syntax (that is, p:+ is not a cell that holds a propagator
-abstraction that adds, but is a Scheme procedure that directly makes
-such a propagator.  More on this below).
+Scheme-Propagators therefore has a "macro system" that is much more
+developed than the propagator language itself, because MIT/GNU Scheme
+is a full programming language that has been around for decades, while
+Scheme-Propagators is a prototype whose name hasn't even stabilized
+yet.  Thus these "macros" are still needed for many purposes.  Perhaps
+the most egregious example is the predefined procedures: in Scheme,
+``+`` is a variable that's bound to a procedure, whereas in
+Scheme-Propagators, the corresponding object ``e:+`` is a piece of
+syntax (that is, the Scheme variable ``e:+`` is not bound to a cell
+that holds a propagator abstraction that adds, and therefore is not a
+variable of Scheme-Propagators, but is rather bound to a Scheme
+procedure that directly makes a propagator that adds, and therefore is
+Scheme-Propagators syntax.  More on this below).
 
 let-cell
 let-cells
@@ -198,3 +201,6 @@ The metadata that gets tracked
 How to make sure that your network tracks it well
 How to draw pictures
 How to wander around using the metadata
+
+
+Mention: initialize-scheduler
