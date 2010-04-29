@@ -146,11 +146,14 @@ variable of Scheme-Propagators, but is rather bound to a Scheme
 procedure that directly makes a propagator that adds, and therefore is
 Scheme-Propagators syntax.  More on this below).
 
+Attaching Propagators Basics: p:foo and e:foo
+----------------------------------------------------------------------
+
 The two basic operations when making a propagator network are making
 cells and attaching propagators to cells.  You already met one way to
 make cells in the form of ``define-cell``; we will talk about more
 later.  You attach propagators to cells by calling an appropriate
-procedure that does that.  For example, the procedure ``p:+`` attaches
+Scheme procedure that does that.  For example, the procedure ``p:+`` attaches
 an adding propagator:::
 
   (p:+ foo bar baz)
@@ -214,32 +217,60 @@ and get a multidirectional constraint:
   (run)
   (content y) ==> 2
 
-let-cell
-let-cells
+Attaching Propagator Constraints: c:foo and ce:foo
+----------------------------------------------------------------------
 
-p: style things are Scheme procedures that attach a propagator
-to a bunch of given cells.  "Attach a propagator" means
-create a Scheme thunk to do that job; notify the scheduler
-about that thunk; and teach the given cells to reawaken that
-propagator-thunk when they get new information.
+Speaking of constraints, they are so useful that many are predefined,
+and they have their own naming convention.  ``c:`` stands for
+"constraining".  A thing named ``c:foo`` is the constraining analogue
+of ``p:foo``, in that in addition to attaching a propagator that does
+``foo`` to its cells, it also attaches ``foo-inverse`` propagators
+that deduce "inputs" from "outputs".  For example, the product
+constraint that we built in the previous section is available as
+``c:*``::
 
-Convention: the "return value" of the job done by a p: thing
-goes into the last supplied argument cell.
+  (define-cell x)
+  (define-cell y)
+  (define-cell z)
+  (c:* x y z)
 
-e: things return cells
-e: stuff is Scheme procedures.  They will make one cell
-to return; they will convert non-cell arguments to cells
-with corresponding constant propagtors staring at them;
-and they will attach corresponding p: things to the
-given cells.  The cell receiving the output of the
-underlying job is the cell made and returned
+  (add-content z 12)
+  (add-content y 4)
+  (run)
+  (content x) ==> 3
+  
+The ``c:`` procedures also have expression versions:::
 
-c: are multidirectional constraint versions of p:
-ce: ditto e:
+  (define-cell x)
+  (define-cell y)
+  (define-cell z (ce:* x y))
+
+``ce:foo`` is to ``c:foo`` as ``e:foo`` is to ``p:foo``.
+
+Constants and Literal Values
+----------------------------------------------------------------------
+
+(constant frob)
+(e:constant frob)
+constant conversion
+
+
+%%
+----------------------------------------------------------------------
+
+%% 
 
 (e: foo bar)  ==  (e: foo bar %%)
 
 (e: foo %% bar)  ==>  (let-cell new (p: foo new bar) new)
+
+
+Making Cells
+----------------------------------------------------------------------
+
+let-cell
+let-cells
+
 
 
 Making New Compound Propagators
@@ -277,3 +308,10 @@ How to wander around using the metadata
 Mention: initialize-scheduler
 
 TODO Where do I have a reference of available propagator constructors?
+
+
+"Attach a propagator" means
+create a Scheme thunk to do that job; notify the scheduler
+about that thunk; and teach the given cells to reawaken that
+propagator-thunk when they get new information.
+
