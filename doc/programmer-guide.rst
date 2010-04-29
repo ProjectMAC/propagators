@@ -66,6 +66,60 @@ five::
   (run)
   (content answer) ==> 5
 
+Each of the parenthesized phrases above are things to type into
+the REPL, and the ``==> 5`` at the end is the result that Scheme
+will print.  I omitted the results of all the other expressions
+because they are not interesting.
+
+Let's have a closer look at what's going on in this example,
+to serve as a guide for more in-depth discussion later.
+``define-cell`` is a Scheme macro for making and naming propagator
+cells.::
+
+  (define-cell a)
+
+creates a new cell and binds it to the Scheme variable ``a``.::
+
+  (define-cell b)
+
+makes another one.  Then ``add-content`` is a Scheme procedure
+that lets you directly zap some information into a propagator
+cell.  So::
+
+  (add-content a 3)
+
+puts a ``3`` into the cell named ``a``, and::
+
+  (add-content b 2)
+
+puts a ``2`` into the cell named ``b``.  Now ``e:+`` (I'll explain
+that naming convention later) is a Scheme procedure that creates
+a propagator that adds, attaches it to the given cells as inputs,
+and makes a cell to hold the adder's output and returns it.  So::
+
+  (define-cell answer (e:+ a b))
+
+creates an adding propagator, and also creates a cell, now called
+``answer``, to hold the result of the addition.  Be careful!  No
+computation has happened yet.  You've just made up a network, but it
+hasn't done its work yet.  That's what the Scheme procedure ``run`` is
+for.::
+
+  (run)
+
+actually executes the network, and only when the network is done
+computing does it give you back the REPL to interact with.  Finally
+``content`` is a Scheme procedure that gets the content of cells::
+
+  (content answer)
+
+looks at what the cell named ``answer`` has now, which is ``5``
+because the addition propagator created by ``e:+`` has had a chance to
+do its job.  If you had forgotted to type ``(run)`` before typing
+``(content answer)``, it would have printed out ``#(*the-nothing*)``,
+which means that cell has no information about the value it is meant
+to have.
+
 Making Propagator Networks
 ======================================================================
 
