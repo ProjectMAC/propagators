@@ -1,0 +1,6 @@
+
+file "programmer-guide.html" => ["programmer-guide.rst", "style.css"] do
+  sh "rst2html --stylesheet style.css programmer-guide.rst > programmer-guide.html"
+end
+
+task :doc => "programmer-guide.html"
