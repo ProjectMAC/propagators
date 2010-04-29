@@ -123,11 +123,14 @@ to have.
 Making Propagator Networks
 ======================================================================
 
-The "read and syntax" phase of the Scheme-Propagators is the "read and
+The "read and syntax" phase of Scheme-Propagators is the "read and
 eval" phase of the host Scheme; with the understanding that all Scheme
 variables that get bound to cells are propagator variables, and all
 Scheme variables that get bound to other Scheme objects are "syntax"
-from the perspective of Scheme-Propagators.
+from the perspective of Scheme-Propagators.  Things that can live in
+cells are the first-class entities of Scheme-Propagators, and other
+things from the host Scheme are second-class as far as the
+Scheme-Propagators langauge is concerned.
 
 Scheme-Propagators therefore has a "macro system" that is much more
 developed than the propagator language itself, because MIT/GNU Scheme
@@ -142,6 +145,74 @@ that holds a propagator abstraction that adds, and therefore is not a
 variable of Scheme-Propagators, but is rather bound to a Scheme
 procedure that directly makes a propagator that adds, and therefore is
 Scheme-Propagators syntax.  More on this below).
+
+The two basic operations when making a propagator network are making
+cells and attaching propagators to cells.  You already met one way to
+make cells in the form of ``define-cell``; we will talk about more
+later.  You attach propagators to cells by calling an appropriate
+procedure that does that.  For example, the procedure ``p:+`` attaches
+an adding propagator:::
+
+  (p:+ foo bar baz)
+
+means attach a propagator that will add the contents of ``foo`` and
+``bar`` and write them into ``baz``.  This means that henceforth,
+whenever ``foo`` or ``bar`` gets any new interesting information,
+the appropriate sum will eventually get computed and written into
+``baz``.
+
+Note that this ``p:+`` is different from the ``e:+`` in the example at
+the beginning.  This is a general naming convention.  ``p:`` stands
+for "propagator".  A thing named ``p:foo`` is a Scheme procedure
+(therefore Scheme-Propagators syntax) that attaches a propagator that
+does the ``foo`` job to a full collection of cells, one for each input
+to ``foo`` and one for the output from ``foo``.  The output cells
+conventionally go last (though I am open to changing that).  In
+principle the ``p:`` convention will work just as well for jobs that
+have multiple outputs, but I don't actually have any of those in the
+system.
+
+In contrast, ``e:`` stands for "expression".  A thing named ``e:foo``
+is a Scheme procedure (so Scheme-Propagators syntax) just like
+``p:foo``, except that it makes a fresh cell for the output and
+returns it (whereas ``p:foo`` does not return anything useful).  Here
+are two different ways to write the same thing:
+
+  (define-cell x)
+  (define-cell y)
+  (define-cell z)
+  (p:* x y z)
+
+and
+
+  (define-cell x)
+  (define-cell y)
+  (define-cell z (e:* x y))
+
+Generally the ``e:`` procedures are much more convenient to use most
+of the time, when some propagator is the only one that writes to its
+output; and you can chain them in the familiar way
+
+  (e:- w (e:* (e:+ x y) z))
+
+but when you need to make a propagator that writes to a cell you
+already have, such as when multiple propagators need to write to the
+same cell, you need the ``p:`` versions.  For example, if you wanted
+to being able to go back from ``z`` and one of ``x`` or ``y`` to the
+other, rather than just from ``x`` and ``y`` to ``z``, you could write
+
+  (define-cell x)
+  (define-cell y)
+  (define-cell z (e:* x y))
+  (p:/ z x y)
+  (p:/ z y x)
+
+and get a multidirectional constraint:
+
+  (add-content z 6)
+  (add-content x 3)
+  (run)
+  (content y) ==> 2
 
 let-cell
 let-cells
@@ -204,3 +275,5 @@ How to wander around using the metadata
 
 
 Mention: initialize-scheduler
+
+TODO Where do I have a reference of available propagator constructors?
