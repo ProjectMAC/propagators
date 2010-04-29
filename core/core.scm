@@ -85,6 +85,8 @@
      (define symbol (name-locally! form 'symbol)))
     ((define-cell symbol)
      (define-cell symbol (make-named-cell 'symbol)))))
+;; TODO Enable (define-cell foo 5) as a shorthand for
+;; (define-cell foo (e:constant 5))
 
 ;; (let-cells ((foo foo-form)
 ;;             (bar bar-form)
