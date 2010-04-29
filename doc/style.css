@@ -7,13 +7,11 @@ body {
   padding: 6px;
 }
 
-h1 {
+h1, h2 {
   color: #333333;
-  font-size: 200%;
   margin-top: 0px;
   margin-bottom: 0px;
   padding-top: 0.0em;
-  padding-right: 0.5em;
 }
 
 p {

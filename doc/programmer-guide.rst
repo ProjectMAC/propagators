@@ -146,7 +146,7 @@ variable of Scheme-Propagators, but is rather bound to a Scheme
 procedure that directly makes a propagator that adds, and therefore is
 Scheme-Propagators syntax.  More on this below).
 
-Attaching Propagators Basics: p:foo and e:foo
+Attaching Basic Propagators: p:foo and e:foo
 ----------------------------------------------------------------------
 
 The two basic operations when making a propagator network are making
@@ -154,7 +154,7 @@ cells and attaching propagators to cells.  You already met one way to
 make cells in the form of ``define-cell``; we will talk about more
 later.  You attach propagators to cells by calling an appropriate
 Scheme procedure that does that.  For example, the procedure ``p:+`` attaches
-an adding propagator:::
+an adding propagator::
 
   (p:+ foo bar baz)
 
@@ -173,20 +173,20 @@ to ``foo`` and one for the output from ``foo``.  The output cells
 conventionally go last (though I am open to changing that).  In
 principle the ``p:`` convention will work just as well for jobs that
 have multiple outputs, but I don't actually have any of those in the
-system.
+system at present.
 
 In contrast, ``e:`` stands for "expression".  A thing named ``e:foo``
 is a Scheme procedure (so Scheme-Propagators syntax) just like
 ``p:foo``, except that it makes a fresh cell for the output and
 returns it (whereas ``p:foo`` does not return anything useful).  Here
-are two different ways to write the same thing:
+are two different ways to write the same thing::
 
   (define-cell x)
   (define-cell y)
   (define-cell z)
   (p:* x y z)
 
-and
+and::
 
   (define-cell x)
   (define-cell y)
@@ -196,13 +196,15 @@ Generally the ``e:`` procedures are much more convenient to use most
 of the time, when some propagator is the only one that writes to its
 output; and you can chain them in the familiar way
 
+::
+
   (e:- w (e:* (e:+ x y) z))
 
 but when you need to make a propagator that writes to a cell you
 already have, such as when multiple propagators need to write to the
 same cell, you need the ``p:`` versions.  For example, if you wanted
-to being able to go back from ``z`` and one of ``x`` or ``y`` to the
-other, rather than just from ``x`` and ``y`` to ``z``, you could write
+to be able to go back from ``z`` and one of ``x`` or ``y`` to the
+other, rather than just from ``x`` and ``y`` to ``z``, you could write::
 
   (define-cell x)
   (define-cell y)
@@ -210,7 +212,7 @@ other, rather than just from ``x`` and ``y`` to ``z``, you could write
   (p:/ z x y)
   (p:/ z y x)
 
-and get a multidirectional constraint:
+and get a multidirectional constraint::
 
   (add-content z 6)
   (add-content x 3)
@@ -246,6 +248,9 @@ The ``c:`` procedures also have expression versions:::
   (define-cell z (ce:* x y))
 
 ``ce:foo`` is to ``c:foo`` as ``e:foo`` is to ``p:foo``.
+
+Of course, not every operation has a useful inverse, so there are
+fewer ``c:`` procedures defined than ``p:``.  For the complete list see TODO.
 
 Constants and Literal Values
 ----------------------------------------------------------------------
