@@ -30,8 +30,7 @@
 (load-relative "../core/load.scm")
 
 (for-each load-relative-compiled
- '("expression-language"
-   "environments"
+ '("environments"
    "electric-parts"
    "solve"
    "inequalities"
