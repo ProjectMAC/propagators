@@ -197,7 +197,7 @@
             (apply f (map content inputs))))))))
 
 ;;; This version has additional metadata to allow the propagator
-;;; network to be effectively traversed (see extensions/prop-dot.scm)
+;;; network to be effectively traversed (see extensions/draw.scm)
 (define (function->propagator-constructor f)
   (lambda cells
     (let ((output (car (last-pair cells)))
@@ -208,11 +208,6 @@
         (eq-adjoin! output 'shadow-connections the-propagator)
         (eq-label! the-propagator 'name f 'inputs inputs 'outputs (list output))
         (propagator inputs the-propagator)))))
-
-(define (constant value)
-  (function->propagator-constructor
-   #; (lambda () value)
-   (eq-label! (lambda () value) 'name `(constant ,value))))
 
 ;;; Propagators that defer the construction of their bodies, as one
 ;;; mechanism of abstraction.

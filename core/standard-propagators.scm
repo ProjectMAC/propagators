@@ -57,6 +57,11 @@
 
 (define switch
   (function->propagator-constructor (nary-unpacking switch-function)))
+
+(define (constant value)
+  (function->propagator-constructor
+   #; (lambda () value)
+   (eq-label! (lambda () value) 'name `(constant ,value))))
 
 ;;; Standard "propagator macros"
 
