@@ -219,7 +219,7 @@
 
 ;;; Propagators that defer the construction of their bodies, as one
 ;;; mechanism of abstraction.
-(define (compound-propagator neighbors to-build)
+(define (one-shot-propagator neighbors action)
   (let ((done? #f) (neighbors (listify neighbors)))
     (define (test)
       (if done?
@@ -232,15 +232,15 @@
 			;; The act of expansion makes the compound
 			;; itself uninteresting
 			(network-unregister test)
-			(to-build)))))))
-    (eq-clone! to-build test)
+			(action)))))))
+    (eq-clone! action test)
     (propagator neighbors test)))
 
 (define (compoundify-propagator-constructor prop-ctor)
   (lambda args
     ;; TODO Can I autodetect "inputs" that should not trigger
     ;; construction?
-    (compound-propagator args
+    (one-shot-propagator args
      (apply eq-label!
       (lambda ()
 	(apply prop-ctor args))

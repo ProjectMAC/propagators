@@ -19,7 +19,7 @@
 
 (define (choice-node name . alternatives)
   (lambda (go? segment)
-    (compound-propagator (list go?)	; Only expand if go? has something
+    (one-shot-propagator (list go?)	; Only expand if go? has something
       (eq-label!
        (lambda ()
 	 (snewline)
@@ -119,7 +119,7 @@
 
 (define (split-node name estimator segment-splitter . stages)
   (lambda (go? segment)
-    (compound-propagator (list go?) ; Only expand if go? has something
+    (one-shot-propagator (list go?) ; Only expand if go? has something
       (eq-label!
        (lambda ()
 	 (estimator segment)
@@ -157,7 +157,7 @@
 (define plan-walk
   (delay 
     (lambda (go? segment)
-      (compound-propagator (list go?)
+      (one-shot-propagator (list go?)
 	(eq-label!
 	 (lambda ()
 	   ((constant (make-trip-segment-by-method 'just-walk)) segment)
@@ -219,7 +219,7 @@
   (p:make-trip-segment-by-end   (e:trip-segment-end   segment) end))
 
 (define-macro-propagator (between-airports go? segment)
-  (compound-propagator (list go?)
+  (one-shot-propagator (list go?)
     (eq-label!
      (lambda ()
        ;; Complicated task-specific stuff stubbed...
@@ -267,7 +267,7 @@
    segment))
 
 (define-macro-propagator (between-stations go? segment)
-  (compound-propagator (list go?)
+  (one-shot-propagator (list go?)
     (eq-label!
      (lambda ()
        ;; Complicated task-specific stuff stubbed...
@@ -311,7 +311,7 @@
    segment))
 
 (define-macro-propagator (between-stops go? segment)
-  (compound-propagator (list go?)
+  (one-shot-propagator (list go?)
     (eq-label!
      (lambda ()
        ;; Complicated task-specific stuff stubbed...
