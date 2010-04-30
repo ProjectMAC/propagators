@@ -389,3 +389,5 @@ create a Scheme thunk to do that job; notify the scheduler
 about that thunk; and teach the given cells to reawaken that
 propagator-thunk when they get new information.
 
+(declare (usual-integrations make-cell cell?))
+
