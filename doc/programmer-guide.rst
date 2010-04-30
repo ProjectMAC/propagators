@@ -255,9 +255,49 @@ fewer ``c:`` procedures defined than ``p:``.  For the complete list see TODO.
 Constants and Literal Values
 ----------------------------------------------------------------------
 
-(constant frob)
-(e:constant frob)
-constant conversion
+Programs have embedded constants all the time, and propagator programs
+are no different (except that constant values, like all other values,
+can be partial; see below).  We've already seen one way to put a
+Scheme value into a propagator program: the ``add-content`` procedure
+zaps a value straight into a cell.  This is generally encouraged at
+the REPL, but frowned upon in actual programs.  It is much nicer (in
+my current opinion) to use ``constant`` or ``p:constant`` (they're the
+same) to make a propagator that will zap your value into your cell for
+you::
+
+  (define-cell thing)
+  ((constant 5) thing)
+  (content thing) ==> #(*the-nothing*)
+  (run)
+  (content thing) ==> 5
+
+There is also an expression-oriented version, called, naturally,
+``e:constant``::
+
+  (define-cell thing (e:constant 5))
+  (run)
+  (content thing) ==> 5
+
+In fact, inserting constants is so important, that there is one more
+nicification of this: all the ``e:`` and ``ce:`` procedures will
+automatically convert any non-cell Scheme value that they get as
+arguments into a cell, using ``e:constant`` to zap that value in
+there.  For example::
+
+  (define-cell x)
+  (define-cell y (e:+ x 2))
+
+is the same as
+
+  (define-cell x)
+  (define-cell y (e:+ x (e:constant 2)))
+
+TODO: A near-term plan of mine is to extend this feature to other
+aspects of the propagator language, namely to the ``p:`` and ``c:``
+procedures, and to ``define-cell``, ``let-cells``, and all other
+places where it belongs.  But for the time being, only ``e:foo`` and
+``ce:foo`` understand raw non-cell Scheme values as constants.
+
 
 
 %%
@@ -293,8 +333,10 @@ Also the propagatify macro makes more of them
 defines
 p:eq? and e:eq?
 
+Using Partial Information
+======================================================================
 
-Making New Partial Information Types
+Making New Kinds of Partial Information
 ======================================================================
 
 - Making cells deal with them
