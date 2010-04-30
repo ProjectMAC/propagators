@@ -66,7 +66,7 @@
 (define (make-named-cell name)
   (name! (make-cell) name))
 
-(define (->cell thing)
+(define (ensure-cell thing)
   (if (cell? thing)
       thing
       ;; TODO Retain this forward reference?  Copy the code?
@@ -76,11 +76,11 @@
 
 ;; (define-cell foo form)
 ;; is the same as
-;; (define foo form)
+;; (define foo (ensure-cell form))
 ;; except it grabs the name foo and associates it with the
-;; object (presumably a cell) that form constructs.
+;; cell that form constructs.
 ;;
-;; for the frequent case when you want a fresh cell
+;; For the frequent case when you want a fresh cell
 ;; (define-cell foo)
 ;; expands into
 ;; (define-cell foo (make-named-cell 'foo))
@@ -88,26 +88,23 @@
 (define-syntax define-cell
   (syntax-rules ()
     ((define-cell symbol form)
-     (define symbol (name-locally! form 'symbol)))
+     (define symbol (name-locally! (ensure-cell form) 'symbol)))
     ((define-cell symbol)
      (define-cell symbol (make-named-cell 'symbol)))))
-;; TODO Enable (define-cell foo 5) as a shorthand for
-;; (define-cell foo (e:constant 5))
 
 ;; (let-cells ((foo foo-form)
 ;;             (bar bar-form)
 ;;             (baz baz-form))
 ;;   stuff)
 ;; is the same as 
-;; (let ((foo foo-form)
-;;       (bar bar-form)
-;;       (baz baz-form))
+;; (let ((foo (ensure-cell foo-form))
+;;       (bar (ensure-cell bar-form))
+;;       (baz (ensure-cell baz-form)))
 ;;   stuff)
-;; except that it captures the names foo bar and baz
-;; and associates them with the objects (presumably cells)
-;; that the corresponding forms return.
+;; except that it captures the names foo bar and baz and associates
+;; them with the cells that the corresponding forms return.
 ;;
-;; for the frequent case when you want fresh cells
+;; For the frequent case when you want fresh cells
 ;; (let-cells (foo bar baz)
 ;;   stuff)
 ;; expands into
@@ -123,7 +120,7 @@
   (syntax-rules ()
     ((let-cells ((cell-name cell-form) ...)
        form ...)
-     (let ((cell-name (name-locally! cell-form 'cell-name)) ...)
+     (let ((cell-name (name-locally! (ensure-cell cell-form) 'cell-name)) ...)
        form ...))
     ((let-cells (cell-name ...)
        form ...)
@@ -149,7 +146,7 @@
        ()
        ((cell-name cell-form) ...)
        form ...)
-     (let ((cell-name (name-locally! cell-form 'cell-name)) ...)
+     (let ((cell-name (name-locally! (ensure-cell cell-form) 'cell-name)) ...)
        form ...))
     ((let-cells "process-clauses"
        ((cell-name cell-form) clause ...)
@@ -167,6 +164,11 @@
        (clause ...)
        ((cell-name (make-named-cell 'cell-name)) done-clause ...)
        form ...))))
+
+;; TODO Add one more clause to interpret
+;; (let-cells ((foo foo-form)
+;;             (bar))
+;; in agreement with Scheme let.
 
 ;; This version is a grammatical convenience if there is only one
 ;; cell.  (let-cell (foo foo-form) stuff) and (let-cell foo stuff) are

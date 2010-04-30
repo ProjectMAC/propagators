@@ -44,7 +44,7 @@
 	       inputs)
 	  (append inputs (map (lambda (k) (manufacture-cell))
 			      (iota num-outputs)))))
-    (apply propagator (map ->cell true-inputs))
+    (apply propagator (map ensure-cell true-inputs))
     (if (= 1 (length outputs))
 	(car outputs)
 	;; TODO Maybe (reverse outputs) here?
