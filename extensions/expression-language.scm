@@ -115,7 +115,7 @@
 (define e:forbid (functionalize p:forbid))
 
 ;; TODO I would have much preferred to write
-;; (define e:one-of (functionalize one-of-the-cells), but that one
+;; (define e:one-of (functionalize one-of-the-cells)), but that one
 ;; wants an explicit list of input cells.  Oh well.
 (define (e:one-of . values)
   (let-cell cell
