@@ -236,7 +236,7 @@
     (eq-clone! action test)
     (propagator neighbors test)))
 
-(define (compoundify-propagator-constructor prop-ctor)
+(define (delayed-propagator-constructor prop-ctor)
   (lambda args
     ;; TODO Can I autodetect "inputs" that should not trigger
     ;; construction?

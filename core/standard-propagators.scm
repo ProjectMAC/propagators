@@ -102,7 +102,7 @@
   (syntax-rules ()
     ((define-compound-propagator (name arg-form ...) body-form ...)
      (define name
-       (compoundify-propagator-constructor
+       (delayed-propagator-constructor
 	(named-macro-propagator (name arg-form ...)
 	  body-form ...))))))
 
