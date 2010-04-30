@@ -44,6 +44,10 @@
         ((pair? object) object)
         (else (list object))))
 
+(define (coercing coercer f)
+  (lambda args
+    (apply f (map coercer args))))
+
 (define (walker->mapper walker)
   (lambda (proc . rest)
     (let ((result '()))

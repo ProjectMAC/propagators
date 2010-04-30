@@ -62,10 +62,6 @@
       x
       (make-interval x x)))
 
-(define (coercing coercer f)
-  (lambda args
-    (apply f (map coercer args))))
-
 (defhandler generic-* (coercing ->interval mul-interval) number? interval?)
 (defhandler generic-* (coercing ->interval mul-interval) interval? number?)
 (defhandler generic-/ (coercing ->interval div-interval) number? interval?)
