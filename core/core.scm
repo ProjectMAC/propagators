@@ -197,8 +197,8 @@
 
 (define (function->propagator-constructor f)
   (lambda cells
-    (let ((output (car (last-pair cells)))
-          (inputs (except-last-pair cells)))
+    (let ((output (ensure-cell (car (last-pair cells))))
+          (inputs (map ensure-cell (except-last-pair cells))))
       (propagator inputs                ; The output isn't a neighbor!
         (lambda ()
           (add-content output
@@ -208,8 +208,8 @@
 ;;; network to be effectively traversed (see extensions/draw.scm)
 (define (function->propagator-constructor f)
   (lambda cells
-    (let ((output (car (last-pair cells)))
-          (inputs (except-last-pair cells)))
+    (let ((output (ensure-cell (car (last-pair cells))))
+          (inputs (map ensure-cell (except-last-pair cells))))
       (let ((the-propagator
              (lambda ()
                (add-content output (apply f (map content inputs))))))
@@ -220,7 +220,7 @@
 ;;; Propagators that defer the construction of their bodies, as one
 ;;; mechanism of abstraction.
 (define (one-shot-propagator neighbors action)
-  (let ((done? #f) (neighbors (listify neighbors)))
+  (let ((done? #f) (neighbors (map ensure-cell (listify neighbors))))
     (define (test)
       (if done?
           'ok
@@ -240,11 +240,12 @@
   (lambda args
     ;; TODO Can I autodetect "inputs" that should not trigger
     ;; construction?
-    (one-shot-propagator args
-     (apply eq-label!
-      (lambda ()
-	(apply prop-ctor args))
-      (compute-aggregate-metadata prop-ctor args)))))
+    (let ((args (map ensure-cell args)))
+      (one-shot-propagator args
+        (apply eq-label!
+	  (lambda ()
+	    (apply prop-ctor args))
+	  (compute-aggregate-metadata prop-ctor args))))))
 
 ;;; Merging, and the basic data types.
 
