@@ -63,46 +63,45 @@
 ;;; This strategy is presented in the text as an alternative to the
 ;;; preceding.  I choose not to enable it by default.
 #|
-(define (conser a-cell d-cell output)
-  (propagator ()                        ; That's right, no inputs.
-    (lambda ()
-      (add-content output
-        (cons a-cell d-cell)))))
+ (define (conser a-cell d-cell output)
+   (propagator ()                        ; That's right, no inputs.
+     (lambda ()
+       (add-content output
+	 (cons a-cell d-cell)))))
 
-(define (carer cons-cell output)
-  (propagator (list cons-cell)
-    (lambda ()
-      (add-content output
-        (content (car (content cons-cell)))))))
+ (define (carer cons-cell output)
+   (propagator (list cons-cell)
+     (lambda ()
+       (add-content output
+	 (content (car (content cons-cell)))))))
 
-(define (carer cons-cell output)
-  (propagator (list cons-cell)
-    (lambda ()
-      (identity (car (content cons-cell)) output))))
+ (define (carer cons-cell output)
+   (propagator (list cons-cell)
+     (lambda ()
+       (identity (car (content cons-cell)) output))))
 
-(define (identity input output)
-  (propagator (list input)
-    (lambda ()
-      (add-content output (content input)))))
+ (define (identity input output)
+   (propagator (list input)
+     (lambda ()
+       (add-content output (content input)))))
 
-(define (carer cons-cell output)
-  (propagator (list cons-cell)
-    (lambda ()
-      (let* ((best-pair (tms-query (content cons-cell)))
-             (transported-cell (car (v&s-value best-pair))))
-        ((conditional-identity (v&s-support best-pair))
-         transported-cell output)))))
+ (define (carer cons-cell output)
+   (propagator (list cons-cell)
+     (lambda ()
+       (let* ((best-pair (tms-query (content cons-cell)))
+	      (transported-cell (car (v&s-value best-pair))))
+	 ((conditional-identity (v&s-support best-pair))
+	  transported-cell output)))))
 
-(define ((conditional-identity support) input output)
-  (propagator (list input)
-    (lambda ()
-      (if (all-premises-in? support)
-          (add-content output
-            (attach-support (tms-query (content input)) support))))))
+ (define ((conditional-identity support) input output)
+   (propagator (list input)
+     (lambda ()
+       (if (all-premises-in? support)
+	   (add-content output
+	     (attach-support (tms-query (content input)) support))))))
 
-(define (attach-support v&s more-support)
-  (supported
-   (v&s-value v&s)
-   (lset-union eq? (v&s-support v&s) more-support)))
-
+ (define (attach-support v&s more-support)
+   (supported
+    (v&s-value v&s)
+    (lset-union eq? (v&s-support v&s) more-support)))
 |#
