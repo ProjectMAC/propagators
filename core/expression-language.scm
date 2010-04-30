@@ -24,16 +24,10 @@
   (eq? thing %%))
 (name! %% '%%)
 
-(define (->cell thing)
-  (if (or (implicit-cell? thing) (cell? thing))
-      thing
-      (e:constant thing)))
-
 (define (functionalize propagator #!optional num-outputs)
   (if (default-object? num-outputs)
       (set! num-outputs 1))
-  (lambda args
-    (define inputs (map ->cell args))
+  (lambda inputs
     (define outputs '())
     (define (manufacture-cell)
       (let ((cell (make-named-cell 'cell)))
@@ -50,7 +44,7 @@
 	       inputs)
 	  (append inputs (map (lambda (k) (manufacture-cell))
 			      (iota num-outputs)))))
-    (apply propagator true-inputs)
+    (apply propagator (map ->cell true-inputs))
     (if (= 1 (length outputs))
 	(car outputs)
 	;; TODO Maybe (reverse outputs) here?

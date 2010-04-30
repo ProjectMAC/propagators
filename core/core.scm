@@ -66,6 +66,12 @@
 (define (make-named-cell name)
   (name! (make-cell) name))
 
+(define (->cell thing)
+  (if (cell? thing)
+      thing
+      ;; TODO Retain this forward reference?  Copy the code?
+      (e:constant thing)))
+
 ;;; Convenience macros for defining new cells.
 
 ;; (define-cell foo form)
