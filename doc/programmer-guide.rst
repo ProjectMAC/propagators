@@ -289,6 +289,8 @@ there.  For example::
 
 is the same as
 
+::
+
   (define-cell x)
   (define-cell y (e:+ x (e:constant 2)))
 
@@ -298,17 +300,36 @@ procedures, and to ``define-cell``, ``let-cells``, and all other
 places where it belongs.  But for the time being, only ``e:foo`` and
 ``ce:foo`` understand raw non-cell Scheme values as constants.
 
-
-
-%%
+Implicit Cell Syntax
 ----------------------------------------------------------------------
 
-%% 
+Before we move on, there is one more quirky little feature, called
+``%%``.  This is a Scheme object, therefore Scheme-Propagators syntax,
+for controlling the argument position of the implicit cell that an
+``e:`` or ``ce:`` procedure will make and return.  Perhaps examples
+are best::
 
-(e: foo bar)  ==  (e: foo bar %%)
+  (e: foo bar)     <==>  (e: foo bar %%)
 
-(e: foo %% bar)  ==>  (let-cell new (p: foo new bar) new)
+  (e: foo %% bar)  <==>  (let-cell new (p: foo new bar) new)
 
+I borrowed this idea from Guy Steele's PhD thesis on constraint
+languages, and was a year between when I implemented it and
+when I first used it.  The use case I do have is when I
+want to make a new cell participate in an input position
+in a constraint with some existing cells::
+
+  (define-cell x)
+  (define-cell z)
+  (define-cell y (ce:+ x %% z))
+  (add-content x 5)
+  (add-content y 3)
+  (run)
+  (content z) ==> 8
+
+Perhaps this use case could also be served by adding more
+expression-style constraint procedures (namely ``ce:-``, which I do
+not currently have), but then again maybe it's elegant.
 
 Making Cells
 ----------------------------------------------------------------------
@@ -351,6 +372,12 @@ How to make sure that your network tracks it well
 How to draw pictures
 How to wander around using the metadata
 
+Advanced Features
+======================================================================
+
+Provenance tracking
+Truth maintenance
+Search (binary-amb)
 
 Mention: initialize-scheduler
 
