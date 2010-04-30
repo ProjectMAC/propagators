@@ -74,37 +74,72 @@
 ;;; is most useful in the regime where all the passed arguments are
 ;;; actually cells (as opposed to, say, Scheme-lists of cells).
 
-(define-syntax define-macro-propagator
+(define-syntax define-propagator-syntax
   (syntax-rules ()
-    ((define-macro-propagator (name arg-form ...) body-form ...)
+    ((define-propagator-syntax (name arg-form ...) body-form ...)
      (define name
-       (named-macro-propagator (name arg-form ...)
+       (named-propagator-syntax (name arg-form ...)
 	 body-form ...)))
     ;; N.B. This is the clause that will match dot-notation argument lists
-    ((define-macro-propagator name body-form ...)
+    ((define-propagator-syntax name body-form ...)
      (define name
        (with-network-group (network-group-named 'name)
 	 (lambda ()
 	   body-form ...))))))
 
-;;; TODO Should this be called propagator-lambda?
-;;; What about the compound version?
-(define-syntax named-macro-propagator
+;;; This is the "lambda" to define-propagator-syntax's "define".
+(define-syntax named-propagator-syntax
   (syntax-rules ()
-    ((named-macro-propagator (name arg-form ...) body-form ...)
+    ((named-propagator-syntax (name arg-form ...) body-form ...)
      (named-lambda (name arg-form ...)
        (with-network-group (network-group-named 'name)
 	 (lambda ()
 	   (name-locally! arg-form 'arg-form) ...
 	   body-form ...))))))
 
+;;; This version is just like define-propagator-syntax, but expects
+;;; all its arguments to actually be cells, and enforces that
+;;; expectation with ENSURE-CELL.
+(define-syntax define-macro-propagator
+  (syntax-rules ()
+    ((define-macro-propagator (name arg-form ...) body-form ...)
+     (define name
+       (named-macro-propagator (name arg-form ...) body-form ...)))))
+
+;;; This is the "lambda" to define-macro-propagator's "define".
+(define-syntax named-macro-propagator
+  (syntax-rules ()
+    ((named-macro-propagator stuff ...)
+     (coercing ensure-cell (named-propagator-syntax stuff ...)))))
+
+;;; This version is just like define-macro-propagator, but
+;;; additionally allows the body to be recursive by delaying its
+;;; expansion until there is some information in at least one of the
+;;; neighbor cells.
 (define-syntax define-compound-propagator
   (syntax-rules ()
     ((define-compound-propagator (name arg-form ...) body-form ...)
      (define name
-       (delayed-propagator-constructor
-	(named-macro-propagator (name arg-form ...)
-	  body-form ...))))))
+       (named-compound-propagator (name arg-form ...)
+	 body-form ...)))))
+
+;;; This is the "lambda" to define-compound-propagator's "define".
+(define-syntax named-compound-propagator
+  (syntax-rules ()
+    ((named-compound-propagator stuff ...)
+     (delayed-propagator-constructor
+      (named-macro-propagator stuff ...)))))
+
+;;; More remains to be done before I can really make a
+;;; propagator-lambda macro, or its corresponding define.  I would
+;;; need to settle on the representation of closures --- all the above
+;;; produce raw Scheme procedures.  I would also need to settle on the
+;;; behavior of closures --- the above use physical copies and
+;;; primitive delaying as their abstraction strategy.  Finally, I
+;;; would need a story for variable arity procedures, which is
+;;; basically the same as the story for compound data.  (And at the
+;;; end I would need to adjust the above to define-cell instead of
+;;; define, and to return cells instead raw values, but that's easy.)
 
 ;;; TODO Here's an idea: maybe the arguments to the Scheme procedures
 ;;; produced by define-macro-propagator and company should be

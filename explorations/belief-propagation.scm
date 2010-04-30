@@ -122,7 +122,7 @@
 
 (propagatify pointwise-sum-product)
 
-(define-macro-propagator (factor-props factor terminals)
+(define-propagator-syntax (factor-props factor terminals)
   ;; Ugh.  The factor comes in as a lisp procedure, because 
   ;; currying it the way I want is easier in lisp.
   (define (crunch-the-factor index factor)

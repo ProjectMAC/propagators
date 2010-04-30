@@ -136,7 +136,7 @@
        'inputs (list go? segment)
        'outputs (list segment)))))
 
-(define-macro-propagator (answer-compounder go? out . subanswers)
+(define-propagator-syntax (answer-compounder go? out . subanswers)
   (p:make-trip-segment-by-start (e:trip-segment-start (car subanswers)) out)
   (p:make-trip-segment-by-end
    (e:trip-segment-end (car (last-pair subanswers))) out)

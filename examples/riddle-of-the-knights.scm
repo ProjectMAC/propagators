@@ -24,7 +24,7 @@
     (conditional-wire control cell1 cell2)
     control))
 
-(define-macro-propagator (quadratic-guess-bijection cells1 cells2)
+(define-propagator-syntax (quadratic-guess-bijection cells1 cells2)
   (define (not-all-off . cells)
     (require (reduce e:or #f cells)))
   (let ((controls
@@ -41,7 +41,7 @@
 	      controls)
     (apply for-each not-all-off controls)))
 
-(define-macro-propagator (quadratic-extend-bijection cell-alist cells1 cells2)
+(define-propagator-syntax (quadratic-extend-bijection cell-alist cells1 cells2)
   (for-each (lambda (cell-pair)
 	      (pass-through (car cell-pair) (cdr cell-pair))
 	      (pass-through (cdr cell-pair) (car cell-pair)))
