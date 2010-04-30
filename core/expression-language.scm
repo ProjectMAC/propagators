@@ -37,10 +37,10 @@
     (define implicit-cells-present? (any implicit-cell? inputs))
     (define true-inputs
       (if implicit-cells-present?
-	  (map (lambda (cell)
-		 (if (implicit-cell? cell)
+	  (map (lambda (input)
+		 (if (implicit-cell? input)
 		     (manufacture-cell)
-		     cell))
+		     input))
 	       inputs)
 	  (append inputs (map (lambda (k) (manufacture-cell))
 			      (iota num-outputs)))))
