@@ -47,6 +47,10 @@ def mechanics_band
   "/scmutils/linux/edwin-mechanics.com"
 end
 
+def mechanics_band64
+  "/scmutils/scheme-x86-64/edwin-mechanics.com"
+end
+
 def try_by_band(band)
   fixed_opts = ["-constant",
     "2000",
@@ -62,6 +66,7 @@ end
 
 try_by_executable
 try_by_band("/sw" + mechanics_band)
+try_by_band("/usr/local"+ mechanics_band64)
 try_by_band("/usr/local"+ mechanics_band)
 puts "No Scheme at #{scheme} and no Mechanics bands at {/sw|/usr/local}#{mechanics_band} :("
 
