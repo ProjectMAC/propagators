@@ -72,6 +72,9 @@
   (set! *propagators-ever-alerted* (make-eq-oset))
   'ok)
 
+(define (execute-propagator propagator)
+  (propagator))
+
 (define (alert-propagators propagators)
   (for-each
    (lambda (propagator)
@@ -144,11 +147,11 @@
   (let ((temp (oset-members propagators-left)))
     (oset-clear! propagators-left)
     (for-each (lambda (propagator)
-		(propagator))
+		(execute-propagator propagator))
 	      temp)))
 
 (define (stack-policy propagators-left)
-  ((oset-pop! propagators-left)))
+  (execute-propagator (oset-pop! propagators-left)))
 
 (define (make-round-robin-scheduler)
   (make-oset-scheduler round-robin-policy))
