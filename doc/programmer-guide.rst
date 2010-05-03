@@ -498,6 +498,16 @@ only if it has information to process.
 Much the same effect can be achieved procedurally using the Scheme
 procedure ``delayed-propagator-constructor``.
 
+In principle, there is no propagator abstraction that you can express
+with ``define-macro-propagator`` that you cannot express better with
+``define-compound-propagator``.  However, I still advise
+``define-macro-propagator`` where possible, because
+``define-compound-propagator`` is more complex, and less stable.
+Specifically, while it's pretty clear that ``define-macro-propagator``
+is pretty much the right way to make a "propagator macro", it is not
+at all clear whether ``define-compound-propagator`` is the right
+implementation of the idea of "propagator closure".
+
 Expressions
 ----------------------------------------------------------------------
 
