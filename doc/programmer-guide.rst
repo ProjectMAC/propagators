@@ -777,10 +777,94 @@ to make a partial information structure.
 Debugging
 ======================================================================
 
-The metadata that gets tracked
-How to make sure that your network tracks it well
-How to draw pictures
-How to wander around using the metadata
+There is no stand-along "propagator debugger"; if something goes
+wrong, the underlying Scheme debugger is your friend.  Some effort
+has, however, been expended on making your life easier.
+
+In normal operation, Scheme-Propagators keeps track of some metadata
+about the network that is running.  This metadata can be invaluable
+for debugging propagator networks.  The specific data it tries to
+track is:
+
+- The names (non-unique but semantic) of all the cells and
+  propagators.  This is in contast with the unique but non-semantic
+  object hashes of all the cells and propagators that MIT Scheme
+  tracks anyway.
+
+- Which propagators are connected to which cells.
+
+- Whether the connections are input, output, or both.
+
+- The grouping structure of the propagator network, as defined
+  by the call structure of the Scheme procedures that constructed it.
+
+To make sure that your network tracks this metadata well, you should
+use the high level interfaces to making cells, propagators, and
+propagator constructors when possible (``define-cell``, ``let-cells``,
+``define-macro-propagator``, ``propagatify``, etc).  Any gaps not
+filled by use of these interfaces must either be accepted as gaps or
+be filled by hand.
+
+Perhaps the most spectacular use of the metadata facility is to
+draw pictures of your propagator network.  Just type::
+
+  (draw:show-graph)
+
+at the REPL and watch what happens!  If the picture does not look like
+the graph you thought you made, make sure the connection metadata is
+collected appropriately, but then check your code to see whether you
+miswired something.  If the pciture contains useless gibberish in the
+labels, make sure the names of things are correctly assigned and
+tracked.  If ``dot`` crashes, maybe your network is too big for it.
+For more on various pictures you can draw, look in the source comments
+in ``extensions/draw.scm``.
+
+Of course, in order to use the metadata for debugging, you must be
+able to read it.  Inspection procedures using the metadata are provided:
+
+name
+  the name of an object, should it have one
+
+cell?
+  whether something is a cell or not
+
+propagator?
+  whether something is a propagator or not
+
+propagator-inputs
+  the inputs of a propagator (a list of cells)
+
+propagator-outputs
+  the outputs of a propagator (a list of cells)
+
+neighbors
+  the readers of a cell (a list of propagators)
+
+cell-non-readers
+  other propagators somehow associated with a cell (presumably ones that write to it)
+
+cell-connections
+  all propagators around a cell (the append of the neighbors
+  and the non-readers)
+
+network-group-of
+  a metadata object representing the context in which
+  the object being examined was created (see ``core/metadata.scm``
+  to learn what you can do with them)
+
+You can use these at least somewhat to wander around a network you are
+debugging.  Be advised that both cells and propagators are represented
+directly as Scheme procedures, and therefore do not print very nicely
+at the REPL (TODO: fix this).
+
+If you find yourself doing something strange that circumvents the
+usual metadata tracking mechanisms, you can add the desired metadata
+yourself.  All the metadata collection procedures are defined in
+``core/metadata.scm``; they generally use the ``eq-properties``
+mechanism in ``support/eq-properties.scm`` to track the metadata, so
+you can use to add more.  In particular, see the definition of, say,
+``function->propagator-constructor`` or ``define-macro-propagator``
+for examples of how this is done.
 
 Advanced Features
 ======================================================================
@@ -918,3 +1002,5 @@ Mention (in Getting Started) how to acquire the system
 
 - Also mention that Scmutils is useful for some sorts of things,
   and where to get it
+
+scm-propagators.el
