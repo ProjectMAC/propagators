@@ -419,6 +419,126 @@ the next expression or assigned to variables.
 Making New Compound Propagators
 ======================================================================
 
+So, you know the primitives (the supplied propagators) and the means
+of combination (how to make cells and wire bunches of propagators up
+into networks).  Now for the means of abstraction.  A procedure like
+``p:+`` is like a wiring diagram with a few holes where it can be
+attached to other structures.  Supply that procedure with cells,
+and it makes an actual propagator for addition whose inputs and outputs
+are those cells.  How do you make compound such procedures?
+
+Well, you can always just use the underlying Scheme::
+
+  (define (my-diagram x y z)
+    (p:+ x y z)
+    (p:- z y x)
+    (p:- z x y))
+
+Then ``my-diagram`` would be almost like ``p:+``, in that it would
+also be a Scheme variable bound to a Scheme procedure that, if given
+three cells, would construct some propagators attached to those cells.
+``p:+`` does a little more than that basic job, however, so you should
+use ``define-macro-propagator`` instead of ``define``::
+
+  (define-macro-propagator (my-diagram x y z)
+    (p:+ x y z)
+    (p:- z y x)
+    (p:- z x y))
+
+makes a much nicer ``my-diagram`` that, in addition to doing the basic
+job you would expect, also keeps track of metadata that is very helpful
+for debugging (namely that the adder and two subtractors inside were
+created by a ``my-diagram`` rather than just hanging out), and performs
+constant conversion on its inputs, so you can write::
+
+  (my-diagram x 3 z)  
+
+and get
+
+::
+
+  (my-diagram x (e:constant 3) z)
+
+The Scheme macro ``define-macro-propagator`` is called that because
+the object it creates is not first-class in Scheme-Propagators.  At
+the moment, Scheme-Propagators has no (stable) first-class
+representation of wiring diagrams; so all abstraction is effectively
+at the level of "macros", and ``define-macro-propagator`` is part of
+that system.  But the only "macroness" about it, really, is that the
+resulting ``my-diagram`` does not and cannot live in a cell.
+
+Recursion
+----------------------------------------------------------------------
+
+Propagator abstractions defined by ``define-macro-propagator`` have
+one flaw: they are expanded immediately when Scheme encounters them.
+Therefore, they cannot be used to build recursive structures, because
+the structure would be expanded infinitely far.  For this purpose,
+there is ``define-compound-propagator``.  It's just like
+``define-macro-propagator``, except that the expansion of the wiring
+diagram represented by the resulting Scheme procedure is delayed until
+some (however partial) information shows up on at least one of the
+cells that the diagram is attached to.  For example::
+
+  (define-compound-propagator (sqrt-iter x g answer)
+    (let-cells (done x-if-done x-if-not-done g-if-done g-if-not-done
+		     new-g recursive-answer)
+      (good-enuf? x g done)
+      (conditional-writer done x x-if-done x-if-not-done)
+      (conditional-writer done g g-if-done g-if-not-done)
+      (heron-step x-if-not-done g-if-not-done new-g)
+      (sqrt-iter x-if-not-done new-g recursive-answer)
+      (conditional done g-if-done recursive-answer answer)))
+
+contains a call to itself; but attaching this to some cells will not
+cause an immediate infinite regress because the internal ``sqrt-iter``
+will only expand dynamically during the execution of the network, and
+only if it has information to process.
+
+Much the same effect can be achieved procedurally using the Scheme
+procedure ``delayed-propagator-constructor``.
+
+Expressions
+----------------------------------------------------------------------
+
+The example diagram called ``my-diagram`` above should probably have
+been named ``p:my-diagram``, because its expects to get all of its
+boundary cells when called, and the Scheme procedure does not return
+anything.  You can mechanically convert ``p:``-type procedures that
+you define into ``e:``-type versions with the Scheme procedure
+``functionalize``::
+
+  (define e:my-diagram (functionalize p:my-diagram))
+  (define-cell z (e:my-diagram x y))
+
+will do what you expect.
+
+Macrology
+----------------------------------------------------------------------
+
+Sometimes you will need to make something that looks more like a macro
+to Scheme-Propagators than the things ``define-macro-propagator`` is
+for.  After all, the procedures produced by
+``define-macro-propagator`` will not only assume that their arguments
+are all cells, but will actively coerce them into cells.  For extreme
+cases there's always Scheme's ``define``; but sometimes you want the
+debugging data provided by ``define-macro-propagator`` but not the
+constant conversion.  A common use case is variable-arity network
+diagrams.  You can a list of cells rather than a single cell, and you
+want to use Scheme's ``map`` or ``for-each`` to do something to them,
+but you still want the debugging aids that ``define-macro-propagator``
+provides and ``define`` does not.  This is what
+``define-propagator-syntax`` is for.  The classic example is
+``require-distinct``::
+
+  (define-propagator-syntax (require-distinct cells)
+    (for-each-distinct-pair
+     (lambda (c1 c2)
+       (define-cell p)
+       (=? c1 c2 p)
+       (forbid p))
+     cells))
+
 
 Making New Primitive Propagators
 ======================================================================
