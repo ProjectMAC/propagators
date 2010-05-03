@@ -793,13 +793,107 @@ Search (binary-amb)
 Making New Primitive Propagators
 ======================================================================
 
-(Almost) All the p:, e:, c:, and ce: are defined in
-extensions/expression-language.scm
+Direct Construction from Functions
+----------------------------------------------------------------------
 
-Also the propagatify macro makes more of them
-(propagatify eq?)
-defines
-p:eq? and e:eq?
+The fundamental, stable way to make your own primitive propagators is
+the procedure ``function->propagator-constructor``.  It takes a Scheme
+function, and makes a propagator construction procedure out of it that
+makes a propagator that does the job implemented by that Scheme
+function.  The propagator constructor in question takes one more
+argument than the original function, the extra argument being the cell
+into which to write the output.  So the result of
+``function->propagator-constructor`` is a ``p:``-style procedure
+(complete with (most of) the debugging information, and the constant
+conversion).  For example, you might define::
+
+  (define p:my-primitive (function->propagator-constructor do-it))
+
+where ``do-it`` is the appropriate Scheme function.
+
+Two things to pay attention to: ``function->propagator-constructor``
+wraps the given function up into a propagator directly, and it is up
+to the function itself to handle any interesting partial information
+type that might come out of its argument cells.  Notably, ``nothing``
+might show up in the arguments of that function when it is called.
+Therefore, it may be appropriate the make the function itself generic,
+and/or wrap it in ``nary-unpacking``.  For examples, check out how the
+provided primitive propagators are implemented, in
+``core/standard-propagators.scm`` (which refers to definitions made in
+``core/generic-definitions.scm``).
+
+The second thing is metadata.  ``function->propagator-constructor``
+can supply all the metadata that the debugger uses except the name for
+your function.  That you need to add yourself, with ``(name!
+your-function 'some-name)`` (see ``core/generic-definitions.scm``).
+
+
+Propagator Constructor Combinators
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Once you've made a ``p:``-style propagator constructor, you can turn
+it into an ``:e``-style one automatically with ``functionalize``.  For
+example, ``e:+`` is actually defined as::
+
+  (define e:+ (functionalize p:+))
+
+See ``core/expression-language.scm`` for more of that.
+
+You can also delay the actual construction of your primitives
+if you want with ``delayed-propagator-constructor``, though that's
+really more useful with recursive compound propagators.
+
+
+DWIM Propagator Construction
+----------------------------------------------------------------------
+
+All that wrapping in ``nary-unpacking``, and naming your propagator
+functions with ``name!``, and calling ``functionalize`` to convert
+them to ``e:``-style versions can get tedious.  This whole shebang
+is automated by the ``propagatify`` macro::
+
+  (propagatify eq?)
+
+turns into
+
+::
+
+  (define p:eq?
+   (function->propagator-constructor
+    (nary-unpacking (name! eq? 'eq?))))
+  (define e:eq? (functionalize p:eq?))
+
+Use this with some caution; you may not always want ``nary-unpacking``.
+The macro is defined in ``core/expression-language.scm``, so that's
+an example for you if you want to write variants (let me know if you
+come across a good one).
+
+
+Fully-manual Low-level Propagator Construction
+----------------------------------------------------------------------
+
+Finally, when the thing you want your propagator is so low-level and
+interesting that it doesn't even correspond to a Scheme function,
+there's always the ``propagator`` procedure.  This is the lowest level
+interface to asking cells to notify a propagator when they change.
+``propagator`` expects a list of cells that your propagator is
+interested in, and a thunk that implements the job that propagator is
+supposed to do.  The scheduler will execute your thunk from time to
+time --- the only promise is that it will run at least once after the
+last time any cell in the supplied neighbor list gains any new
+information.  For example::
+
+  (define (my-hairy-thing cell1 cell2)
+    (propagator (list cell1 cell2)
+      (lambda ()
+        do-something-presumably-with-cell1-and-cell2)))
+
+The ``propagator`` procedure being the lowest possible level, it has
+no access to any useful sources of metadata, so you will need to
+provide yourself any metadata you want to be able to access later.
+For an example of how this facility is used, see the implementations
+of ``function->propagator-constructor`` and
+``delayed-propagator-constructor`` in ``core/core.scm``.
 
 Miscellany
 ======================================================================
