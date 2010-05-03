@@ -108,13 +108,15 @@
 	    (name group-name)
 	    (name thing))))))
 
+(define (cell-non-readers cell)
+  (or (eq-get cell 'shadow-connections)
+      '()))
+
 (define (cell-connections cell)
   ;; The neighbors are the ones that need to be woken up; the
   ;; connections are the ones that touch the cell at all.  This
   ;; concept is useful for walking the graph structure of the network.
-  (append (neighbors cell)
-	  (or (eq-get cell 'shadow-connections)
-	      '())))
+  (append (neighbors cell) (cell-non-readers cell)))
 
 ;;; Oof!
 ;;; TODO Figure out a theory of what this steaming pile is doing
