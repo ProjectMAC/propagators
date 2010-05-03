@@ -2,6 +2,8 @@
 		     Programming with Propagators
 ======================================================================
 
+.. contents::
+
 Scheme-Propagators, pending a better name, is a prototype
 propagator-oriented programming language embedded in Scheme.
 Scheme-Propagators is also the name of the only extant implementation.
@@ -550,17 +552,6 @@ provides and ``define`` does not.  This is what
      cells))
 
 
-Making New Primitive Propagators
-======================================================================
-
-(Almost) All the p:, e:, c:, and ce: are defined in
-extensions/expression-language.scm
-
-Also the propagatify macro makes more of them
-(propagatify eq?)
-defines
-p:eq? and e:eq?
-
 Using Partial Information
 ======================================================================
 
@@ -586,6 +577,21 @@ Provenance tracking
 Truth maintenance
 Search (binary-amb)
 
+
+Making New Primitive Propagators
+======================================================================
+
+(Almost) All the p:, e:, c:, and ce: are defined in
+extensions/expression-language.scm
+
+Also the propagatify macro makes more of them
+(propagatify eq?)
+defines
+p:eq? and e:eq?
+
+Miscellany
+======================================================================
+
 Mention: initialize-scheduler
 
 TODO Where do I have a reference of available propagator constructors?
@@ -598,3 +604,10 @@ propagator-thunk when they get new information.
 
 (declare (usual-integrations make-cell cell?))
 
+Describe where in the source various constructs are defined?  So that
+it is possible to mimic them (e.g. more primitive propagators) and/or
+adapt them.
+
+Mention (in Getting Started) how to acquire the system
+- Also mention that Scmutils is useful for some sorts of things,
+  and where to get it
