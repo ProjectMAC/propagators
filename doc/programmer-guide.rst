@@ -555,6 +555,83 @@ provides and ``define`` does not.  This is what
 Using Partial Information
 ======================================================================
 
+Partial, accumulatable information is the other side of the coin of
+multidirectional, nonsequential programming, so Scheme-Propagators is
+all about partial information.  What do I mean by that?  Each "memory
+location" of Scheme-Propagators, that is each cell, maintains not "a
+value", but "all the information it has about a value".  Such
+information may be as little as "I know absolutely nothing about my
+value", as much as "I know everything there is to know about my value,
+and it is ``x``", and many possible variations in between; and also
+one not-in-between variation, which is "Stop the presses!  I know
+there is a contradiction!"
+
+All these various possible states of information are represented (per
+force) as Scheme objects.  The Scheme object ``nothing`` represents
+the information "I don't know anything".  This only takes a single
+Scheme object, because not knowing anything is a single state of
+knowledge.  Most Scheme objects represent "perfect, consistent"
+information: the Scheme object ``5`` represents the information "I
+know everything there is to know, and the answer is ``5``."  There are
+also several Scheme types provided with the system that denote
+specific other states of knowledge, and you can make your own.  For
+example, objects of type ``interval?`` contain an upper bound and a
+lower bound, and represent information of the form "I know by value is
+between this real number and that one."
+
+The way to get partial knowledge into the network is to put it into
+cells with ``add-content`` or constant propagators.  For example::
+
+  (define-cell x (make-interval 3 5))
+
+produces a cell named ``x`` that now holds the partial information
+``(make-interval 3 5)``, which means that its notional value is
+between ``3`` and ``5``.
+
+Partial information structures are generally built to be contagious,
+so that once you've inserted a structure of a certain type into
+the network, the normal propagators will generally produce answers
+in kind, and, if needed, coerce their inputs into the right form
+to co-operate.  For example, if ``x`` has an interval like above,
+
+::
+
+  (define-cell y (e:+ x 2))
+
+will make an adder that will eventually need to add ``2`` to the
+interval between ``3`` and ``5``.  This is a perfectly reasonable
+thing to ask, because both ``2`` and ``(make-interval 3 5)`` are
+states of knowledge about the inputs to that adder, so it ought to
+produce the best possible representation of the knowledge it can
+deduce about the result of the addition.  In this case, that would be
+the interval between ``5`` and ``7``::
+
+  (run)
+  (content y)  ==>  #(interval 5 7)
+
+The key thing about partial information is, of course, that it's
+cumulative.  So if you also added some other knowledge to the ``y``
+cell, it would need to merge with the interval that's there to
+represent the complete knowledge available as a result::
+
+  (add-content y (make-interval 4 6))
+  (content y)  ==>  #(interval 5 6)
+
+If incoming knowledge hopelessly contradicts the knowledge a cell
+already has, it will complain::
+
+  (add-content y 15)  ==>  Error
+
+TODO Documentation of provided partial information types
+
+- nothing
+- just a value
+- intervals
+- supported values
+- truth maintenance systems
+- cons cells (in flux)
+
+
 Making New Kinds of Partial Information
 ======================================================================
 
@@ -609,5 +686,6 @@ it is possible to mimic them (e.g. more primitive propagators) and/or
 adapt them.
 
 Mention (in Getting Started) how to acquire the system
+
 - Also mention that Scmutils is useful for some sorts of things,
   and where to get it
