@@ -67,6 +67,7 @@
 (defhandler generic-/ (coercing ->interval div-interval) number? interval?)
 (defhandler generic-/ (coercing ->interval div-interval) interval? number?)
 
+;;; TODO Refactor this to use with-equality
 (defhandler merge
  (lambda (content increment)
    (let ((new-range (intersect-intervals content increment)))
