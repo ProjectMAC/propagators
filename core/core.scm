@@ -116,16 +116,16 @@
 ;;
 ;; The following would suffice for the above.
 #;
-(define-syntax let-cells
-  (syntax-rules ()
-    ((let-cells ((cell-name cell-form) ...)
-       form ...)
-     (let ((cell-name (name-locally! (ensure-cell cell-form) 'cell-name)) ...)
-       form ...))
-    ((let-cells (cell-name ...)
-       form ...)
-     (let-cells ((cell-name (make-named-cell 'cell-name))...)
-       form ...))))
+ (define-syntax let-cells
+   (syntax-rules ()
+     ((let-cells ((cell-name cell-form) ...)
+	form ...)
+      (let ((cell-name (name-locally! (ensure-cell cell-form) 'cell-name)) ...)
+	form ...))
+     ((let-cells (cell-name ...)
+	form ...)
+      (let-cells ((cell-name (make-named-cell 'cell-name))...)
+	form ...))))
 
 ;; The much more horrible macro below allows the two use patterns
 ;; above to mix, as follows,
