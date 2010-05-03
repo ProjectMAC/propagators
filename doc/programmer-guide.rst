@@ -44,6 +44,8 @@ rather than to be even more convinced.
 Getting Started
 ======================================================================
 
+TODO Describe how to acquire the system
+
 Scheme-Propagators is implemented in `MIT/GNU Scheme`_, which you will
 need in order to use it.  Start up your Scheme and load the main entry
 file with ``(load "load")``.  This gives you a read-eval-print loop
@@ -220,6 +222,9 @@ and get a multidirectional constraint::
   (add-content x 3)
   (run)
   (content y) ==> 2
+
+
+TODO Provide a list of available propagator constructors. (Don't forget binary-amb and company)
 
 Attaching Propagator Constraints: c:foo and ce:foo
 ----------------------------------------------------------------------
@@ -866,13 +871,6 @@ you can use to add more.  In particular, see the definition of, say,
 ``function->propagator-constructor`` or ``define-macro-propagator``
 for examples of how this is done.
 
-Advanced Features
-======================================================================
-
-Provenance tracking
-Truth maintenance
-Search (binary-amb)
-
 
 Making New Primitive Propagators
 ======================================================================
@@ -979,28 +977,74 @@ For an example of how this facility is used, see the implementations
 of ``function->propagator-constructor`` and
 ``delayed-propagator-constructor`` in ``core/core.scm``.
 
+
 Miscellany
 ======================================================================
 
-Mention: initialize-scheduler
+Reboots
+----------------------------------------------------------------------
 
-TODO Where do I have a reference of available propagator constructors?
+The procedure ``initialize-scheduler`` wipes out an existing
+propagator network and lets you start afresh::
 
+  build lots of network
+  ...
+  (initialize-scheduler)
+  (run) --- nothing happens; no propagators to run!
 
-"Attach a propagator" means
-create a Scheme thunk to do that job; notify the scheduler
-about that thunk; and teach the given cells to reawaken that
-propagator-thunk when they get new information.
+Compiling
+----------------------------------------------------------------------
 
-(declare (usual-integrations make-cell cell?))
+It turns out that ``make-cell`` and ``cell?`` are also MIT Scheme
+primitives, so if you want to compile your Scheme-Propagators
+code, be sure to put
 
-Describe where in the source various constructs are defined?  So that
+::
+
+  (declare (usual-integrations make-cell cell?))
+
+at the top of your source files.  Also, of course, you need to be
+suitably careful to make sure that the defined macros are available to
+the syntaxer when it processes your file.  See
+``support/auto-compilation.scm`` for how I do this, and, say,
+``core/load.scm`` for how I use the compiler.
+
+Scmutils
+----------------------------------------------------------------------
+
+The Scmutils_ system built by Gerald Jay Sussman for thinking about
+physics can be very useful for many purposes.  Among other things,
+it knows about units and dimensions, about symbolic algebra,
+about solving systems of equations, etc.  Scheme-Propagators runs
+in Scmutils just as well as in MIT Scheme; and some of the unit
+tests in the self-test suite rely on Scmutils.
+
+.. _Scmutils: http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm
+
+Editing
+----------------------------------------------------------------------
+
+I find it very useful to have my editor highlight and indent some of
+the Scheme-Propagators macros I have defined the same way as their
+Scheme analogues; notably ``define-macro-propagator`` and co, and
+``let-cells``.  Sadly the Emacs Scheme mode does not do this
+by default.  TODO Create ``support/scm-propagators.el`` for others
+in this boat?
+
+If you are going to edit any parenthesized source code in Emacs,
+`Paredit mode`_ is a godsend.
+
+.. _`Paredit mode`: http://www.emacswiki.org/emacs/ParEdit
+
+Hacking
+----------------------------------------------------------------------
+
+Scheme-Propagators is obviously a work in progress.  Be aware that I
+will continue to hack it to my heart's content.  Likewise, feel free
+to hack it to yours --- let me know if you invent or implement
+something interesting.
+
+TODO Describe where in the source various constructs are defined?  So that
 it is possible to mimic them (e.g. more primitive propagators) and/or
 adapt them.
 
-Mention (in Getting Started) how to acquire the system
-
-- Also mention that Scmutils is useful for some sorts of things,
-  and where to get it
-
-scm-propagators.el
