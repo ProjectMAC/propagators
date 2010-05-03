@@ -635,8 +635,143 @@ TODO Documentation of provided partial information types
 Making New Kinds of Partial Information
 ======================================================================
 
-- Making cells deal with them
-- Making existing propagators support them
+There are N components to making your own types of partial
+information.  The zeroth is to define the appropriate data structure,
+of course.
+
+Define your Merge Handlers
+----------------------------------------------------------------------
+
+The first is to teach cells how to merge your partial information
+structure.  This you do by adding methods to the generic procedure
+``merge``.  Method addition is done with the ``defhandler``
+procedure::
+
+  (defhandler operation handler arg-predicate ...)
+
+The generic operations system is a predicate dispatch system.  Every
+handler is keyed by a bunch of predicates that must accept the
+arguments to the generic procedure in turn; if they do, that handler
+is invoked.  For example, merging two intervals with each other
+can be defined as::
+
+  (defhandler merge intersect-intervals interval? interval?)
+
+Two important things not to forget: First, if the incoming information
+(second argument to the ``merge`` generic procedure) is redundant, you
+must return identically the first argument, because cells check with
+``eq?`` whether their information changed.  Presumably the
+``intersect-intervals`` procedure above arranges this internally.
+(The Scheme procedure ``with-equality`` is provided as a useful
+combinator for this purpose -- type ``(pp with-equality)`` at a prompt
+after loading the Scheme-Propagators system).  Second, it is your
+responsibility to make sure that your partial information structure
+merges well with all other partial information structures that it can
+encounter in a cell.  Intervals, for example, should handle raw
+numbers, because knowing that something is exactly ``2`` is compatible
+with knowing that it is between ``1`` and ``3``.  In the case of
+intervals, I defined the procedure ``ensure-inside`` to either
+return the number if it is in the interval, or return a contradiction
+object if it is not, and attached it as a handler with
+
+::
+
+  (defhandler merge ensure-inside interval? number?)
+
+  (defhandler merge
+   (lambda (content increment)
+     (ensure-inside increment content))
+   number? interval?)
+
+Speaking of which, ``merge`` is allowed to return a special object
+called ``the-contradiction`` to indicate a complete contradiction
+(that should result in an immediate error).
+
+TODO Document the extant partial information structures and the
+default mechanisms they use for interacting with others (namely the
+``nothing? any?`` handlers, the ``flat?`` predicate, the general
+bevaior of TMSes, maybe also the cons story).
+
+Define your Contradiction Test
+----------------------------------------------------------------------
+
+There is a generic procedure called ``contradictory?`` to which you
+can also attach handlers for your partial information structures.  The
+``contradictory?`` procedure is called by cells on new merge results
+every time they are created, and if it ever returns true, the cell
+signals an error immediately.  For example, a strictly empty interval
+implies an impossible state of knowledge::
+
+  (defhandler contradictory? empty-interval? interval?)
+
+which means that every interval will be checked by the
+``empty-interval?`` procedure to test whether it represents a
+contradiction.
+
+Augment the Propagators
+----------------------------------------------------------------------
+
+In addition to teaching cells how to support your partial information
+type, you must also teach the appropriate propagators about it.  Every
+primitive propagator that you expect to interact with your partial
+information must know how to handle it.  The compound propagators are
+ok because they just pass stuff along to the primitives they are
+eventually composed of, but the primitives must be taught.
+
+There are two mechanisms of doing this.  Most (TODO document which)
+primitive propagators are actually generic Scheme functions
+underneath, so you can add handlers to them just like you add handlers
+to ``merge``.  See ``core/intervals.scm`` for an example of how this
+is done with intervals.  Don't forget to teach the propagators what to
+do if they encounter your partial information structure on one input
+and a different one on another --- if both represent states of
+knowledge about compatible ultimate values, it should be possible to
+produce a state of knowledge about the results of the computation
+(though in extreme cases that state of knowledge might be ``nothing``,
+implying no new information produced by the propagator).
+
+Also, most (TODO document which) primitive propagators are wrapped
+with the ``nary-unpacking`` wrapper function around their underlying
+generic operation.  This wrapper function is a poor man's
+implementation of monads, so if your partial information structure is
+essentially monadic, you can use this to teach all propagators how to
+handle it.
+
+Unfortunately, I understand neither partial information nor monads as
+well as I would like, so this mechanism is a bit nasty.  To use it,
+you must define methods for the generic procedures ``generic-unpack``
+and ``generic-flatten``, which are a not-necessarily-good
+decomposition of the usual monadic ``bind`` operation.  The ``bind``
+is an ``unpack`` followed by a ``flatten``.  ``generic-unpack`` takes
+your partial information structure and a function that wants the
+goodie inside, is expected to call that function with whatever values
+it wants, and to produce the result of the function, partial in the
+way appropriate to your partial information.  Subsequently,
+``generic-flatten`` is called on the result, to allow you to sanitize
+it; for example, to turn a truth maintenance system that now
+(directly) contains a truth maintenance system into just one single
+truth maintenance system.
+
+If this helps, the type signatures of ``generic-unpack`` and
+``generic-flatten`` would be::
+
+  generic-unpack: M a --> (a --> b) --> M b
+  generic-flatten: M M a --> M a
+
+except for two things: I tried to allow the underlying system to be a
+bit sloppy with its types, and to rely on coercions to correct the
+sloppiness; so the result is that a function being unpacked into is
+free to return whatever it wants, and you are expected to take care of
+it in ``generic-flatten``; and I tried to make the partial information
+types compose, so the thing that's really going on is that there is
+one big monad that you are adding to.  I don't know whether this is a
+reimplementation of the monad transformers story, because no one has
+ever explained that story to me in such a way that I got it.
+
+In any case, this mechanism is something of a mess.  See
+``core/supported-values.scm`` and ``core/truth-maintenance.scm`` for
+examples of how it can be used; and maybe talk to me when you set out
+to make a partial information structure.
 
 
 Debugging
