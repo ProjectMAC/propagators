@@ -57,7 +57,7 @@
 (define generic-flatten
   (make-generic-operator 1 'flatten (lambda (object) object)))
 
-(define (nary-unpacking function)
+(define (%nary-unpacking function)
   (lambda args
     (let loop ((args args)
                (function function))
@@ -72,10 +72,8 @@
 
 ;; This version also attaches the name information, for debugging and
 ;; drawing networks.
-(define nary-unpacking
-  (let ((nary-unpacking nary-unpacking))
-    (lambda (function)
-      (eq-label! (nary-unpacking function) 'name function))))
+(define (nary-unpacking function)
+  (eq-label! (%nary-unpacking function) 'name function))
 
 (defhandler generic-unpack
   (lambda (object function) nothing)
