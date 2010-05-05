@@ -399,7 +399,15 @@ usage::
 
   (let-cells ((x) (y) (foo (some thing))) ...)
 
-by analogy with Scheme ``let``.
+by analogy with Scheme ``let``.  By further analogy, ``let-cells*``
+is to ``let-cells`` what ``let*`` is to ``let``::
+
+  (let-cells* ((x)
+               (y (e:+ x x)))
+    ...)
+
+will make a cell named ``x`` and a cell named ``y`` with an adder both
+of whose inputs are ``x`` and whose output is ``y``.
 
 Now, ``let-cells`` is, like ``define-cell``, basically a convenience
 over doing the same thing in Scheme with ``let`` and ``make-cell``.
@@ -413,9 +421,6 @@ cell::
 
   (let-cell x ...)              ==>  (let-cells (x) ...)
   (let-cell (x (e:+ y z)) ...)  ==>  (let-cells ((x (e:+ y z))) ...)
-
-TODO Implement ``let-cells*`` analagous to ``let*``.  I don't
-think I need ``let-cellsrec``, however.
 
 Finally, there is one more way to make cells that you've also already
 met, but maybe didn't recognize.  All the ``e:`` and ``ce:``

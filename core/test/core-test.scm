@@ -135,4 +135,16 @@
     (produces #(interval 3.0255 3.0322))
     ))
 
+ (define-each-check
+   (= 4 (let-cell (x 4) (run) (content x)))
+   (= 5 (let-cells ((x (e:constant 2))
+		    (y 3))
+	  (let-cell (z (e:+ x y))
+	    (run)
+	    (content z))))
+   (= 7 (let-cells* ((x 3)
+		     (y (e:+ x 4)))
+	  (run)
+	  (content y))))
+
  )

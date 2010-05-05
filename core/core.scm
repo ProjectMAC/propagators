@@ -190,6 +190,21 @@
        form ...)
      (let-cells (cell-binding)
        form ...))))
+
+;; And here is the moral equivalent of let*
+(define-syntax let-cells*
+  (syntax-rules ()
+    ((let-cells* (binding bindings ...)
+       form ...)
+     (let-cell binding
+       (let-cells* (bindings ...)
+	 form ...)))
+    ((let-cells* ()
+       form ...)
+     (let-cells ()
+       form ...))))
+
+;; TODO Do I need let-cells-rec?  What would that do for me?
 
 ;;; Propagators
 
