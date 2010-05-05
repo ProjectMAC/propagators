@@ -394,7 +394,12 @@ for ``let-cells`` to make cells with no initialization forms::
 
 creates cells named ``x`` and ``y``, which are empty and have
 no propagators attached to them initially, and also a cell
-named ``foo`` like above.
+named ``foo`` like above.  ``let-cells`` also recognizes the
+usage::
+
+  (let-cells ((x) (y) (foo (some thing))) ...)
+
+by analogy with Scheme ``let``.
 
 Now, ``let-cells`` is, like ``define-cell``, basically a convenience
 over doing the same thing in Scheme with ``let`` and ``make-cell``.
@@ -411,9 +416,6 @@ cell::
 
 TODO Implement ``let-cells*`` analagous to ``let*``.  I don't
 think I need ``let-cellsrec``, however.
-
-TODO Implement ``(let-cells ((x) (y stuff)) ...)`` as a synonym for
-``(let-cells (x (y stuff)) ...)``, by analogy with Scheme ``let``.
 
 Finally, there is one more way to make cells that you've also already
 met, but maybe didn't recognize.  All the ``e:`` and ``ce:``

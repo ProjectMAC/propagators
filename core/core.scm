@@ -133,7 +133,13 @@
 ;;             bar
 ;;             (baz baz-form))
 ;;   stuff)
-;; and have the right thing happen.
+;; and have the right thing happen.  It also interprets the
+;; slightly more traditional
+;; (let-cells ((foo foo-form)
+;;             (bar)
+;;             (baz baz-form))
+;;   stuff)
+;; in agreement with Scheme's let.
 (define-syntax let-cells
   (syntax-rules ()
     ((let-cells (cell-binding ...)
@@ -157,6 +163,14 @@
        ((cell-name cell-form) done-clause ...)
        form ...))
     ((let-cells "process-clauses"
+       ((cell-name) clause ...)
+       (done-clause ...)
+       form ...)
+     (let-cells "process-clauses"
+       (cell-name clause ...)
+       (done-clause ...)
+       form ...))
+    ((let-cells "process-clauses"
        (cell-name clause ...)
        (done-clause ...)
        form ...)
@@ -164,11 +178,6 @@
        (clause ...)
        ((cell-name (make-named-cell 'cell-name)) done-clause ...)
        form ...))))
-
-;; TODO Add one more clause to interpret
-;; (let-cells ((foo foo-form)
-;;             (bar))
-;; in agreement with Scheme let.
 
 ;; This version is a grammatical convenience if there is only one
 ;; cell.  (let-cell (foo foo-form) stuff) and (let-cell foo stuff) are
