@@ -35,3 +35,7 @@ Massage:
 - Look through the file structure of the tests again?
 - Does defhandler want to become define-handler?
 - Normalize the integrations being declared?
+
+- Convert cells and propagators not to just be procedures?
+  Then I can type tag them nicely, and define custom unparser
+  methods for them.

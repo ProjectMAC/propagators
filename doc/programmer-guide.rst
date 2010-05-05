@@ -867,7 +867,7 @@ network-group-of
 You can use these at least somewhat to wander around a network you are
 debugging.  Be advised that both cells and propagators are represented
 directly as Scheme procedures, and therefore do not print very nicely
-at the REPL (TODO: fix this).
+at the REPL.
 
 If you find yourself doing something strange that circumvents the
 usual metadata tracking mechanisms, you can add the desired metadata
