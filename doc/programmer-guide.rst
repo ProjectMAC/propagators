@@ -1031,17 +1031,21 @@ tests in the self-test suite rely on Scmutils.
 Editing
 ----------------------------------------------------------------------
 
-I find it very useful to have my editor highlight and indent some of
-the Scheme-Propagators macros I have defined the same way as their
-Scheme analogues; notably ``define-macro-propagator`` and co, and
-``let-cells``.  Sadly the Emacs Scheme mode does not do this
-by default.  TODO Create ``support/scm-propagators.el`` for others
-in this boat?
+I edit code in Emacs.  Emacs of course has a Scheme mode; nothing more
+need be said about that here.
 
 If you are going to edit any parenthesized source code in Emacs,
 `Paredit mode`_ is a godsend.
 
 .. _`Paredit mode`: http://www.emacswiki.org/emacs/ParEdit
+
+In addition to the above, I find it very useful to have my editor
+highlight and indent some of the Scheme-Propagators macros I have
+defined the same way as their Scheme analogues; notably
+``define-macro-propagator`` and co, and ``let-cells``.  Sadly the
+Emacs Scheme mode does not do this by default, so you need to tweak
+the Emacs config to do that.  The file ``support/scm-propagators.el``
+contains a dump of the relevant portion of my Emacs configuration.
 
 Hacking
 ----------------------------------------------------------------------
