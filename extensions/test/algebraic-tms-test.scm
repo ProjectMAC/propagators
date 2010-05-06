@@ -1,5 +1,5 @@
 ;;; ----------------------------------------------------------------------
-;;; Copyright 2009-2010 Alexey Radul.
+;;; Copyright 2010 Alexey Radul and Gerald Jay Sussman
 ;;; ----------------------------------------------------------------------
 ;;; This file is part of Propagator Network Prototype.
 ;;; 
@@ -17,37 +17,27 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
-
-(define (load-relative filename)
-  (self-relatively (lambda () (load filename))))
-
-(load-relative "../core/load.scm")
-
-(for-each load-relative-compiled
- '("environments"
-   "info-alist"
-   "electric-parts"
-   "solve"
-   "inequalities"
-   "symbolics"
-   "symbolics-ineq"
-   "functional-reactivity"
-   "test-utils"))
-
-(for-each load-relative
- '("physical-copies"
-   "closures"
-   "example-closures"
-   "draw"
-   "dot-writer"
-   "graphml-writer"
-   "algebraic-tms"))
-
-(maybe-warn-low-memory)
-(initialize-scheduler)
+(in-test-group
+ algebraic-tms
+ (define-test (smoke)
+   (interaction
+    (initialize-scheduler)
+    (define-cell bill (make-tms (supported 3 '(bill))))
+    (define-cell bill-cons (e:cons nothing bill))
+    (define-cell answer)
+    (c:== bill-cons answer)
+    (define-cell fred (make-tms (supported 4 '(fred))))
+    (define-cell fred-cons (e:cons fred nothing))
+    (define-cell george (make-tms (supported #t '(george))))
+    (conditional-wire george fred-cons answer)
+    (define-cell the-pair? (e:pair? answer))
+    (define-cell the-car (e:car answer))
+    (define-cell the-cdr (e:cdr answer))
+    (run)
+    ; (pp (content answer))
+    (content the-pair?)
+    (produces #(tms (#(supported #t ()))))
+    (content the-car)
+    (produces #(tms (#(supported 4 (fred george)))))
+    (content the-cdr)
+    (produces #(tms (#(supported 3 (bill))))))))

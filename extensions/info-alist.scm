@@ -1,5 +1,5 @@
 ;;; ----------------------------------------------------------------------
-;;; Copyright 2009-2010 Alexey Radul.
+;;; Copyright 2010 Alexey Radul and Gerald Jay Sussman
 ;;; ----------------------------------------------------------------------
 ;;; This file is part of Propagator Network Prototype.
 ;;; 
@@ -17,37 +17,32 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
+(declare (usual-integrations make-cell cell?))
 
-(define (load-relative filename)
-  (self-relatively (lambda () (load filename))))
+(define (information-assq key alist)
+  (let ((binding (assq key alist)))
+    (if binding
+	(cdr binding)
+	nothing)))
 
-(load-relative "../core/load.scm")
+(define (same-alist? alist1 alist2)
+  (lset= (lambda (pair1 pair2)
+	   (and (eq? (car pair1) (car pair2))
+		(equivalent? (cdr pair1) (cdr pair2))))
+	 alist1 alist2))
 
-(for-each load-relative-compiled
- '("environments"
-   "info-alist"
-   "electric-parts"
-   "solve"
-   "inequalities"
-   "symbolics"
-   "symbolics-ineq"
-   "functional-reactivity"
-   "test-utils"))
+(define (unary-alist-unpacking f)
+  (lambda (alist)
+    (map (lambda (binding)
+	   (cons (car binding) (f (cdr binding))))
+	 alist)))
 
-(for-each load-relative
- '("physical-copies"
-   "closures"
-   "example-closures"
-   "draw"
-   "dot-writer"
-   "graphml-writer"
-   "algebraic-tms"))
+(define (binary-alist-unpacking f)
+  (lambda (alist1 alist2)
+    (let ((keys (lset-union eq? (map car alist1) (map car alist2))))
+      (define get information-assq)
+      (map (lambda (key)
+	     (cons key (f (get key alist1) (get key alist2))))
+	   keys))))
 
-(maybe-warn-low-memory)
-(initialize-scheduler)
+(define merge-alist (binary-alist-unpacking merge))

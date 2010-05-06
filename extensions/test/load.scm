@@ -17,6 +17,7 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
+
 (for-each load-relative
   '("inequality-test"
     "symbolics-test"
@@ -28,3 +29,5 @@
     "environments-test"
     "dynamic-closures-test"
     "graph-drawing-test"))
+
+(load-relative "algebraic-tms-test")

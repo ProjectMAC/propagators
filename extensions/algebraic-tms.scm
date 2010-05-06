@@ -76,7 +76,8 @@
       (and (tms? thing)
 	   (every algebraic-tms-able? (tms-values thing)))
       (and (v&s? thing)
-	   (algebraic-tms-able? (v&s-value thing)))))
+	   (or (algebraic-tms? (v&s-value thing))
+	       (algebraic-tms-able? (v&s-value thing))))))
 
 (define (->algebraic-tms thing)
   (cond ((algebraic-tms? thing)
@@ -161,7 +162,7 @@
   (p:null answer))
 
 (define e:null? (functionalize p:null?))
-(define e:null (functionalize e:null))
+(define e:null (functionalize p:null))
 
 (define ce:null? (functionalize c:null?))
 (define ce:null (functionalize c:null))
