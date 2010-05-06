@@ -94,7 +94,9 @@
 		(make-algebraic-tms
 		 (map (lambda (accessor)
 			(cons accessor
-			      (->tms (generic-bind thing (alg-tmsify accessor)))))
+			      (->tms (generic-bind thing
+				      (handling-algebraic-partial-information
+				       accessor)))))
 		      (map car (algebraic-tms-fields (v&s-value thing))))))
 	       ((algebraic-tms-able? (v&s-value thing))
 		(->algebraic-tms
