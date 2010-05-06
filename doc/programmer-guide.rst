@@ -2,58 +2,44 @@
 		     Programming with Propagators
 ======================================================================
 
-.. contents::
-
 Scheme-Propagators, pending a better name, is a prototype
 propagator-oriented programming language embedded in Scheme.
 Scheme-Propagators is also the name of the only extant implementation.
 The purpose of this document is to teach you how to write and run
 propagator programs in Scheme-Propagators for fun and profit.
 
-Propagator-orientation is a new programming paradigm under development
-by Alexey Radul and Gerald Jay Sussman at the Massachusetts Institute
-of Technology, with the support of the Mind Machine Project of same.
-Scheme-Propagators is the most advanced programming language built
-from the ground up to support the propagator-oriented paradigm, and is
-being codeveloped with the paradigm itself by Alexey Radul and Gerald
-Jay Sussman.
+.. contents::
 
-The propagator-orientation paradigm offers
+Audience
+======================================================================
 
-- easy and natural non-sequential programming
-- freedom from unnecessary worries about flow of control
-- modular non-hierarchical composition of peer systems
-  without imposing extraneous command structures
-- easy and natural concurrent and distributed programming
-- support for and unification of existing programming paradigms:
+I assume you are familiar with the Scheme programming language.  If
+you're not, you should go learn it --- it's a wonderful programming
+language --- but I cannot teach it to you here; and Scheme-Propagators
+is inseparably intertwined with Scheme, so you will need to know
+Scheme both to get anything out of reading this document and to
+program Scheme-Propagators.
 
-  - functional
-  - object-oriented
-  - constraint programming
-  - logic programming
+I also assume you know who I am.  Scheme-Propagators is enough a
+prototype that I can make no guarantees about your mileage with it
+unless you are in range to ask me questions.
 
-For more discusion of the paradigm and its benefits, please peruse the
-`Art of the Propagator`_ paper or the `Propagation Networks`_ PhD
-thesis; but that is now enough advertising.  You are presumably here
-because you are already impressed, and want to start trying it out,
-rather than to be even more convinced.
-
-.. _`Art of the Propagator`: http://dspace.mit.edu/handle/1721.1/44215
-.. _`Propagation Networks`: http://dspace.mit.edu/handle/1721.1/49525
 
 Getting Started
 ======================================================================
 
-TODO Describe how to acquire the system
-
 Scheme-Propagators is implemented in `MIT/GNU Scheme`_, which you will
-need in order to use it.  Start up your Scheme and load the main entry
-file with ``(load "load")``.  This gives you a read-eval-print loop
-(traditionally called a REPL for short) for both the
-Scheme-Propagators system and the underlying Scheme implementation.
-Check out the README for more on this.
+need in order to use it.  You will also need Scheme-Propagators
+itself, which you can check out from the `MMP git archive`_.  Once you
+have it, go to the ``propagator/`` directory, start up your Scheme and
+load the main entry file with ``(load "load")``.  This gives you a
+read-eval-print loop (traditionally called a REPL for short) for both
+the Scheme-Propagators system and the underlying Scheme
+implementation.  Check out the README for more on this.
+TODO Real releases?  From a real web place?
 
 .. _`MIT/GNU Scheme`: http://www.gnu.org/software/mit-scheme/
+.. _`MMP git archive`: git@github.com:MIT-MMP/propagator.git
 
 Once you've got your REPL, you can start typing away at it to create
 propagator networks, give them inputs, ask them to do computations,
@@ -78,11 +64,13 @@ because they are not interesting.
 Let's have a closer look at what's going on in this example,
 to serve as a guide for more in-depth discussion later.
 ``define-cell`` is a Scheme macro for making and naming propagator
-cells.::
+cells::
 
   (define-cell a)
 
-creates a new cell and binds it to the Scheme variable ``a``.::
+creates a new cell and binds it to the Scheme variable ``a``.
+
+::
 
   (define-cell b)
 
@@ -107,7 +95,7 @@ creates an adding propagator, and also creates a cell, now called
 ``answer``, to hold the result of the addition.  Be careful!  No
 computation has happened yet.  You've just made up a network, but it
 hasn't done its work yet.  That's what the Scheme procedure ``run`` is
-for.::
+for::
 
   (run)
 
@@ -119,7 +107,7 @@ computing does it give you back the REPL to interact with.  Finally
 
 looks at what the cell named ``answer`` has now, which is ``5``
 because the addition propagator created by ``e:+`` has had a chance to
-do its job.  If you had forgotted to type ``(run)`` before typing
+do its job.  If you had forgotten to type ``(run)`` before typing
 ``(content answer)``, it would have printed out ``#(*the-nothing*)``,
 which means that cell has no information about the value it is meant
 to have.
@@ -1059,3 +1047,7 @@ TODO Describe where in the source various constructs are defined?  So that
 it is possible to mimic them (e.g. more primitive propagators) and/or
 adapt them.
 
+Revision History of this Guide
+----------------------------------------------------------------------
+
+First written May 5, 2010 by Alexey Radul
