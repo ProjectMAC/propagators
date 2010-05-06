@@ -13,6 +13,22 @@ propagator programs in Scheme-Propagators for fun and profit.
 Audience
 ======================================================================
 
+I assume you are very excited to try your hand at programming with
+propagators, either on this system or on one you intend to build for
+yourself using what I learned building this one as a guide.  Otherwise
+why would you be reading the programming guide of a prototype
+propagator programming language?  I will therefore expend no effort to
+convince you that propagators are awesome.
+
+I assume you read the `Art of the Propagator`_ paper and/or the
+`Propagation Networks`_ PhD dissertation.  Otherwise, I fear you will
+have no idea what I'm talking about in this document.  Be advised,
+though, that the actual mechanics of the Scheme-Propagators system
+have evolved somewhat since those were published.
+
+.. _`Art of the Propagator`: http://dspace.mit.edu/handle/1721.1/44215
+.. _`Propagation Networks`: http://dspace.mit.edu/handle/1721.1/49525
+
 I assume you are familiar with the Scheme programming language.  If
 you're not, you should go learn it --- it's a wonderful programming
 language --- but I cannot teach it to you here; and Scheme-Propagators
@@ -20,7 +36,7 @@ is inseparably intertwined with Scheme, so you will need to know
 Scheme both to get anything out of reading this document and to
 program Scheme-Propagators.
 
-I also assume you know who I am.  Scheme-Propagators is enough a
+Finally, I assume you know who I am.  Scheme-Propagators is enough a
 prototype that I can make no guarantees about your mileage with it
 unless you are in range to ask me questions.
 
@@ -112,17 +128,33 @@ do its job.  If you had forgotten to type ``(run)`` before typing
 which means that cell has no information about the value it is meant
 to have.
 
-Making Propagator Networks
+
+Organizing Principle
 ======================================================================
 
-The "read and syntax" phase of Scheme-Propagators is the "read and
-eval" phase of the host Scheme; with the understanding that all Scheme
-variables that get bound to cells are propagator variables, and all
-Scheme variables that get bound to other Scheme objects are "syntax"
-from the perspective of Scheme-Propagators.  Things that can live in
-cells are the first-class entities of Scheme-Propagators, and other
-things from the host Scheme are second-class as far as the
-Scheme-Propagators langauge is concerned.
+The two major aspects of a propagator-oriented programming language,
+at least as I currently envision such a thing, are propagator networks
+and the partial information structures they manipulate.  It feels like
+"programming" is primarily about creating propagator networks;
+inventing and implementing good partial information types seems to be
+more of a library writer's kind of job, though one you will most
+likely also need to engage in if you want to get anything done with
+Scheme-Propagators as it currently stands.  We will therefore talk
+about making networks first, and about making partial information
+types later.  Also, making propagator networks is more different from
+the normal programming you are used to than is creating partial
+information types, and so the way to do that is more of a new
+"language".
+
+The "read and syntax" phase of programming a network in
+Scheme-Propagators is the "read and eval" phase of the host Scheme;
+with the understanding that all Scheme variables that get bound to
+cells are propagator variables, and all Scheme variables that get
+bound to other Scheme objects are "syntax" from the perspective of
+Scheme-Propagators.  Things that can live in cells are the first-class
+entities of Scheme-Propagators, and other things from the host Scheme
+are second-class as far as the Scheme-Propagators langauge is
+concerned.
 
 Scheme-Propagators therefore has a "macro system" that is much more
 developed than the propagator language itself, because MIT/GNU Scheme
@@ -137,6 +169,14 @@ that holds a propagator abstraction that adds, and therefore is not a
 variable of Scheme-Propagators, but is rather bound to a Scheme
 procedure that directly makes a propagator that adds, and therefore is
 Scheme-Propagators syntax.  More on this below).
+
+Scheme-Propagators has no linguistic support for making new partial
+information types.  Those are all programmed in the underlying Scheme,
+but we will talk about how to do that.
+
+
+Making Propagator Networks
+======================================================================
 
 Attaching Basic Propagators: p:foo and e:foo
 ----------------------------------------------------------------------
