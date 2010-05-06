@@ -41,7 +41,9 @@ meant to give you the overview and introduction, and get you started,
 but Scheme-Propagators is a prototype.  You will need to look under
 the covers eventually, both to understand in detail how things work,
 and to do the sophisticated things I expect you may come to want to
-do.
+do.  Scheme-Propagators is also a work in progress.  Documentation
+goes stale, but the code is always right (especially when the test
+suite passes).
 
 Finally, I assume you know who I am.  Scheme-Propagators is enough a
 prototype that I can make no guarantees about your mileage with it
