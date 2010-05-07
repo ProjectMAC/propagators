@@ -70,7 +70,7 @@
 	       (algebraic-tms-fields atms2)))
 
 (define algebraic-tms-merge
-  (with-equality %algebraic-tms-merge algebraic-tms-equal?))
+  (eq?-standardizing %algebraic-tms-merge algebraic-tms-equal?))
 
 (define (algebraic-tms-able? thing)
   (or (algebraic? thing)

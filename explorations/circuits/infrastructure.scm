@@ -126,7 +126,7 @@
 	       (element-descriptor-alist ed2)))
 
 (defhandler merge
-  (with-equality merge-element-descriptors element-descriptor-equal?)
+  (eq?-standardizing merge-element-descriptors element-descriptor-equal?)
   element-descriptor? element-descriptor?)
 
 (define (function->unpacking->propagator-constructor f)

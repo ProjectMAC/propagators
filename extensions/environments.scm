@@ -142,7 +142,7 @@
 
 ;; TODO This utility really belongs in the standard propagator
 ;; library...
-(define (with-equality merge equal?)
+(define (eq?-standardizing merge equal?)
   (lambda (item1 item2)
     (let ((answer (merge item1 item2)))
       (cond ((equal? answer item1) item1)
@@ -164,7 +164,7 @@
   ((frame-by-frame merge) copy-set1 copy-set2))
 
 (defhandler merge
-  (with-equality virtual-copy-merge v-c-equal?)
+  (eq?-standardizing virtual-copy-merge v-c-equal?)
   virtual-copies? virtual-copies?)
 
 (defhandler contradictory?

@@ -73,7 +73,7 @@
 	          (frame-map-default-parents map2))))
 
 (defhandler merge
-  (with-equality frame-map-merge f-m-equal?) frame-map? frame-map?)
+  (eq?-standardizing frame-map-merge f-m-equal?) frame-map? frame-map?)
 
 ;;;; Extending frame maps
 

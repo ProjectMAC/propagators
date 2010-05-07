@@ -39,7 +39,7 @@
        (eq? (cons-tms-cdr cons-tms1)
 	    (cons-tms-cdr cons-tms2))))
 
-(define cons-tms-merge (with-equality pre-cons-tms-merge cons-tms-equal?))
+(define cons-tms-merge (eq?-standardizing pre-cons-tms-merge cons-tms-equal?))
 
 (define (->cons-tms thing)
   (cond ((nothing? thing)

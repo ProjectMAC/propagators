@@ -39,7 +39,7 @@
        (eq? (list-tms-cdr list-tms1)
 	    (list-tms-cdr list-tms2))))
 
-(define list-tms-merge (with-equality pre-list-tms-merge list-tms-equal?))
+(define list-tms-merge (eq?-standardizing pre-list-tms-merge list-tms-equal?))
 
 (define (list-tms-able? thing)
   (or (pair? thing)

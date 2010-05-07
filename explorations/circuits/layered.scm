@@ -159,7 +159,7 @@
  (list generic-+ generic-- generic-* generic-/ generic-switch))
 
 (attach-layer-method merge
-  (with-equality (binary-layered-unpacking merge) layered-equal?))
+  (eq?-standardizing (binary-layered-unpacking merge) layered-equal?))
 
 (for-each
  (lambda (operation)
