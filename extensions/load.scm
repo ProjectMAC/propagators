@@ -31,6 +31,7 @@
 
 (for-each load-relative-compiled
  '("environments"
+   "closures"
    "info-alist"
    "algebraic-tms"
    "electric-parts"
@@ -43,7 +44,6 @@
 
 (for-each load-relative
  '("physical-copies"
-   "closures"
    "example-closures"
    "draw"
    "dot-writer"
