@@ -131,11 +131,6 @@
 
 ;;;; Equating and merging virtual copy sets
 
-(define (equivalent? info1 info2)
-  (or (eq? info1 info2)			; Fast path...
-      (and (implies? info1 info2)
-	   (implies? info2 info1))))
-
 (define (v-c-equal? copy-set1 copy-set2)
   (let ((the-frames (occurring-frames copy-set1)))
     (and (lset= eq? the-frames (occurring-frames copy-set2))

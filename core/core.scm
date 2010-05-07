@@ -327,6 +327,8 @@
 
 ;;; Basic merging
 
+;; TODO Is there any good way to fast-path this to say that any two
+;; eq? things merge to the first one?
 (define merge
   (make-generic-operator 2 'merge
    (lambda (content increment)
@@ -352,6 +354,19 @@
 (defhandler merge
  (lambda (content increment) increment)
  nothing? any?)
+
+(define (implies? v1 v2)
+  ;; This is right on the assumption that trivial effects are squeezed
+  ;; out (for example by using effectful->).
+  (eq? v1 (merge v1 v2)))
+
+;; TODO Should equivalent? be a direct, generic function?
+;; Most partial information types define equivalence anyway, to standardize
+;; answers for eq?-testing...
+(define (equivalent? info1 info2)
+  (or (eq? info1 info2)			; Fast path...
+      (and (implies? info1 info2)
+	   (implies? info2 info1))))
 
 ;;; Effects that a merge might have
 

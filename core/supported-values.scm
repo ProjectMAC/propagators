@@ -72,9 +72,6 @@
 
 (defhandler merge v&s-merge v&s? v&s?)
 
-(define (implies? v1 v2)
-  (eq? v1 (merge v1 v2)))
-
 (defhandler contradictory?
  (lambda (v&s) (contradictory? (v&s-value v&s)))
  v&s?)
