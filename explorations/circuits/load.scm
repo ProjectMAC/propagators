@@ -30,8 +30,7 @@
 (load-relative "../../extensions/load.scm")
 
 (for-each load-relative-compiled
- '("info-alist"
-   "infrastructure"
+ '("infrastructure"
    "layered"
    "parts"
    "examples"))
