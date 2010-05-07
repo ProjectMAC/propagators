@@ -37,22 +37,38 @@
 (define (v&s-merge v&s1 v&s2)
   (let* ((v&s1-value (v&s-value v&s1))
          (v&s2-value (v&s-value v&s2))
-         (value-merge (merge v&s1-value v&s2-value)))
-    (cond ((eq? value-merge v&s1-value)
-           (if (implies? v&s2-value value-merge)
-               ;; Confirmation of existing information
-               (if (more-informative-support? v&s2 v&s1)
-                   v&s2
-                   v&s1)
-               ;; New information is not interesting
-               v&s1))
-          ((eq? value-merge v&s2-value)
-           ;; New information overrides old information
-           v&s2)
-          (else
-           ;; Interesting merge, need both provenances
-           (supported value-merge
-                      (merge-supports v&s1 v&s2))))))
+         (value-merge+effect (->effectful (merge v&s1-value v&s2-value))))
+    (let ((value-merge (effectful-info value-merge+effect))
+	  (value-effect (effectful-effect value-merge+effect)))
+      (effectful->
+       (make-effectful
+	(cond ((eq? value-merge v&s1-value)
+	       (if (implies? v&s2-value value-merge)
+		   ;; Confirmation of existing information
+		   (if (more-informative-support? v&s2 v&s1)
+		       v&s2
+		       v&s1)
+		   ;; New information is not interesting
+		   v&s1))
+	      ((eq? value-merge v&s2-value)
+	       ;; New information overrides old information
+	       v&s2)
+	      (else
+	       ;; Interesting merge, need both provenances
+	       (supported value-merge
+			  (merge-supports v&s1 v&s2))))
+	(attach-support-to-effect 
+	 value-effect (merge-supports v&s1 v&s2)))))))
+
+;; TODO This wants to be a generic operation
+(define (attach-support-to-effect effect support)
+  (cond ((no-effect? effect)
+	 no-effect)
+	((nogood-effect? effect)
+	 (make-nogood-effect
+	  (map (lambda (nogood)
+		 (lset-union eq? nogood support))
+	       (nogood-effect-nogoods effect))))))
 
 (defhandler merge v&s-merge v&s? v&s?)
 

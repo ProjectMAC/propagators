@@ -25,14 +25,18 @@
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
     (define (add-content increment)
-      (let ((new-content (merge content increment)))
-        (cond ((eq? new-content content) 'ok)
-              ((contradictory? new-content)
-               (error "Ack! Inconsistency!" me increment)
-	       'this-is-not-a-tail-call)
-              (else (set! content new-content)
-		    (eq-adjoin! content 'visited-cells me)
-                    (alert-propagators neighbors)))))
+      (let ((info+effect (->effectful (merge content increment))))
+        (let ((effect (effectful-effect info+effect))
+	      (new-content (effectful-info info+effect)))
+	  (cond ((eq? new-content content) 'ok)
+		((contradictory? new-content)
+		 (error "Ack! Inconsistency!" me increment)
+		 'this-is-not-a-tail-call)
+		(else 
+		 (set! content new-content)
+		 (eq-adjoin! content 'visited-cells me)
+		 (alert-propagators neighbors)))
+	  (execute-effect effect))))
     (define (new-neighbor! new-neighbor)
       (if (not (memq new-neighbor neighbors))
           (begin
@@ -271,7 +275,57 @@
 	    (apply prop-ctor args))
 	  (compute-aggregate-metadata prop-ctor args))))))
 
-;;; Merging, and the basic data types.
+;;;; Merging
+
+;;; My original thought was that merge answers the question:
+;;; 
+;;; "What is the least-commitment information structure that captures
+;;; all the knowledge in these two information structures?"
+;;; 
+;;; That was a pretty good place to start, but it turns out not to be
+;;; quite adequate.  What's the problem with it, you might ask?  The
+;;; problem is that this question cannot have any side-effects.  But
+;;; side-effects appear necessary: when merging two TMSes, one must
+;;; check the result for consistency, and maybe signal a nogood set if
+;;; one discovers a supported contradiction.  Worse, the
+;;; carrying-cells strategy for compound data means that you might
+;;; have to merge cells, and the only way to do that is to attach
+;;; identity propagators between them, which is most definitely an
+;;; effect.
+;;; 
+;;; After long thought, I understand that the real question that a
+;;; cell asks (whether or not "merge" is a good name for the function
+;;; that computes the answer) is:
+;;; 
+;;; "What do I need to do to the network in order to make it reflect
+;;; the discovery that these two information structures are about the
+;;; same object?"
+;;; 
+;;; In the common case, the answer to this question is going to amount
+;;; to just an answer to the previous question, namely "You must
+;;; record that that object is best described by this information
+;;; structure, which is the least-commitment information structure
+;;; that captures all the knowledge in the given information
+;;; structures."  (That "you must record" is the set! in add-content).
+;;; Also consistent with the simpler idea is the answer "These two
+;;; information structures cannot describe the same object."  (This is
+;;; the contradictory? test in add-content.)  However, this refined
+;;; question provides the opening for more nuanced answers.  For
+;;; example, with TMSes, it becomes possible to answer "The object is
+;;; described by the following information structure, and you should
+;;; record the following nogood set."  Or, with carrying cells, the
+;;; answer can be "The object is described by the following
+;;; information structure, and you should identify these two cells."
+;;; 
+;;; The advantage of thinking about it this way is that merge can be a
+;;; pure function, which is allowed to return requests for these
+;;; effects in addition to refined information structures.  Then places
+;;; where merge is called recursively have a chance to intercept and
+;;; modify these requests for effects (for example noting that they
+;;; must be considered conditional on certain premises), and only 
+;;; add-content actually executes the effects that come to it.
+
+;;; Basic merging
 
 (define merge
   (make-generic-operator 2 'merge
@@ -298,3 +352,86 @@
 (defhandler merge
  (lambda (content increment) increment)
  nothing? any?)
+
+;;; Effects that a merge might have
+
+(define (no-effect)
+  'ok)
+
+(define (no-effect? thing)
+  (eq? thing no-effect))
+
+(define execute-effect 
+  (make-generic-operator 1 'execute-effect (lambda (effect) (effect))))
+
+(define append-effects 
+  (make-generic-operator 2 'append-effects
+    (lambda (a b)
+      (lambda ()
+	(a) (b)))))
+
+(defhandler append-effects
+  (lambda (a b) b)
+  no-effect? any?)
+
+(defhandler append-effects
+  (lambda (a b) a)
+  any? no-effect?)
+
+;;; Data structure to represent a merge that may have an effect.
+
+(define-structure effectful
+  info
+  effect)
+
+(define (effectful-return info)
+  (make-effectful info no-effect))
+
+(define (->effectful thing)
+  (if (effectful? thing)
+      thing
+      (effectful-return thing)))
+
+(define (effectful-> effectful)
+  (if (no-effect? (effectful-effect effectful))
+      (effectful-info effectful)
+      effectful))
+
+(define (effectful-flatten effectful)
+  (let ((subeffectful (->effectful (effectful-info effectful))))
+    (let ((subinfo (effectful-info subeffectful))
+	  (subeffect (effectful-effect subeffectful))
+	  (effect (effectful-effect effectful)))
+      (make-effectful
+       subinfo
+       (append-effects subeffect effect)))))
+
+(define-method generic-match ((pattern <vector>) (object rtd:effectful))
+  (generic-match
+   pattern
+   (vector 'effectful (effectful-info object)
+	   (effectful-effect object))))
+
+(define (effectful-merge e1 e2)
+  (let ((e1 (->effectful e1))
+	(e2 (->effectful e2)))
+    (let ((info-merge (->effectful (merge (effectful-info e1)
+					  (effectful-info e2)))))
+      (effectful->
+       (make-effectful
+	(effectful-info info-merge)
+	(append-effects (append-effects (effectful-effect e1)
+					(effectful-effect info-merge))
+			(effectful-effect e2)))))))
+
+;;; This is the n-ary merge
+(define (merge* infos-list)
+  (fold-left effectful-merge nothing infos-list))
+
+(define (effectful-bind effectful func)
+  (let ((effectful (->effectful effectful)))
+    (effectful->
+     (effectful-flatten
+      (make-effectful
+       (->effectful (func (effectful-info effectful)))
+       (effectful-effect effectful))))))

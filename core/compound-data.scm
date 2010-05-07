@@ -37,6 +37,20 @@
           (else
            (cons car-answer cdr-answer)))))
 
+(define (pair-merge pair1 pair2)
+  (effectful-bind (merge (car pair1) (car pair2))
+    (lambda (car-answer)
+      (effectful-bind (merge (cdr pair1) (cdr pair2))
+	(lambda (cdr-answer)
+	  (cond ((and (eq? (car pair1) car-answer)
+		      (eq? (cdr pair1) cdr-answer))
+		 pair1)
+		((and (eq? (car pair2) car-answer)
+		      (eq? (cdr pair2) cdr-answer))
+		 pair2)
+		(else
+		 (cons car-answer cdr-answer))))))))
+
 (defhandler merge pair-merge pair? pair?)
 
 ;;; The generalization (though I don't know whether this strategy is right):

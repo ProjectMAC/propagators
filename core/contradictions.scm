@@ -27,6 +27,17 @@
       (check-consistent! consequence)   ; **
       (tms-assimilate candidate consequence))))
 
+(define (tms-merge tms1 tms2)
+  (let ((candidate (tms-assimilate tms1 tms2)))
+    (effectful-bind (strongest-consequence candidate)
+      (lambda (consequence)
+	(if (not (contradictory? consequence))
+	    (tms-assimilate candidate consequence)
+	    (make-effectful
+	     candidate
+	     (make-nogood-effect
+	      (list (v&s-support consequence)))))))))
+
 (define (tms-query tms)
   (let ((answer (strongest-consequence tms)))
     (let ((better-tms (tms-assimilate tms answer)))
@@ -43,3 +54,25 @@
 (define (process-nogood! nogood)
   (abort-process `(contradiction ,nogood)))
 
+(define-structure nogood-effect
+  nogoods)
+
+(defhandler execute-effect
+  (lambda (nogood-effect)
+    (map (lambda (nogood)
+	   (if (all-premises-in? nogood)
+	       (process-nogood! nogood)))
+	 (nogood-effect-nogoods nogood-effect)))
+  nogood-effect?)
+
+(defhandler append-effects
+  (lambda (nge1 nge2)
+    (make-nogood-effect
+     (append (nogood-effect-nogoods nge1)
+	     (nogood-effect-nogoods nge2))))
+  nogood-effect? nogood-effect?)
+
+(define-method generic-match ((pattern <vector>) (object rtd:nogood-effect))
+  (generic-match
+   pattern
+   (vector 'nogood-effect (nogood-effect-nogoods object))))

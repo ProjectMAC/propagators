@@ -35,14 +35,7 @@
    (generic-match '(4 . 5) (merge (cons 4 5) (cons 4 nothing)))
    (generic-match '(4 . 5) (merge (cons 4 nothing) (cons 4 5)))
    (generic-match '(4 . 5) (merge (cons 4 5) (cons 4 5)))
-   ;; It's not entirely clear what to do with
-   #;
-   (merge (make-tms (supported (cons (make-tms (supported 4 '(fred))) nothing)
-			       '(george)))
-	  (make-tms (supported (cons (make-tms (supported 3 '(bill))) nothing)
-			       '(joe))))
-   ;; because if it signals a contradiction, both george and joe
-   ;; should be implicated.  Likewise,
+   ;; This
    #;
    (merge (make-tms (supported (cons (make-tms (supported 4 '(fred))) nothing)
 			       '(george)))
@@ -61,6 +54,28 @@
    ;; 4:fred inside, because if the pair is believed, then george is,
    ;; so fred isn't.
    )
+
+ (define-test (recursive-tms-merge)
+   (generic-match
+    #(effectful
+      #(tms
+	(#(supported
+	   (#(tms (#(supported 4 (fred)) #(supported 3 (bill))))
+	    .
+	    #(*the-nothing*))
+	   (george joe))
+	 #(supported
+	   (#(tms (#(supported 3 (bill)))) . #(*the-nothing*)) (joe))
+	 #(supported
+	   (#(tms (#(supported 4 (fred)))) . #(*the-nothing*))
+	   (george))))
+      #(nogood-effect ((joe george bill fred))))
+    (merge (make-tms (supported
+		      (cons (make-tms (supported 4 '(fred))) nothing)
+		      '(george)))
+	   (make-tms (supported
+		      (cons (make-tms (supported 3 '(bill))) nothing)
+		      '(joe))))))
 
  (define-test (example)
 

@@ -36,6 +36,12 @@
     (let ((consequence (strongest-consequence candidate)))
       (tms-assimilate candidate consequence))))
 
+(define (tms-merge tms1 tms2)
+  (let ((candidate (tms-assimilate tms1 tms2)))
+    (effectful-bind (strongest-consequence candidate)
+      (lambda (consequence)
+	(tms-assimilate candidate consequence)))))
+
 (define (tms-assimilate tms stuff)
   (cond ((nothing? stuff) tms)
         ((v&s? stuff) (tms-assimilate-one tms stuff))
@@ -43,7 +49,7 @@
          (fold-left tms-assimilate-one
                     tms
                     (tms-values stuff)))
-        (else (error "This should never happen"))))
+        (else (error "This should never happen" stuff))))
 
 (define (subsumes? v&s1 v&s2)
   (and (implies? (v&s-value v&s1) (v&s-value v&s2))
@@ -64,7 +70,7 @@
 (define (strongest-consequence tms)
   (let ((relevant-v&ss
          (filter v&s-believed? (tms-values tms))))
-    (fold-left merge nothing relevant-v&ss)))
+    (merge* relevant-v&ss)))
 
 (define (v&s-believed? v&s)
   (all-premises-in? (v&s-support v&s)))
