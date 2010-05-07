@@ -736,8 +736,8 @@ Two important things not to forget: First, if the incoming information
 must return identically the first argument, because cells check with
 ``eq?`` whether their information changed.  Presumably the
 ``intersect-intervals`` procedure above arranges this internally.
-(The Scheme procedure ``with-equality`` is provided as a useful
-combinator for this purpose -- type ``(pp with-equality)`` at a prompt
+(The Scheme procedure ``eq?-standardizing`` is provided as a useful
+combinator for this purpose -- type ``(pp eq?-standardizing)`` at a prompt
 after loading the Scheme-Propagators system).  If you get this wrong,
 your networks will tend to enter infinite loops.  Second, it is your
 responsibility to make sure that your partial information structure

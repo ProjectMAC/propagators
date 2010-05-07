@@ -140,15 +140,6 @@
 				    (full-frame-content copy-set2 frame)))
 		     the-frames)))))
 
-;; TODO This utility really belongs in the standard propagator
-;; library...
-(define (eq?-standardizing merge equal?)
-  (lambda (item1 item2)
-    (let ((answer (merge item1 item2)))
-      (cond ((equal? answer item1) item1)
-	    ((equal? answer item2) item2)
-	    (else answer)))))
-
 ;;; This merge is OK if "normal" propagators use v-c-i/o-unpacking
 ;;; (below) for their operations.  Then they will respect the
 ;;; occurrence structure so the merge operation doesn't have to.

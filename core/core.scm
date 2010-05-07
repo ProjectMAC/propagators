@@ -367,6 +367,14 @@
   (or (eq? info1 info2)			; Fast path...
       (and (implies? info1 info2)
 	   (implies? info2 info1))))
+
+(define (eq?-standardizing merge equal?)
+  (lambda (item1 item2)
+    (let ((answer (merge item1 item2)))
+      (cond ((effectful? answer) answer)
+	    ((equal? answer item1) item1)
+	    ((equal? answer item2) item2)
+	    (else answer)))))
 
 ;;; Effects that a merge might have
 
