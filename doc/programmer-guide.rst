@@ -181,7 +181,7 @@ Scheme-Propagators syntax.  More on this later).
 
 Scheme-Propagators has no linguistic support for making new partial
 information types.  Those are all programmed in the underlying Scheme,
-with a procedural interface.  We will talk about how to do that.
+with a procedural interface.  We will talk about how to do that later.
 
 
 Making Propagator Networks
@@ -370,7 +370,7 @@ are best::
   (e: foo %% bar)  <==>  (let-cell new (p: foo new bar) new)
 
 I borrowed this idea from Guy Steele's PhD thesis on constraint
-languages, and was a year between when I implemented it and
+languages, and it was a year between when I implemented it and
 when I first used it.  The use case I do have is when I
 want to make a new cell participate in an input position
 in a constraint with some existing cells::
@@ -408,12 +408,11 @@ you could write::
 
 which would also make a Scheme variable named ``x`` and bind a cell to
 it.  In fact, that is almost exactly what ``define-cell`` does, except
-that ``define-cell`` does constant conversion (so ``(define-cell x
-5)`` makes ``x`` a cell that will get a ``5`` put into it, whereas
-``(define x 5)`` would just bind ``x`` to ``5``) and also attaches
+that ``define-cell`` attaches
 some metadata to the cell it creates to make it easier to debug the
-network (see below).  Among other things, that includes the metadata
-that the cell's name is ``x``.
+network (see below) and also does constant conversion (so ``(define-cell x
+5)`` makes ``x`` a cell that will get a ``5`` put into it, whereas
+``(define x 5)`` would just bind ``x`` to ``5``).
 
 Just as Scheme has several mechanisms of making variables, so
 Scheme-Propagators has corresponding ones.  Corresponding to Scheme's
@@ -426,7 +425,7 @@ Scheme-Propagators has corresponding ones.  Corresponding to Scheme's
 will create the Scheme bindings ``foo`` and ``bar``, and bind them to
 the cells made by ``(e:+ x y)`` and ``(e:* x y)``, respectively (this
 code is only sensible if ``x`` and ``y`` are already bound to cells
-(or subject to constant conversion).  The bindings will only be
+(or subject to constant conversion)).  The new bindings will only be
 visible inside the scope of the ``let-cells``, just like in Scheme;
 but if you attach propagators to them, the cells themselves will
 continue to exist and function as part of your propagator network.
@@ -778,6 +777,7 @@ signals an error immediately.  For example, a strictly empty interval
 implies an impossible state of knowledge::
 
   (defhandler contradictory? empty-interval? interval?)
+  ;; N.B. empty-interval? is the handler; interval? is the only predicate
 
 which means that every interval will be checked by the
 ``empty-interval?`` procedure to test whether it represents a
@@ -852,7 +852,7 @@ to make a partial information structure.
 Debugging
 ======================================================================
 
-There is no stand-along "propagator debugger"; if something goes
+There is no stand-alone "propagator debugger"; if something goes
 wrong, the underlying Scheme debugger is your friend.  Some effort
 has, however, been expended on making your life easier.
 
@@ -888,7 +888,7 @@ draw pictures of your propagator network.  Just type::
 at the REPL and watch what happens!  If the picture does not look like
 the graph you thought you made, make sure the connection metadata is
 collected appropriately, but then check your code to see whether you
-miswired something.  If the pciture contains useless gibberish in the
+miswired something.  If the picture contains useless gibberish in the
 labels, make sure the names of things are correctly assigned and
 tracked.  If ``dot`` crashes, maybe your network is too big for it.
 For more on various pictures you can draw, look in the source comments
