@@ -37,12 +37,12 @@
    "sudoku"
    "riddle-of-the-knights"
    "albatross-conundrum"
+   "selectors/data"
    ))
 
 (for-each
  load-relative
- '("selectors/data"
-   "selectors/selectors"))
+ '("selectors/selectors"))
 
 (maybe-warn-low-memory)
 (initialize-scheduler)

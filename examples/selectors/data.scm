@@ -17,6 +17,9 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
+; What are the operations I need to exempt to get Scmutils units behavior?
+; (declare (usual-integrations make-cell cell? + - * / =))
+
 ;;; Trip segments in general
 
 (define-structure
