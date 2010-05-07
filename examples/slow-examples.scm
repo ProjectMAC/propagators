@@ -54,7 +54,8 @@
      " \-/ \-/   \-O-----/ \n"
      "+ + + + + + + + + + +\n"))
    *number-of-calls-to-fail*
-   (produces (if *false-premise-starts-out* 439 457))))
+   (produces (if *false-premise-starts-out*
+		 (if *avoid-false-true-flips* 440 439) 457))))
 
 (define-test (medium-masyu)
   (interaction
@@ -93,7 +94,8 @@
      "       \-/   \-O---------X X---/ \-/ \n"
      "+ + + + + + + + + + + + + + + + + + +\n"))
    *number-of-calls-to-fail*
-   (produces (if *false-premise-starts-out* 930 855))))
+   (produces (if *false-premise-starts-out*
+		 (if *avoid-false-true-flips* 821 930) 855))))
 
 #;
 (define-test (large-masyu)
@@ -138,7 +140,8 @@
        #(knight sir-balthus   ,s9 ,h9))
      (map v&s-value (map tms-query (show-time find-solution)))))
    (check (= *number-of-calls-to-fail*
-	     (if *false-premise-starts-out* 894 922)))))
+	     (if *false-premise-starts-out*
+		 (if *avoid-false-true-flips* 419 894) 922)))))
 
 (in-test-group
  albatross-conundrum
@@ -151,7 +154,8 @@
        #(deck gun scurvy casket-of-magenta ropes)
        #(deck lower kraken goldenhall-talisman spare-sails))
      (map v&s-value (map tms-query (show-time find-albatross-solution)))))
-   (check (= 1425 *number-of-calls-to-fail*))))
+   (check (= (if *avoid-false-true-flips* 695 1425)
+	     *number-of-calls-to-fail*))))
 
 ;;; This one is too slow even for the slow-examples!
 #;
