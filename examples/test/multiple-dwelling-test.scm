@@ -29,5 +29,6 @@
     (produces '(3 2 4 5 1))
 
     *number-of-calls-to-fail*
-    (produces (if *false-premise-starts-out* 54 63))
+    (produces (if *false-premise-starts-out*
+		  (if *avoid-false-true-flips* 38 54) 63))
     )))

@@ -22,29 +22,34 @@
 (declare (usual-integrations make-cell cell?))
 
 (define *false-premise-starts-out* #t)
+(define *avoid-false-true-flips* #t)
 
 (define (binary-amb cell)
   (let ((true-premise (make-hypothetical))
         (false-premise (make-hypothetical)))
     (define (amb-choose)
-      (let ((reasons-against-true
-             (filter all-premises-in?
-               (premise-nogoods true-premise)))
-            (reasons-against-false
-             (filter all-premises-in?
-               (premise-nogoods false-premise))))
-        (cond ((null? reasons-against-true)
-               (kick-out! false-premise)
-               (bring-in! true-premise))
-              ((null? reasons-against-false)
-               (kick-out! true-premise)
-               (bring-in! false-premise))
-              (else                     ; this amb must fail.
-               (kick-out! true-premise)
-               (kick-out! false-premise)
-               (process-contradictions
-                (pairwise-resolve reasons-against-true
-                                  reasons-against-false))))))
+      (if (and *avoid-false-true-flips*
+	       (or (premise-in? true-premise)
+		   (premise-in? false-premise)))
+	  'ok ; the some-premise-is-in invariant holds
+	  (let ((reasons-against-true
+		 (filter all-premises-in?
+			 (premise-nogoods true-premise)))
+		(reasons-against-false
+		 (filter all-premises-in?
+			 (premise-nogoods false-premise))))
+	    (cond ((null? reasons-against-true)
+		   (kick-out! false-premise)
+		   (bring-in! true-premise))
+		  ((null? reasons-against-false)
+		   (kick-out! true-premise)
+		   (bring-in! false-premise))
+		  (else			; this amb must fail.
+		   (kick-out! true-premise)
+		   (kick-out! false-premise)
+		   (process-contradictions
+		    (pairwise-resolve reasons-against-true
+				      reasons-against-false)))))))
     (eq-label! amb-choose 'name 'amb-choose 'outputs (list cell))
     ;; This only affects run order, and only in some experimental
     ;; schedulers
