@@ -32,6 +32,7 @@
 (for-each load-relative-compiled
  '("environments"
    "info-alist"
+   "algebraic-tms"
    "electric-parts"
    "solve"
    "inequalities"
@@ -46,8 +47,7 @@
    "example-closures"
    "draw"
    "dot-writer"
-   "graphml-writer"
-   "algebraic-tms"))
+   "graphml-writer"))
 
 (maybe-warn-low-memory)
 (initialize-scheduler)
