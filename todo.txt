@@ -1,12 +1,12 @@
-Massage:
-- Release and document test-manager carefully (esp interaction and produces)
-- Write a "new propagator programmer" guide?
+Pre-release:
+- Produce reference documentation of important program elements
+- Proofread README; abstract "developer guide" from it?
+- Refer to test-manager documentation
 
+Massage:
 - Tease apart Scmutils stuff from Scheme stuff?
 - Extract draw.scm & co. into support/; abstract propagator stuff away from it?
-- Does expression-language.scm deserve to be part of core?
-  - How many things do I want to rewrite in expression style?
-- Add the appropriate elisp file for nice highlighting and indentation
+- How many examples do I want to rewrite in expression style?
 - Concept diagram?  (All the way down to test-manager/, MIT Scheme,
   and Scheme?)  With concept dependencies, "how to know what
   concept(s) you are looking at", "how to know what concept(s) you
@@ -32,9 +32,9 @@ Massage:
   anyway).  But they are in principle more general.  Where should they
   go?
 - Where does the stuff in extensions/test-utils.scm belong?
+  - Where do random define-method calls go?
 - Look through the file structure of the tests again?
 - Does defhandler want to become define-handler?
-- Normalize the integrations being declared?
 
 - Convert cells and propagators not to just be procedures?
   Then I can type tag them nicely, and define custom unparser
