@@ -138,6 +138,13 @@
 
 (define %p:tag (function->propagator-constructor
 		(handling-algebraic-partial-information algebraic-tag)))
+
+(define-method generic-match ((pattern <vector>) (object rtd:algebraic-tms))
+  (generic-match
+   pattern
+   (vector 'algebraic-tms 
+	   (information-assq algebraic-tag (algebraic-tms-fields object))
+	   (delq algebraic-tag (algebraic-tms-fields object)))))
 
 ;;; Nulls
 

@@ -40,4 +40,24 @@
     (content the-car)
     (produces #(tms (#(supported 4 (fred george)))))
     (content the-cdr)
-    (produces #(tms (#(supported 3 (bill))))))))
+    (produces #(tms (#(supported 3 (bill)))))))
+
+ (define-test (contradictions)
+   (check
+    (generic-match
+     #(effectful
+       #(algebraic-tms
+	 #(tms
+	   (#(supported (#(*the-nothing*) . #(*the-nothing*)) (joe))
+	    #(supported (#(*the-nothing*) . #(*the-nothing*)) (george))))
+	 (car . #(tms (#(supported 3 (bill joe)) #(supported 4 (fred george)))))
+	 (cdr . #(tms ())))
+       #(nogood-effect ((george fred bill joe))))
+     (merge (->algebraic-tms
+	     (make-tms (supported
+			(cons (make-tms (supported 4 '(fred))) nothing)
+			'(george))))
+	    (->algebraic-tms
+	     (make-tms (supported
+			(cons (make-tms (supported 3 '(bill))) nothing)
+			'(joe)))))))))
