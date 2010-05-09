@@ -74,6 +74,21 @@
 					       accessors))))
   (defhandler contradictory? slotful-contradiction? predicate?))
 
+;;; Test slotful structure
+(define-structure (kons (constructor kons))
+  kar
+  kdr)
+
+(slotful-information-type kons? kons kons-kar kons-kdr)
+(define konser (function->propagator-constructor kons))
+(define karer (function->propagator-constructor (nary-unpacking kons-kar)))
+(define kdrer (function->propagator-constructor (nary-unpacking kons-kdr)))
+
+(define-method generic-match ((pattern <vector>) (object rtd:kons))
+  (generic-match
+   pattern
+   (vector 'kons (kons-kar object) (kons-kdr object))))
+
 ;;; This strategy is presented in the text as an alternative to the
 ;;; preceding.  I choose not to enable it by default.
 #|

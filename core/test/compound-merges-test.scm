@@ -56,26 +56,27 @@
    )
 
  (define-test (recursive-tms-merge)
-   (generic-match
-    #(effectful
-      #(tms
-	(#(supported
-	   (#(tms (#(supported 4 (fred)) #(supported 3 (bill))))
-	    .
-	    #(*the-nothing*))
-	   (george joe))
-	 #(supported
-	   (#(tms (#(supported 3 (bill)))) . #(*the-nothing*)) (joe))
-	 #(supported
-	   (#(tms (#(supported 4 (fred)))) . #(*the-nothing*))
-	   (george))))
-      #(nogood-effect ((joe george bill fred))))
-    (merge (make-tms (supported
-		      (cons (make-tms (supported 4 '(fred))) nothing)
-		      '(george)))
-	   (make-tms (supported
-		      (cons (make-tms (supported 3 '(bill))) nothing)
-		      '(joe))))))
+   (check
+    (generic-match
+     #(effectful
+       #(tms
+	 (#(supported
+	    (#(tms (#(supported 4 (fred)) #(supported 3 (bill))))
+	     .
+	     #(*the-nothing*))
+	    (george joe))
+	  #(supported
+	    (#(tms (#(supported 3 (bill)))) . #(*the-nothing*)) (joe))
+	  #(supported
+	    (#(tms (#(supported 4 (fred)))) . #(*the-nothing*))
+	    (george))))
+       #(nogood-effect ((joe george bill fred))))
+     (merge (make-tms (supported
+		       (cons (make-tms (supported 4 '(fred))) nothing)
+		       '(george)))
+	    (make-tms (supported
+		       (cons (make-tms (supported 3 '(bill))) nothing)
+		       '(joe)))))))
 
  (define-test (example)
 
@@ -119,5 +120,27 @@
     (content x-again)
     (produces #(tms (#(supported 4 (harry joe)))))
     ))
+
+ (define-test (recursive-tms-merge-2)
+   (check
+    (generic-match
+     #(effectful
+       #(tms
+	 (#(supported
+	    (kons #(tms (#(supported 4 (fred)) #(supported 3 (bill))))
+		  #(*the-nothing*))
+	    (george joe))
+	  #(supported
+	    (kons #(tms (#(supported 3 (bill)))) #(*the-nothing*)) (joe))
+	  #(supported
+	    (kons #(tms (#(supported 4 (fred)))) #(*the-nothing*))
+	    (george))))
+       #(nogood-effect ((joe george bill fred))))
+     (merge (make-tms (supported
+		       (kons (make-tms (supported 4 '(fred))) nothing)
+		       '(george)))
+	    (make-tms (supported
+		       (kons (make-tms (supported 3 '(bill))) nothing)
+		       '(joe)))))))
 
  )
