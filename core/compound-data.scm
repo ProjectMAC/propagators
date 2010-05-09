@@ -55,7 +55,7 @@
 
 ;;; The generalization (though I don't know whether this strategy is right):
 (define (slotful-information-type predicate? constructor . accessors)
-  (define (slotful-merge thing1 thing2)
+  #;(define (slotful-merge thing1 thing2)
     (let* ((slots1 (map (lambda (accessor) (accessor thing1))
 			accessors))
 	   (slots2 (map (lambda (accessor) (accessor thing2))
@@ -66,6 +66,18 @@
       (cond (ok1? thing1)
 	    (ok2? thing2)
 	    (else (apply constructor submerges)))))
+  (define (slotful-merge thing1 thing2)
+    (let* ((slots1 (map (lambda (accessor) (accessor thing1))
+			accessors))
+	   (slots2 (map (lambda (accessor) (accessor thing2))
+			accessors)))
+      (effectful-list-bind (map merge slots1 slots2)
+	(lambda (submerges)
+	  (let ((ok1? (apply boolean/and (map eq? submerges slots1)))
+		(ok2? (apply boolean/and (map eq? submerges slots2))))
+	    (cond (ok1? thing1)
+		  (ok2? thing2)
+		  (else (apply constructor submerges))))))))
   (defhandler merge slotful-merge predicate? predicate?)
   
   (define (slotful-contradiction? thing)

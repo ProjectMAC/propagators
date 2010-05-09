@@ -458,3 +458,11 @@
       (make-effectful
        (->effectful (func (effectful-info effectful)))
        (effectful-effect effectful))))))
+
+(define (effectful-list-bind effectfuls func)
+  (let ((effectfuls (map ->effectful effectfuls)))
+    (effectful->
+     (effectful-flatten
+      (make-effectful
+       (->effectful (func (map effectful-info effectfuls)))
+       (fold-left append-effects no-effect (map effectful-effect effectfuls)))))))

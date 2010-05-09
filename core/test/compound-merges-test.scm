@@ -127,13 +127,13 @@
      #(effectful
        #(tms
 	 (#(supported
-	    (kons #(tms (#(supported 4 (fred)) #(supported 3 (bill))))
-		  #(*the-nothing*))
+	    #(kons #(tms (#(supported 4 (fred)) #(supported 3 (bill))))
+		   #(*the-nothing*))
 	    (george joe))
 	  #(supported
-	    (kons #(tms (#(supported 3 (bill)))) #(*the-nothing*)) (joe))
+	    #(kons #(tms (#(supported 3 (bill)))) #(*the-nothing*)) (joe))
 	  #(supported
-	    (kons #(tms (#(supported 4 (fred)))) #(*the-nothing*))
+	    #(kons #(tms (#(supported 4 (fred)))) #(*the-nothing*))
 	    (george))))
        #(nogood-effect ((joe george bill fred))))
      (merge (make-tms (supported
