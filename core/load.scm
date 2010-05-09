@@ -45,8 +45,8 @@
     "search"
     "amb-utils"
     "compound-data"
-    "example-networks"
-    "expression-language"))
+    "expression-language"
+    "example-networks"))
 
 (maybe-warn-low-memory)
 (initialize-scheduler)

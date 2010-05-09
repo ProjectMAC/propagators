@@ -147,4 +147,10 @@
 	  (run)
 	  (content y))))
 
+ (define-test (factorial)
+   (interaction
+    (define-cell n! (e:factorial 5))
+    (run)
+    (content n!)
+    (produces 120)))
  )

@@ -163,3 +163,5 @@
     lead))
 (define ce:== (functionalize c:==))
 
+(define p:conditional conditional)
+(define e:conditional (functionalize p:conditional))
