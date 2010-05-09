@@ -510,22 +510,21 @@ there is ``define-compound-propagator``.  It's just like
 diagram represented by the resulting Scheme procedure is delayed until
 some (however partial) information shows up on at least one of the
 cells that the diagram is attached to.  For example, a diagram for
-computing square roots::
+computing factorials::
 
-  (define-compound-propagator (sqrt-iter x g answer)
-    (let-cells (done x-if-done x-if-not-done g-if-done g-if-not-done
-		     new-g recursive-answer)
-      (good-enuf? x g done)
-      (conditional-writer done x x-if-done x-if-not-done)
-      (conditional-writer done g g-if-done g-if-not-done)
-      (heron-step x-if-not-done g-if-not-done new-g)
-      (sqrt-iter x-if-not-done new-g recursive-answer)
-      (conditional done g-if-done recursive-answer answer)))
+  (define-compound-propagator (p:factorial n n!)
+    (let-cells* ((done? (e:= 0 n))
+		 (n-again (e:switch (e:not done?) n))
+		 (n!-again (e:* n-again (e:factorial (e:- n-again 1)))))
+      (conditional done? 1 n!-again n!)))
+
+  (define e:factorial (functionalize p:factorial))
 
 contains a call to itself; but attaching this to some cells will not
-cause an immediate infinite regress because the internal ``sqrt-iter``
+cause an immediate infinite regress because the internal ``factorial``
 will only expand dynamically during the execution of the network, and
-only if it has information to process.
+only if it has information to process (preventing spurious recursions
+is what the ``switch`` and ``n-again`` is for).
 
 Much the same effect can be achieved procedurally using the Scheme
 procedure ``delayed-propagator-constructor``.
