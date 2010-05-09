@@ -1116,6 +1116,12 @@ TODO Describe where in the source various constructs are defined?  So that
 it is possible to mimic them (e.g. more primitive propagators) and/or
 adapt them.
 
+TODO
+----------------------------------------------------------------------
+
+- How do I want to section up the p:, e:, c:, and ce: ideas?
+- Advertise the examples/ directory
+
 Revision History of this Guide
 ----------------------------------------------------------------------
 
