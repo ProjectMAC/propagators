@@ -1,10 +1,19 @@
+======================================================================
+			Propagator Orientation
+======================================================================
+
 Propagator-orientation is a new programming paradigm under development
-by Alexey Radul and Gerald Jay Sussman at the Massachusetts Institute
-of Technology, with the support of the Mind Machine Project of same.
+by `Alexey Radul`_ and `Gerald Jay Sussman`_ at the `Massachusetts Institute
+of Technology`_, with the support of the `Mind Machine Project`_ of same.
 Scheme-Propagators is the most advanced programming language built
 from the ground up to support the propagator-oriented paradigm, and is
 being codeveloped with the paradigm itself by Alexey Radul and Gerald
 Jay Sussman.
+
+.. _`Alexey Radul`: http://web.mit.edu/~axch/www
+.. _`Gerald Jay Sussman`: http://groups.csail.mit.edu/mac/users/gjs/
+.. _`Massachusetts Institute of Technology`: http://web.mit.edu/
+.. _`Mind Machine Project`: http://mmp.mit.edu
 
 The propagator-orientation paradigm offers
 

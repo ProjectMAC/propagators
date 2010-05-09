@@ -2,6 +2,8 @@ Pre-release:
 - Produce reference documentation of important program elements
 - Proofread README; abstract "developer guide" from it?
 - Refer to test-manager documentation
+- Cross-link propagator-oriented and Scheme-Propagators in the
+  propagator guide and the ad
 
 Massage:
 - Tease apart Scmutils stuff from Scheme stuff?
