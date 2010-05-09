@@ -23,15 +23,9 @@
 
 (define (tms-merge tms1 tms2)
   (let ((candidate (tms-assimilate tms1 tms2)))
-    (let ((consequence (strongest-consequence candidate)))
-      (check-consistent! consequence)   ; **
-      (tms-assimilate candidate consequence))))
-
-(define (tms-merge tms1 tms2)
-  (let ((candidate (tms-assimilate tms1 tms2)))
     (effectful-bind (strongest-consequence candidate)
       (lambda (consequence)
-	(if (not (contradictory? consequence))
+	(if (not (contradictory? consequence))  ; **
 	    (tms-assimilate candidate consequence)
 	    (make-effectful
 	     candidate

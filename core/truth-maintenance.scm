@@ -33,11 +33,6 @@
 ;; Will be replaced by tms-merge in contradictions.scm
 (define (tms-merge tms1 tms2)
   (let ((candidate (tms-assimilate tms1 tms2)))
-    (let ((consequence (strongest-consequence candidate)))
-      (tms-assimilate candidate consequence))))
-
-(define (tms-merge tms1 tms2)
-  (let ((candidate (tms-assimilate tms1 tms2)))
     (effectful-bind (strongest-consequence candidate)
       (lambda (consequence)
 	(tms-assimilate candidate consequence)))))

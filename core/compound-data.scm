@@ -26,18 +26,6 @@
 (define carer (function->propagator-constructor (nary-unpacking car)))
 
 (define (pair-merge pair1 pair2)
-  (let ((car-answer (merge (car pair1) (car pair2)))
-        (cdr-answer (merge (cdr pair1) (cdr pair2))))
-    (cond ((and (eq? (car pair1) car-answer)
-                (eq? (cdr pair1) cdr-answer))
-           pair1)
-          ((and (eq? (car pair2) car-answer)
-                (eq? (cdr pair2) cdr-answer))
-           pair2)
-          (else
-           (cons car-answer cdr-answer)))))
-
-(define (pair-merge pair1 pair2)
   (effectful-bind (merge (car pair1) (car pair2))
     (lambda (car-answer)
       (effectful-bind (merge (cdr pair1) (cdr pair2))
@@ -55,17 +43,6 @@
 
 ;;; The generalization (though I don't know whether this strategy is right):
 (define (slotful-information-type predicate? constructor . accessors)
-  #;(define (slotful-merge thing1 thing2)
-    (let* ((slots1 (map (lambda (accessor) (accessor thing1))
-			accessors))
-	   (slots2 (map (lambda (accessor) (accessor thing2))
-			accessors))
-	   (submerges (map merge slots1 slots2))
-	   (ok1? (apply boolean/and (map eq? submerges slots1)))
-	   (ok2? (apply boolean/and (map eq? submerges slots2))))
-      (cond (ok1? thing1)
-	    (ok2? thing2)
-	    (else (apply constructor submerges)))))
   (define (slotful-merge thing1 thing2)
     (let* ((slots1 (map (lambda (accessor) (accessor thing1))
 			accessors))
