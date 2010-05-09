@@ -32,6 +32,10 @@
 	     (make-nogood-effect
 	      (list (v&s-support consequence)))))))))
 
+;;; TODO TMS-QUERY is still hopelessly broken.  The problem is that
+;;; the effect of signaling a contradiction is being deferred from the
+;;; point at which the worldview changes to the point at which some
+;;; propagator tries to get the result.
 (define (tms-query tms)
   (let ((answer (strongest-consequence tms)))
     (let ((better-tms (tms-assimilate tms answer)))

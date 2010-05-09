@@ -39,6 +39,3 @@ Massage:
 - Convert cells and propagators not to just be procedures?
   Then I can type tag them nicely, and define custom unparser
   methods for them.
-
-Apply the effectful-bind abstraction where needed
-tms-query remains hopelessly broken
