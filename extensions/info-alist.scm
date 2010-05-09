@@ -45,4 +45,12 @@
 	     (cons key (f (get key alist1) (get key alist2))))
 	   keys))))
 
-(define merge-alist (binary-alist-unpacking merge))
+(define %merge-alist (binary-alist-unpacking merge))
+
+(define (merge-alist alist1 alist2)
+  (let ((putative-answer (%merge-alist alist1 alist2)))
+    (effectful-list-bind (map cdr putative-answer)
+      (lambda (cdrs)
+	(map cons
+	     (map car putative-answer)
+	     cdrs)))))

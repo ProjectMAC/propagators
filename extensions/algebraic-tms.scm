@@ -61,13 +61,15 @@
   fields)
 
 (define (%algebraic-tms-merge atms1 atms2)
-  (make-algebraic-tms
-   (merge-alist (algebraic-tms-fields atms1)
-		(algebraic-tms-fields atms2))))
+  (effectful-bind (merge-alist (algebraic-tms-fields atms1)
+			       (algebraic-tms-fields atms2))
+    make-algebraic-tms))
 
 (define (algebraic-tms-equal? atms1 atms2)
-  (same-alist? (algebraic-tms-fields atms1)
-	       (algebraic-tms-fields atms2)))
+  (and (algebraic-tms? atms1)
+       (algebraic-tms? atms2)
+       (same-alist? (algebraic-tms-fields atms1)
+		    (algebraic-tms-fields atms2))))
 
 (define algebraic-tms-merge
   (eq?-standardizing %algebraic-tms-merge algebraic-tms-equal?))
@@ -107,7 +109,9 @@
 			    (v&s-support thing))))
 	       (else (error "Inappropriate coersion for ->algebraic-tms" thing))))
 	((tms? thing)
-	 (reduce merge nothing (map ->algebraic-tms (tms-values thing))))
+	 ;; TODO Ug, bletch: this could discover a latent contradiction
+	 ;; inside the tms it's merging up.
+	 (merge* (map ->algebraic-tms (tms-values thing))))
 	(else (error "??? ->algebraic-tms" thing))))
 
 (defhandler merge algebraic-tms-merge algebraic-tms? algebraic-tms?)
@@ -144,7 +148,7 @@
    pattern
    (vector 'algebraic-tms 
 	   (information-assq algebraic-tag (algebraic-tms-fields object))
-	   (delq algebraic-tag (algebraic-tms-fields object)))))
+	   (alist-delete algebraic-tag (algebraic-tms-fields object) eq?))))
 
 ;;; Nulls
 
