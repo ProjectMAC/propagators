@@ -51,7 +51,7 @@
 ;;; We also need to arrange for the premise states to be reset for
 ;;; every new example.  Better creativity having failed me, I will
 ;;; hang that action onto the initialize-scheduler procedure.
-;;; TODO Can one do better?
+;;; TODO Can one do better than redefining initialize-scheduler?
 (define initialize-scheduler
   (let ((initialize-scheduler initialize-scheduler))
     (lambda ()
