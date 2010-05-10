@@ -161,7 +161,13 @@
 ;;; the cons are not copied every time.  The advantage of this pattern
 ;;; is that cells really become very analagous to Scheme memory
 ;;; locations.  Incidentally, this idea is independent of physical vs
-;;; virtual copies.
+;;; virtual copies.  Hm.  It appears that carrying cells is actually
+;;; just a slight optimization of this --- if the closure constructor's
+;;; call site knows that it is about to make a few new cells and attach
+;;; them to existing cells with unconditional identity propagators,
+;;; then might as well just grab those cells in the first place.
+;;; But if those propagators do something funny like shift levels
+;;; in a virtual copies scheme, then that's another story.
 
 (define-macro-propagator (conditional control if-true if-false output)
   (let-cell not-control
