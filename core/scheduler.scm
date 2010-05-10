@@ -72,6 +72,14 @@
   (set! *propagators-ever-alerted* (make-eq-oset))
   'ok)
 
+(define (with-independent-scheduler thunk)
+  (fluid-let ((*scheduler* #f)
+	      (*abort-process* #f)
+	      (*last-value-of-run* #f)
+	      (*propagators-ever-alerted* #f))
+    (initialize-scheduler)
+    (thunk)))
+
 (define (execute-propagator propagator)
   (propagator))
 

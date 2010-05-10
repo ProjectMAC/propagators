@@ -108,6 +108,12 @@
       (initialize-scheduler)
       (set! *number-of-calls-to-fail* 0))))
 
+(define with-independent-scheduler
+  (let ((with-independent-scheduler with-independent-scheduler))
+    (lambda args
+      (fluid-let ((*number-of-calls-to-fail* #f))
+	(apply with-independent-scheduler args)))))
+
 (define (process-nogood! nogood)
   (set! *number-of-calls-to-fail*
         (+ *number-of-calls-to-fail* 1))

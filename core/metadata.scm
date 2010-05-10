@@ -84,6 +84,12 @@
       (initialize-scheduler)
       (reset-network-groups!))))
 
+(define with-independent-scheduler
+  (let ((with-independent-scheduler with-independent-scheduler))
+    (lambda args
+      (fluid-let ((*current-network-group* #f))
+	(apply with-independent-scheduler args)))))
+
 (define (propagator-inputs propagator)
   (or (eq-get propagator 'inputs)
       (eq-get propagator 'neighbors)
@@ -313,15 +319,3 @@
 		       (network-group-elements *current-network-group*))))
 	 `(name ,(name (car constructed-objects))
 	   inputs ,my-inputs outputs ,my-outputs))))))
-
-(define (with-independent-scheduler thunk)
-  ;; TODO This really belongs split across scheduler.scm,
-  ;; metadata.scm, and search.scm in core.
-  (fluid-let ((*scheduler* #f)
-	      (*abort-process* #f)
-	      (*last-value-of-run* #f)
-	      (*propagators-ever-alerted* #f)
-	      (*current-network-group* #f)
-	      (*number-of-calls-to-fail* #f))
-    (initialize-scheduler)
-    (thunk)))
