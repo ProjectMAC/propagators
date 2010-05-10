@@ -91,7 +91,7 @@
 ;;; the file "frob.graphml" in graphml format, which can then be
 ;;; viewed with yEd (if that program is available).
 
-;;; TODO:
+;;; TODOs:
 ;;; Write a handful of useful procedures to fluid bind draw:cell-label to
 ;;; Dump port data (this compound box takes these inputs and then
 ;;;   routes them to these sub-boxes)
