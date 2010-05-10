@@ -96,7 +96,7 @@
 
 (define generic-tag
   (make-generic-operator 1 'the-tag
-    ;; TODO: Lisp type extractor?
+    ;; This wants to be an extractor of the Lisp type
     (lambda (x) x)))
 
 (defhandler generic-tag
