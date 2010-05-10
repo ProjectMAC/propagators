@@ -42,21 +42,20 @@
 		((constant value) cell)
 		cell)
               values)))
-    (one-of-the-cells cells output-cell)))
+    (apply one-of-the-cells `(,@cells ,output-cell))))
 
-(define-propagator-syntax (one-of-the-cells input-cells output-cell)
-  (cond ((= (length input-cells) 2)
-         (let-cell p
-           (conditional p
-             (car input-cells) (cadr input-cells)
-             output-cell)
-           (binary-amb p)))
-        ((> (length input-cells) 2)
-         (let-cells (link p)
-           (one-of-the-cells (cdr input-cells) link)
-           (conditional
-            p (car input-cells) link output-cell)
-           (binary-amb p)))
-        (else
-         (error "Inadequate choices for one-of-the-cells"
-                input-cells output-cell))))
+(define-propagator-syntax (one-of-the-cells . cells)
+  (let ((output (ensure-cell (car (last-pair cells))))
+	(inputs (map ensure-cell (except-last-pair cells))))
+    (cond ((= (length inputs) 2)
+	   (let-cell p
+	     (conditional p (car inputs) (cadr inputs) output)
+	     (binary-amb p)))
+	  ((> (length inputs) 2)
+	   (let-cells (link p)
+	     (apply one-of-the-cells `(,@(cdr inputs) ,link))
+	     (conditional p (car inputs) link output)
+	     (binary-amb p)))
+	  (else
+	   (error "Inadequate choices for one-of-the-cells"
+		  inputs output)))))
