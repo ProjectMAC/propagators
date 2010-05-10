@@ -119,8 +119,8 @@
   (append (neighbors cell) (cell-non-readers cell)))
 
 ;;; Oof!
-;;; TODO Figure out a theory of what this steaming pile is doing
-;;; and refactor it.
+;;; TODO Figure out what network-group-expression-substructure is
+;;; really doing and refactor it.
 (define (network-group-expression-substructure group)
   ;; Produce the collection of cells, propagators, network groups, and
   ;; expression network groups that should be visible at this group
