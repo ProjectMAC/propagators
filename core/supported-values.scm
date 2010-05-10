@@ -60,7 +60,7 @@
 	(map (attach-support-to-effect (merge-supports v&s1 v&s2))
 	     value-effects))))))
 
-;; TODO This wants to be a generic operation
+;; TODO attach-support-to-effect wants to be a generic operation
 (define ((attach-support-to-effect support) effect)
   (cond ((nogood-effect? effect)
 	 (make-nogood-effect
