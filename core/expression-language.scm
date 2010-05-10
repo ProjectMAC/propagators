@@ -28,26 +28,25 @@
   (if (default-object? num-outputs)
       (set! num-outputs 1))
   (lambda inputs
-    (define outputs '())
     (define (manufacture-cell)
-      (let ((cell (make-named-cell 'cell)))
-	(set! outputs (cons cell outputs))
-	(eq-put! cell 'subexprs inputs)
-	cell))
-    (define implicit-cells-present? (any implicit-cell? inputs))
+      (eq-put! (make-named-cell 'cell) 'subexprs inputs))
+    (define outputs (map (lambda (k) (manufacture-cell))
+			 (iota num-outputs)))
     (define true-inputs
-      (if implicit-cells-present?
-	  (map (lambda (input)
-		 (if (implicit-cell? input)
-		     (manufacture-cell)
-		     input))
-	       inputs)
-	  (append inputs (map (lambda (k) (manufacture-cell))
-			      (iota num-outputs)))))
+      (let loop ((inputs inputs)
+		 (outputs outputs))
+	(cond ((null? inputs)
+	       outputs)
+	      ((implicit-cell? (car inputs))
+	       (if (null? outputs)
+		   (error "Too many implicit cells" inputs)
+		   (cons (car outputs)
+			 (loop (cdr inputs) (cdr outputs)))))
+	      (else
+	       (cons (car inputs) (loop (cdr inputs) outputs))))))
     (apply propagator (map ensure-cell true-inputs))
     (if (= 1 (length outputs))
 	(car outputs)
-	;; TODO Maybe (reverse outputs) here?
 	(apply values outputs))))
 
 ;;; Naming convention:
