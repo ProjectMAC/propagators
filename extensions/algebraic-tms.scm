@@ -109,7 +109,7 @@
 			    (v&s-support thing))))
 	       (else (error "Inappropriate coersion for ->algebraic-tms" thing))))
 	((tms? thing)
-	 ;; TODO Ug, bletch: this could discover a latent contradiction
+	 ;; TODO Ug, bletch: merge* could discover a latent contradiction
 	 ;; inside the tms it's merging up.
 	 (merge* (map ->algebraic-tms (tms-values thing))))
 	(else (error "??? ->algebraic-tms" thing))))
@@ -132,7 +132,7 @@
   (coercing ->algebraic-tms algebraic-tms-merge) tms? algebraic?)
 
 (define (handling-algebraic-partial-information accessor)
-  ;;; TODO This wants to be a generic operation
+  ;;; TODO handling-algebraic-partial-information wants to be generic
   (lambda (info)
     (cond ((nothing? info)
 	   nothing)
