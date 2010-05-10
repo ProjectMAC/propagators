@@ -51,7 +51,6 @@
       (error "Peeking empty oset" oset))
   (if *reproducible-order*
       (car (oset-list oset))
-      ;; TODO Really randomize this?
       (car (hash-table/key-list (oset-table oset)))))
 
 (define (oset-pop! oset)
