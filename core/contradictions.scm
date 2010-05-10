@@ -29,8 +29,8 @@
 	    (tms-assimilate candidate consequence)
 	    (make-effectful
 	     candidate
-	     (make-nogood-effect
-	      (list (v&s-support consequence)))))))))
+	     (list (make-nogood-effect
+		    (v&s-support consequence)))))))))
 
 ;;; TODO TMS-QUERY is still hopelessly broken.  The problem is that
 ;;; the effect of signaling a contradiction is being deferred from the
@@ -53,24 +53,15 @@
   (abort-process `(contradiction ,nogood)))
 
 (define-structure nogood-effect
-  nogoods)
+  nogood)
 
 (defhandler execute-effect
   (lambda (nogood-effect)
-    (map (lambda (nogood)
-	   (if (all-premises-in? nogood)
-	       (process-nogood! nogood)))
-	 (nogood-effect-nogoods nogood-effect)))
+    (if (all-premises-in? (nogood-effect-nogood nogood-effect))
+	(process-nogood! (nogood-effect-nogood nogood-effect))))
   nogood-effect?)
-
-(defhandler append-effects
-  (lambda (nge1 nge2)
-    (make-nogood-effect
-     (append (nogood-effect-nogoods nge1)
-	     (nogood-effect-nogoods nge2))))
-  nogood-effect? nogood-effect?)
 
 (define-method generic-match ((pattern <vector>) (object rtd:nogood-effect))
   (generic-match
    pattern
-   (vector 'nogood-effect (nogood-effect-nogoods object))))
+   (vector 'nogood-effect (nogood-effect-nogood object))))

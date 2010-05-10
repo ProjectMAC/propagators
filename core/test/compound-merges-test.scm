@@ -70,7 +70,7 @@
 	  #(supported
 	    (#(tms (#(supported 4 (fred)))) . #(*the-nothing*))
 	    (george))))
-       #(nogood-effect ((joe george bill fred))))
+       (#(nogood-effect (joe george bill fred))))
      (merge (make-tms (supported
 		       (cons (make-tms (supported 4 '(fred))) nothing)
 		       '(george)))
@@ -135,7 +135,7 @@
 	  #(supported
 	    #(kons #(tms (#(supported 4 (fred)))) #(*the-nothing*))
 	    (george))))
-       #(nogood-effect ((joe george bill fred))))
+       (#(nogood-effect (joe george bill fred))))
      (merge (make-tms (supported
 		       (kons (make-tms (supported 4 '(fred))) nothing)
 		       '(george)))

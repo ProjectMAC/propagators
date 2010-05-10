@@ -25,9 +25,9 @@
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
     (define (add-content increment)
-      (let ((info+effect (->effectful (merge content increment))))
-        (let ((effect (effectful-effect info+effect))
-	      (new-content (effectful-info info+effect)))
+      (let ((info+effects (->effectful (merge content increment))))
+        (let ((effects (effectful-effects info+effects))
+	      (new-content (effectful-info info+effects)))
 	  (cond ((eq? new-content content) 'ok)
 		((contradictory? new-content)
 		 (error "Ack! Inconsistency!" me increment)
@@ -36,7 +36,7 @@
 		 (set! content new-content)
 		 (eq-adjoin! content 'visited-cells me)
 		 (alert-propagators neighbors)))
-	  (execute-effect effect))))
+	  (for-each execute-effect effects))))
     (define (new-neighbor! new-neighbor)
       (if (not (memq new-neighbor neighbors))
           (begin
@@ -376,39 +376,16 @@
 	    ((equal? answer item2) item2)
 	    (else answer)))))
 
-;;; Effects that a merge might have
-
-(define (no-effect)
-  'ok)
-
-(define (no-effect? thing)
-  (eq? thing no-effect))
-
+;;; Data structure to represent a merge that may have effects.
 (define execute-effect 
   (make-generic-operator 1 'execute-effect (lambda (effect) (effect))))
 
-(define append-effects 
-  (make-generic-operator 2 'append-effects
-    (lambda (a b)
-      (lambda ()
-	(a) (b)))))
-
-(defhandler append-effects
-  (lambda (a b) b)
-  no-effect? any?)
-
-(defhandler append-effects
-  (lambda (a b) a)
-  any? no-effect?)
-
-;;; Data structure to represent a merge that may have an effect.
-
 (define-structure effectful
   info
-  effect)
+  effects)
 
 (define (effectful-return info)
-  (make-effectful info no-effect))
+  (make-effectful info '()))
 
 (define (->effectful thing)
   (if (effectful? thing)
@@ -416,24 +393,22 @@
       (effectful-return thing)))
 
 (define (effectful-> effectful)
-  (if (no-effect? (effectful-effect effectful))
+  (if (null? (effectful-effects effectful))
       (effectful-info effectful)
       effectful))
 
 (define (effectful-flatten effectful)
   (let ((subeffectful (->effectful (effectful-info effectful))))
     (let ((subinfo (effectful-info subeffectful))
-	  (subeffect (effectful-effect subeffectful))
-	  (effect (effectful-effect effectful)))
-      (make-effectful
-       subinfo
-       (append-effects subeffect effect)))))
+	  (subeffects (effectful-effects subeffectful))
+	  (effects (effectful-effects effectful)))
+      (make-effectful subinfo (append subeffects effects)))))
 
 (define-method generic-match ((pattern <vector>) (object rtd:effectful))
   (generic-match
    pattern
    (vector 'effectful (effectful-info object)
-	   (effectful-effect object))))
+	   (effectful-effects object))))
 
 (define (effectful-merge e1 e2)
   (let ((e1 (->effectful e1))
@@ -443,9 +418,9 @@
       (effectful->
        (make-effectful
 	(effectful-info info-merge)
-	(append-effects (append-effects (effectful-effect e1)
-					(effectful-effect info-merge))
-			(effectful-effect e2)))))))
+	(append (effectful-effects e1)
+		(effectful-effects info-merge)
+		(effectful-effects e2)))))))
 
 ;;; This is the n-ary merge
 (define (merge* infos-list)
@@ -457,7 +432,7 @@
      (effectful-flatten
       (make-effectful
        (->effectful (func (effectful-info effectful)))
-       (effectful-effect effectful))))))
+       (effectful-effects effectful))))))
 
 (define (effectful-list-bind effectfuls func)
   (let ((effectfuls (map ->effectful effectfuls)))
@@ -465,4 +440,4 @@
      (effectful-flatten
       (make-effectful
        (->effectful (func (map effectful-info effectfuls)))
-       (fold-left append-effects no-effect (map effectful-effect effectfuls)))))))
+       (apply append (map effectful-effects effectfuls)))))))
