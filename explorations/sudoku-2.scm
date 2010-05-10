@@ -52,8 +52,7 @@
 		     (< (modulo n (* 2 grain)) grain))
 		   (iota size 1)))
     (lambda (in out)
-      (one-of (list (make-set in) (make-set out))
-	      cell))))
+      (one-of (make-set in) (make-set out) cell))))
 
 (define (add-guesser! cell size)
   (let loop ((grain 1))

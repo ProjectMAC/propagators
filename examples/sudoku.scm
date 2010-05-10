@@ -124,7 +124,7 @@
 
 (define (add-guesser! cell size)
   (if (not (integer? (content cell)))
-      (one-of (iota size 1) cell)))
+      (apply one-of `(,@(iota size 1) ,cell))))
 
 (define (one-choice? thing)
   (or (integer? thing)

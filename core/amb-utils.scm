@@ -35,16 +35,7 @@
      (forbid p))
    cells))
 
-(define-propagator-syntax (one-of values output-cell)
-  (let ((cells
-         (map (lambda (value)
-                (define-cell cell)
-		((constant value) cell)
-		cell)
-              values)))
-    (apply one-of-the-cells `(,@cells ,output-cell))))
-
-(define-propagator-syntax (one-of-the-cells . cells)
+(define-propagator-syntax (one-of . cells)
   (let ((output (ensure-cell (car (last-pair cells))))
 	(inputs (map ensure-cell (except-last-pair cells))))
     (cond ((= (length inputs) 2)
@@ -53,9 +44,9 @@
 	     (binary-amb p)))
 	  ((> (length inputs) 2)
 	   (let-cells (link p)
-	     (apply one-of-the-cells `(,@(cdr inputs) ,link))
+	     (apply one-of `(,@(cdr inputs) ,link))
 	     (conditional p (car inputs) link output)
 	     (binary-amb p)))
 	  (else
-	   (error "Inadequate choices for one-of-the-cells"
+	   (error "Inadequate choices for one-of"
 		  inputs output)))))
