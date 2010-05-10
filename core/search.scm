@@ -101,7 +101,6 @@
 
 (define *number-of-calls-to-fail* 0)
 
-;;; TODO Can one do better than this?
 (define initialize-scheduler
   (let ((initialize-scheduler initialize-scheduler))
     (lambda ()
