@@ -67,15 +67,13 @@
 (defhandler generic-/ (coercing ->interval div-interval) number? interval?)
 (defhandler generic-/ (coercing ->interval div-interval) interval? number?)
 
-;;; TODO Refactor this to use eq?-standardizing
 (defhandler merge
- (lambda (content increment)
-   (let ((new-range (intersect-intervals content increment)))
-     (cond ((interval-equal? new-range content) content)
-           ((interval-equal? new-range increment) increment)
-           ((empty-interval? new-range) the-contradiction)
-           (else new-range))))
- interval? interval?)
+  (eq?-standardizing intersect-intervals interval-equal?)
+  interval? interval?)
+
+(defhandler contradictory?
+  empty-interval?
+  interval?)
 
 (define (ensure-inside interval number)
   (if (<= (interval-low interval) number (interval-high interval))
@@ -83,11 +81,11 @@
       the-contradiction))
 
 (defhandler merge
- (lambda (content increment)
-   (ensure-inside increment content))
- number? interval?)
+  (lambda (content increment)
+    (ensure-inside increment content))
+  number? interval?)
 
 (defhandler merge
- (lambda (content increment)
-   (ensure-inside content increment))
- interval? number?)
+  (lambda (content increment)
+    (ensure-inside content increment))
+  interval? number?)
