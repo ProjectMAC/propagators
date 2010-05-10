@@ -104,8 +104,7 @@
 (define (operator-record-tree record) (cdr record))
 (define (set-operator-record-tree! record tree) (set-cdr! record tree))
 
-;;; TODO Rename to generic-operator-arity for agreement with GJS?
-(define (operator-arity operator)
+(define (generic-operator-arity operator)
   (let ((record (get-operator-record operator)))
     (if record
         (operator-record-arity record)

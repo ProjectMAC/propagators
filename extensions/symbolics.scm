@@ -171,7 +171,7 @@
 
 #;
 (define (coerce-symbolic operator)
-  (case (operator-arity operator)
+  (case (generic-operator-arity operator)
     ((1)
      (defhandler operator (symbolic-unpacking operator) symbolic?))
     ((2)
