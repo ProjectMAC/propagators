@@ -73,7 +73,7 @@
 (define (ensure-cell thing)
   (if (cell? thing)
       thing
-      ;; TODO Retain this forward reference?  Copy the code?
+      ;; TODO Retain forward reference to e:constant?  Copy the code?
       (e:constant thing)))
 
 ;;; Convenience macros for defining new cells.
@@ -327,7 +327,7 @@
 
 ;;; Basic merging
 
-;; TODO Is there any good way to fast-path this to say that any two
+;; TODO Is there any good way to fast-path merge to say that any two
 ;; eq? things merge to the first one?
 (define merge
   (make-generic-operator 2 'merge
