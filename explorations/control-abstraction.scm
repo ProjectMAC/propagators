@@ -50,7 +50,7 @@
   (propagator neighbors
     (lambda ()
       (let ((run-result
-	     (with-fresh-scheduler
+	     (with-independent-scheduler
 	      (lambda ()
 		;; Also need to make the connections to the neighbors
 		;; constructed by to-build temporary.  But this
@@ -66,20 +66,6 @@
 	    ;; that was unresolvable on the inside but is resolvable on
 	    ;; the outside, otherwise pass it on like this:
 	    (abort-process run-result))))))
-
-(define (with-fresh-scheduler to-do)
-  ;; TODO Also somehow need things like *external-premise-nogoods*
-  ;; that are global supports for the dependency tracker.  I think.
-  ;; Also probably need to relabel premises created by ambs from
-  ;; the outside as "external", I think.
-  (fluid-let ((*alerted-propagators* *alerted-propagators*)
-	      (*alerted-propagator-list* *alerted-propagator-list*)
-	      (*abort-process* *abort-process*)
-	      (*last-value-of-run* *last-value-of-run*)
-	      (*propagators-ever-alerted* *propagators-ever-alerted*)
-	      (*propagators-ever-alerted-list* *propagators-ever-alerted-list*))
-    (initialize-scheduler)
-    (to-do)))
 
 ;;; This version requires an already-constructed boundary to represent
 ;;; the interior of the compound.  Either this boundary must represent
@@ -97,7 +83,7 @@
   (propagator neighbors
     (lambda ()
       (let ((run-result
-	     (with-fresh-scheduler
+	     (with-independent-scheduler
 	      (lambda ()
 		(with-temporary-connections neighbors boundary run)))))
 	(if (eq? run-result 'done)
@@ -145,7 +131,7 @@
     (lambda ()
       (let ((saved-boundary #f)
 	    (run-result
-	     (with-fresh-scheduler
+	     (with-independent-scheduler
 	      (lambda ()
 		(let ((boundary (fresh-copy)))
 		  (set! saved-boundary boundary)
@@ -182,7 +168,7 @@
   (propagator neighbors
     (lambda ()
       (let ((run-result
-	     (with-fresh-scheduler
+	     (with-independent-scheduler
 	      (lambda ()
 		(map (lambda (outside inside)
 		       (add-content inside (content outside)))
