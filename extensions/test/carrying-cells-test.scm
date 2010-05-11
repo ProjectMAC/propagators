@@ -1,5 +1,5 @@
 ;;; ----------------------------------------------------------------------
-;;; Copyright 2009-2010 Alexey Radul.
+;;; Copyright 2010 Alexey Radul and Gerald Jay Sussman
 ;;; ----------------------------------------------------------------------
 ;;; This file is part of Propagator Network Prototype.
 ;;; 
@@ -17,18 +17,28 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-
-(for-each load-relative
-  '("inequality-test"
-    "symbolics-test"
-    "symbolics-ineq-test"
-    "voltage-divider-test"
-    "bridge-rectifier-test"
-    "functional-reactive-test"
-    "physical-copies-test"
-    "environments-test"
-    "dynamic-closures-test"
-    "graph-drawing-test"))
-
-(load-relative "algebraic-tms-test")
-(load-relative "carrying-cells-test")
+(in-test-group
+ carrying-cells
+ (define-test (smoke)
+   (interaction
+    (initialize-scheduler)
+    (define-cell bill (make-tms (supported 3 '(bill))))
+    (define-cell bill-cons (e:carry-cons nothing bill))
+    (define-cell answer)
+    (c:== bill-cons answer)
+    (define-cell fred (make-tms (supported 4 '(fred))))
+    (define-cell fred-cons (e:carry-cons fred nothing))
+    (define-cell george (make-tms (supported #t '(george))))
+    (conditional-wire george fred-cons answer)
+    (define-cell the-pair? (e:pair? answer))
+    (define-cell the-car (e:carry-car answer))
+    (define-cell the-cdr (e:carry-cdr answer))
+    (run)
+    ; (pp (content answer))
+    (content the-pair?)
+    (produces #t)
+    (content the-car)
+    (produces #(tms (#(supported 4 (fred george)))))
+    (content the-cdr)
+    (produces #(tms (#(supported 3 (bill)))))))
+ )

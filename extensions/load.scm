@@ -43,7 +43,8 @@
    "test-utils"))
 
 (for-each load-relative
- '("physical-copies"
+ '("carrying-cells"
+   "physical-copies"
    "example-closures"
    "draw"
    "dot-writer"
