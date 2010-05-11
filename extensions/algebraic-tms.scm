@@ -137,7 +137,7 @@
     (cond ((nothing? info)
 	   nothing)
 	  ((algebraic-tms? info)
-	   (information-assq accessor (algebraic-tms-fields info)))
+	   (tms-> (information-assq accessor (algebraic-tms-fields info))))
 	  (else (accessor info)))))
 
 (define %p:tag (function->propagator-constructor
