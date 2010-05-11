@@ -138,7 +138,7 @@
 	   nothing)
 	  ((algebraic-tms? info)
 	   (information-assq accessor (algebraic-tms-fields info)))
-	  (else (accessor thing)))))
+	  (else (accessor info)))))
 
 (define %p:tag (function->propagator-constructor
 		(handling-algebraic-partial-information algebraic-tag)))
