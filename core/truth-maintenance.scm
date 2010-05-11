@@ -96,13 +96,11 @@
 
 (defhandler generic-flatten
   (lambda (tms)
-    (let ((candidates
-           (append-map tms-values
-                       (map ->tms
-                            (map generic-flatten (tms-values tms))))))
-      (if (null? candidates)
-          nothing
-          (make-tms candidates))))
+    (tms->
+     (make-tms
+      (append-map tms-values
+		  (map ->tms
+		       (map generic-flatten (tms-values tms)))))))
   tms?)
 
 (defhandler generic-flatten
@@ -126,3 +124,13 @@
 (defhandler merge (coercing ->tms the-tms-handler) v&s? tms?)
 (defhandler merge (coercing ->tms the-tms-handler) tms? flat?)
 (defhandler merge (coercing ->tms the-tms-handler) flat? tms?)
+
+(define (tms-> tms)
+  (cond ((null? (tms-values tms))
+	 nothing)
+	((and (= 1 (length (tms-values tms)))
+	      (v&s? (car (tms-values tms)))
+	      (null? (v&s-support (car (tms-values tms)))))
+	 (v&s-value (car (tms-values tms))))
+	(else
+	 tms)))

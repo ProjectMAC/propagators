@@ -36,7 +36,7 @@
     (run)
     ; (pp (content answer))
     (content the-pair?)
-    (produces #(tms (#(supported #t ()))))
+    (produces #t)
     (content the-car)
     (produces #(tms (#(supported 4 (fred george)))))
     (content the-cdr)
