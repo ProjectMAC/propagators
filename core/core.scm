@@ -358,7 +358,8 @@
 (define (implies? v1 v2)
   ;; This is right on the assumption that trivial effects are squeezed
   ;; out (for example by using effectful->).
-  (eq? v1 (merge v1 v2)))
+  (or (eq? v1 v2)
+      (eq? v1 (merge v1 v2))))
 
 ;; TODO Should equivalent? be a direct, generic function?
 ;; Most partial information types define equivalence anyway, to standardize
