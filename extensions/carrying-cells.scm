@@ -68,9 +68,16 @@
 	  support))))))
   cell-join-effect?)
 
+(define (function->cell-carrier-constructor f)
+  (lambda cells
+    (let ((output (ensure-cell (car (last-pair cells))))
+          (inputs (map ensure-cell (except-last-pair cells))))
+      ((constant (apply f inputs))
+       output))))#;
 (define-macro-propagator (p:carry-cons a-cell d-cell output)
   ((constant (cons a-cell d-cell))
    output))
+(define p:carry-cons (function->cell-carrier-constructor cons))
 (define e:carry-cons (functionalize p:carry-cons))
 
 (define-macro-propagator (p:carry-car pair-cell output)
