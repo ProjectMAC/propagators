@@ -60,11 +60,10 @@
 	(map (attach-support-to-effect (merge-supports v&s1 v&s2))
 	     value-effects))))))
 
-;; TODO attach-support-to-effect wants to be a generic operation
 (define ((attach-support-to-effect support) effect)
-  (cond ((nogood-effect? effect)
-	 (make-nogood-effect
-	  (lset-union eq? (nogood-effect-nogood effect) support)))))
+  ((generic-attach-support effect) support))
+
+(define generic-attach-support (make-generic-operator 1 'attach-support))
 
 (defhandler merge v&s-merge v&s? v&s?)
 
