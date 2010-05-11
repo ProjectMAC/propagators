@@ -66,29 +66,47 @@
 (define-macro-propagator (voltage-divider-slice R1 node R2)
   ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
   ;; in common.
-  (define (allow-discrepancy capped-cell)
-    (let ((premises
-	   (apply append
-		  (map v&s-support
-		       (tms-values (content capped-cell))))))
-      (assert (= 1 (length premises)))
-      (assert (kcl-premise? (car premises)))
-      (kick-out! (car premises))))
+  (define (allow-discrepancy capped-cell done-cell)
+    (define (collect-premises thing)
+      (cond ((tms? thing)
+	     (delete-duplicates
+	      (apply append (map v&s-support (tms-values thing))) eq?))
+	    ((layered? thing)
+	     (delete-duplicates
+	      (apply append (map collect-premises
+				 (map cdr (layered-alist thing)))) eq?))
+	    (else '())))
+    ((function->propagator-constructor
+      (name!
+       (lambda (cap)
+	 (let ((premises (filter kcl-premise? (collect-premises cap))))
+	   (if (null? premises)
+	       nothing
+	       (begin
+		 (assert (= 1 (length premises)))
+		 (pp (map kcl-premise-name premises))
+		 (kick-out! (car premises))
+		 #t))))
+       'discrepancy-allower))
+     capped-cell done-cell))
   (let-cells ((Requiv (resistor))
 	      (ok? (e:< (e:abs (the residual node))
-			(e:abs (e:* 1e-2 (the current R1))))))
-    (allow-discrepancy (the capped? node))
+			(e:abs (e:* 1e-2 (the current R1)))))
+	      discrepancy-allowed?
+	      go?)
+    (allow-discrepancy (the capped? node) discrepancy-allowed?)
+    (p:and ok? discrepancy-allowed? go?)
     ;; Maybe this should really be guessing the value of the output
     ;; current...  And applying this model if it's zero...
     (binary-amb ok?)
     ;; TODO This assumes that this slice is the only one interested in
     ;; fiddling with the node's cap.
-    (c:not ok? (the capped? node))
+    (c:not go? (the capped? node))
     (c:+ (the resistance R1)
 	 (the resistance R2)
 	 (the resistance Requiv))
-    (terminal-equivalence ok? (the t1 R1) (the t1 Requiv))
-    (terminal-equivalence ok? (the t2 R2) (the t2 Requiv))))
+    (terminal-equivalence go? (the t1 R1) (the t1 Requiv))
+    (terminal-equivalence go? (the t2 R2) (the t2 Requiv))))
 
 (define-macro-propagator (voltage-divider-circuit)
   (let-cells ((R1 (resistor))
@@ -301,46 +319,6 @@
  (content output)
  (content Q-power)
 |#
-
-(define-macro-propagator (bias-voltage-divider-slice R1 node R2)
-  ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
-  ;; in common.
-  (define (allow-discrepancy capped-cell)
-    (let ((premises
-	   (apply append
-		  (map v&s-support
-		       (tms-values (content capped-cell))))))
-      (assert (= 1 (length premises)))
-      (assert (kcl-premise? (car premises)))
-      (kick-out! (car premises))))
-  (let-cells ((Requiv (resistor))
-	      (ok? (e:< ((ce:layered-get 'bias) (e:abs (the residual node)))
-			((ce:layered-get 'bias) (e:abs (e:* 1e-2 (the current R1))))))
-	      (node-cap (the capped? node)))
-    (allow-discrepancy node-cap)
-    ;; Maybe this should really be guessing the value of the output
-    ;; current...  And applying this model if it's zero...
-    (binary-amb ok?)
-    ;; TODO This assumes that this slice is the only one interested in
-    ;; fiddling with the node's cap.
-    (c:not ok? ((ce:layered-get 'bias) node-cap))
-    (add-content node-cap (make-layered `((incremental . #t))))
-    (c:+ (the resistance R1)
-	 (the resistance R2)
-	 (the resistance Requiv))
-    (conditional-wire
-     ok? ((ce:layered-get 'bias) (ce:potential (the t1 R1)))
-     (ce:potential (the t1 Requiv)))
-    (conditional-wire
-     ok? ((ce:layered-get 'bias) (ce:current (the t1 R1)))
-     (ce:current (the t1 Requiv)))
-    (conditional-wire
-     ok? ((ce:layered-get 'bias) (ce:potential (the t2 R2)))
-     (ce:potential (the t2 Requiv)))
-    (conditional-wire
-     ok? ((ce:layered-get 'bias) (ce:current (the t2 R2)))
-     (ce:current (the t2 Requiv)))
-    (e:inspectable-object Requiv ok? node-cap)))
 
 #|
  (define-cell slice (bias-voltage-divider-slice (the Rb1 amp test) (the bn amp test) (the Rb2 amp test)))

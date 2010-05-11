@@ -183,16 +183,6 @@
 
 (define (the-func name thing)
   (let ((answer (make-named-cell 'cell)))
-    ;; TODO This violates my theory!
-    ;; But it is necessary for "constant folding": nodes add-content
-    ;; their capped? cells on construction so that e.g. the
-    ;; voltage-divider-slice can read that value when *it* is
-    ;; constructed and interact with the premise contained therein
-    ;; before the latter causes any trouble.  To do this, I need to
-    ;; forward those values when I use THE.
-    (add-content answer
-      ((nary-unpacking (element-descriptor-get name))
-       (content thing)))
     ((function->unpacking->propagator-constructor
       (element-descriptor-get name))
      thing answer)
