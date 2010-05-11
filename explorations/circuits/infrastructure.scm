@@ -117,13 +117,15 @@
    `(filter-out ,@names)))
 
 (define (merge-element-descriptors ed1 ed2)
-  (make-element-descriptor
-   (merge-alist (element-descriptor-alist ed1)
-		(element-descriptor-alist ed2))))
+  (effectful-bind (merge-alist (element-descriptor-alist ed1)
+			       (element-descriptor-alist ed2))
+    make-element-descriptor))
 
 (define (element-descriptor-equal? ed1 ed2)
-  (same-alist? (element-descriptor-alist ed1)
-	       (element-descriptor-alist ed2)))
+  (and (element-descriptor? ed1)
+       (element-descriptor? ed2)
+       (same-alist? (element-descriptor-alist ed1)
+		    (element-descriptor-alist ed2))))
 
 (defhandler merge
   (eq?-standardizing merge-element-descriptors element-descriptor-equal?)
