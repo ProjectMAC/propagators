@@ -42,7 +42,7 @@
     (run)
 
     (content answer)
-    (produces #(tms (#(supported 2 ())))) ; Doesn't depend on KCL!
+    (produces 2)			; Doesn't depend on KCL!
 
     (define-cell source-current (the current V test))
     (run)
