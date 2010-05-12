@@ -48,8 +48,7 @@
     (run)
 
     (content source-current)
-    (produces #(tms (#(supported -2 (#(kcl-premise n2)))
-		     #(supported -2 (#(kcl-premise n1))))))
+    (produces #(tms (#(supported -2 (#(kcl-premise n1))))))
     ))
 
  (define-test (true-voltage-divider)
@@ -85,8 +84,12 @@
 
     (define-cell load-current (the current load test))
     (run)
-    (content load-current)
+    (content load-current) #;
     (produces #(tms (#(supported 1/250 (#(hypothetical))))))
+    ;; This answer actually depends on the propagator firing order,
+    ;; because the voltage divider slice is in fact contradictory (but
+    ;; the contradiction may not be detected until after this answer
+    ;; is deduced.)
     ))
 
  (define-test (resistor-bias-model)
@@ -106,10 +109,8 @@
 
     (content source-current)
     (produces
-     #(layered (bias . #(tms (#(supported -2 (#(kcl-premise n2)))
-			      #(supported -2 (#(kcl-premise n1))))))
-	       (incremental . #(tms (#(supported 0 (#(kcl-premise n2)))
-				     #(supported 0 (#(kcl-premise n1))))))))
+     #(layered (bias . #(tms (#(supported -2 (#(kcl-premise n1))))))
+	       (incremental . #(tms (#(supported 0 (#(kcl-premise n1))))))))
     ))
 
  (define-test (ce-amp-1)

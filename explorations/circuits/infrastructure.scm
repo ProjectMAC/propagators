@@ -144,9 +144,9 @@
 (define (e:inspectable-object-func names things)
   (let ((answer (make-named-cell 'cell)))
     (apply
-     (function->propagator-constructor
+     (function->cell-carrier-constructor #;function->propagator-constructor
       (apply make-element-descriptor-from names))
-     (append things (list answer)))
+     (append things (list answer)))#;
     (for-each
      (lambda (name thing)
        ((function->unpacking->propagator-constructor
@@ -183,10 +183,10 @@
 
 (define (the-func name thing)
   (let ((answer (make-named-cell 'cell)))
-    ((function->unpacking->propagator-constructor
+    #;((function->unpacking->propagator-constructor
       (element-descriptor-get name))
      thing answer)
-    ((function->propagator-constructor
+    ((function->cell-carrier-constructor #;function->propagator-constructor
       (make-element-descriptor-from name))
      answer thing)
     answer))
