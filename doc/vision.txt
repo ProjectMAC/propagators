@@ -1,13 +1,42 @@
-The drafty draft. 
+Goal
+----------------------------------------------------------------------
 
-Propagators are....
+Modern programming systems are not expressive enough. The traditional
+image of a single computer that has global effects on a large memory
+is too restrictive.  The propagation paradigm replaces this with
+computing by networks of local, independent, stateless machines
+interconnected with stateful storage cells.  In so doing, it offers
+great flexibility and expressive power:
 
-There are a number of parts to our vision of what propagators could
-become:
+- disentanglement of flow of data from flow of control
+- modular non-hierarchical composition of peer systems
+  without imposing extraneous command structures
+- easy and natural concurrent and distributed programming
+- support for and unification of existing programming paradigms:
+
+  - functional
+  - object-oriented
+  - constraint programming
+  - logic programming
+
+We are pushing the frontiers of expressivity and flexibility in
+programming systems by developing a prototype propagation-oriented
+programming language, writing new kinds of programs in it, and
+studying what it takes to develop the paradigm for use for artificial
+intelligence and general programming.
+
+People
+----------------------------------------------------------------------
+
+...
+
+Vision
+----------------------------------------------------------------------
 
 First of all and most of all, propagators are way to explore new
 frontiers of the expressivity of programming languages.  We believe
-that many of the breakthroughs in computing and AI are built on
+that many of the breakthroughs in computing and artificial intelligence
+are built on
 advances in the expressivity of their underlying languages.  In
 particular, propagators allow us to explore what happens when we
 separate control dependencies from data dependencies. They also allow
