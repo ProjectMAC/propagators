@@ -19,3 +19,15 @@ p {
   text-align: justify;
 }
 
+/* People list */
+.people { overflow: auto; }
+.person {
+  float: left;
+  text-align: center;
+  padding: .5em;
+  width: 160px;
+  height: 180px;
+}
+.person img { height: 120px; }
+.person .name { font-weight: bold; }
+.person { font-size: 80%; }
