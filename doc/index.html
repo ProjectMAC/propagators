@@ -1,39 +1,72 @@
-Goal
-----------------------------------------------------------------------
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.4.1: http://docutils.sourceforge.net/" />
+<title></title>
+<style type="text/css">
 
-Modern programming systems are not expressive enough. The traditional
+@import url(html4css1.css);
+
+body {
+  background: white;
+  font-family: verdana, arial, helvetica, sans-serif;
+  margin: 0px;
+  padding: 6px;
+}
+
+h1, h2 {
+  color: #333333;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0.0em;
+}
+
+p {
+  margin-top: 0.5em;
+  text-align: justify;
+}
+
+
+</style>
+</head>
+<body>
+<div class="document">
+<div class="section">
+<h1><a id="goal" name="goal">Goal</a></h1>
+<p>Modern programming systems are not expressive enough. The traditional
 image of a single computer that has global effects on a large memory
 is too restrictive.  The propagation paradigm replaces this with
 computing by networks of local, independent, stateless machines
 interconnected with stateful storage cells.  In so doing, it offers
-great flexibility and expressive power:
-
-- disentanglement of flow of data from flow of control
-- modular non-hierarchical composition of peer systems
-  without imposing extraneous command structures
-- easy and natural concurrent and distributed programming
-- support for and unification of existing programming paradigms:
-
-  - functional
-  - object-oriented
-  - constraint programming
-  - logic programming
-
-We are pushing the frontiers of expressivity and flexibility in
+great flexibility and expressive power:</p>
+<ul class="simple">
+<li>disentanglement of flow of data from flow of control</li>
+<li>modular non-hierarchical composition of peer systems
+without imposing extraneous command structures</li>
+<li>easy and natural concurrent and distributed programming</li>
+<li>support for and unification of existing programming paradigms:<ul>
+<li>functional</li>
+<li>object-oriented</li>
+<li>constraint programming</li>
+<li>logic programming</li>
+</ul>
+</li>
+</ul>
+<p>We are pushing the frontiers of expressivity and flexibility in
 programming systems by developing a prototype propagation-oriented
 programming language, writing new kinds of programs in it, and
 studying what it takes to develop the paradigm for use for artificial
-intelligence and general programming.
-
-People
-----------------------------------------------------------------------
-
-...
-
-Vision
-----------------------------------------------------------------------
-
-First of all and most of all, propagators are way to explore new
+intelligence and general programming.</p>
+</div>
+<div class="section">
+<h1><a id="people" name="people">People</a></h1>
+<p>...</p>
+</div>
+<div class="section">
+<h1><a id="vision" name="vision">Vision</a></h1>
+<p>First of all and most of all, propagators are way to explore new
 frontiers of the expressivity of programming languages.  We believe
 that many of the breakthroughs in computing and artificial intelligence
 are built on
@@ -51,12 +84,12 @@ that keeps data dependencies local and separate from control
 dependencies, and forces the programmer to keep track of those
 extraordinary circumstances when non-local dependencies and the
 interference of the chosen control algorithm are absolutely
-necessary. This kind of "forced mindfulness" about mutation or
+necessary. This kind of &quot;forced mindfulness&quot; about mutation or
 dependency might seem like a burden at first to a new programmer, but
-in the long run it allows him to control the effects of the "dangerous
-elements" of the language -- and so increases his power. For example,
-it is possible that the natural style of "propagator-oriented
-programming" may enable compilers of the language to target multiple
+in the long run it allows him to control the effects of the &quot;dangerous
+elements&quot; of the language -- and so increases his power. For example,
+it is possible that the natural style of &quot;propagator-oriented
+programming&quot; may enable compilers of the language to target multiple
 architectures, including parallel ones, because they have been freed
 from the constraints imposed by accidental control dependencies and
 similarly accidental non-locality, while still having careful
@@ -65,25 +98,28 @@ day and age of fabulously smart compilers and hardware designers, a
 language that allows a programmer to tell a compiler the true essence
 of their intentions, while leaving to the discretion of the machine all
 non-essential choices, is one that might unlock hidden power,
-currently suffocated by out-of-date computing models.
-
-Secondly, propagators could become a substrate to investigate various
+currently suffocated by out-of-date computing models.</p>
+<p>Secondly, propagators could become a substrate to investigate various
 as-yet unimplemented visions of Artificial Intelligence. The natural
-multi-directionality of propagators allows a system to "learn from its
-mistakes" -- to reverse a computation which failed, carrying with it
+multi-directionality of propagators allows a system to &quot;learn from its
+mistakes&quot; -- to reverse a computation which failed, carrying with it
 information about the nature of the failure. It may allow for
-"controlled hallucination," the ability to see or hear something
+&quot;controlled hallucination,&quot; the ability to see or hear something
 because we already have some idea of what we are expecting to see or
 hear -- an ability key to
 understanding how humans can so dramatically outperform machines in
 vision or speech understanding. Propagators may allow for a
-layered system of "reactive critics," in which a higher layer of
-"critics" observe and control the processing that happens in lower
+layered system of &quot;reactive critics,&quot; in which a higher layer of
+&quot;critics&quot; observe and control the processing that happens in lower
 layers. In the same way that a propagator language might make life
 easier for a compiler that is trying to translate the problem to a
 lower level of abstraction, it might also make life easier for a
-"critic" that is trying to view the computation at a higher level of
+&quot;critic&quot; that is trying to view the computation at a higher level of
 abstraction. The elimination of inessential dependencies and the
-"forced mindfulness" induced in the programmer facilitate both
+&quot;forced mindfulness&quot; induced in the programmer facilitate both
 goals. This underlines the importance of language expressivity as the
-foundation of all other advances.
+foundation of all other advances.</p>
+</div>
+</div>
+</body>
+</html>
