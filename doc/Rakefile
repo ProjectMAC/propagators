@@ -1,6 +1,9 @@
-
-file "programmer-guide.html" => ["programmer-guide.rst", "style.css"] do
-  sh "rst2html --stylesheet style.css programmer-guide.rst > programmer-guide.html"
+def rstify filename
+  file "#{filename}.html" => ["#{filename}.rst", "style.css"] do
+    sh "rst2html --stylesheet style.css #{filename}.rst > #{filename}.html"
+  end
+  task :doc => "#{filename}.html"
 end
 
-task :doc => "programmer-guide.html"
+rstify "programmer-guide"
+rstify "propagator-orientation"
