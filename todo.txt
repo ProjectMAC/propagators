@@ -3,6 +3,7 @@ Pre-release:
   - Take the debugging utilities out of the introductory guide
 - Proofread README; abstract "developer guide" from it?
 - Refer to test-manager documentation
+- Put the programmer guide on the web
 - Cross-link propagator-oriented and Scheme-Propagators in the
   propagator guide and the ad
 
