@@ -6,4 +6,3 @@ def rstify filename
 end
 
 rstify "programmer-guide"
-rstify "propagator-orientation"
