@@ -1,3 +1,9 @@
+Now:
+- Nice pictures, data of me, Gerry, David; add Guy?
+- Link to propagator page from the front page
+- Link to propagator paper list?
+- Do I want to link to the news article about me?
+
 Pre-release:
 - Produce reference documentation of important program elements
   - Take the debugging utilities out of the introductory guide
