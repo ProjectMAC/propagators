@@ -21,9 +21,10 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define conser (function->propagator-constructor cons))
-
-(define carer (function->propagator-constructor (nary-unpacking car)))
+;;; This appears to be the right story for merging compound data,
+;;; regardless of the choice between the "copying data" or "carrying
+;;; cells" representations.  I say "appears" because it might be
+;;; wrong.
 
 (define (pair-merge pair1 pair2)
   (effectful-bind (merge (car pair1) (car pair2))
@@ -41,7 +42,8 @@
 
 (defhandler merge pair-merge pair? pair?)
 
-;;; The generalization (though I don't know whether this strategy is right):
+;;; The generalization to arbitrary product types:
+
 (define (slotful-information-type predicate? constructor . accessors)
   (define (slotful-merge thing1 thing2)
     (let* ((slots1 (map (lambda (accessor) (accessor thing1))
@@ -63,6 +65,21 @@
 					       accessors))))
   (defhandler contradictory? slotful-contradiction? predicate?))
 
+;;; The "copying data" strategy from the thesis is given by these
+;;; definitions of the cons-car-cdr propagators:
+
+(define conser (function->propagator-constructor cons))
+(define carer (function->propagator-constructor (nary-unpacking car)))
+(define cdrer (function->propagator-constructor (nary-unpacking cdr)))
+
+;;; The "carrying cells" strategy is elaborated in
+;;; extensions/carrying-cells.scm.  Since the merging is the same in
+;;; both cases, the two strategies may be intermixed within the same
+;;; network --- just make sure your propagators know what to expect
+;;; (and there is as yet no good story for merging a piece of data and
+;;; a cell, so merging a carrying cons with a copying cons will not do
+;;; anything good).
+
 ;;; Test slotful structure
 (define-structure (kons (constructor kons))
   kar
@@ -77,49 +94,3 @@
   (generic-match
    pattern
    (vector 'kons (kons-kar object) (kons-kdr object))))
-
-;;; This strategy is presented in the text as an alternative to the
-;;; preceding.  I choose not to enable it by default.
-#|
- (define (conser a-cell d-cell output)
-   (propagator ()                        ; That's right, no inputs.
-     (lambda ()
-       (add-content output
-	 (cons a-cell d-cell)))))
-
- (define (carer cons-cell output)
-   (propagator (list cons-cell)
-     (lambda ()
-       (add-content output
-	 (content (car (content cons-cell)))))))
-
- (define (carer cons-cell output)
-   (propagator (list cons-cell)
-     (lambda ()
-       (identity (car (content cons-cell)) output))))
-
- (define (identity input output)
-   (propagator (list input)
-     (lambda ()
-       (add-content output (content input)))))
-
- (define (carer cons-cell output)
-   (propagator (list cons-cell)
-     (lambda ()
-       (let* ((best-pair (tms-query (content cons-cell)))
-	      (transported-cell (car (v&s-value best-pair))))
-	 ((conditional-identity (v&s-support best-pair))
-	  transported-cell output)))))
-
- (define ((conditional-identity support) input output)
-   (propagator (list input)
-     (lambda ()
-       (if (all-premises-in? support)
-	   (add-content output
-	     (attach-support (tms-query (content input)) support))))))
-
- (define (attach-support v&s more-support)
-   (supported
-    (v&s-value v&s)
-    (lset-union eq? (v&s-support v&s) more-support)))
-|#
