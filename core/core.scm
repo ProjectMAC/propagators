@@ -327,14 +327,19 @@
 
 ;;; Basic merging
 
-;; TODO Is there any good way to fast-path merge to say that any two
-;; eq? things merge to the first one?
-(define merge
+(define (merge info1 info2)
+  (if (eq? info1 info2)
+      info1
+      (generic-merge info1 info2)))
+
+(define generic-merge
   (make-generic-operator 2 'merge
    (lambda (content increment)
      (if (default-equal? content increment)
          content
          the-contradiction))))
+
+(set-operator-record! merge (get-operator-record generic-merge))
 
 (define nothing #(*the-nothing*))
 
@@ -358,16 +363,14 @@
 (define (implies? v1 v2)
   ;; This is right on the assumption that trivial effects are squeezed
   ;; out (for example by using effectful->).
-  (or (eq? v1 v2)
-      (eq? v1 (merge v1 v2))))
+  (eq? v1 (merge v1 v2)))
 
 ;; TODO Should equivalent? be a direct, generic function?
 ;; Most partial information types define equivalence anyway, to standardize
 ;; answers for eq?-testing...
 (define (equivalent? info1 info2)
-  (or (eq? info1 info2)			; Fast path...
-      (and (implies? info1 info2)
-	   (implies? info2 info1))))
+  (and (implies? info1 info2)
+       (implies? info2 info1)))
 
 (define (eq?-standardizing merge equal?)
   (lambda (item1 item2)
