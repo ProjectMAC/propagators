@@ -19,6 +19,11 @@ p {
   text-align: justify;
 }
 
+.document {
+  max-width: 50em;
+  margin: 0 auto;
+}
+
 /* People list */
 .people { overflow: auto; }
 .person {
