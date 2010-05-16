@@ -17,24 +17,18 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
+(declare (usual-integrations make-cell cell?))
 
-(define (load-relative filename)
-  (self-relatively (lambda () (load filename))))
+(define-macro-propagator (terminal-equivalence ok? t1 t2)
+  (conditional-wire ok? (ce:current t1) (ce:current t2))
+  (conditional-wire ok? (ce:potential t1) (ce:potential t2)))
 
-(load-relative "../../extensions/load.scm")
-
-(for-each load-relative-compiled
- '("infrastructure"
-   "layered"
-   "parts"
-   "slices"
-   "examples"))
-
-(maybe-warn-low-memory)
-(initialize-scheduler)
+(define-macro-propagator (exact-voltage-divider-slice R1 node R2)
+  ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
+  ;; in common, and are the only terminals on that node
+  (let-cells ((Requiv (resistor)))
+    (c:+ (the resistance R1)
+	 (the resistance R2)
+	 (the resistance Requiv))
+    (terminal-equivalence #t (the t1 R1) (the t1 Requiv))
+    (terminal-equivalence #t (the t2 R2) (the t2 Requiv))))

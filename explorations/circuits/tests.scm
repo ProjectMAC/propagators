@@ -61,10 +61,10 @@
     (content answer)
     (produces #(*the-nothing*))
 
-    (voltage-divider-slice (the R1 test) (the n2 test) (the R2 test))
+    (exact-voltage-divider-slice (the R1 test) (the n2 test) (the R2 test))
     (run)
     (content answer)
-    (produces #(tms (#(supported 4 (#(hypothetical)))))))
+    (produces 4))
    )
 
  (define-test (approximate-voltage-divider)
