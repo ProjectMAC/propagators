@@ -75,6 +75,15 @@
   ((constant 0) i)
   (e:inspectable-object))
 
+;; TODO Is leakage-current the right name for this?  It's a "two
+;; terminal device" that places no additional constraint on its
+;; terminals.  That is, it's willing to let any current flow at any
+;; voltage.  This object is equivalent to a voltage source of
+;; unconstrained strength, and to a current source of unconstrained
+;; strength.
+(define-macro-propagator (leakage-current)
+  (two-terminal-device (lambda (v i) 'no-constraint)))
+
 (define-macro-propagator (voltage-source)
   (two-terminal-device (voltage-source-vic)))
 
