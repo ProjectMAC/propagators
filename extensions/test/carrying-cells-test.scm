@@ -41,4 +41,14 @@
     (produces #(tms (#(supported 4 (fred george)))))
     (content the-cdr)
     (produces #(tms (#(supported 3 (bill)))))))
+
+ (define-test (early-access-test)
+   (interaction
+    (initialize-scheduler)
+    (define-cell source-car)
+    (define-cell source-cdr)
+    (define-cell the-pair (e:carry-cons source-car source-cdr))
+    (check (eq? source-car (e:carry-car the-pair)))
+    (check (eq? source-cdr (e:carry-cdr the-pair)))
+    ))
  )

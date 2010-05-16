@@ -68,25 +68,47 @@
 	  support))))))
   cell-join-effect?)
 
+;;; The specific version
+#;
+(define-macro-propagator (p:carry-cons a-cell d-cell output)
+  ((constant (cons a-cell d-cell))
+   output))
+
+;;; The general version
 (define (function->cell-carrier-constructor f)
   (lambda cells
     (let ((output (ensure-cell (car (last-pair cells))))
           (inputs (map ensure-cell (except-last-pair cells))))
-      ((constant (apply f inputs))
-       output))))#;
-(define-macro-propagator (p:carry-cons a-cell d-cell output)
-  ((constant (cons a-cell d-cell))
-   output))
+      (execute-propagator ; To enable the early-access-hack below
+       ((constant (apply f inputs))
+	output)))))
 (define p:carry-cons (function->cell-carrier-constructor cons))
 (define e:carry-cons (functionalize p:carry-cons))
 
 (define-macro-propagator (p:carry-car pair-cell output)
   (p:carry-cons output nothing pair-cell))
-(define e:carry-car (functionalize p:carry-car))
+(define %e:carry-car (functionalize p:carry-car))
+#;
+(define (e:carry-car pair-cell)
+  (if (and (cell? pair-cell)
+	   (pair? (content pair-cell))
+	   (cell? (car (content pair-cell))))
+      (car (content pair-cell))
+      (%e:carry-car pair-cell)))
+
+(define (early-access-hack type? accessor fallback)
+  (lambda (structure-cell)
+    (if (and (cell? structure-cell)
+	     (type? (content structure-cell))
+	     (cell? (accessor (content structure-cell))))
+	(accessor (content structure-cell))
+	(fallback structure-cell))))
+(define e:carry-car (early-access-hack pair? car %e:carry-car))
 
 (define-macro-propagator (p:carry-cdr pair-cell output)
   (p:carry-cons nothing output pair-cell))
-(define e:carry-cdr (functionalize p:carry-cdr))
+(define %e:carry-cdr (functionalize p:carry-cdr))
+(define e:carry-cdr (early-access-hack pair? cdr %e:carry-cdr))
 
 (define effectful->
   (let ((effectful-> effectful->))

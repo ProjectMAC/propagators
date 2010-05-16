@@ -218,7 +218,8 @@
             (listify neighbors))
   (eq-put! to-do 'propagator #t)
   (network-register to-do)
-  (alert-propagator to-do))
+  (alert-propagator to-do)
+  to-do)
 
 (define (propagator? thing)
   (eq-get thing 'propagator))
