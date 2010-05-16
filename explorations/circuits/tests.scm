@@ -51,6 +51,14 @@
     (produces #(tms (#(supported -2 (#(kcl-premise n1))))))
     ))
 
+ (define-test (easy-early-access-smoke)
+   (initialize-scheduler)
+   (define-cell v)
+   (define-cell i)
+   (define-cell source-inspectable ((voltage-source-vic) v i))
+   (check (eq? (the strength source-inspectable)
+	       (the strength source-inspectable))))
+
  (define-test (true-voltage-divider)
    (interaction
     (initialize-scheduler)
