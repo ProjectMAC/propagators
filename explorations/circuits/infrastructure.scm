@@ -165,7 +165,8 @@
 
 (define (ce:append-inspectable-object-func names sub-object addition)
   (let ((answer (make-named-cell 'cell)))
-    (p:append-element-descriptor sub-object addition answer)
+    (execute-propagator
+     (p:append-element-descriptor sub-object addition answer))
     ((function->unpacking->propagator-constructor
       (filter-element-descriptor names))
      answer addition)
@@ -182,11 +183,15 @@
      (the-func 'name (the form ...)))))
 
 (define (the-func name thing)
-  (let ((answer (make-named-cell 'cell)))
-    #;((function->unpacking->propagator-constructor
+  (define (fallback thing)
+    (let ((answer (make-named-cell 'cell)))
+      #;((function->unpacking->propagator-constructor
       (element-descriptor-get name))
      thing answer)
-    ((function->cell-carrier-constructor #;function->propagator-constructor
-      (make-element-descriptor-from name))
-     answer thing)
-    answer))
+     ((function->cell-carrier-constructor #;function->propagator-constructor
+       (make-element-descriptor-from name))
+      answer thing)
+     answer))
+  ((early-access-hack
+    element-descriptor? (element-descriptor-get name) fallback)
+   thing))
