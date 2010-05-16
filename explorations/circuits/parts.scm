@@ -38,7 +38,18 @@
       (make-tms (supported #t (list (make-kcl-premise name)))))
     (apply c:== potential (map ce:potential terminals))
     (conditional-wire capped? residual (e:constant 0))
-    (e:inspectable-object potential residual capped?)))
+    (let-cell terminal-list
+      (add-content terminal-list terminals)
+      (e:inspectable-object potential residual capped? terminal-list))))
+
+(define (assert p #!optional irritant)
+  (if (not p)
+      (error "Assertion failed" irritant)))
+
+;;; Because the propagator machine doesn't support lists of cells very
+;;; well, this is a horrible hack.  User beware.
+(define (the-terminals node-cell)
+  (content (the terminal-list node-cell)))
 
 (define (two-terminal-device vic)
   (let-cells (t1 t2 power)
@@ -82,7 +93,7 @@
 ;; unconstrained strength, and to a current source of unconstrained
 ;; strength.
 (define-macro-propagator (leakage-current)
-  (two-terminal-device (lambda (v i) 'no-constraint)))
+  (two-terminal-device (lambda (v i) (e:inspectable-object))))
 
 (define-macro-propagator (voltage-source)
   (two-terminal-device (voltage-source-vic)))

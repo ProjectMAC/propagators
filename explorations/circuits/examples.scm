@@ -55,10 +55,6 @@
  ;Value 24: #(tms (#(supported -2 (#(kcl-premise n2))) #(supported -2 (#(kcl-premise n1)))))
 |#
 
-(define (assert p #!optional irritant)
-  (if (not p)
-      (error "Assertion failed" irritant)))
-
 (define-macro-propagator (terminal-equivalence ok? t1 t2)
   (conditional-wire ok? (ce:current t1) (ce:current t2))
   (conditional-wire ok? (ce:potential t1) (ce:potential t2)))

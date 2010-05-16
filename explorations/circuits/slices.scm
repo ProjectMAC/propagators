@@ -32,3 +32,62 @@
 	 (the resistance Requiv))
     (terminal-equivalence #t (the t1 R1) (the t1 Requiv))
     (terminal-equivalence #t (the t2 R2) (the t2 Requiv))))
+
+(define (collect-premises thing)
+  (cond ((tms? thing)
+	 (delete-duplicates
+	  (apply append (map v&s-support (tms-values thing))) eq?))
+	((layered? thing)
+	 (delete-duplicates
+	  (apply append (map collect-premises
+			     (map cdr (layered-alist thing)))) eq?))
+	(else '())))
+
+(define (premise-overrider premised)
+  (let ((premises (filter kcl-premise? (collect-premises premised))))
+    (if (null? premises)
+	nothing
+	(begin
+	  (assert (= 1 (length premises)))
+	  (pp (map kcl-premise-name premises))
+	  (kick-out! (car premises))
+	  #t))))
+(name! premise-overrider 'premise-overrider)
+
+(define p:override-premise (function->propagator-constructor premise-overrider))
+(define e:override-premise (functionalize p:override-premise))
+
+(define-macro-propagator (approximate-voltage-divider-slice R1 center R2 bottom)
+  (let ((center-terminals (the-terminals center)))
+    (assert (memq (the t2 R1) center-terminals))
+    (assert (memq (the t1 R2) center-terminals))
+    (let-cells ((Requiv (resistor))
+		(leak (leakage-current))
+		(fresh-t1)
+		(fresh-t2)
+		(approximation-ok?
+		 (e:< (e:abs (the residual center))
+		      (e:abs (e:* 1e-2 (the current R1)))))
+		(go?))
+      (p:and (e:and (e:override-premise (the capped? center))
+		    (e:override-premise (the capped? bottom)))
+	     approximation-ok?
+	     go?)
+      (binary-amb approximation-ok?)
+      ;; TODO Is this the right way to restore the node caps if the
+      ;; approximation is wrong?
+      (c:not go? (the capped? center))
+      (c:not go? (the capped? bottom))
+      (c:+ (the resistance R1)
+	   (the resistance R2)
+	   (the resistance Requiv))
+      (terminal-equivalence go? (the t1 R1) (the t1 Requiv))
+      (terminal-equivalence go? (the t2 R2) (the t2 Requiv))
+      (let-cells ((new-center (apply node fresh-t1
+				     (delq (the t1 R2)
+					   (delq (the t2 R1)
+						 center-terminals))))
+		  (new-bottom (apply node fresh-t2 (the-terminals bottom))))
+	(terminal-equivalence go? (the t1 leak) fresh-t1)
+	(terminal-equivalence go? (the t2 leak) fresh-t2)))))
+
