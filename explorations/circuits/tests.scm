@@ -59,6 +59,13 @@
    (check (eq? (the strength source-inspectable)
 	       (the strength source-inspectable))))
 
+ (define-test (early-access-smoke)
+   (initialize-scheduler)
+   (define-cell R (resistor))
+   (check (eq? (the resistance R) (the resistance R)))
+   (check (eq? (the current R) (the current R)))
+   (check (eq? (the t1 R) (the t1 R))))
+
  (define-test (true-voltage-divider)
    (interaction
     (initialize-scheduler)
