@@ -92,3 +92,21 @@
 	(terminal-equivalence go? (the t1 leak) fresh-t1)
 	(terminal-equivalence go? (the t2 leak) fresh-t2)))))
 
+(define ((model-terminal-equivalence model)
+	 ok? general-terminal model-terminal)
+  (conditional-wire
+   ok? ((ce:layered-get model) (ce:potential general-terminal))
+   (ce:potential model-terminal))
+  (conditional-wire
+   ok? ((ce:layered-get model) (ce:current general-terminal))
+   (ce:current model-terminal)))
+
+(define ((model-exact-voltage-divider-slice model) R1 node R2)
+  ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
+  ;; in common, and are the only terminals on that node
+  (let-cells ((Requiv (resistor)))
+    (c:+ (the resistance R1)
+	 (the resistance R2)
+	 (the resistance Requiv))
+    ((model-terminal-equivalence model) #t (the t1 R1) (the t1 Requiv))
+    ((model-terminal-equivalence model) #t (the t2 R2) (the t2 Requiv))))

@@ -126,6 +126,81 @@
 	       (incremental . #(tms (#(supported 0 (#(kcl-premise n1))))))))
     ))
 
+ (define-test (ce-amp-exact)
+   (interaction
+    (initialize-scheduler)
+    (define-cell test (breadboard))
+
+    (add-content (the resistance Rb1 amp test) 51000)
+    (add-content (the resistance Rb2 amp test) 10000)
+    (add-content (the resistance Re amp test) 1000)
+    (add-content (the capacitance Cin amp test) 10e-6)
+    (add-content (the capacitance Cout amp test) 10e-6)
+    
+    (define-cell Rc-resistance (the resistance Rc amp test))
+    (add-content Rc-resistance 5000)
+
+    (define-cell gain (the gain amp test))
+    #; (add-content gain 5)
+
+    (add-content (the strength VCC test) 15)
+    (add-content (the strength vin test) 1/10)
+
+    (define-cell output (the voltage vout test))
+    (define-cell Q-power (the power Q amp test))
+    
+;;     (run)
+
+;;     (content gain)
+;;     (produces #(layered (incremental . #(tms (#(supported 5 ()))))
+;; 			(bias . 5)))
+
+;;     (content output)
+;;     (produces
+;;      #(layered (bias . #(*the-nothing*))
+;; 	       (incremental
+;; 		. #(tms (#(supported -1/2
+;; 			   (#(kcl-premise out)
+;; 			    #(kcl-premise en)
+;; 			    #(kcl-premise cn))))))))
+;;     (content Q-power)
+;;     (produces 
+;;      #(layered (bias . #(*the-nothing*))
+;; 	       (incremental
+;; 		. #(tms (#(supported -3/50000
+;; 			   (#(kcl-premise out)
+;; 			    #(kcl-premise en)
+;; 			    #(kcl-premise cn))))))))
+
+    ;; The slice can be added either inside the circuit or
+    ;; after the fact like this
+    
+    (define-cell slice 
+      ((model-exact-voltage-divider-slice 'bias)
+       (the Rb1 amp test) (the bn amp test) (the Rb2 amp test)))
+    (run)
+
+    (content output)
+    (produces
+     #(layered (bias . #(*the-nothing*))
+	       (incremental
+		. #(tms (#(supported -1/2
+			   (#(kcl-premise out)
+			    #(kcl-premise en)
+			    #(kcl-premise cn))))))))
+    (content Q-power)
+    (produces 
+     #(layered (bias
+		. #(tms (#(supported 7.149594195108842e-3
+                           (#(kcl-premise en)
+			    #(kcl-premise cn))))))
+	       (incremental
+		. #(tms (#(supported -3/50000
+			   (#(kcl-premise out)
+			    #(kcl-premise en)
+			    #(kcl-premise cn))))))))
+    ))
+
  (define-test (ce-amp-1)
    (interaction
     (initialize-scheduler)
@@ -174,7 +249,7 @@
 
     ;; The slice can be added either inside the circuit or
     ;; after the fact like this
-    #;
+    
     (define-cell slice 
       (bias-voltage-divider-slice
        (the Rb1 amp test) (the bn amp test) (the Rb2 amp test)))
@@ -200,7 +275,5 @@
 			   (#(kcl-premise out)
 			    #(kcl-premise en)
 			    #(kcl-premise cn))))))))
-    #; (length (all-propagators))
-    #; (produces 994)
     ))
  )
