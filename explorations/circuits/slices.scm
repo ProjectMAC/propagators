@@ -75,7 +75,8 @@
 	     go?)
       (binary-amb approximation-ok?)
       ;; TODO Is this the right way to restore the node caps if the
-      ;; approximation is wrong?
+      ;; approximation is wrong?  This is also assuming that no one
+      ;; else is interested in these nodes' caps...
       (c:not go? (the capped? center))
       (c:not go? (the capped? bottom))
       (c:+ (the resistance R1)

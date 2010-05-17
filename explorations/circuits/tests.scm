@@ -92,33 +92,6 @@
     (content answer)
     (produces #(*the-nothing*))
 
-    (voltage-divider-slice (the R1 test) (the n2 test) (the R2 test))
-    (run)
-    (content answer)
-    (produces #(tms (#(supported 4 (#(hypothetical))))))
-
-    (define-cell load-current (the current load test))
-    (run)
-    (content load-current) #;
-    (produces #(tms (#(supported 1/250 (#(hypothetical))))))
-    ;; This answer actually depends on the propagator firing order,
-    ;; because the voltage divider slice is in fact contradictory (but
-    ;; the contradiction may not be detected until after this answer
-    ;; is deduced.)
-    (every premise-in? (collect-premises (content answer)))
-    (produces #f)
-    ))
-
- (define-test (approximate-voltage-divider-2)
-   (interaction
-    (initialize-scheduler)
-    (define-cell test (voltage-divider-circuit-2))
-    (define-cell answer (the potential n2 test))
-    (run)
-
-    (content answer)
-    (produces #(*the-nothing*))
-
     (approximate-voltage-divider-slice (the R1 test) (the n2 test) (the R2 test) (the n3 test))
     (run)
     (content answer)
