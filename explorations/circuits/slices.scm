@@ -62,9 +62,6 @@
     (assert (memq (the t2 R1) center-terminals))
     (assert (memq (the t1 R2) center-terminals))
     (let-cells ((Requiv (resistor))
-		(leak (leakage-current))
-		(fresh-t1)
-		(fresh-t2)
 		(approximation-ok?
 		 (e:< (e:abs (the residual center))
 		      (e:abs (e:* 1e-2 (the current R1)))))
@@ -84,11 +81,14 @@
 	   (the resistance Requiv))
       (terminal-equivalence go? (the t1 R1) (the t1 Requiv))
       (terminal-equivalence go? (the t2 R2) (the t2 Requiv))
-      (let-cells ((new-center (apply node fresh-t1
-				     (delq (the t1 R2)
-					   (delq (the t2 R1)
-						 center-terminals))))
-		  (new-bottom (apply node fresh-t2 (the-terminals bottom))))
+      (let-cells* ((leak (leakage-current))
+		   (fresh-t1)
+		   (fresh-t2)
+		   (new-center (apply node fresh-t1
+				      (delq (the t1 R2)
+					    (delq (the t2 R1)
+						  center-terminals))))
+		   (new-bottom (apply node fresh-t2 (the-terminals bottom))))
 	(terminal-equivalence go? (the t1 leak) fresh-t1)
 	(terminal-equivalence go? (the t2 leak) fresh-t2)))))
 
