@@ -33,6 +33,7 @@
 
 (for-each load-relative-compiled
   '("profiler"
+    "mit-profile"
     "eq-properties"
     "generic-system"
     "insertion-order-sets"

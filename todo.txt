@@ -5,6 +5,8 @@ Now:
 - Do I want to link to the news article about me?
 
 Pre-release:
+- Profile the system in MIT Scheme 9.0.1 or later
+- Draw pictures of the electrical circuits?
 - Produce reference documentation of important program elements
   - Take the debugging utilities out of the introductory guide
 - Proofread README; abstract "developer guide" from it?
