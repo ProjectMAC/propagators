@@ -97,20 +97,19 @@
       (merge-supports v&s (v&s-value v&s)))))
   (lambda (thing) (and (v&s? thing) (v&s? (v&s-value thing)))))
 
-(define *flat-types-list* '())
+(define-generic flat? (thing))
 
-(define (flat? thing)
-  (apply boolean/or (map (lambda (type) (type thing)) *flat-types-list*)))
+(define-method flat? (thing) thing #f)
 
 (define (specify-flat type)
-  (if (memq type *flat-types-list*)
-      'ok
-      (set! *flat-types-list* (cons type *flat-types-list*))))
+  (add-method flat?
+    (make-method (list type)
+      (lambda (thing) #t))))
 
-(specify-flat symbol?)
-(specify-flat number?)
-(specify-flat boolean?)
-(specify-flat interval?)
+(specify-flat <symbol>)
+(specify-flat <number>)
+(specify-flat <boolean>)
+(specify-flat rtd:interval)
 
 (define (->v&s thing)
   (if (v&s? thing)

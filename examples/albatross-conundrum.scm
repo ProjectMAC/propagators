@@ -48,7 +48,7 @@
 (propagatify make-deck-from-treasure)
 (propagatify make-deck-from-supply)
 
-(specify-flat deck?)
+(specify-flat rtd:deck)
 
 (slotful-information-type deck? make-deck
   deck-name deck-commander deck-treasure deck-supply)

@@ -219,7 +219,7 @@
        (not (boolean? thing))
        (not (symbolic? thing))))
 
-(specify-flat symbolic?)
+(specify-flat rtd:symbolic)
 
 (defhandler merge (coercing ->symbolic symbolic-merge) symbolic? symbolizable?)
 (defhandler merge (coercing ->symbolic symbolic-merge) symbolizable? symbolic?)

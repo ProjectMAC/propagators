@@ -156,10 +156,9 @@
 (slotful-information-type knight? make-knight
   knight-name knight-shield knight-horse)
 
-(specify-flat knight?)
-(specify-flat shield?)
-(specify-flat horse?)
-(specify-flat symbol?)
+(specify-flat rtd:knight)
+(specify-flat rtd:shield)
+(specify-flat rtd:horse)
 
 (define (get thing map)
   (let ((cell (assq thing map)))
