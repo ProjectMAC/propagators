@@ -34,17 +34,13 @@
 	    (,derived . ,derived-content)))))
    (define-each-check
      (equal? (list derived base) (frame-ancestors derived))
-     (equal?
-      base-content (direct-frame-content base-and-derived base))
-     (equal?
-      derived-content (direct-frame-content base-and-derived derived))
-     (equal? base-content (full-frame-content base-and-derived base))
-     (equal? (merge base-content derived-content)
-		   (full-frame-content base-and-derived derived))
-     (equal?
-      nothing (direct-frame-content base-and-derived (make-frame '())))
-     (equal?
-      nothing (full-frame-content base-and-derived (make-frame '())))
+     (eq? base-content (direct-frame-content base-and-derived base))
+     (eq? derived-content (direct-frame-content base-and-derived derived))
+     (eq? base-content (full-frame-content base-and-derived base))
+     (equivalent? (merge base-content derived-content)
+		  (full-frame-content base-and-derived derived))
+     (nothing? (direct-frame-content base-and-derived (make-frame '())))
+     (nothing? (full-frame-content base-and-derived (make-frame '())))
 
      (lexical-invariant? base-only)
      (lexical-invariant? derived-only)
