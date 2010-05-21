@@ -26,7 +26,9 @@
   (type vector) (named 'interval) (print-procedure #f) (safe-accessors #t))
  low high)
 
-(define interval-equal? equal?)
+(define (interval-equal? int1 int2)
+  (and (= (interval-low int1) (interval-low int2))
+       (= (interval-high int1) (interval-high int2))))
 
 (define (mul-interval x y)
   (make-interval (* (interval-low x) (interval-low y))

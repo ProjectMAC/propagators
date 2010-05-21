@@ -73,8 +73,7 @@
     (produces #(supported #(interval 54.9 55.1) (shadows)))
 
     (content fall-time)
-    (produces #(supported #(interval 3.0255 3.0322)
-			  (shadows superintendent)))
+    (produces #(supported #(interval 3.0255 3.0322) (superintendent)))
     ))
 
  (define-test (tms-barometer)
