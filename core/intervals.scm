@@ -22,9 +22,19 @@
 (declare (usual-integrations make-cell cell?))
 
 (define-structure
- (interval
-  (type vector) (named 'interval) (print-procedure #f) (safe-accessors #t))
- low high)
+  (interval (safe-accessors #t)
+	    (print-procedure
+	     (simple-unparser-method
+	      'interval
+	      (lambda (interval)
+		(list (interval-low interval)
+		      (interval-high interval))))))
+  low high)
+
+(define-method generic-match ((pattern <vector>) (object rtd:interval))
+  (generic-match
+   pattern
+   (vector 'interval (interval-low object) (interval-high object))))
 
 (define (interval-equal? int1 int2)
   (and (= (interval-low int1) (interval-low int2))
