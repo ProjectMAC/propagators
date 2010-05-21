@@ -27,6 +27,8 @@
 (define (load-relative filename)
   (self-relatively (lambda () (load filename))))
 
+(load-option 'sos)
+
 (load-relative "auto-compilation")
 
 (load-relative "../testing/load")
