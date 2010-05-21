@@ -58,38 +58,30 @@
 	  (merge (make-virtual-copies `((,base . ,(make-interval 2 12))))
 		 base-and-derived))
 
-     (equal? `((,base . ,(make-interval 9 100)))
-      (virtual-copies->alist
-       ((v-c-i/o-unpacking generic-square) base-only base-only)))
-     (equal? `((,derived . ,(make-interval 9 100)))
-      (virtual-copies->alist
+     (generic-match `((,base . ,(make-interval 9 100)))
+       ((v-c-i/o-unpacking generic-square) base-only base-only))
+     (generic-match `((,derived . ,(make-interval 9 100)))
        ((v-c-i/o-unpacking generic-square)
-	base-only derived-only)))
-     (equal? `((,derived . ,(make-interval 25 225)))
-      (virtual-copies->alist
+	base-only derived-only))
+     (generic-match `((,derived . ,(make-interval 25 225)))
        ((v-c-i/o-unpacking generic-square)
-	derived-only derived-only)))
-     (equal? `((,base . ,(make-interval 25 225)))
-      (virtual-copies->alist
+	derived-only derived-only))
+     (generic-match `((,base . ,(make-interval 25 225)))
        ((v-c-i/o-unpacking generic-square)
-	derived-only base-only)))
+	derived-only base-only))
 
-     (equal? `((,base . ,(make-interval 9 100)))
-      (virtual-copies->alist
+     (generic-match `((,base . ,(make-interval 9 100)))
        ((v-c-i/o-unpacking generic-*)
-	base-only base-only base-only)))
-     (equal? `((,base . ,(make-interval 15 150)))
-      (virtual-copies->alist
+	base-only base-only base-only))
+     (generic-match `((,base . ,(make-interval 15 150)))
        ((v-c-i/o-unpacking generic-*)
-	base-only derived-only base-only)))
-     (equal? `((,derived . ,(make-interval 15 150)))
-      (virtual-copies->alist
+	base-only derived-only base-only))
+     (generic-match `((,derived . ,(make-interval 15 150)))
        ((v-c-i/o-unpacking generic-*)
-	derived-only base-only derived-only)))
-     (equal? `((,derived . ,(make-interval 9 100)))
-      (virtual-copies->alist
+	derived-only base-only derived-only))
+     (generic-match `((,derived . ,(make-interval 9 100)))
        ((v-c-i/o-unpacking generic-*)
-	base-only base-only derived-only)))
+	base-only base-only derived-only))
      ))
 
  (define-test (interior-propagator-smoke)
@@ -104,8 +96,8 @@
    (add-content zero (alist->virtual-copies `((,repl-frame . 0))))
    (add-content same (alist->virtual-copies `((,repl-frame . ,nothing))))
    (run)
-   (check (equal? `((,repl-frame . #f))
-		  (virtual-copies->alist (content same))))
+   (content same)
+   (check (generic-match `((,repl-frame . #f)) (content same)))
    )
 
  (define-test (call-site-smoke)
@@ -125,8 +117,7 @@
    (add-content out-square
      (alist->virtual-copies `((,repl-frame . ,nothing))))
    (run)
-   (check (equal? `((,repl-frame . 16))
-		  (virtual-copies->alist (content out-square)))))
+   (check (generic-match `((,repl-frame . 16)) (content out-square))))
 
  (define-test (factorial)
    (initialize-scheduler)
@@ -168,8 +159,7 @@
    (add-content out-n  (alist->virtual-copies `((,repl-frame . 4))))
    (add-content out-n! (alist->virtual-copies `((,repl-frame . ,nothing))))
    (run)
-   (check (equal? `((,repl-frame . 24))
-		  (virtual-copies->alist (content out-n!))))
+   (check (generic-match `((,repl-frame . 24)) (content out-n!)))
    )
 
  (define-test (iterative-factorial)
@@ -229,8 +219,7 @@
    (add-content my-n  (alist->virtual-copies `((,repl-frame . 5))))
    (add-content my-n! (alist->virtual-copies `((,repl-frame . ,nothing))))
    (run)
-   (check (equal? `((,repl-frame . 120))
-		  (virtual-copies->alist (content my-n!))))
+   (check (generic-match `((,repl-frame . 120)) (content my-n!)))
    )
 
  (define-test (fibonacci)
@@ -276,7 +265,7 @@
     (add-content my-n  (alist->virtual-copies `((,repl-frame . 5))))
     (add-content my-fib-n (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)
-    (virtual-copies->alist (content my-fib-n))
+    (content my-fib-n)
     (produces `((,repl-frame . 8)))
     ))
 
@@ -291,7 +280,7 @@
     (add-content n  (alist->virtual-copies `((,repl-frame . 4))))
     (add-content fib-n (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)
-    (virtual-copies->alist (content fib-n))
+    (content fib-n)
     (produces `((,repl-frame . 5)))
     ))
 
@@ -308,7 +297,7 @@
     (add-content b (alist->virtual-copies `((,repl-frame . ,(* 17 5)))))
     (add-content gcd-a-b (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)
-    (virtual-copies->alist (content gcd-a-b))
+    (content gcd-a-b)
     (produces `((,repl-frame . 17)))
     ))
 )

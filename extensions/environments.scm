@@ -54,6 +54,9 @@
 (define alist->virtual-copies make-virtual-copies)
 (define virtual-copies->alist virtual-copies-alist)
 
+(define-method generic-match ((pattern <pair>) (object rtd:virtual-copies))
+  (generic-match pattern (virtual-copies->alist object)))
+
 (define (frame-binding copy-set frame)
   ;; TODO Of course, an alist is the worst possible data structure for
   ;; this purpose, but it's built-in and it's persistent.

@@ -35,7 +35,7 @@
     (add-content euclid (alist->virtual-copies `((,repl-frame . ,euclid-cl))))
     (add-content gcd-a-b (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)
-    (virtual-copies->alist (content gcd-a-b))
+    (content gcd-a-b)
     (produces `((,repl-frame . 17)))))
 
  (define-test (closure-switching)
@@ -58,7 +58,7 @@
       (alist->virtual-copies
        `((,repl-frame-a . ,fact-cl) (,repl-frame-b . ,fib-cl))))
     (run)
-    (virtual-copies->alist (content answer))
+    (content answer)
     (produces `((,repl-frame-a . 24) (,repl-frame-b . 5)))
     ))
  ;; TODO ((if mumble fact fib) 4) by tms premise?
@@ -85,7 +85,7 @@
 		(add-content cell (alist->virtual-copies `((,repl-frame . ,nothing)))))
 	      (list lambda-x lambda-y answer))
     (run)
-    (virtual-copies->alist (content answer))
+    (content answer)
     (produces `((,repl-frame . 7)))
 
     (define-cell outer-y2)
@@ -94,7 +94,7 @@
     (add-content outer-y2 (alist->virtual-copies `((,repl-frame . 7))))
     (add-content answer2 (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)
-    (virtual-copies->alist (content answer2))
+    (content answer2)
     (produces `((,repl-frame . 11)))
     ))
 
@@ -134,7 +134,7 @@
      (list compose double square square-double x answer))
     (add-content x (alist->virtual-copies `((,repl-frame . 4))))
     (run)
-    (virtual-copies->alist (content answer))
+    (content answer)
     (produces `((,repl-frame . 64)))
 
     (define-cell double-square)
@@ -149,7 +149,7 @@
       (alist->virtual-copies `((,repl-frame . ,nothing))))
     (add-content answer2 (alist->virtual-copies `((,repl-frame . ,nothing))))
     (run)
-    (virtual-copies->alist (content answer2))
+    (content answer2)
     (produces `((,repl-frame . 32)))
     ))
 
@@ -205,7 +205,7 @@
     (add-content x (alist->virtual-copies `((,repl-frame . 1))))
     (add-content n (alist->virtual-copies `((,repl-frame . 4))))
     (run)
-    (virtual-copies->alist (content answer))
+    (content answer)
     (produces `((,repl-frame . 16)))
     ))
 
