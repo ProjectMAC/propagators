@@ -65,6 +65,32 @@
    (defhandler-axch test-g (lambda (x) 'exact) (guard <number> exact?))
    (check (eq? 'even (test-g 2)))
    (check (eq? 'odd (test-g 3)))
-   (check (eq? 'exact (test-g 3/2)))
+   (check (eq? 'exact (test-g 3/2))))
+ 
+ (define-test (explicit-guards)
+   (define test-g (make-generic-operator-axch 1 'test))
+   (defhandler-axch test-g (lambda (x) 'object) <object>)
+   (define (bogus? x)
+     (or (vector? x)
+	 (and (string? x)
+	      (< (string-length x) 2))))
+
+   (defhandler-axch test-g (lambda (x) 'bogus) bogus?)
+   (check (eq? 'bogus (test-g #())))
+   (check (eq? 'bogus (test-g "")))
+   (check (eq? 'object (test-g 1)))
+
+   ;; Yes, this is wrong; I'm trying to test overriding
+   (declare-explicit-guard bogus? (guard <integer> any?))
+   (defhandler-axch test-g (lambda (x) 'guard-bogus) bogus?)
+   (check (eq? 'bogus (test-g #())))
+   (check (eq? 'bogus (test-g "")))
+   (check (eq? 'guard-bogus (test-g 1)))
+
+   (declare-explicit-guard bogus? <string>)
+   (defhandler-axch test-g (lambda (x) 'type-guard-bogus) bogus?)
+   (check (eq? 'bogus (test-g #())))
+   (check (eq? 'type-guard-bogus (test-g "")))
+   (check (eq? 'object (test-g "abc")))
    ))
 

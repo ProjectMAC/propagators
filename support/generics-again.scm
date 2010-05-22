@@ -148,7 +148,7 @@
 	      (add-intermediate-search-method generic specializers)))
 	 (method-record (get-operator-record target-method)))
     (set-method-record-tree! method-record
-      (bind-in-tree (map desired-guard argument-guards) handler
+      (bind-in-tree (map desired-predicate argument-guards) handler
 		    (method-record-tree method-record))))
   operator)
 
@@ -183,18 +183,31 @@
 	  (call-next-method arg1 arg2)))))
 
 (define (desired-specializer guard)
-  (cond ((specializer? guard) guard)
-	((procedure? guard) <object>)
-	((guard? guard) (guard-specializer guard))
-	(else
-	 (error "Unsupported guard type" guard))))
+  (define (given-specializer guard)
+    (cond ((false? guard) #f)
+	  ((specializer? guard) guard)
+	  ((procedure? guard) #f)
+	  ((guard? guard) (guard-specializer guard))
+	  (else
+	   (error "Unsupported guard type" guard))))
+  (or (given-specializer (eq-get guard 'explicit-guard))
+      (given-specializer guard)
+      <object>))
 
-(define (desired-guard guard)
-  (cond ((specializer? guard) any?)
-	((procedure? guard) guard)
-	((guard? guard) (guard-procedure guard))
-	(else
-	 (error "Unsupported guard type" guard))))
+(define (desired-predicate guard)
+  (define (given-predicate guard)
+    (cond ((false? guard) #f)
+	  ((specializer? guard) #f)
+	  ((procedure? guard) guard)
+	  ((guard? guard) (guard-procedure guard))
+	  (else
+	   (error "Unsupported guard type" guard))))
+  (or (given-predicate (eq-get guard 'explicit-guard))
+      (given-predicate guard)
+      any?))
+
+(define (declare-explicit-guard object guard)
+  (eq-put! object 'explicit-guard guard))
 
 (define-structure (guard (constructor guard))
   specializer
