@@ -182,11 +182,17 @@
 (define (desired-specializer guard)
   (cond ((specializer? guard) guard)
 	((procedure? guard) <object>)
+	((guard? guard) (guard-specializer guard))
 	(else
 	 (error "Unsupported guard type" guard))))
 
 (define (desired-guard guard)
   (cond ((specializer? guard) any?)
 	((procedure? guard) guard)
+	((guard? guard) (guard-procedure guard))
 	(else
 	 (error "Unsupported guard type" guard))))
+
+(define-structure (guard (constructor guard))
+  specializer
+  procedure)

@@ -2,17 +2,17 @@
 ;;; Copyright 2010 Alexey Radul.
 ;;; ----------------------------------------------------------------------
 ;;; This file is part of Propagator Network Prototype.
-;;; 
+;;;
 ;;; Propagator Network Prototype is free software; you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
 ;;; (at your option) any later version.
-;;; 
+;;;
 ;;; Propagator Network Prototype is distributed in the hope that it will be useful,
 ;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
-;;; 
+;;;
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
@@ -42,7 +42,7 @@
    (check (equal? '(integer symbol)  (smoke-g 2 'foo)))
    (check (equal? '(symbol integer)  (smoke-g 'foo 2)))
    (check (equal? '(symbol symbol)   (smoke-g 'foo 'foo)))
-   
+
    (defhandler-axch smoke-g (lambda (x y) '(integer vector)) <integer> vector?)
    (defhandler-axch smoke-g (lambda (x y) '(vector integer)) vector? <integer>)
    (defhandler-axch smoke-g (lambda (x y) '(vector vector)) vector? vector?)
@@ -53,6 +53,18 @@
    (check (equal? '(integer integer) (smoke-g 2 2)))
    (check (equal? '(integer symbol)  (smoke-g 2 'foo)))
    (check (equal? '(symbol integer)  (smoke-g 'foo 2)))
-   (check (equal? '(symbol symbol)   (smoke-g 'foo 'foo)))
+   (check (equal? '(symbol symbol)   (smoke-g 'foo 'foo))))
+
+ (define-test (guarded)
+   (define test-g (make-generic-operator-axch 1 'test))
+   (defhandler-axch test-g (lambda (x) 'even) <integer>)
+   (defhandler-axch test-g (lambda (x) 'odd) (guard <integer> odd?))
+   (check (eq? 'even (test-g 2)))
+   (check (eq? 'odd (test-g 3)))
+
+   (defhandler-axch test-g (lambda (x) 'exact) (guard <number> exact?))
+   (check (eq? 'even (test-g 2)))
+   (check (eq? 'odd (test-g 3)))
+   (check (eq? 'exact (test-g 3/2)))
    ))
 
