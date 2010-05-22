@@ -92,5 +92,44 @@
    (check (eq? 'bogus (test-g #())))
    (check (eq? 'type-guard-bogus (test-g "")))
    (check (eq? 'object (test-g "abc")))
+   )
+
+ (define-test (inspection)
+   (define test-g (make-generic-operator-axch 1 'test))
+   (define (say-object x) 'object)
+   (define (say-bogus x) 'bogus)
+   (define (say-guard-bogus x) 'guard-bogus)
+   (define (say-type-guard-bogus x) 'type-guard-bogus)
+   (defhandler-axch test-g say-object <object>)
+   (define (bogus? x)
+     (or (vector? x)
+	 (and (string? x)
+	      (< (string-length x) 2))))
+
+   (defhandler-axch test-g say-bogus bogus?)
+
+   ;; Yes, this is wrong; I'm trying to test overriding
+   (declare-explicit-guard bogus? (guard <integer> any?))
+   (defhandler-axch test-g say-guard-bogus bogus?)
+
+   (declare-explicit-guard bogus? <string>)
+   (defhandler-axch test-g say-type-guard-bogus bogus?)
+   (check (eq? say-bogus (selected-handler test-g '(#()))))
+   (check (eq? say-type-guard-bogus (selected-handler test-g '(""))))
+   (check (eq? say-object (selected-handler test-g '("abc"))))
+   (check (equal?
+	   `(((,<string>)
+	      (,bogus? . ,say-type-guard-bogus))
+	     ((,<object>)
+	      (,bogus? . ,say-bogus)
+	      (,any? . ,say-object)))
+	   (handler-search-trees test-g '(""))))
+   (check (equal?
+	   `(((,<integer>)
+	      (,any? . ,say-guard-bogus))
+	     ((,<object>)
+	      (,bogus? . ,say-bogus)
+	      (,any? . ,say-object)))
+	   (handler-search-trees test-g '(1))))
    ))
 

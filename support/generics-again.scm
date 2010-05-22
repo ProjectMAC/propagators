@@ -226,3 +226,21 @@
     answer))
 
 (define defhandler defhandler-axch)
+
+;;;; Inspecting this generic system
+
+(define (handler-search-methods operator args)
+  (let ((classes (map object-class args)))
+    ((access compute-methods (->environment compute-method))
+     (get-operator-record operator)
+     classes)))
+
+(define (handler-search-trees operator args)
+  (let ((methods (handler-search-methods operator args)))
+    (map cons
+	 (map method-specializers methods)
+	 (map method-record-tree
+	      (map get-operator-record methods)))))
+
+(define (selected-handler operator args)
+  (apply (get-operator-record operator) args))
