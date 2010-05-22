@@ -33,7 +33,7 @@
   expression
   local
   global)
-; (declare-type-tester symb-ineq? rtd:symb-ineq)
+(declare-type-tester symb-ineq? rtd:symb-ineq)
 
 (define (local->global-inequalities ineq-list)
   (let ((lower-bounds (filter lower-bound-ineq? ineq-list))
@@ -156,15 +156,15 @@
 #;
 (defhandler generic-flatten
   (lambda (thing) nothing)
-  (lambda (thing) (and (symb-ineq? thing) (nothing? (symb-ineq-expression thing)))))
+  (guard rtd:symb-ineq (lambda (thing) (nothing? (symb-ineq-expression thing)))))
 
 #;
 (defhandler generic-flatten
   (lambda (thing) nothing)
-  (lambda (thing) (and (symb-ineq? thing)
-		       (nothing? (symb-ineq-expression thing))
-		       (null? (symb-ineq-local thing))
-		       (null? (symb-ineq-global thing)))))
+  (guard rtd:symb-ineq (lambda (thing) 
+			 (nothing? (symb-ineq-expression thing))
+			 (null? (symb-ineq-local thing))
+			 (null? (symb-ineq-global thing)))))
 
 (defhandler generic-flatten
   (lambda (symb-ineq)
@@ -177,7 +177,7 @@
 	 (symb-ineq-local symb-ineq)
 	 (symb-ineq-global symb-ineq))
 	sub-ineq))))
-  (lambda (thing) (and (symb-ineq? thing) (symb-ineq? (symb-ineq-expression thing)))))
+  (guard rtd:symb-ineq (lambda (thing) (symb-ineq? (symb-ineq-expression thing)))))
 
 ;;; TODO Why am I writing so many methods for generic-flatten that
 ;;; just flip things inside out?  Could a binary version of bind work
@@ -210,12 +210,12 @@
 		 (symb-ineq-local symb-ineq)
 		 (symb-ineq-global symb-ineq)))
 	       (v&s-support the-value))))))))
-  (lambda (thing) (and (symb-ineq? thing) (tms? (symb-ineq-expression thing)))))
+  (guard rtd:symb-ineq (lambda (thing) (tms? (symb-ineq-expression thing)))))
 
 (defhandler generic-flatten
   (lambda (symb-ineq)
     (symb-ineq-expression symb-ineq))
-  (lambda (thing) (and (symb-ineq? thing) (boolean? (symb-ineq-expression thing)))))
+  (guard rtd:symb-ineq (lambda (thing) (boolean? (symb-ineq-expression thing)))))
 
 (defhandler generic-flatten
   (lambda (symbolic)
