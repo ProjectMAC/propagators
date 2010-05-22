@@ -38,10 +38,9 @@
     "mit-profile"
     "eq-properties"
     "generic-system"
+    "generics-again"
     "insertion-order-sets"
     "utils"
     "test-utils"))
-
-(load-relative "generics-again")
 
 (maybe-warn-low-memory)
