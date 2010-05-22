@@ -37,6 +37,7 @@
   (cost   nothing read-only #t)
   (pain   nothing read-only #t)
   (method nothing read-only #t))
+(declare-type-tester trip-segment? rtd:trip-segment)
 
 (propagatify trip-segment-start)
 (propagatify trip-segment-end)
