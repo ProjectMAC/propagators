@@ -19,4 +19,5 @@
 
 (for-each load-relative
   '("profiler-test"
-    "utils-test"))
+    "utils-test"
+    "generics-test"))

@@ -42,4 +42,6 @@
     "utils"
     "test-utils"))
 
+(load-relative "generics-again")
+
 (maybe-warn-low-memory)
