@@ -11,4 +11,7 @@ cd ../extensions
 
 cd ../examples
 ./run-tests
-exec ./run-mechanics-tests
+./run-mechanics-tests
+
+cd ../explorations/circuits
+./run-tests
