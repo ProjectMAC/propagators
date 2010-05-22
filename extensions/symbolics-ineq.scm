@@ -193,7 +193,7 @@
 	  (symbolic-metadata symbolic)))
 	(symb-ineq-local sub-ineq)
 	(symb-ineq-global sub-ineq)))))
-  (lambda (thing) (and (symbolic? thing) (symb-ineq? (symbolic-expression thing)))))
+  (guard rtd:symbolic (lambda (thing) (symb-ineq? (symbolic-expression thing)))))
 
 (defhandler generic-flatten
   (lambda (symb-ineq)
@@ -220,7 +220,7 @@
 (defhandler generic-flatten
   (lambda (symbolic)
     (symbolic-expression symbolic))
-  (lambda (thing) (and (symbolic? thing) (boolean? (symbolic-expression thing)))))
+  (guard rtd:symbolic (lambda (thing) (boolean? (symbolic-expression thing)))))
 
 (define (inequalizable? thing)
   (or (symbolizable? thing)

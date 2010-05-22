@@ -69,7 +69,7 @@
 (define-structure (symbolic (constructor %make-symbolic))
   expression
   metadata)
-; (declare-type-tester symbolic? rtd:symbolic)
+(declare-type-tester symbolic? rtd:symbolic)
 
 (define (make-symbolic expression metadata)
   (%make-symbolic
@@ -139,11 +139,11 @@
       (generic-flatten (symbolic-expression (symbolic-expression symb1)))
       (unify-metadata (symbolic-metadata symb1)
 		      (symbolic-metadata (symbolic-expression symb1))))))
-  (lambda (thing) (and (symbolic? thing) (symbolic? (symbolic-expression thing)))))
+  (guard rtd:symbolic (lambda (thing) (symbolic? (symbolic-expression thing)))))
 
 (defhandler generic-flatten
   (lambda (thing) nothing)
-  (lambda (thing) (and (symbolic? thing) (nothing? (symbolic-expression thing)))))
+  (guard rtd:symbolic (lambda (thing) (nothing? (symbolic-expression thing)))))
 
 (defhandler generic-flatten
   (lambda (symbolic)
@@ -159,7 +159,7 @@
 		 (generic-flatten (v&s-value the-value))
 		 (symbolic-metadata symbolic)))
 	       (v&s-support the-value))))))))
-  (lambda (thing) (and (symbolic? thing) (tms? (symbolic-expression thing)))))
+  (guard rtd:symbolic (lambda (thing) (tms? (symbolic-expression thing)))))
 
 ;;; The other way is the old school, adding methods to every generic
 ;;; operation:
@@ -216,9 +216,9 @@
        (empty-metadata))))
 
 (define (symbolizable? thing)
-  (and (flat? thing)
-       (not (boolean? thing))
-       (not (symbolic? thing))))
+  (or (number? thing)
+      (symbol? thing) ; Really?
+      ))
 
 (specify-flat rtd:symbolic)
 
