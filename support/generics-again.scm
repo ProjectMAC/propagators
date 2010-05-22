@@ -93,7 +93,7 @@
     (set-operator-record! method record)
     answer))
 
-(define-structure (method-record (safe-accessors #t))
+(define-structure method-record
   tree)
 
 (define (bottom-method-procedure method-record)
@@ -108,7 +108,7 @@
   (lambda (arg1 arg2)
     (search-tree-2 method-record arg1 arg2)))
 
-(define (search-tree method-record args)
+(define-integrable (search-tree method-record args)
   (let per-arg ((tree (method-record-tree method-record))
 		(args args))
     (if (null? args)
@@ -117,19 +117,22 @@
 	  (lambda (branch)
 	    (per-arg branch (cdr args)))))))
 
-(define (search-tree-1 method-record arg)
-  (find-branch (method-record-tree method-record) arg (lambda (x) x)))
+(define-integrable (search-tree-1 method-record arg)
+  (find-branch (method-record-tree method-record) arg branch-found))
 
-(define (search-tree-2 method-record arg1 arg2)
+(define-integrable (search-tree-2 method-record arg1 arg2)
   (find-branch (method-record-tree method-record) arg1
     (lambda (branch)
-      (find-branch branch arg2 (lambda (x) x)))))
+      (find-branch branch arg2 branch-found))))
 
-(define (find-branch tree item win)
+(define-integrable (find-branch tree item win)
   (let loop ((tree tree))
     (and (pair? tree)
 	 (or (and ((caar tree) item) (win (cdar tree)))
 	     (loop (cdr tree))))))
+
+(define-integrable (branch-found branch)
+  branch)
 
 (define (defhandler-axch operator handler . argument-guards)
   (let* ((generic (get-operator-record operator))

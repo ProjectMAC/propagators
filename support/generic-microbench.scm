@@ -129,7 +129,14 @@
 (let ((lst '(,(current-input-port) (1) #(1) "1" () ,(lambda () 1) #f #t ,(make-frob2 1))))
   (let ((answer (map test lst)))
     (for-each
-     (lambda (func)
-       (pp (equal? answer (map func lst)))
-       (show-time (repeated 2000000 (lambda () (map func lst)))))
+     (lambda (name func)
+       (newline)
+       (pp `(,name ,(equal? answer (map func lst))))
+       (show-time
+	(if #t
+	    (lambda ()
+	      (with-profiling 10
+			      (repeated 2000000 (lambda () (map func lst)))))
+	    (repeated 2000000 (lambda () (map func lst))))))
+     '(test g-test gerry-test #;flat? axch-test-1 axch-test-2 axch-test-3)
      (list test g-test gerry-test #;flat? axch-test-1 axch-test-2 axch-test-3))))
