@@ -37,6 +37,7 @@
   (commander nothing)
   (treasure nothing)
   (supply nothing))
+(declare-type-tester deck? rtd:deck)
 
 (propagatify deck-name)
 (propagatify deck-commander)

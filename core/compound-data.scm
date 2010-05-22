@@ -84,6 +84,7 @@
 (define-structure (kons (constructor kons))
   kar
   kdr)
+(declare-type-tester kons? rtd:kons)
 
 (slotful-information-type kons? kons kons-kar kons-kdr)
 (define konser (function->propagator-constructor kons))

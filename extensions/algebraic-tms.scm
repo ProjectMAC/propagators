@@ -59,6 +59,7 @@
 
 (define-structure algebraic-tms
   fields)
+(declare-type-tester algebraic-tms? rtd:algebraic-tms)
 
 (define (%algebraic-tms-merge atms1 atms2)
   (effectful-bind (merge-alist (algebraic-tms-fields atms1)

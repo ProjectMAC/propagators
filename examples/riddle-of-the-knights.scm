@@ -144,6 +144,7 @@
   (name nothing)
   (shield nothing)
   (horse nothing))
+(declare-type-tester knight? rtd:knight)
 
 (propagatify knight-name)
 (propagatify knight-shield)

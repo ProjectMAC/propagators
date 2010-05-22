@@ -295,6 +295,7 @@
 
 (define-structure estimate
   value)
+(declare-type-tester estimate? rtd:estimate)
 
 (define (the-estimate thing)
   (if (estimate? thing)

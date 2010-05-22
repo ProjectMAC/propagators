@@ -50,6 +50,7 @@
 (define-structure
   (virtual-copies (safe-accessors #t))
   alist)
+(declare-type-tester virtual-copies? rtd:virtual-copies)
 
 (define alist->virtual-copies make-virtual-copies)
 (define virtual-copies->alist virtual-copies-alist)

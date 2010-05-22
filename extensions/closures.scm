@@ -28,6 +28,7 @@
   frame-map
   alist
   default-parents)
+(declare-type-tester frame-map? rtd:frame-map)
 
 (define (frame-map-bind frame-map key1 key2)
   (make-frame-map
@@ -137,6 +138,7 @@
   inside
   interior
   default-parents)
+(declare-type-tester closure? rtd:closure)
 
 ;; This still requires the closure to be known statically.
 (define (static-call-site closure outside-cells)

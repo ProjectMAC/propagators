@@ -69,6 +69,7 @@
 (define-structure (symbolic (constructor %make-symbolic))
   expression
   metadata)
+; (declare-type-tester symbolic? rtd:symbolic)
 
 (define (make-symbolic expression metadata)
   (%make-symbolic

@@ -182,6 +182,10 @@
       (or (search-tree-2 method-record arg1 arg2)
 	  (call-next-method arg1 arg2)))))
 
+(define-structure (guard (constructor guard))
+  specializer
+  procedure)
+
 (define (desired-specializer guard)
   (define (given-specializer guard)
     (cond ((false? guard) #f)
@@ -209,15 +213,16 @@
 (define (declare-explicit-guard object guard)
   (eq-put! object 'explicit-guard guard))
 
-(define-structure (guard (constructor guard))
-  specializer
-  procedure)
+(define (declare-type-tester predicate type)
+  (declare-explicit-guard predicate (guard type any?)))
+(declare-type-tester boolean? <boolean>)
+(declare-type-tester pair? <pair>)
+(declare-type-tester number? <number>)
 
-#;
 (define (make-generic-operator arity #!optional name default-operation)
   (let ((answer (make-generic-operator-axch arity name)))
     (if (not (default-object? default-operation))
 	(apply defhandler-axch answer default-operation (make-list arity <object>)))
     answer))
-#;
+
 (define defhandler defhandler-axch)

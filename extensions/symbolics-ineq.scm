@@ -33,6 +33,7 @@
   expression
   local
   global)
+; (declare-type-tester symb-ineq? rtd:symb-ineq)
 
 (define (local->global-inequalities ineq-list)
   (let ((lower-bounds (filter lower-bound-ineq? ineq-list))

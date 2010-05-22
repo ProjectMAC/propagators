@@ -30,6 +30,7 @@
 		(list (interval-low interval)
 		      (interval-high interval))))))
   low high)
+(declare-type-tester interval? rtd:interval)
 
 (define-method generic-match ((pattern <vector>) (object rtd:interval))
   (generic-match

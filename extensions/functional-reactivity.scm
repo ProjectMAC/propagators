@@ -51,6 +51,7 @@
   value
   support
   (stale #f))
+(declare-type-tester frs? rtd:frs)
 
 (define (make-frs value support)
   (%make-frs value (listify support)))
