@@ -242,5 +242,11 @@
 	 (map method-record-tree
 	      (map get-operator-record methods)))))
 
+(define (search-tree-summary tree) 
+  (cons (car tree)
+	(map (lambda (subtree)
+	       (list (length (cdr subtree)) (car subtree)))
+	     (cdr tree))))
+
 (define (selected-handler operator args)
   (apply (get-operator-record operator) args))
