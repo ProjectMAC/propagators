@@ -199,3 +199,12 @@
 (define-structure (guard (constructor guard))
   specializer
   procedure)
+
+#;
+(define (make-generic-operator arity #!optional name default-operation)
+  (let ((answer (make-generic-operator-axch arity name)))
+    (if (not (default-object? default-operation))
+	(apply defhandler-axch answer default-operation (make-list arity <object>)))
+    answer))
+#;
+(define defhandler defhandler-axch)
