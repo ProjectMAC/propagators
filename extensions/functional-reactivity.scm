@@ -63,6 +63,7 @@
 
 (define (stale-frs? thing)
   (and (frs? thing) (frs-stale thing)))
+(declare-explicit-guard stale-frs? rtd:frs)
 
 (define (fr-support-invalidates? frsupport1 frsupport2)
   (any (lambda (frp1)
@@ -105,7 +106,7 @@
 
 (defhandler generic-flatten
   (lambda (frs) nothing)
-  (lambda (thing) (and (frs? thing) (nothing? (frs-value thing)))))
+  (guard rtd:frs (lambda (thing) (nothing? (frs-value thing)))))
 
 (defhandler generic-flatten
   (lambda (frs)
@@ -118,7 +119,7 @@
 	   (make-frs
 	    (frs-value (frs-value frs))
 	    (fr-merge-supports support1 support2))))))
-  (lambda (thing) (and (frs? thing) (frs? (frs-value thing)))))
+  (guard rtd:frs (lambda (thing) (frs? (frs-value thing)))))
 
 (define (merge-frs frs1 frs2)
   (let ((support1 (frs-support frs1))
