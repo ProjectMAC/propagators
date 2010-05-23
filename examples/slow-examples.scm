@@ -55,7 +55,9 @@
      "+ + + + + + + + + + +\n"))
    *number-of-calls-to-fail*
    (produces (if *false-premise-starts-out*
-		 (if *avoid-false-true-flips* 440 439) 457))))
+		 (if *avoid-false-true-flips* 440 439) 457))
+   *worldview-number*
+   (produces 2356)))
 
 (define-test (medium-masyu)
   (interaction
@@ -95,7 +97,9 @@
      "+ + + + + + + + + + + + + + + + + + +\n"))
    *number-of-calls-to-fail*
    (produces (if *false-premise-starts-out*
-		 (if *avoid-false-true-flips* 821 930) 855))))
+		 (if *avoid-false-true-flips* 821 930) 855))
+   *worldview-number*
+   (produces 4522)))
 
 #;
 (define-test (large-masyu)
@@ -141,7 +145,8 @@
      (map v&s-value (map tms-query (show-time find-solution)))))
    (check (= *number-of-calls-to-fail*
 	     (if *false-premise-starts-out*
-		 (if *avoid-false-true-flips* 419 894) 922)))))
+		 (if *avoid-false-true-flips* 419 894) 922)))
+   (check (= *worldview-number* 1550))))
 
 (in-test-group
  albatross-conundrum
@@ -155,7 +160,8 @@
        #(deck lower kraken goldenhall-talisman spare-sails))
      (map v&s-value (map tms-query (show-time find-albatross-solution)))))
    (check (= (if *avoid-false-true-flips* 695 1425)
-	     *number-of-calls-to-fail*))))
+	     *number-of-calls-to-fail*))
+   (check (= *worldview-number* 2760))))
 
 ;;; This one is too slow even for the slow-examples!
 #;
