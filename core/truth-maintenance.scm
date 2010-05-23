@@ -76,7 +76,9 @@
 	 (cdr answer))))
 
 (define (cache-consequence! tms consequence)
-  (hash-table/put! *consequence-cache* tms (cons *worldview-number* consequence))
+  (hash-table/put! *consequence-cache* tms
+   ;; Caching the data, not the effect (if any)
+   (cons *worldview-number* (effectful-info (->effectful consequence))))
   consequence)
 
 (define (compute-strongest-consequence tms)
