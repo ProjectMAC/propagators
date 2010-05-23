@@ -77,10 +77,10 @@
 ;;;     pretty prints the counts under the optional path, eliding
 ;;;     subtrees that contain no non-zero counts.
 ;;;   (prof:reset-stats! [path])
-;;;     resets all the stats under the optioanl path to zero.
+;;;     resets all the stats under the optional path to zero.
 ;;;   (prof:with-reset [path] thunk)
 ;;;     resets the stats under the optional path, runs the thunk,
-;;;     prints out the stats the thunk produced, and return the
+;;;     prints out the stats the thunk produced, and returns the
 ;;;     thunk's value.  Yes, the path is before the thunk in the order
 ;;;     of arguments, even though the path is optional but the thunk
 ;;;     is required.  TODO dynmaic-wind to re-clear on entry and print
