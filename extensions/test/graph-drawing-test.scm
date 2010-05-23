@@ -66,7 +66,10 @@
 " (out)))
     (check (equal? (draw:write-graph-to-string foo)
 		   (draw:write-graph-to-string (list foo bar))))))
-
+#|
+ ;;; These tests are slow (because they ask for lots of GC) but they
+ ;;; don't test much when things are working, because the following
+ ;;; test summarizes them.
  (define-each-check
    (< (memory-loss-from (repeated 100 make-eq-hash-table)) 2)
    (< (memory-loss-from (repeated 100 make-strong-eq-hash-table)) 2)
@@ -81,7 +84,7 @@
      (define-cell bar)
      (initialize-scheduler))
    (check (< (memory-loss-from (repeated 100 one-small-network)) 2)))
-
+|#
  (define-test (groups-do-not-leak-2)
    (initialize-scheduler)
    (define (one-small-network)
