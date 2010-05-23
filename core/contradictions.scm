@@ -37,13 +37,10 @@
 ;;; point at which the worldview changes to the point at which some
 ;;; propagator tries to get the result.
 (define (tms-query tms)
-  (prof:count (query))
   (let ((answer (strongest-consequence tms)))
     (let ((better-tms (tms-assimilate tms answer)))
       (if (not (eq? tms better-tms))
-          (begin
-	    (prof:count (fresh-consequence))
-	    (set-tms-values! tms (tms-values better-tms))))
+          (set-tms-values! tms (tms-values better-tms)))
       (check-consistent! answer)        ; **
       answer)))
 
