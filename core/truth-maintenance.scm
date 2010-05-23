@@ -47,8 +47,8 @@
         (else (error "This should never happen" stuff))))
 
 (define (subsumes? v&s1 v&s2)
-  (and (implies? (v&s-value v&s1) (v&s-value v&s2))
-       (lset<= eq? (v&s-support v&s1) (v&s-support v&s2))))
+  (and (lset<= eq? (v&s-support v&s1) (v&s-support v&s2))
+       (implies? (v&s-value v&s1) (v&s-value v&s2))))
 
 (define (tms-assimilate-one tms v&s)
   (if (any (lambda (old-v&s) (subsumes? old-v&s v&s))
