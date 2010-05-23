@@ -98,7 +98,7 @@
   (oset-members *propagators-ever-alerted*))
 
 (define (alert-all-propagators!)
-  (alert-propagators (all-propagators)))
+  (for-each (*scheduler* 'alert-one) (all-propagators)))
 
 (define (with-process-abortion thunk)
   (call-with-current-continuation
