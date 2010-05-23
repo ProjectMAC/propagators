@@ -63,6 +63,23 @@
            v&s)))))
 
 (define (strongest-consequence tms)
+  (let ((cached (cached-consequence tms)))
+    (or cached
+	(cache-consequence! tms (compute-strongest-consequence tms)))))
+
+(define *consequence-cache* (make-eq-hash-table))
+
+(define (cached-consequence tms)
+  (let ((answer (hash-table/get *consequence-cache* tms #f)))
+    (and answer
+	 (= (car answer) *worldview-number*)
+	 (cdr answer))))
+
+(define (cache-consequence! tms consequence)
+  (hash-table/put! *consequence-cache* tms (cons *worldview-number* consequence))
+  consequence)
+
+(define (compute-strongest-consequence tms)
   (let ((relevant-v&ss
          (filter v&s-believed? (tms-values tms))))
     (merge* relevant-v&ss)))
@@ -72,6 +89,18 @@
 
 (define (all-premises-in? premise-list)
    (every premise-in? premise-list))
+
+(define initialize-scheduler
+  (let ((initialize-scheduler initialize-scheduler))
+    (lambda ()
+      (initialize-scheduler)
+      (set! *consequence-cache* (make-eq-hash-table)))))
+
+(define with-independent-scheduler
+  (let ((with-independent-scheduler with-independent-scheduler))
+    (lambda args
+      (fluid-let ((*consequence-cache* #f))
+	(apply with-independent-scheduler args)))))
 
 ;; Will be replaced by tms-query in contradictions.scm
 (define (tms-query tms)
