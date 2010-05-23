@@ -82,10 +82,17 @@
       answer)))
 
 (define (kick-out! premise)
-  (if (premise-in? premise) (alert-all-propagators!))
+  (if (premise-in? premise)
+      (begin
+	(set! *worldview-number* (+ *worldview-number* 1))
+	(alert-all-propagators!)))
   (mark-premise-out! premise))
+
 (define (bring-in! premise)
-  (if (not (premise-in? premise)) (alert-all-propagators!))
+  (if (not (premise-in? premise))
+      (begin
+	(set! *worldview-number* (+ *worldview-number* 1))
+	(alert-all-propagators!)))
   (mark-premise-in! premise))
 
 (defhandler generic-unpack

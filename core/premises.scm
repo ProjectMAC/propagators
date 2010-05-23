@@ -25,6 +25,7 @@
   (hypothetical (type vector) (named 'hypothetical)
                 (print-procedure #f) (safe-accessors #t)))
 
+(define *worldview-number* 0)
 (define *premise-outness* (make-eq-hash-table))
 
 (define (premise-in? premise)
@@ -45,6 +46,7 @@
   (hash-table/put! *premise-nogoods* premise nogoods))
 
 (define (reset-premise-info!)
+  (set! *worldview-number* 0)
   (set! *premise-outness* (make-eq-hash-table))
   (set! *premise-nogoods* (make-eq-hash-table)))
 
@@ -57,6 +59,14 @@
     (lambda ()
       (initialize-scheduler)
       (reset-premise-info!))))
+
+(define with-independent-scheduler
+  (let ((with-independent-scheduler with-independent-scheduler))
+    (lambda args
+      (fluid-let ((*worldview-number* #f)
+		  (*premise-outness* #f)
+		  (*premise-nogoods* #f))
+	(apply with-independent-scheduler args)))))
 
 (define (disbelieving-func premise thunk)
   (let ((old-belief (premise-in? premise)))
