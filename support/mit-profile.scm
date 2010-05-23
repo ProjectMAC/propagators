@@ -113,18 +113,21 @@
 (define (run-profiling sample-interval thunk)
   (let ((profile (make-profile))
         (timer-registration #t))
+    (reset-sample-times!)
     (define (register-event)
       (if timer-registration
           (set! timer-registration
                 (register-timer-event sample-interval
                   (lambda ()
+		    (sample-time!)
                     (call-with-current-continuation
                       (lambda (continuation)
                         (carefully-record-sample profile continuation)
                         (register-event))))))))
     (define (deregister-event)
       (deregister-timer-event timer-registration)
-      (set! timer-registration #f))
+      (set! timer-registration #f)
+      (sample-time!))
     (values (with-simple-restart 'ABORT "Abort profiling."
               (lambda ()
                 (dynamic-wind register-event
@@ -375,3 +378,22 @@
               (*pp-save-vertical-space?* #t)
               (*pp-default-as-code?* #t))
     (pp expression output-port)))
+
+(define *sample-times* '())
+
+(define (sample-time-differences)
+  (let loop ((samples *sample-times*)
+	     (answers '()))
+    (if (null? (cdr samples))
+	answers
+	(loop (cdr samples)
+	      (cons (- (car samples) (cadr samples))
+		    answers)))))
+
+(define (reset-sample-times!)
+  (set! *sample-times* '())
+  (sample-time!))
+
+(define (sample-time!)
+  #;(set! *sample-times* (cons (real-time-clock) *sample-times*))
+  'ok)
