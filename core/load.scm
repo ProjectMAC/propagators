@@ -35,6 +35,7 @@
   '("scheduler"
     "metadata"
     "core"
+    "sugar"
     "generic-definitions"
     "standard-propagators"
     "intervals"
