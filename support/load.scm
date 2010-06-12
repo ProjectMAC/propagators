@@ -39,6 +39,7 @@
     "eq-properties"
     "generic-system"
     "generics-again"
+    "coercions"
     "insertion-order-sets"
     "utils"
     "test-utils"))

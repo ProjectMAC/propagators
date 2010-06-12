@@ -32,20 +32,11 @@
   low high)
 (declare-type-tester %interval? rtd:%interval)
 
-(define (specify operation type)
-  (defhandler operation (lambda (thing) #t) type))
+(declare-named-coercions %interval? %interval-able? ->%interval)
 
-;;; TODO Make %interval-able? and ->%interval (and %interval->?) generic
-(define %interval-able?
-  (make-generic-operator 1 '%interval-able? (lambda (x) #f)))
+(specify %interval-able? <number> (lambda (x) (make-%interval x x)))
 
-(specify %interval-able? <number>)
-
-(define (->%interval x)
-  (if (%interval? x)
-      x
-      (make-%interval x x)))
-
+;;; TODO Make %interval-> generic?
 (define (%interval-> int)
   (if (= (interval-low int) (interval-high int))
       (interval-low int)
