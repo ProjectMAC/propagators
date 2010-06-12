@@ -149,17 +149,14 @@
        (supported (tms-query (v&s-value v&s)) (v&s-support v&s))))))
   (lambda (thing) (and (v&s? thing) (tms? (v&s-value thing)))))
 
-(define (->tms thing)
-  (cond ((tms? thing) thing)
-        ((nothing? thing) (make-tms '()))
-        (else (make-tms (list (->v&s thing))))))
+(declare-coercion-target tms (lambda (thing) (make-tms (list (->v&s thing)))))
+
+(declare-coercion v&s? ->tms)
+(declare-coercion v&s-able? ->tms)
+(defhandler ->tms (lambda (nothing) (make-tms '())) nothing?)
 
 (define (the-tms-handler thing1 thing2)
   (tms-merge thing1 thing2))
-
-(define (tms-able? thing)
-  (or (v&s? thing)
-      (v&s-able? thing)))
 
 (defhandler merge the-tms-handler tms? tms?)
 (defhandler merge (coercing ->tms the-tms-handler) tms? tms-able?)
