@@ -30,7 +30,7 @@
 (define (tag-with-tester coercer tester)
   (eq-put! coercer 'coercability-tester tester))
 
-(define (coercable type coercer #!optional coercion)
+(define (declare-coercion type coercer #!optional coercion)
   (let ((the-tester (eq-get coercer 'coercability-tester)))
     (if the-tester
 	(defhandler the-tester (lambda (thing) #t) type)
@@ -38,7 +38,7 @@
   (if (not (default-object? coercion))
       (defhandler coercer coercion type)))
 
-(define-syntax declare-named-coercions
+(define-syntax declare-named-coercion-target
   (syntax-rules ()
     ((_ predicate-name coercability-name coercer-name operation)
      (begin
@@ -49,10 +49,10 @@
        (defhandler coercer-name (lambda (x) x) predicate-name)
        (tag-with-tester coercer-name coercability-name)))
     ((_ predicate-name coercability-name coercer-name)
-     (declare-named-coercions
+     (declare-named-coercion-target
       predicate-name coercability-name coercer-name #!default))))
 
-(define-syntax declare-coercions
+(define-syntax declare-coercion-target
   (sc-macro-transformer
    (lambda (form use-env)
      (let ((name (cadr form))
@@ -60,5 +60,5 @@
        (let ((pred-name (symbol name '?))
 	     (coerability-name (symbol name '-able?))
 	     (coercer-name (symbol '-> name)))
-	 `(declare-named-coercions
+	 `(declare-named-coercion-target
 	   ,pred-name ,coerability-name, coercer-name ,@opt-operation))))))

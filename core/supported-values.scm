@@ -97,11 +97,11 @@
       (merge-supports v&s (v&s-value v&s)))))
   (lambda (thing) (and (v&s? thing) (v&s? (v&s-value thing)))))
 
-(declare-coercions v&s (lambda (thing) (supported thing '())))
+(declare-coercion-target v&s (lambda (thing) (supported thing '())))
 
 ;;; TODO Abstract this to (specify v&s-able? type) ?
 (define (specify-flat type)
-  (coercable type ->v&s))
+  (declare-coercion type ->v&s))
 
 (specify-flat <symbol>)
 (specify-flat <number>)

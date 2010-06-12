@@ -32,9 +32,9 @@
   low high)
 (declare-type-tester %interval? rtd:%interval)
 
-(declare-coercions %interval)
+(declare-coercion-target %interval)
 
-(coercable <number> ->%interval (lambda (x) (make-%interval x x)))
+(declare-coercion <number> ->%interval (lambda (x) (make-%interval x x)))
 
 ;;; TODO Make %interval-> generic?
 (define (%interval-> int)
