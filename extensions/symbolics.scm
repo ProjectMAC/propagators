@@ -220,7 +220,7 @@
       (symbol? thing) ; Really?
       ))
 
-(specify-flat rtd:symbolic)
+(declare-coercion rtd:symbolic ->v&s)
 
 (defhandler merge (coercing ->symbolic symbolic-merge) symbolic? symbolizable?)
 (defhandler merge (coercing ->symbolic symbolic-merge) symbolizable? symbolic?)

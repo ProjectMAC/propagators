@@ -49,7 +49,7 @@
 (propagatify make-deck-from-treasure)
 (propagatify make-deck-from-supply)
 
-(specify-flat rtd:deck)
+(declare-coercion rtd:deck ->v&s)
 
 (slotful-information-type deck? make-deck
   deck-name deck-commander deck-treasure deck-supply)

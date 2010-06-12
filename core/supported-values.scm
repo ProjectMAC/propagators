@@ -99,14 +99,10 @@
 
 (declare-coercion-target v&s (lambda (thing) (supported thing '())))
 
-;;; TODO Abstract this to (specify v&s-able? type) ?
-(define (specify-flat type)
-  (declare-coercion type ->v&s))
-
-(specify-flat <symbol>)
-(specify-flat <number>)
-(specify-flat <boolean>)
-(specify-flat rtd:%interval)
+(declare-coercion <symbol> ->v&s)
+(declare-coercion <number> ->v&s)
+(declare-coercion <boolean> ->v&s)
+(declare-coercion rtd:%interval ->v&s)
 
 (defhandler merge (coercing ->v&s v&s-merge) v&s? v&s-able?)
 (defhandler merge (coercing ->v&s v&s-merge) v&s-able? v&s?)

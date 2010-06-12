@@ -226,7 +226,7 @@
   (or (symbolizable? thing)
       (symbolic? thing)))
 
-(specify-flat rtd:symb-ineq) ;; Really?
+(declare-coercion rtd:symb-ineq ->v&s) ;; Really?
 
 (define (->symb-ineq thing)
   (if (symb-ineq? thing)

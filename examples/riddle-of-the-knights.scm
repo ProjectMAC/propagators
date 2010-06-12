@@ -157,9 +157,9 @@
 (slotful-information-type knight? make-knight
   knight-name knight-shield knight-horse)
 
-(specify-flat rtd:knight)
-(specify-flat rtd:shield)
-(specify-flat rtd:horse)
+(declare-coercion rtd:knight ->v&s)
+(declare-coercion rtd:shield ->v&s)
+(declare-coercion rtd:horse ->v&s)
 
 (define (get thing map)
   (let ((cell (assq thing map)))
