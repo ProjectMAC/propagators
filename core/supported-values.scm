@@ -97,12 +97,12 @@
       (merge-supports v&s (v&s-value v&s)))))
   (lambda (thing) (and (v&s? thing) (v&s? (v&s-value thing)))))
 
-(define-generic flat? (thing))
+(define-generic v&s-able? (thing))
 
-(define-method flat? (thing) thing #f)
+(define-method v&s-able? (thing) thing #f)
 
 (define (specify-flat type)
-  (add-method flat?
+  (add-method v&s-able?
     (make-method (list type)
       (lambda (thing) #t))))
 
@@ -116,5 +116,5 @@
       thing
       (supported thing '())))
 
-(defhandler merge (coercing ->v&s v&s-merge) v&s? flat?)
-(defhandler merge (coercing ->v&s v&s-merge) flat? v&s?)
+(defhandler merge (coercing ->v&s v&s-merge) v&s? v&s-able?)
+(defhandler merge (coercing ->v&s v&s-merge) v&s-able? v&s?)

@@ -93,10 +93,10 @@
 	(else (make-layered '() thing))))
 
 (define (layer-coercable? thing)
-  (or (flat? thing)
+  (or (v&s-able? thing)
       (and (tms? thing)
 	   (or (null? (tms-values thing))
-	       (flat? (v&s-value (car (tms-values thing))))))))
+	       (v&s-able? (v&s-value (car (tms-values thing))))))))
 
 (define (attach-layer-method operation method)
   (defhandler operation
