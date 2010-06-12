@@ -212,19 +212,6 @@
   (lambda (thing) (make-symbolic thing (empty-metadata))))
 (declare-coercion <number> ->symbolic)
 (declare-coercion <symbol> ->symbolic)
-#|
-(define (->symbolic thing)
-  (if (symbolic? thing)
-      thing
-      (make-symbolic
-       thing
-       (empty-metadata))))
-
-(define (symbolic-able? thing)
-  (or (number? thing)
-      (symbol? thing) ; Really?
-      ))
-|#
 (declare-coercion rtd:symbolic ->v&s)
 
 (defhandler merge (coercing ->symbolic symbolic-merge) symbolic? symbolic-able?)
