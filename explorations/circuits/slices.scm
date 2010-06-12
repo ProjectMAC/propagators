@@ -49,7 +49,7 @@
 	nothing
 	(begin
 	  (assert (= 1 (length premises)))
-	  (pp (map kcl-premise-name premises))
+	  ; (pp (map kcl-premise-name premises))
 	  (kick-out! (car premises))
 	  #t))))
 (name! premise-overrider 'premise-overrider)
