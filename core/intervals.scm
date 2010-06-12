@@ -32,7 +32,7 @@
   low high)
 (declare-type-tester %interval? rtd:%interval)
 
-(declare-named-coercions %interval? %interval-able? ->%interval)
+(declare-coercions %interval)
 
 (specify %interval-able? <number> (lambda (x) (make-%interval x x)))
 

@@ -51,3 +51,14 @@
     ((_ predicate-name coercability-name coercer-name)
      (declare-named-coercions
       predicate-name coercability-name coercer-name #!default))))
+
+(define-syntax declare-coercions
+  (sc-macro-transformer
+   (lambda (form use-env)
+     (let ((name (cadr form))
+	   (opt-operation (cddr form)))
+       (let ((pred-name (symbol name '?))
+	     (coerability-name (symbol name '-able?))
+	     (coercer-name (symbol '-> name)))
+	 `(declare-named-coercions
+	   ,pred-name ,coerability-name, coercer-name ,@opt-operation))))))
