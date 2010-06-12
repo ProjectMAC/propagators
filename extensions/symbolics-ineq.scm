@@ -223,7 +223,7 @@
   (guard rtd:symbolic (lambda (thing) (boolean? (symbolic-expression thing)))))
 
 (define (inequalizable? thing)
-  (or (symbolizable? thing)
+  (or (symbolic-able? thing)
       (symbolic? thing)))
 
 (declare-coercion rtd:symb-ineq ->v&s) ;; Really?

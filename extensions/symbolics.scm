@@ -177,8 +177,8 @@
      (defhandler operator (symbolic-unpacking operator) symbolic?))
     ((2)
      (defhandler operator (symbolic-unpacking operator) symbolic? symbolic?)
-     (defhandler operator (coercing ->symbolic operator) symbolic? symbolizable?)
-     (defhandler operator (coercing ->symbolic operator) symbolizable? symbolic?))))
+     (defhandler operator (coercing ->symbolic operator) symbolic? symbolic-able?)
+     (defhandler operator (coercing ->symbolic operator) symbolic-able? symbolic?))))
 #;
 (for-each coerce-symbolic
  (list generic-+ generic-- generic-* generic-/
@@ -215,15 +215,15 @@
        thing
        (empty-metadata))))
 
-(define (symbolizable? thing)
+(define (symbolic-able? thing)
   (or (number? thing)
       (symbol? thing) ; Really?
       ))
 
 (declare-coercion rtd:symbolic ->v&s)
 
-(defhandler merge (coercing ->symbolic symbolic-merge) symbolic? symbolizable?)
-(defhandler merge (coercing ->symbolic symbolic-merge) symbolizable? symbolic?)
+(defhandler merge (coercing ->symbolic symbolic-merge) symbolic? symbolic-able?)
+(defhandler merge (coercing ->symbolic symbolic-merge) symbolic-able? symbolic?)
 
 (define (make-variable)
   (generate-uninterned-symbol 'x))
