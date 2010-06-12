@@ -34,7 +34,7 @@
 
 (declare-coercions %interval)
 
-(specify %interval-able? <number> (lambda (x) (make-%interval x x)))
+(coercable <number> ->%interval (lambda (x) (make-%interval x x)))
 
 ;;; TODO Make %interval-> generic?
 (define (%interval-> int)

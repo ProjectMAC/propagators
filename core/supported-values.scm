@@ -101,7 +101,7 @@
 
 ;;; TODO Abstract this to (specify v&s-able? type) ?
 (define (specify-flat type)
-  (specify v&s-able? type))
+  (coercable type ->v&s))
 
 (specify-flat <symbol>)
 (specify-flat <number>)

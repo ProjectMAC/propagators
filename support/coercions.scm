@@ -27,16 +27,16 @@
 (define (coercer name #!optional operation)
   (make-generic-operator 1 name operation))
 
-(define (tag-with-coercer thing coercer)
-  (eq-put! thing 'coercer coercer))
+(define (tag-with-tester coercer tester)
+  (eq-put! coercer 'coercability-tester tester))
 
-(define (specify operation type #!optional coercion)
+(define (coercable type coercer #!optional coercion)
+  (let ((the-tester (eq-get coercer 'coercability-tester)))
+    (if the-tester
+	(defhandler the-tester (lambda (thing) #t) type)
+	(error "No tester available for" coercer)))
   (if (not (default-object? coercion))
-      (let ((the-coercer (eq-get operation 'coercer)))
-	(if the-coercer
-	    (defhandler the-coercer coercion type)
-	    (error "No coercer available for" operation))))
-  (defhandler operation (lambda (thing) #t) type))
+      (defhandler coercer coercion type)))
 
 (define-syntax declare-named-coercions
   (syntax-rules ()
@@ -47,7 +47,7 @@
        (define coercer-name
 	 (coercer 'coercer-name operation))
        (defhandler coercer-name (lambda (x) x) predicate-name)
-       (tag-with-coercer coercability-name coercer-name)))
+       (tag-with-tester coercer-name coercability-name)))
     ((_ predicate-name coercability-name coercer-name)
      (declare-named-coercions
       predicate-name coercability-name coercer-name #!default))))
