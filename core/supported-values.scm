@@ -101,6 +101,7 @@
 
 (define-method v&s-able? (thing) thing #f)
 
+;;; TODO Abstract this to (specify v&s-able? type) ?
 (define (specify-flat type)
   (add-method v&s-able?
     (make-method (list type)
@@ -111,6 +112,7 @@
 (specify-flat <boolean>)
 (specify-flat rtd:%interval)
 
+;;; TODO Make ->v&s a generic operation
 (define (->v&s thing)
   (if (v&s? thing)
       thing
