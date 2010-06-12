@@ -22,21 +22,48 @@
 (declare (usual-integrations make-cell cell?))
 
 (define-structure
-  (interval (safe-accessors #t)
-	    (print-procedure
-	     (simple-unparser-method
-	      'interval
-	      (lambda (interval)
-		(list (interval-low interval)
-		      (interval-high interval))))))
+  (%interval (safe-accessors #t)
+	     (print-procedure
+	      (simple-unparser-method
+	       'interval
+	       (lambda (interval)
+		 (list (interval-low interval)
+		       (interval-high interval))))))
   low high)
-(declare-type-tester interval? rtd:interval)
+(declare-type-tester %interval? rtd:%interval)
 
-(define-method generic-match ((pattern <vector>) (object rtd:interval))
+;;; TODO Make %interval-able? and ->%interval (and %interval->?) generic
+(define %interval-able? number?)
+(declare-type-tester %interval-able? <number>)
+
+(define (->%interval x)
+  (if (%interval? x)
+      x
+      (make-%interval x x)))
+
+(define (%interval-> int)
+  (if (= (interval-low int) (interval-high int))
+      (interval-low int)
+      int))
+
+(define (interval? x)
+  (or (%interval? x)
+      (%interval-able? x)))
+
+(define (interval-low thing)
+  (%interval-low (->%interval thing)))
+
+(define (interval-high thing)
+  (%interval-high (->%interval thing)))
+
+(define (make-interval low high)
+  (%interval-> (make-%interval low high)))
+
+(define-method generic-match ((pattern <vector>) (object rtd:%interval))
   (generic-match
    pattern
    (vector 'interval (interval-low object) (interval-high object))))
-
+
 (define (interval-equal? int1 int2)
   (and (= (interval-low int1) (interval-low int2))
        (= (interval-high int1) (interval-high int2))))
@@ -65,40 +92,21 @@
    (max (interval-low x) (interval-low y))
    (min (interval-high x) (interval-high y))))
 
-(defhandler generic-* mul-interval interval? interval?)
-(defhandler generic-/ div-interval interval? interval?)
-(defhandler generic-square square-interval interval?)
-(defhandler generic-sqrt sqrt-interval interval?)
+(define merge-intervals
+  (eq?-standardizing intersect-intervals interval-equal?))
 
-(define (->interval x)
-  (if (interval? x)
-      x
-      (make-interval x x)))
+(defhandler generic-* mul-interval %interval? %interval?)
+(defhandler generic-* mul-interval %interval? %interval-able?)
+(defhandler generic-* mul-interval %interval-able? %interval?)
+(defhandler generic-/ div-interval %interval? %interval?)
+(defhandler generic-/ div-interval %interval? %interval-able?)
+(defhandler generic-/ div-interval %interval-able? %interval?)
+(defhandler generic-square square-interval %interval?)
+(defhandler generic-sqrt sqrt-interval %interval?)
 
-(defhandler generic-* (coercing ->interval mul-interval) number? interval?)
-(defhandler generic-* (coercing ->interval mul-interval) interval? number?)
-(defhandler generic-/ (coercing ->interval div-interval) number? interval?)
-(defhandler generic-/ (coercing ->interval div-interval) interval? number?)
+(defhandler merge merge-intervals %interval? %interval?)
+(defhandler merge merge-intervals %interval? %interval-able?)
+(defhandler merge merge-intervals %interval-able? %interval?)
 
-(defhandler merge
-  (eq?-standardizing intersect-intervals interval-equal?)
-  interval? interval?)
+(defhandler contradictory? empty-interval? %interval?)
 
-(defhandler contradictory?
-  empty-interval?
-  interval?)
-
-(define (ensure-inside interval number)
-  (if (<= (interval-low interval) number (interval-high interval))
-      number
-      the-contradiction))
-
-(defhandler merge
-  (lambda (content increment)
-    (ensure-inside increment content))
-  number? interval?)
-
-(defhandler merge
-  (lambda (content increment)
-    (ensure-inside content increment))
-  interval? number?)

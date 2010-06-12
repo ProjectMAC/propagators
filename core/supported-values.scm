@@ -109,7 +109,7 @@
 (specify-flat <symbol>)
 (specify-flat <number>)
 (specify-flat <boolean>)
-(specify-flat rtd:interval)
+(specify-flat rtd:%interval)
 
 (define (->v&s thing)
   (if (v&s? thing)

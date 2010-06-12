@@ -242,7 +242,7 @@
     (produces '(contradiction (superintendent pressure)))
 
     (tms-query (content building-height))
-    (produces #(supported #(*the-contradiction*) (superintendent pressure)))
+    (produces #(supported #(interval 46. 45.) (superintendent pressure)))
 
     (tms-query (content barometer-height))
     (produces #(supported #(interval .3 .30328) (superintendent shadows)))
