@@ -222,16 +222,12 @@
     (symbolic-expression symbolic))
   (guard rtd:symbolic (lambda (thing) (boolean? (symbolic-expression thing)))))
 
-(define (symb-ineq-able? thing)
-  (or (symbolic-able? thing)
-      (symbolic? thing)))
-
 (declare-coercion rtd:symb-ineq ->v&s) ;; Really?
 
-(define (->symb-ineq thing)
-  (if (symb-ineq? thing)
-      thing
-      (make-symb-ineq (->symbolic thing) '() '())))
+(declare-coercion-target symb-ineq
+  (lambda (thing) (make-symb-ineq (->symbolic thing) '() '())))
+(declare-coercion symbolic? ->symb-ineq)
+(declare-coercion symbolic-able? ->symb-ineq)
 
 (defhandler merge
   (coercing ->symb-ineq symb-ineq-merge) symb-ineq? symb-ineq-able?)
