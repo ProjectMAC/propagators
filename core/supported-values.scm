@@ -97,8 +97,7 @@
       (merge-supports v&s (v&s-value v&s)))))
   (lambda (thing) (and (v&s? thing) (v&s? (v&s-value thing)))))
 
-(define v&s-able?
-  (make-generic-operator 1 'v&s-able? (lambda (x) #f)))
+(declare-coercions v&s (lambda (thing) (supported thing '())))
 
 ;;; TODO Abstract this to (specify v&s-able? type) ?
 (define (specify-flat type)
@@ -108,12 +107,6 @@
 (specify-flat <number>)
 (specify-flat <boolean>)
 (specify-flat rtd:%interval)
-
-;;; TODO Make ->v&s a generic operation
-(define (->v&s thing)
-  (if (v&s? thing)
-      thing
-      (supported thing '())))
 
 (defhandler merge (coercing ->v&s v&s-merge) v&s? v&s-able?)
 (defhandler merge (coercing ->v&s v&s-merge) v&s-able? v&s?)
