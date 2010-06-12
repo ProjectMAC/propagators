@@ -222,7 +222,7 @@
     (symbolic-expression symbolic))
   (guard rtd:symbolic (lambda (thing) (boolean? (symbolic-expression thing)))))
 
-(define (inequalizable? thing)
+(define (symb-ineq-able? thing)
   (or (symbolic-able? thing)
       (symbolic? thing)))
 
@@ -234,10 +234,10 @@
       (make-symb-ineq (->symbolic thing) '() '())))
 
 (defhandler merge
-  (coercing ->symb-ineq symb-ineq-merge) symb-ineq? inequalizable?)
+  (coercing ->symb-ineq symb-ineq-merge) symb-ineq? symb-ineq-able?)
 
 (defhandler merge
-  (coercing ->symb-ineq symb-ineq-merge) inequalizable? symb-ineq?)
+  (coercing ->symb-ineq symb-ineq-merge) symb-ineq-able? symb-ineq?)
 
 (define ((ineq-enforcer-func direction) in)
   (make-symb-ineq
