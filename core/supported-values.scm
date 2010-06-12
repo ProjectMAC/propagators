@@ -97,15 +97,11 @@
       (merge-supports v&s (v&s-value v&s)))))
   (lambda (thing) (and (v&s? thing) (v&s? (v&s-value thing)))))
 
-(define-generic v&s-able? (thing))
-
-(define-method v&s-able? (thing) thing #f)
+(define v&s-able? (make-generic-operator 1 'v&s-able? (lambda (x) #f)))
 
 ;;; TODO Abstract this to (specify v&s-able? type) ?
 (define (specify-flat type)
-  (add-method v&s-able?
-    (make-method (list type)
-      (lambda (thing) #t))))
+  (defhandler v&s-able? (lambda (thing) #t) type))
 
 (specify-flat <symbol>)
 (specify-flat <number>)
