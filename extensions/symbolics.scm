@@ -208,6 +208,11 @@
 ;;; really only applicable to numbers, not to boolean values (unless I
 ;;; change it to be applicable to boolean values too...)
 
+(declare-coercion-target symbolic
+  (lambda (thing) (make-symbolic thing (empty-metadata))))
+(declare-coercion <number> ->symbolic)
+(declare-coercion <symbol> ->symbolic)
+#|
 (define (->symbolic thing)
   (if (symbolic? thing)
       thing
@@ -219,7 +224,7 @@
   (or (number? thing)
       (symbol? thing) ; Really?
       ))
-
+|#
 (declare-coercion rtd:symbolic ->v&s)
 
 (defhandler merge (coercing ->symbolic symbolic-merge) symbolic? symbolic-able?)
