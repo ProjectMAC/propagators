@@ -20,9 +20,7 @@
 (define (add-interval x y)
   (make-interval (+ (interval-low x) (interval-low y))
 		 (+ (interval-high x) (interval-high y))))
-(defhandler generic-+ add-interval interval? interval?)
-(defhandler generic-+ (coercing ->interval add-interval) number? interval?)
-(defhandler generic-+ (coercing ->interval add-interval) interval? number?)
+(defhandler-coercing generic-+ add-interval ->%interval)
 
 (define interval-maker
   (function->propagator-constructor (nary-unpacking make-interval)))

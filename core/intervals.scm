@@ -91,15 +91,14 @@
 (define merge-intervals
   (eq?-standardizing intersect-intervals interval-equal?))
 
-(defhandler generic-* mul-interval %interval? %interval?)
-(defhandler generic-* mul-interval %interval? %interval-able?)
-(defhandler generic-* mul-interval %interval-able? %interval?)
-(defhandler generic-/ div-interval %interval? %interval?)
-(defhandler generic-/ div-interval %interval? %interval-able?)
-(defhandler generic-/ div-interval %interval-able? %interval?)
+(defhandler-coercing generic-* mul-interval ->%interval)
+(defhandler-coercing generic-/ div-interval ->%interval)
 (defhandler generic-square square-interval %interval?)
 (defhandler generic-sqrt sqrt-interval %interval?)
 
+;;; TODO This does not use defhandler-coercing because I want the
+;;; eq?-standardizing wrapper to see the original number, not the
+;;; %interval it is coerced to.
 (defhandler merge merge-intervals %interval? %interval?)
 (defhandler merge merge-intervals %interval? %interval-able?)
 (defhandler merge merge-intervals %interval-able? %interval?)
