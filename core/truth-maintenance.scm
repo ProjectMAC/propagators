@@ -158,9 +158,7 @@
 (define (the-tms-handler thing1 thing2)
   (tms-merge thing1 thing2))
 
-(defhandler merge the-tms-handler tms? tms?)
-(defhandler merge (coercing ->tms the-tms-handler) tms? tms-able?)
-(defhandler merge (coercing ->tms the-tms-handler) tms-able? tms?)
+(defhandler-coercing merge the-tms-handler ->tms)
 
 (define (tms-> tms)
   (cond ((null? (tms-values tms))

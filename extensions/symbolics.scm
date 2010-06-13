@@ -71,6 +71,13 @@
   metadata)
 (declare-type-tester symbolic? rtd:symbolic)
 
+(declare-coercion rtd:symbolic ->v&s)
+
+(declare-coercion-target symbolic
+  (lambda (thing) (make-symbolic thing (empty-metadata))))
+(declare-coercion <number> ->symbolic)
+(declare-coercion <symbol> ->symbolic)
+
 (define (make-symbolic expression metadata)
   (%make-symbolic
    (simplify (apply-substitutions expression (symbolic-substitutions metadata)))
@@ -113,7 +120,7 @@
 		   ((same-symbolic? symb2 answer) symb2)
 		   (else answer)))))))
 
-(defhandler merge symbolic-merge symbolic? symbolic?)
+(defhandler-coercing merge symbolic-merge ->symbolic)
 
 ;;; Two ways to add symbolic expressions as a partial information type.
 ;;; One way is to use the nary-unpacking machinery:
@@ -207,15 +214,6 @@
 ;;; very good for the comparison operators, because this data type is
 ;;; really only applicable to numbers, not to boolean values (unless I
 ;;; change it to be applicable to boolean values too...)
-
-(declare-coercion-target symbolic
-  (lambda (thing) (make-symbolic thing (empty-metadata))))
-(declare-coercion <number> ->symbolic)
-(declare-coercion <symbol> ->symbolic)
-(declare-coercion rtd:symbolic ->v&s)
-
-(defhandler merge (coercing ->symbolic symbolic-merge) symbolic? symbolic-able?)
-(defhandler merge (coercing ->symbolic symbolic-merge) symbolic-able? symbolic?)
 
 (define (make-variable)
   (generate-uninterned-symbol 'x))

@@ -27,6 +27,13 @@
       (safe-accessors #t))
  value support)
 
+(declare-coercion-target v&s (lambda (thing) (supported thing '())))
+
+(declare-coercion <symbol> ->v&s)
+(declare-coercion <number> ->v&s)
+(declare-coercion <boolean> ->v&s)
+(declare-coercion rtd:%interval ->v&s)
+
 (define (more-informative-support? v&s1 v&s2)
   (and (not (lset= eq? (v&s-support v&s1) (v&s-support v&s2)))
        (lset<= eq? (v&s-support v&s1) (v&s-support v&s2))))
@@ -65,7 +72,7 @@
 
 (define generic-attach-support (make-generic-operator 1 'attach-support))
 
-(defhandler merge v&s-merge v&s? v&s?)
+(defhandler-coercing merge v&s-merge ->v&s)
 
 (defhandler contradictory?
  (lambda (v&s) (contradictory? (v&s-value v&s)))
@@ -96,13 +103,3 @@
       (v&s-value (v&s-value v&s))
       (merge-supports v&s (v&s-value v&s)))))
   (lambda (thing) (and (v&s? thing) (v&s? (v&s-value thing)))))
-
-(declare-coercion-target v&s (lambda (thing) (supported thing '())))
-
-(declare-coercion <symbol> ->v&s)
-(declare-coercion <number> ->v&s)
-(declare-coercion <boolean> ->v&s)
-(declare-coercion rtd:%interval ->v&s)
-
-(defhandler merge (coercing ->v&s v&s-merge) v&s? v&s-able?)
-(defhandler merge (coercing ->v&s v&s-merge) v&s-able? v&s?)

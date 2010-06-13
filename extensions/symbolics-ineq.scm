@@ -35,6 +35,13 @@
   global)
 (declare-type-tester symb-ineq? rtd:symb-ineq)
 
+(declare-coercion rtd:symb-ineq ->v&s) ;; Really?
+
+(declare-coercion-target symb-ineq
+  (lambda (thing) (make-symb-ineq (->symbolic thing) '() '())))
+(declare-coercion symbolic? ->symb-ineq)
+(declare-coercion symbolic-able? ->symb-ineq)
+
 (define (local->global-inequalities ineq-list)
   (let ((lower-bounds (filter lower-bound-ineq? ineq-list))
 	(upper-bounds (filter upper-bound-ineq? ineq-list)))
@@ -136,7 +143,7 @@
        (equal? (symb-ineq-global symb-ineq1)
 	       (symb-ineq-global symb-ineq2))))
 
-(defhandler merge symb-ineq-merge symb-ineq? symb-ineq?)
+(defhandler-coercing merge symb-ineq-merge ->symb-ineq)
 
 (defhandler generic-unpack
   (lambda (symb-ineq function)
@@ -221,19 +228,6 @@
   (lambda (symbolic)
     (symbolic-expression symbolic))
   (guard rtd:symbolic (lambda (thing) (boolean? (symbolic-expression thing)))))
-
-(declare-coercion rtd:symb-ineq ->v&s) ;; Really?
-
-(declare-coercion-target symb-ineq
-  (lambda (thing) (make-symb-ineq (->symbolic thing) '() '())))
-(declare-coercion symbolic? ->symb-ineq)
-(declare-coercion symbolic-able? ->symb-ineq)
-
-(defhandler merge
-  (coercing ->symb-ineq symb-ineq-merge) symb-ineq? symb-ineq-able?)
-
-(defhandler merge
-  (coercing ->symb-ineq symb-ineq-merge) symb-ineq-able? symb-ineq?)
 
 (define ((ineq-enforcer-func direction) in)
   (make-symb-ineq
