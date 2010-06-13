@@ -27,8 +27,9 @@
 (define (coercer name #!optional operation)
   (make-generic-operator 1 name operation))
 
-(define (tag-with-tester coercer tester)
-  (eq-put! coercer 'coercability-tester tester))
+(define (tag-coercion-metadata predicate coercer tester)
+  (eq-put! coercer 'coercability-tester tester)
+  (eq-put! coercer 'predicate predicate))
 
 (define (declare-coercion type coercer #!optional coercion)
   (let ((the-tester (eq-get coercer 'coercability-tester)))
@@ -47,7 +48,7 @@
        (define coercer-name
 	 (coercer 'coercer-name operation))
        (defhandler coercer-name (lambda (x) x) predicate-name)
-       (tag-with-tester coercer-name coercability-name)))
+       (tag-coercion-metadata predicate-name coercer-name coercability-name)))
     ((_ predicate-name coercability-name coercer-name)
      (declare-named-coercion-target
       predicate-name coercability-name coercer-name #!default))))
@@ -62,3 +63,12 @@
 	     (coercer-name (symbol '-> name)))
 	 `(declare-named-coercion-target
 	   ,pred-name ,coerability-name, coercer-name ,@opt-operation))))))
+
+(define (defhandler-coercing operation handler coercer)
+  (let ((predicate (eq-get coercer 'predicate))
+	(coercability-tester (eq-get coercer 'coercability-tester)))
+    (defhandler operation handler predicate predicate)
+    (defhandler operation
+      (coercing coercer handler) predicate coercability-tester)
+    (defhandler operation
+      (coercing coercer handler) coercability-tester predicate)))

@@ -117,13 +117,7 @@
 		      (v&s-support thing))))
 	 (else (error "Inappropriate coersion for ->algebraic-tms" thing)))))
 
-(defhandler merge algebraic-tms-merge algebraic-tms? algebraic-tms?)
-(defhandler merge
-  (coercing ->algebraic-tms algebraic-tms-merge)
-  algebraic-tms? algebraic-tms-able?)
-(defhandler merge
-  (coercing ->algebraic-tms algebraic-tms-merge)
-  algebraic-tms-able? algebraic-tms?)
+(defhandler-coercing merge algebraic-tms-merge ->algebraic-tms)
 
 (defhandler merge
   (coercing ->algebraic-tms algebraic-tms-merge) algebraic? v&s?)
