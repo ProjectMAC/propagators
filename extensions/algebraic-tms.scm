@@ -75,45 +75,47 @@
 (define algebraic-tms-merge
   (eq?-standardizing %algebraic-tms-merge algebraic-tms-equal?))
 
-(define (algebraic-tms-able? thing)
-  (or (algebraic? thing)
-      (nothing? thing)
-      (and (tms? thing)
-	   (every algebraic-tms-able? (tms-values thing)))
-      (and (v&s? thing)
-	   (or (algebraic-tms? (v&s-value thing))
-	       (algebraic-tms-able? (v&s-value thing))))))
+(declare-coercion-target algebraic-tms)
 
-(define (->algebraic-tms thing)
-  (cond ((algebraic-tms? thing)
-	 thing)
-	((nothing? thing)
-	 (make-algebraic-tms '()))
-	((algebraic? thing)
-	 (make-algebraic-tms
-	  `((,algebraic-tag . ,(->tms (algebraic-tag thing)))
-	    ,@(map (lambda (accessor)
-		     (cons accessor (->tms (accessor thing))))
-		   (algebraic-accessors thing)))))
-	((v&s? thing)
-	 (cond ((algebraic-tms? (v&s-value thing))
-		(make-algebraic-tms
-		 (map (lambda (accessor)
-			(cons accessor
-			      (->tms (generic-bind thing
-				      (handling-algebraic-partial-information
-				       accessor)))))
-		      (map car (algebraic-tms-fields (v&s-value thing))))))
-	       ((algebraic-tms-able? (v&s-value thing))
-		(->algebraic-tms
-		 (supported (->algebraic-tms (v&s-value thing))
-			    (v&s-support thing))))
-	       (else (error "Inappropriate coersion for ->algebraic-tms" thing))))
-	((tms? thing)
-	 ;; TODO Ug, bletch: merge* could discover a latent contradiction
-	 ;; inside the tms it's merging up.
-	 (merge* (map ->algebraic-tms (tms-values thing))))
-	(else (error "??? ->algebraic-tms" thing))))
+(declare-coercion algebraic? ->algebraic-tms
+  (lambda (thing)
+    (make-algebraic-tms
+     `((,algebraic-tag . ,(->tms (algebraic-tag thing)))
+       ,@(map (lambda (accessor)
+		(cons accessor (->tms (accessor thing))))
+	      (algebraic-accessors thing))))))
+
+(declare-coercion nothing? ->algebraic-tms
+  (lambda (thing) (make-algebraic-tms '())))
+
+(declare-coercion
+ (lambda (thing)
+   (and (tms? thing)
+	(every algebraic-tms-able? (tms-values thing))))
+ ->algebraic-tms
+ (lambda (thing)
+   (merge* (map ->algebraic-tms (tms-values thing)))))
+
+(declare-coercion
+ (lambda (thing)
+   (and (v&s? thing)
+	(or (algebraic-tms? (v&s-value thing))
+	    (algebraic-tms-able? (v&s-value thing)))))
+ ->algebraic-tms
+ (lambda (thing)
+   (cond ((algebraic-tms? (v&s-value thing))
+	  (make-algebraic-tms
+	   (map (lambda (accessor)
+		  (cons accessor
+			(->tms (generic-bind thing
+				(handling-algebraic-partial-information
+				 accessor)))))
+		(map car (algebraic-tms-fields (v&s-value thing))))))
+	 ((algebraic-tms-able? (v&s-value thing))
+	  (->algebraic-tms
+	   (supported (->algebraic-tms (v&s-value thing))
+		      (v&s-support thing))))
+	 (else (error "Inappropriate coersion for ->algebraic-tms" thing)))))
 
 (defhandler merge algebraic-tms-merge algebraic-tms? algebraic-tms?)
 (defhandler merge
