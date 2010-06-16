@@ -84,9 +84,13 @@
   (> (interval-low x) (interval-high x)))
 
 (define (intersect-intervals x y)
+  (define (exactness-max x y)
+    (if (>= x y) x y))
+  (define (exactness-min x y)
+    (if (<= x y) x y))
   (make-interval
-   (max (interval-low x) (interval-low y))
-   (min (interval-high x) (interval-high y))))
+   (exactness-max (interval-low x) (interval-low y))
+   (exactness-min (interval-high x) (interval-high y))))
 
 (define merge-intervals
   (eq?-standardizing intersect-intervals interval-equal?))
@@ -96,13 +100,7 @@
 (defhandler generic-square square-interval %interval?)
 (defhandler generic-sqrt sqrt-interval %interval?)
 
-;;; TODO This does not use defhandler-coercing because I want the
-;;; eq?-standardizing wrapper to see the original number, not the
-;;; %interval it is coerced to.
-(defhandler merge merge-intervals %interval? %interval?)
-(defhandler merge merge-intervals %interval? %interval-able?)
-(defhandler merge merge-intervals %interval-able? %interval?)
-
+(defhandler-coercing merge intersect-intervals ->%interval)
 (defhandler-coercing equivalent? interval-equal? ->%interval)
 
 (defhandler contradictory? empty-interval? %interval?)
