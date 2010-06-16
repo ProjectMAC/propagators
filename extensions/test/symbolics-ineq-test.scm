@@ -23,7 +23,7 @@
  (define-each-check
    (generic-match
     (vector 'symb-ineq nothing '((< me 5 (me)) (> me 4 (me))) '())
-    (real-symb-ineq-merge
+    (symb-ineq-merge
      (make-symb-ineq
       nothing
       (list (%make-inequality '< 'me 5))

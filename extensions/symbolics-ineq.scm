@@ -73,7 +73,7 @@
 	       (inequality-expr2 local-ineq)))
 	    local-ineqs)))
 
-(define (real-symb-ineq-merge symb-ineq1 symb-ineq2)
+(define (symb-ineq-merge symb-ineq1 symb-ineq2)
   (let ((new-expression (generic-flatten
 			 (merge (symb-ineq-expression symb-ineq1)
 				(symb-ineq-expression symb-ineq2)))))
@@ -123,14 +123,6 @@
 	  (else
 	   (error "Wah!  symb-ineq-merge doesn't know how to handle" new-expression)))))
 
-(define (symb-ineq-merge symb-ineq1 symb-ineq2)
-  (let ((answer (real-symb-ineq-merge symb-ineq1 symb-ineq2)))
-    (cond ((same-symb-ineq? symb-ineq1 answer)
-	   symb-ineq1)
-	  ((same-symb-ineq? symb-ineq2 answer)
-	   symb-ineq2)
-	  (else answer))))
-
 (define (same-symb-ineq? symb-ineq1 symb-ineq2)
   (and (symb-ineq? symb-ineq1)
        (symb-ineq? symb-ineq2)
@@ -144,6 +136,7 @@
 	       (symb-ineq-global symb-ineq2))))
 
 (defhandler-coercing merge symb-ineq-merge ->symb-ineq)
+(defhandler-coercing equivalent? same-symb-ineq? ->symb-ineq)
 
 (defhandler generic-unpack
   (lambda (symb-ineq function)
