@@ -107,20 +107,15 @@
     (cond ((eqn-contradiction? solution)
 	   the-contradiction)
 	  (else
-	   (let ((answer
-		  (make-symbolic
-		   expr1
-		   (make-symbolic-metadata
-		    (symbolic-variable-order new-metadata)
-		    (substitutions solution)
-		    (residual-equations solution)))))
-	     (cond ((same-symbolic? symb1 answer) symb1)
-		   ;; This comparison may be spuriously wrong sometimes
-		   ;; because the answer is made from expr1
-		   ((same-symbolic? symb2 answer) symb2)
-		   (else answer)))))))
+	   (make-symbolic
+	    expr1
+	    (make-symbolic-metadata
+	     (symbolic-variable-order new-metadata)
+	     (substitutions solution)
+	     (residual-equations solution)))))))
 
 (defhandler-coercing merge symbolic-merge ->symbolic)
+(defhandler-coercing equivalent? same-symbolic? ->symbolic)
 
 ;;; Two ways to add symbolic expressions as a partial information type.
 ;;; One way is to use the nary-unpacking machinery:
