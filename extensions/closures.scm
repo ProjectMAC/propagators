@@ -73,8 +73,8 @@
        (lset= eq? (frame-map-default-parents map1)
 	          (frame-map-default-parents map2))))
 
-(defhandler merge
-  (eq?-standardizing frame-map-merge f-m-equal?) frame-map? frame-map?)
+(defhandler merge frame-map-merge frame-map? frame-map?)
+(defhandler equivalent? f-m-equal? frame-map? frame-map?)
 
 ;;;; Extending frame maps
 
