@@ -59,10 +59,10 @@
      (let ((name (cadr form))
 	   (opt-operation (cddr form)))
        (let ((pred-name (symbol name '?))
-	     (coerability-name (symbol name '-able?))
+	     (coercability-name (symbol name '-able?))
 	     (coercer-name (symbol '-> name)))
 	 `(declare-named-coercion-target
-	   ,pred-name ,coerability-name, coercer-name ,@opt-operation))))))
+	   ,pred-name ,coercability-name, coercer-name ,@opt-operation))))))
 
 (define (defhandler-coercing operation handler coercer)
   (let ((predicate (eq-get coercer 'predicate))
