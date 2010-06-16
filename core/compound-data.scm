@@ -26,25 +26,28 @@
 ;;; cells" representations.  I say "appears" because it might be
 ;;; wrong.
 
+(define (pair-equivalent? pair1 pair2)
+  (and (equivalent? (car pair1) (car pair2))
+       (equivalent? (cdr pair1) (cdr pair2))))
+
 (define (pair-merge pair1 pair2)
   (effectful-bind (merge (car pair1) (car pair2))
     (lambda (car-answer)
       (effectful-bind (merge (cdr pair1) (cdr pair2))
 	(lambda (cdr-answer)
-	  (cond ((and (eq? (car pair1) car-answer)
-		      (eq? (cdr pair1) cdr-answer))
-		 pair1)
-		((and (eq? (car pair2) car-answer)
-		      (eq? (cdr pair2) cdr-answer))
-		 pair2)
-		(else
-		 (cons car-answer cdr-answer))))))))
+	  (cons car-answer cdr-answer))))))
 
 (defhandler merge pair-merge pair? pair?)
+(defhandler equivalent? pair-equivalent? pair? pair?)
 
 ;;; The generalization to arbitrary product types:
 
 (define (slotful-information-type predicate? constructor . accessors)
+  (define (slotful-equivalent? thing1 thing2)
+    (apply boolean/and
+     (map (lambda (accessor)
+	    (equivalent? (accessor thing1) (accessor thing2)))
+	  accessors)))
   (define (slotful-merge thing1 thing2)
     (let* ((slots1 (map (lambda (accessor) (accessor thing1))
 			accessors))
@@ -52,12 +55,9 @@
 			accessors)))
       (effectful-list-bind (map merge slots1 slots2)
 	(lambda (submerges)
-	  (let ((ok1? (apply boolean/and (map eq? submerges slots1)))
-		(ok2? (apply boolean/and (map eq? submerges slots2))))
-	    (cond (ok1? thing1)
-		  (ok2? thing2)
-		  (else (apply constructor submerges))))))))
+	  (apply constructor submerges)))))
   (defhandler merge slotful-merge predicate? predicate?)
+  (defhandler equivalent? slotful-equivalent? predicate? predicate?)
   
   (define (slotful-contradiction? thing)
     (apply boolean/or (map contradictory? (map (lambda (accessor)
