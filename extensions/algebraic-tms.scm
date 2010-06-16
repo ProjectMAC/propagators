@@ -61,7 +61,7 @@
   fields)
 (declare-type-tester algebraic-tms? rtd:algebraic-tms)
 
-(define (%algebraic-tms-merge atms1 atms2)
+(define (algebraic-tms-merge atms1 atms2)
   (effectful-bind (merge-alist (algebraic-tms-fields atms1)
 			       (algebraic-tms-fields atms2))
     make-algebraic-tms))
@@ -71,9 +71,6 @@
        (algebraic-tms? atms2)
        (same-alist? (algebraic-tms-fields atms1)
 		    (algebraic-tms-fields atms2))))
-
-(define algebraic-tms-merge
-  (eq?-standardizing %algebraic-tms-merge algebraic-tms-equal?))
 
 (declare-coercion-target algebraic-tms)
 
@@ -118,6 +115,7 @@
 	 (else (error "Inappropriate coersion for ->algebraic-tms" thing)))))
 
 (defhandler-coercing merge algebraic-tms-merge ->algebraic-tms)
+(defhandler-coercing equivalent? algebraic-tms-equal? ->algebraic-tms)
 
 (defhandler merge
   (coercing ->algebraic-tms algebraic-tms-merge) algebraic? v&s?)
