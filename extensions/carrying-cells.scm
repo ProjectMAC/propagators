@@ -130,3 +130,11 @@
 	       (and candidate
 		    (implies? (content candidate)
 			      control-info)))))))
+
+(define (equivalent-cells? cell1 cell2)
+  (or (eq? cell1 cell2)
+      (let ((candidate-bridge-control (eq-get cell1 cell2)))
+	(and candidate-bridge-control
+	     (equivalent? #t (content candidate-bridge-control))))))
+
+(defhandler equivalent? equivalent-cells? cell? cell?)
