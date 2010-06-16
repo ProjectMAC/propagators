@@ -92,9 +92,6 @@
    (exactness-max (interval-low x) (interval-low y))
    (exactness-min (interval-high x) (interval-high y))))
 
-(define merge-intervals
-  (eq?-standardizing intersect-intervals interval-equal?))
-
 (defhandler-coercing generic-* mul-interval ->%interval)
 (defhandler-coercing generic-/ div-interval ->%interval)
 (defhandler generic-square square-interval %interval?)
