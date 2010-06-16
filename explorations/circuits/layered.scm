@@ -98,15 +98,7 @@
 	   (or (null? (tms-values thing))
 	       (v&s-able? (v&s-value (car (tms-values thing))))))))
 
-(define (attach-layer-method operation method)
-  (defhandler operation
-    method layered? layered?)
-  (defhandler operation
-    (coercing ->layered method)
-    layered? layer-coercable?)
-  (defhandler operation
-    (coercing ->layered method)
-    layer-coercable? layered?))
+(tag-coercion-metadata layered? ->layered layer-coercable?)
 
 (define (layered-equal? thing1 thing2)
   (and (layered? thing1)
@@ -154,12 +146,14 @@
 
 (for-each
  (lambda (operation)
-   (attach-layer-method operation
-     (binary-layered-unpacking (nary-unpacking operation))))
+   (defhandler-coercing operation
+     (binary-layered-unpacking (nary-unpacking operation))
+     ->layered))
  (list generic-+ generic-- generic-* generic-/ generic-switch))
 
-(attach-layer-method merge
-  (eq?-standardizing (binary-layered-unpacking merge) layered-equal?))
+(defhandler-coercing merge
+  (eq?-standardizing (binary-layered-unpacking merge) layered-equal?)
+  ->layered)
 
 (for-each
  (lambda (operation)
