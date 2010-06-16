@@ -103,5 +103,7 @@
 (defhandler merge merge-intervals %interval? %interval-able?)
 (defhandler merge merge-intervals %interval-able? %interval?)
 
+(defhandler-coercing equivalent? interval-equal? ->%interval)
+
 (defhandler contradictory? empty-interval? %interval?)
 

@@ -197,7 +197,11 @@
 (define (merge info1 info2)
   (if (eq? info1 info2)
       info1
-      (generic-merge info1 info2)))
+      (let ((answer (generic-merge info1 info2)))
+	(cond ((effectful? answer) answer)
+	      ((equivalent? answer info1) info1)
+	      ((equivalent? answer info2) info2)
+	      (else answer)))))
 
 (define generic-merge
   (make-generic-operator 2 'merge
@@ -232,12 +236,14 @@
   ;; out (for example by using effectful->).
   (eq? v1 (merge v1 v2)))
 
-;; TODO Should equivalent? be a direct, generic function?
-;; Most partial information types define equivalence anyway, to standardize
-;; answers for eq?-testing...
 (define (equivalent? info1 info2)
-  (and (implies? info1 info2)
-       (implies? info2 info1)))
+  (or (eqv? info1 info2)
+      (generic-equivalent? info1 info2)))
+
+(define generic-equivalent?
+  (make-generic-operator 2 'equivalent? eqv?))
+
+(set-operator-record! equivalent? (get-operator-record generic-equivalent?))
 
 (define (eq?-standardizing merge equal?)
   (lambda (item1 item2)

@@ -158,9 +158,8 @@
 	    (occurring-frames* args)))))
   ((frame-by-frame merge) copy-set1 copy-set2))
 
-(defhandler merge
-  (eq?-standardizing virtual-copy-merge v-c-equal?)
-  virtual-copies? virtual-copies?)
+(defhandler merge virtual-copy-merge virtual-copies? virtual-copies?)
+(defhandler equivalent? v-c-equal? virtual-copies? virtual-copies?)
 
 (defhandler contradictory?
   (lambda (vcs)
