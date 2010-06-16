@@ -151,9 +151,8 @@
      ->layered))
  (list generic-+ generic-- generic-* generic-/ generic-switch))
 
-(defhandler-coercing merge
-  (eq?-standardizing (binary-layered-unpacking merge) layered-equal?)
-  ->layered)
+(defhandler-coercing merge (binary-layered-unpacking merge) ->layered)
+(defhandler-coercing equivalent? layered-equal? ->layered)
 
 (for-each
  (lambda (operation)
