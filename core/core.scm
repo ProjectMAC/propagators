@@ -244,14 +244,6 @@
   (make-generic-operator 2 'equivalent? eqv?))
 
 (set-operator-record! equivalent? (get-operator-record generic-equivalent?))
-
-(define (eq?-standardizing merge equal?)
-  (lambda (item1 item2)
-    (let ((answer (merge item1 item2)))
-      (cond ((effectful? answer) answer)
-	    ((equal? answer item1) item1)
-	    ((equal? answer item2) item2)
-	    (else answer)))))
 
 ;;; Data structure to represent a merge that may have effects.
 (define execute-effect 
