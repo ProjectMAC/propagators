@@ -398,8 +398,14 @@
   #;(set! *sample-times* (cons (real-time-clock) *sample-times*))
   'ok)
 
-;;; TODO Taylor asks:
+;;; TODO Taylor says:
 
 ;; What is the garbage collector up to during the profiling?  Can you
 ;; record a list of the values of (car (gc-timestamp)), like
 ;; *SAMPLE-TIMES*?
+
+;; If you want to pursue this hypothesis [that deep recursions are
+;; causing the problem] further, you could instrument the profiler to
+;; record a histogram of stack depths; it would be reasonably
+;; straightforward.
+
