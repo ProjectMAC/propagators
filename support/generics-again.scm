@@ -251,3 +251,35 @@
 
 (define (selected-handler operator args)
   (apply (get-operator-record operator) args))
+
+;;; For example:
+#|
+ 1 ]=> (pp (map search-tree-summary (handler-search-trees merge '(1 1))))
+ (((#[class 265 <object>])
+   (1 #[compiled-closure 375 ("data" #x2c) #x5e #xf02486 #x101033c])
+   (1 #[compiled-closure 374 ("data" #x2c) #x5e #xf02486 #x1024bf0])
+   (1 #[compiled-procedure 373 (cell? "core" #x6) #xf #xdc85bf])
+   (2 #[compiled-procedure 372 (algebraic? "algebraic-tms" #xa) #xf #xee2ae3])
+   (4 #[compiled-procedure 371 (tms? "truth-maintenance" #x3) #xf #xeda12f])
+   (2 #[generic-procedure 370 flat?])
+   (4 #[compiled-procedure 369 (v&s? "supported-values" #x4) #xf #xed97e7])
+   (1 #[compiled-procedure 368 (nothing? "core" #x15) #xc #xdac87c])
+   (2 #[compiled-procedure 367 (any? "generic-system" #xc) #xc #xda52d0])))
+
+ 1 ]=> (pp (map search-tree-summary (handler-search-trees generic-unpack '(1))))
+ (((#[class 265 <object>])
+   (1 #[compiled-procedure 371 (tms? "truth-maintenance" #x3) #xf #xeda12f])
+   (1 #[compiled-procedure 369 (v&s? "supported-values" #x4) #xf #xed97e7])
+   (1 #[compiled-procedure 368 (nothing? "core" #x15) #xc #xdac87c])
+   (1 #[compiled-procedure 367 (any? "generic-system" #xc) #xc #xda52d0])))
+
+ 1 ]=> (pp (map search-tree-summary (handler-search-trees generic-flatten '(1))))
+ (((#[class 265 <object>])
+   #[compiled-procedure 378 (lambda "truth-maintenance" #x12) #xf #x101601f]
+   #[compiled-procedure 371 (tms? "truth-maintenance" #x3) #xf #xeda12f]
+   #[compiled-procedure 377 (lambda "supported-values" #xf) #xf #x103a463]
+   #[compiled-procedure 376 (lambda "supported-values" #xd) #xf #x1046f63]
+   #[compiled-procedure 369 (v&s? "supported-values" #x4) #xf #xed97e7]
+   #[compiled-procedure 368 (nothing? "core" #x15) #xc #xdac87c]
+   #[compiled-procedure 367 (any? "generic-system" #xc) #xc #xda52d0]))
+|#
