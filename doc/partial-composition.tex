@@ -31,7 +31,7 @@ is very similar to the parametrization of interpreters over monads;
 and the \code{generic-unpack} and \code{generic-flatten} procedures
 are an attempt to mimic monads in the propagator setting.
 
-There are some significant differences between mere monads and partial
+There are some significant differences between monads and partial
 information structures.  First, the latter are required to support a
 merge operation for updating the contents of cells; and the
 computations performed by propagators operating within a particular
@@ -79,7 +79,7 @@ could be in different monads (or different instances of the same
 monad).  This was the great advance that made the monadic style
 practicable in a full programming language (e.g. Haskell).
 
-The appropriate equivalent of \code{do}-notation for propagators has
+The appropriate equivalent of \code{do} notation for propagators has
 not been invented yet, nor has the underlying mechanism for
 segregating one partial information structure from another so that
 different ones can be used in different parts of a system without
@@ -131,7 +131,7 @@ propagator network, even if they never intersect.  At least I have not
 yet invented any way to allow this.  Though perhaps the monad
 transformer story can help arrange it.
 
-As a consequence, you much yourself arrange, by choosing which method
+As a consequence, you must yourself arrange, by choosing which method
 definitions you actually invoke for a particular propagator system,
 which partial information structure you are using.  A survey of the
 compatibilities of the different ones remains to be done.
