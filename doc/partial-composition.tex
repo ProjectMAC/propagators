@@ -1,0 +1,138 @@
+\documentclass[12pt,letterpaper]{article}
+
+\input{preamble.tex}
+\author{Alexey Radul}
+\title{Composing Partial Information}
+
+\begin{document}
+
+\maketitle
+
+The propagator structure is parametrized by the type of partial
+information being propagated.
+
+This parametrization determines how cells merge the partial
+information, and how operations that are not inherently aware of the
+partial information react to it.  For example, addition is not
+inherently aware of the partialness of its arguments, nor does it have
+any specific interactions with any partial information structures
+(except, sort of, interval arithmetic).  Therefore, addition should
+react to, for example, truth maintenance systems, in a mechanical way,
+that depends on what the nature of truth maintenance is, but not on
+the nature of addition.
+
+There is one other place in the body of knowledge that I am aware of
+where some system is parametrized over some structure, such that most
+operations are translated uniformly in accordance with the
+parametrizing structure, and independent of the particular operation.
+That place is interpreters parametrized by monads.\cite{?}  Indeed,
+the parametrization of propagators over partial information structures
+is very similar to the parametrization of interpreters over monads;
+and the \code{generic-unpack} and \code{generic-flatten} procedures
+are an attempt to mimic monads in the propagator setting.
+
+There are some significant differences between mere monads and partial
+information structures.  First, the latter are required to support a
+merge operation for updating the contents of cells; and the
+computations performed by propagators operating within a particular
+partial information structure are ``required'' to be monotonic with
+respect to the lattice induced by that merge operation.  \todo{Get
+  into the partial information structure laws, by analogy with the
+  monad laws?  How were the monad laws derived?  What theorems follow
+  from the partial information structure laws?}
+
+Second, partial information structures as currently embraced by the
+system need not be fully parametric over their ``contents''.  For
+example, merging intervals relies on being able to compare the
+endpoints of intervals with one another, so intervals are not fully
+polymorphic over the type of their endpoints.  (Also, interval
+arithmetic is not entirely uniform over the operations being
+performed, in that multiplying by a negative number is
+inverse-monotonic in the underlying order on the endpoints).
+
+Nonetheless, monads and partial information structures appear to have
+an important, if unfortunate, property in common: they do not compose.
+Monad transformers \cite{?} are a story for augmenting monads with
+additional structure so as to be able to compose them.  The approach
+is promising, but confusing and difficult to grasp and follow.
+(Monads themselves were bad enough!)  The approach would furthermore
+require considerable effort to adapt to partial information
+structures, because the latter are, as discussed earlier, just
+analogous to monads, not the same.  Therefore, having chased the
+question of monad composition, and partial information composition,
+for long enough, I choose to punt it.
+
+What is one to do in a world of non-composing partial information
+structures?  The same thing one does in a world of non-composing
+monads---pick one and stick with it.  In their early
+conceptions,\cite{wadler?, moggi?}  monads were thought of as parametrizing
+entire programming language interpreters, and therefore the particular
+monad chosen would form the global set of features available in a
+particular interpreted language \todo{Is this assertion actually
+  true?}.  This was still an advance over the non-monadic approach,
+because at least the basic pure interpreter, and perhaps some ad-hoc
+pieces of the implementations of the various monads, could be shared.
+In time, the \code{do} notation was invented \cite{??}, and made it
+possible to delineate a part of a program as being in a monad, so that
+different, sufficiently non-interacting parts of the same program
+could be in different monads (or different instances of the same
+monad).  This was the great advance that made the monadic style
+practicable in a full programming language (e.g. Haskell).
+
+The appropriate equivalent of \code{do}-notation for propagators has
+not been invented yet, nor has the underlying mechanism for
+segregating one partial information structure from another so that
+different ones can be used in different parts of a system without
+interference.  I expect such an invention will be necessary before the
+propagator language becomes really practical, but until then you'll
+just have to make do with what I've got.
+
+What have I got?  Think of the full collection of methods defined on
+all the generic-foo operations at any one time as defining one big
+partial information structure.  For example, if you load all of
+\code{core}, you will get a propagator machine whose partial information
+structure can handle
+\begin{itemize}
+\item The \code{nothing} object, meaning ``no information''
+\item Raw Scheme values, meaning exactly themselves
+\item Intervals over positive numbers, meaning ``it's within these bounds''
+\item Supported values, meaning ``If you believe the given premises, you have information X''
+\item Truth maintenance systems, which store that same information but
+  admit (even automatic) changes in the set of believed premises.
+\item Compositions: TMSes over intervals, TMSes over raw values,
+  supported intervals, and supported raw values.
+\end{itemize}
+If you also load \code{extensions/symbolics}, this will be augmented
+with symbolic expressions over real numbers, with tracking and
+solution of symbolic equations between them; and all sensible
+compositions thereof (though maybe not compositions of symbolic
+expressions and intervals).  If you also load
+\code{extensions/symbolics-ineq}, this will be further augmented with
+symbolic boolean values, and tracking and solutions of inequalities.
+
+On the other hand, the virtual-copies data structures in
+\code{extensions/environments}, for example, do not interoperate at
+all well with the TMSes from \code{core}.  So if you load that, you
+effectively have two incompatible partial information structures: one
+where TMSes are allowed and virtual copies are not, and one where
+virtual copies are allowed and TMSes are not.  This is not inherently
+a problem, but there is no static notation like the \code{do}-notation
+for separating the regions of propagator network where the two
+different structures are acceptable, so you must manually arrange for
+the two kinds of things not to meet in any unpleasant places.
+
+Unfortunately, the definitions of the generic operations used in the
+propagator system are global.  So while it would in principle be
+possible to define the generic operations to handle either the partial
+information structure ``virtual copies of truth maintenance systems of
+X'', or the partial information structure ``truth maintenance over
+virtual copies of X'', there is no way to allow both in the same
+propagator network, even if they never intersect.  At least I have not
+yet invented any way to allow this.  Though perhaps the monad
+transformer story can help arrange it.
+
+As a consequence, you much yourself arrange, by choosing which method
+definitions you actually invoke for a particular propagator system,
+which partial information structure you are using.  A survey of the
+compatibilities of the different ones remains to be done.
+\end{document}
