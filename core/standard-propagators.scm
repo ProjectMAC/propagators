@@ -26,31 +26,31 @@
 (define adder
   (function->propagator-constructor (binary-mapping generic-+)))
 (define subtractor
-  (function->propagator-constructor (nary-unpacking generic--)))
+  (function->propagator-constructor (binary-mapping generic--)))
 (define multiplier
-  (function->propagator-constructor (nary-unpacking generic-*)))
+  (function->propagator-constructor (binary-mapping generic-*)))
 (define divider
-  (function->propagator-constructor (nary-unpacking generic-/)))
+  (function->propagator-constructor (binary-mapping generic-/)))
 
 (define absolute-value
-  (function->propagator-constructor (nary-unpacking generic-abs)))
+  (function->propagator-constructor (unary-mapping generic-abs)))
 (define squarer
-  (function->propagator-constructor (nary-unpacking generic-square)))
+  (function->propagator-constructor (unary-mapping generic-square)))
 (define sqrter
-  (function->propagator-constructor (nary-unpacking generic-sqrt)))
+  (function->propagator-constructor (unary-mapping generic-sqrt)))
 
-(define =? (function->propagator-constructor (nary-unpacking generic-=)))
-(define <? (function->propagator-constructor (nary-unpacking generic-<)))
-(define >? (function->propagator-constructor (nary-unpacking generic->)))
-(define <=? (function->propagator-constructor (nary-unpacking generic-<=)))
-(define >=? (function->propagator-constructor (nary-unpacking generic->=)))
+(define =? (function->propagator-constructor (binary-mapping generic-=)))
+(define <? (function->propagator-constructor (binary-mapping generic-<)))
+(define >? (function->propagator-constructor (binary-mapping generic->)))
+(define <=? (function->propagator-constructor (binary-mapping generic-<=)))
+(define >=? (function->propagator-constructor (binary-mapping generic->=)))
 
 (define inverter
   (function->propagator-constructor (nary-unpacking generic-not)))
 (define conjoiner
-  (function->propagator-constructor (nary-unpacking generic-and)))
+  (function->propagator-constructor (binary-mapping generic-and)))
 (define disjoiner
-  (function->propagator-constructor (nary-unpacking generic-or)))
+  (function->propagator-constructor (binary-mapping generic-or)))
 
 (define pass-through
   (function->propagator-constructor identity))
