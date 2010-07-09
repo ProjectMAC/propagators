@@ -23,7 +23,7 @@
 (defhandler-coercing generic-+ add-interval ->%interval)
 
 (define interval-maker
-  (function->propagator-constructor (nary-unpacking make-interval)))
+  (function->propagator-constructor (binary-mapping make-interval)))
 
 ;; This assumes that the input is more than 1
 (define (sqrt-network input-cell answer-cell)
