@@ -19,7 +19,8 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-structure (symbolic-metadata (conc-name symbolic-))
+(define-structure
+  (symbolic-metadata (conc-name symbolic-) (safe-accessors #t))
   variable-order
   substitutions
   residual-equations)
@@ -66,7 +67,8 @@
 (define (list-unify-metadata metadatas)
   (reduce unify-metadata (empty-metadata) metadatas))
 
-(define-structure (symbolic (constructor %make-symbolic))
+(define-structure
+  (symbolic (constructor %make-symbolic) (safe-accessors #t))
   expression
   metadata)
 (declare-type-tester symbolic? rtd:symbolic)
@@ -117,6 +119,14 @@
 (defhandler-coercing merge symbolic-merge ->symbolic)
 (defhandler-coercing equivalent? same-symbolic? ->symbolic)
 
+(define (symbolic-binary-map symb1 symb2)
+  (lambda (f)
+    (make-symbolic
+     (f (symbolic-expression symb1) (symbolic-expression symb2))
+     (unify-metadata (symbolic-metadata symb1) (symbolic-metadata symb2)))))
+
+(defhandler-coercing binary-map symbolic-binary-map ->symbolic)
+
 ;;; Two ways to add symbolic expressions as a partial information type.
 ;;; One way is to use the nary-unpacking machinery:
 

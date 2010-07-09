@@ -24,7 +24,7 @@
 ;;;; Standard primitive propagators
 
 (define adder
-  (function->propagator-constructor (nary-unpacking generic-+)))
+  (function->propagator-constructor (binary-mapping generic-+)))
 (define subtractor
   (function->propagator-constructor (nary-unpacking generic--)))
 (define multiplier

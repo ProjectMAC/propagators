@@ -78,6 +78,14 @@
  (lambda (v&s) (contradictory? (v&s-value v&s)))
  v&s?)
 
+(define (v&s-binary-map v&s1 v&s2)
+  (lambda (f)
+    (supported
+     (f (v&s-value v&s1) (v&s-value v&s2))
+     (merge-supports v&s1 v&s2))))
+
+(defhandler-coercing binary-map v&s-binary-map ->v&s)
+
 (defhandler generic-unpack
   (lambda (v&s function)
     (supported

@@ -93,6 +93,32 @@
 	(else
 	 (>-list (cdr lst1) (cdr lst2)))))
 
+(declare-coercion-target frs
+  (lambda (thing) (make-frs thing '())))
+(declare-coercion <number> ->frs)
+(declare-coercion <symbol> ->frs)
+
+(define (frs-binary-map frs1 frs2)
+  (lambda (f)
+    (let ((support1 (frs-support frs1))
+	  (support2 (frs-support frs2)))
+      (if (or (fr-support-invalidates? support1 support2)
+	      (fr-support-invalidates? support2 support1))
+	  nothing
+	  (make-frs
+	   (f (frs-value frs1) (frs-value frs2))
+	   (fr-merge-supports support1 support2))))))
+
+(defhandler-coercing binary-map frs-binary-map ->frs)
+
+(defhandler binary-map
+  (lambda (x y) (lambda (f) nothing))
+  frs? stale-frs?)
+
+(defhandler binary-map
+  (lambda (x y) (lambda (f) nothing))
+  stale-frs? frs?)
+
 (defhandler generic-unpack
   (lambda (frs function)
     (make-frs

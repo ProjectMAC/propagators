@@ -44,6 +44,34 @@
 (name! switch-function 'switch)
 (name! identity 'identity)
 
+;;; General generic applicative functor machinery
+
+(define (binary-mapping f)
+  (define (loop x y)
+    (let ((mapper (binary-map x y)))
+      (if (procedure? mapper)
+	  (mapper loop)
+	  (f x y))))
+  loop)
+
+(define binary-map
+  (make-generic-operator 2 'binary-map
+    (lambda (x y) 'done!)))
+
+(defhandler binary-map
+  (lambda (x y) (lambda (f) nothing))
+  nothing? any?)
+
+(defhandler binary-map
+  (lambda (x y) (lambda (f) nothing))
+  any? nothing?)
+
+(define (unary-mapping f)
+  (lambda (x)
+    ((binary-mapping (lambda (x y) (f x)))
+     x 1) ;;; TODO Make this 1 a real "object that can be coerced into anything"
+    ))
+
 ;;; General generic-monadic machinery
 
 (define (generic-bind thing function)

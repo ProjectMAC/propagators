@@ -29,7 +29,7 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-structure symb-ineq
+(define-structure (symb-ineq (safe-accessors #t))
   expression
   local
   global)
@@ -137,6 +137,18 @@
 
 (defhandler-coercing merge symb-ineq-merge ->symb-ineq)
 (defhandler-coercing equivalent? same-symb-ineq? ->symb-ineq)
+
+(define (symb-ineq-binary-map ineq1 ineq2)
+  (lambda (f)
+    (merge
+     (make-symb-ineq nothing '() (symb-ineq-global ineq1))
+     (make-symb-ineq
+      (f (symb-ineq-expression ineq1)
+	 (symb-ineq-expression ineq2))
+      '()
+      (symb-ineq-global ineq2)))))
+
+(defhandler-coercing binary-map symb-ineq-binary-map ->symb-ineq)
 
 (defhandler generic-unpack
   (lambda (symb-ineq function)

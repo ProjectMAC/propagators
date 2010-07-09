@@ -167,5 +167,14 @@
 	      (v&s? (car (tms-values tms)))
 	      (null? (v&s-support (car (tms-values tms)))))
 	 (v&s-value (car (tms-values tms))))
+	((and (= 1 (length (tms-values tms)))
+	      (nothing? (car (tms-values tms))))
+	 nothing)
 	(else
 	 tms)))
+
+(define (tms-binary-map tms1 tms2)
+  (lambda (f)
+    (tms-> (make-tms (list (f (tms-query tms1) (tms-query tms2)))))))
+
+(defhandler-coercing binary-map tms-binary-map ->tms)
