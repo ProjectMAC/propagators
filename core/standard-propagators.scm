@@ -46,7 +46,7 @@
 (define >=? (function->propagator-constructor (binary-mapping generic->=)))
 
 (define inverter
-  (function->propagator-constructor (nary-unpacking generic-not)))
+  (function->propagator-constructor (unary-mapping generic-not)))
 (define conjoiner
   (function->propagator-constructor (binary-mapping generic-and)))
 (define disjoiner
