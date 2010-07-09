@@ -153,7 +153,7 @@
 (declare-algebraic null? null)
 
 (define %p:null? (function->propagator-constructor
-		  (nary-unpacking null?)))
+		  (unary-mapping null?)))
 
 (define-macro-propagator (p:null? thing answer)
   (let-cell tag
@@ -179,7 +179,7 @@
 
 (declare-algebraic pair? cons car cdr)
 
-(define %p:pair? (function->propagator-constructor (nary-unpacking pair?)))
+(define %p:pair? (function->propagator-constructor (unary-mapping pair?)))
 
 (define-macro-propagator (p:pair? thing answer)
   (let-cell tag
