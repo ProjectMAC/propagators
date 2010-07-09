@@ -123,9 +123,6 @@
 	  (define ,expression-oriented-name
 	    (functionalize ,propagator-name)))))))
 
-(define (flat-function->propagator-expression f)
-  (functionalize (function->propagator-constructor (nary-unpacking f))))
-
 (propagatify eq?)
 (propagatify expt)
 
