@@ -67,8 +67,8 @@
 (define (ce:layered-get name)
   (functionalize (cp:layered-get name)))
 
-(define (binary-layered-unpacking f)
-  (lambda (layered1 layered2)
+(define (layered-binary-map layered1 layered2)
+  (lambda (f)
     (let ((alist1 (layered-alist layered1))
 	  (alist2 (layered-alist layered2)))
       (let ((keys (lset-union eq? (map car alist1) (map car alist2))))
@@ -79,13 +79,6 @@
 	      keys)
 	 (f (layered-base layered1)
 	    (layered-base layered2)))))))
-
-(define (unary-layered-unpacking f)
-  (lambda (layered)
-    (make-layered
-     ((unary-alist-unpacking f)
-      (layered-alist layered))
-     (f (layered-base layered)))))
 
 (define (->layered thing)
   (cond ((layered? thing)
@@ -107,6 +100,8 @@
 		    (layered-alist thing2))
        (equivalent? (layered-base thing1)
 		    (layered-base thing2))))
+
+(defhandler-coercing binary-map layered-binary-map ->layered)
 
 (defhandler generic-flatten
   (lambda (tms)
@@ -139,27 +134,9 @@
     (and (layered? thing)
 	 (any layered? (map cdr (layered-alist thing))))))
 
-;;; TODO Install this in the base system?
-(define generic-switch (make-generic-operator 2 'g-switch switch-function))
-(define switch
-  (function->propagator-constructor (nary-unpacking switch-function)))
-
-(for-each
- (lambda (operation)
-   (defhandler-coercing operation
-     (binary-layered-unpacking (nary-unpacking operation))
-     ->layered))
- (list generic-+ generic-- generic-* generic-/ generic-switch))
-
-(defhandler-coercing merge (binary-layered-unpacking merge) ->layered)
+(defhandler-coercing merge (lambda (x y)
+			     ((layered-binary-map x y) merge)) ->layered)
 (defhandler-coercing equivalent? layered-equal? ->layered)
-
-(for-each
- (lambda (operation)
-   (defhandler operation
-     (unary-layered-unpacking (nary-unpacking operation))
-     layered?))
- (list generic-not generic-abs))
 
 (defhandler contradictory?
   (lambda (layered)
