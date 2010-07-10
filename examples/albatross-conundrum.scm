@@ -39,15 +39,15 @@
   (supply nothing))
 (declare-type-tester deck? rtd:deck)
 
-(propagatify deck-name)
-(propagatify deck-commander)
-(propagatify deck-treasure)
-(propagatify deck-supply)
+(propagatify deck-name nary-mapping)
+(propagatify deck-commander nary-mapping)
+(propagatify deck-treasure nary-mapping)
+(propagatify deck-supply nary-mapping)
 
-(propagatify make-deck-from-name)
-(propagatify make-deck-from-commander)
-(propagatify make-deck-from-treasure)
-(propagatify make-deck-from-supply)
+(propagatify make-deck-from-name nary-mapping)
+(propagatify make-deck-from-commander nary-mapping)
+(propagatify make-deck-from-treasure nary-mapping)
+(propagatify make-deck-from-supply nary-mapping)
 
 (declare-coercion rtd:deck ->v&s)
 

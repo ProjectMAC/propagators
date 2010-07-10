@@ -19,19 +19,6 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-syntax propagatify-direct
-  (sc-macro-transformer
-   (lambda (form use-env)
-     (let* ((propagatee-name (cadr form))
-	    (propagator-name (symbol 'p: propagatee-name))
-	    (expression-oriented-name (symbol 'e: propagatee-name)))
-       `(begin
-	  (define ,propagator-name
-	    (function->propagator-constructor
-	     (name! ,(close-syntax propagatee-name use-env) ',propagatee-name)))
-	  (define ,expression-oriented-name
-	    (functionalize ,propagator-name)))))))
-
 (define-structure
   (terminal
    (safe-accessors #t)
@@ -49,12 +36,12 @@
 (slotful-information-type
  terminal? make-terminal terminal-potential terminal-current)
 
-(propagatify terminal-potential)
-(propagatify terminal-current)
+(propagatify terminal-potential nary-unpacking)
+(propagatify terminal-current nary-unpacking)
 
-(propagatify-direct make-terminal)
-(propagatify-direct make-terminal-from-potential)
-(propagatify-direct make-terminal-from-current)
+(propagatify make-terminal)
+(propagatify make-terminal-from-potential)
+(propagatify make-terminal-from-current)
 
 (define (c:potential terminal potential)
   (p:terminal-potential terminal potential)
@@ -96,7 +83,7 @@
   (make-element-descriptor
    (append (element-descriptor-alist ed1)
 	   (element-descriptor-alist ed2))))
-(propagatify append-element-descriptor)
+(propagatify append-element-descriptor binary-mapping)
 
 (define (filter-element-descriptor names)
   (name!

@@ -56,10 +56,10 @@
 	   'horse (lambda (horse) (list (horse-name horse))))))
   name color reins plume pattern)
 
-(propagatify horse-color)
-(propagatify horse-plume)
-(propagatify horse-reins)
-(propagatify horse-pattern)
+(propagatify horse-color nary-mapping)
+(propagatify horse-plume nary-mapping)
+(propagatify horse-reins nary-mapping)
+(propagatify horse-pattern nary-mapping)
 
 (define-syntax defhorse
   (syntax-rules ()
@@ -91,10 +91,10 @@
 (define (plumed? horse)
   (not (eq? (horse-plume horse) 'none)))
 
-(propagatify white?)
-(propagatify black?)
-(propagatify red-reined?)
-(propagatify plumed?)
+(propagatify white? nary-mapping)
+(propagatify black? nary-mapping)
+(propagatify red-reined? nary-mapping)
+(propagatify plumed? nary-mapping)
 
 (define-structure
   (shield (print-procedure
@@ -102,8 +102,8 @@
 	    'shield (lambda (shield) (list (shield-name shield))))))
   name shape pattern)
 
-(propagatify shield-shape)
-(propagatify shield-pattern)
+(propagatify shield-shape nary-mapping)
+(propagatify shield-pattern nary-mapping)
 
 (define-syntax defshield
   (syntax-rules ()
@@ -146,13 +146,13 @@
   (horse nothing))
 (declare-type-tester knight? rtd:knight)
 
-(propagatify knight-name)
-(propagatify knight-shield)
-(propagatify knight-horse)
+(propagatify knight-name nary-mapping)
+(propagatify knight-shield nary-mapping)
+(propagatify knight-horse nary-mapping)
 
-(propagatify make-knight-from-name)
-(propagatify make-knight-from-shield)
-(propagatify make-knight-from-horse)
+(propagatify make-knight-from-name nary-mapping)
+(propagatify make-knight-from-shield nary-mapping)
+(propagatify make-knight-from-horse nary-mapping)
 
 (slotful-information-type knight? make-knight
   knight-name knight-shield knight-horse)

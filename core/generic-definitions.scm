@@ -72,6 +72,13 @@
      x 1) ;;; TODO Make this 1 a real "object that can be coerced into anything"
     ))
 
+;;; TODO Do nary applicative mapping for real
+(define (nary-mapping f)
+  (procedure-arity-dispatch
+   f (lambda (f)
+       (error "Don't know how to applicativize" f))
+   unary-mapping binary-mapping))
+
 ;;; General generic-monadic machinery
 
 (define (generic-bind thing function)

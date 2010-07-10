@@ -39,19 +39,19 @@
   (method nothing read-only #t))
 (declare-type-tester trip-segment? rtd:trip-segment)
 
-(propagatify trip-segment-start)
-(propagatify trip-segment-end)
-(propagatify trip-segment-time)
-(propagatify trip-segment-cost)
-(propagatify trip-segment-pain)
-(propagatify trip-segment-method)
+(propagatify trip-segment-start nary-unpacking)
+(propagatify trip-segment-end nary-unpacking)
+(propagatify trip-segment-time nary-unpacking)
+(propagatify trip-segment-cost nary-unpacking)
+(propagatify trip-segment-pain nary-unpacking)
+(propagatify trip-segment-method nary-unpacking)
 
-(propagatify make-trip-segment-by-start)
-(propagatify make-trip-segment-by-end)
-(propagatify make-trip-segment-by-time)
-(propagatify make-trip-segment-by-cost)
-(propagatify make-trip-segment-by-pain)
-(propagatify make-trip-segment-by-method)
+(propagatify make-trip-segment-by-start nary-unpacking)
+(propagatify make-trip-segment-by-end nary-unpacking)
+(propagatify make-trip-segment-by-time nary-unpacking)
+(propagatify make-trip-segment-by-cost nary-unpacking)
+(propagatify make-trip-segment-by-pain nary-unpacking)
+(propagatify make-trip-segment-by-method nary-unpacking)
 
 (slotful-information-type trip-segment? make-trip-segment
   trip-segment-start trip-segment-end trip-segment-time
@@ -171,7 +171,7 @@
 	 nothing)
 	(else
 	 (make-estimate (/ (distance-est trip-segment) speed)))))
-(propagatify time-est)
+(propagatify time-est nary-unpacking)
 
 (define (same-city? trip-segment)
   ;; Really same-subway-network?
@@ -180,7 +180,7 @@
       (eq? (pick-airport (trip-segment-start trip-segment))
 	   (pick-airport (trip-segment-end trip-segment)))
       nothing))
-(propagatify same-city?)
+(propagatify same-city? nary-unpacking)
 
 (define (pick-airport place)
   (force-assoc place '((home . logan)
@@ -194,7 +194,7 @@
 		       (laguardia-airport . laguardia)
 		       (57th-street . laguardia)
 		       (met . laguardia))))
-(propagatify pick-airport)
+(propagatify pick-airport nary-unpacking)
 
 (define (airport-lookup segment)
   (force-assoc
@@ -204,7 +204,7 @@
       ,(make-trip-segment 'logan 'laguardia
 	(& 4 hour) (& 432 dollar) (& 215 crap) 'fly))
      )))
-(propagatify airport-lookup)
+(propagatify airport-lookup nary-unpacking)
 
 (define (pick-station place)
   (force-assoc place '((home . south-station)
@@ -218,7 +218,7 @@
 		       (laguardia-airport . penn-station)
 		       (57th-street . penn-station)
 		       (met . penn-station))))
-(propagatify pick-station)
+(propagatify pick-station nary-unpacking)
 
 (define (station-lookup segment)
   (force-assoc
@@ -228,7 +228,7 @@
       ,(make-trip-segment 'south-station 'penn-station
 	(& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train))
      )))
-(propagatify station-lookup)
+(propagatify station-lookup nary-unpacking)
 
 (define (pick-stop place)
   (force-assoc place '((home . beaconsfield)
@@ -244,7 +244,7 @@
 		       ;; Cheating; there are many, of course
 		       (met . 57th-street)
 		       (57th-street . 57th-street))))
-(propagatify pick-stop)
+(propagatify pick-stop nary-unpacking)
 
 (define (stop-lookup segment)
   (force-assoc
@@ -289,7 +289,7 @@
       ,(make-trip-segment '34th-street '34th-street
 	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
      )))
-(propagatify stop-lookup)
+(propagatify stop-lookup nary-unpacking)
 
 ;;; Hack for numerical estimates.  I should really do this with
 ;;; premises and proper truth maintenance
@@ -360,7 +360,7 @@
 				trip-segment-pain
 				trip-segment-method)))))
 	(else thing)))
-(propagatify tag-not-estimate)
+(propagatify tag-not-estimate nary-unpacking)
 
 ;; TODO What a hack!  My critic uses the estimate structure with a
 ;; number inside to have a overridable "method to elaborate" cell.
@@ -415,4 +415,4 @@
   (if (eq? 'go-deep go-command)
       go-command
       nothing))
-(propagatify deep-only)
+(propagatify deep-only nary-unpacking)

@@ -120,18 +120,26 @@
 	    (propagator-name (symbol 'p: propagatee-name))
 	    (expression-oriented-name (symbol 'e: propagatee-name))
 	    (generic-name (symbol 'generic- propagatee-name))
-	    (propagatee (close-syntax propagatee-name use-env)))
-       `(begin
-	  (define ,generic-name
-	    (make-arity-detecting-operator ',propagatee-name ,propagatee))
-	  (define ,propagator-name
-	    (function->propagator-constructor
-	     (nary-unpacking ,generic-name)))
-	  (define ,expression-oriented-name
-	    (functionalize ,propagator-name)))))))
+	    (propagatee (close-syntax propagatee-name use-env))
+	    (direct? (null? (cddr form))))
+       (if direct?
+	   `(begin
+	      (define ,propagator-name
+		(function->propagator-constructor
+		 (name! ,propagatee ,propagatee-name)))
+	      (define ,expression-oriented-name
+		(functionalize ,propagator-name)))
+	   `(begin
+	      (define ,generic-name
+		(make-arity-detecting-operator ',propagatee-name ,propagatee))
+	      (define ,propagator-name
+		(function->propagator-constructor
+		 (,(caddr form) ,generic-name)))
+	      (define ,expression-oriented-name
+		(functionalize ,propagator-name))))))))
 
-(propagatify eq?)
-(propagatify expt)
+(propagatify eq? nary-unpacking)
+(propagatify expt unary-mapping)
 
 (define c:+ sum-constraint)
 (define ce:+ (functionalize sum-constraint))
