@@ -204,7 +204,7 @@
       ,(make-trip-segment 'logan 'laguardia
 	(& 4 hour) (& 432 dollar) (& 215 crap) 'fly))
      )))
-(propagatify airport-lookup nary-unpacking)
+(propagatify airport-lookup unary-mapping)
 
 (define (pick-station place)
   (force-assoc place '((home . south-station)
@@ -218,7 +218,7 @@
 		       (laguardia-airport . penn-station)
 		       (57th-street . penn-station)
 		       (met . penn-station))))
-(propagatify pick-station nary-unpacking)
+(propagatify pick-station unary-mapping)
 
 (define (station-lookup segment)
   (force-assoc
@@ -228,7 +228,7 @@
       ,(make-trip-segment 'south-station 'penn-station
 	(& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train))
      )))
-(propagatify station-lookup nary-unpacking)
+(propagatify station-lookup unary-mapping)
 
 (define (pick-stop place)
   (force-assoc place '((home . beaconsfield)
@@ -244,7 +244,7 @@
 		       ;; Cheating; there are many, of course
 		       (met . 57th-street)
 		       (57th-street . 57th-street))))
-(propagatify pick-stop nary-unpacking)
+(propagatify pick-stop unary-mapping)
 
 (define (stop-lookup segment)
   (force-assoc
@@ -289,7 +289,7 @@
       ,(make-trip-segment '34th-street '34th-street
 	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
      )))
-(propagatify stop-lookup nary-unpacking)
+(propagatify stop-lookup unary-mapping)
 
 ;;; Hack for numerical estimates.  I should really do this with
 ;;; premises and proper truth maintenance
@@ -360,7 +360,7 @@
 				trip-segment-pain
 				trip-segment-method)))))
 	(else thing)))
-(propagatify tag-not-estimate nary-unpacking)
+(propagatify tag-not-estimate unary-mapping)
 
 ;; TODO What a hack!  My critic uses the estimate structure with a
 ;; number inside to have a overridable "method to elaborate" cell.
@@ -415,4 +415,4 @@
   (if (eq? 'go-deep go-command)
       go-command
       nothing))
-(propagatify deep-only nary-unpacking)
+(propagatify deep-only)
