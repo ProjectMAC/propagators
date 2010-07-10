@@ -44,7 +44,7 @@
 				    messages))))
 	support)))
 
-(propagatify pointwise-product nary-mapping)
+(propagatify pointwise-product nary-unpacking)
 
 (define (normalize-message message)
   (let ((constant (sum (map cdr (message-alist message)))))
@@ -54,7 +54,7 @@
 		  (/ (cdr pair) constant)))
 	  (message-alist message)))))
 
-(propagatify normalize-message nary-mapping)
+(propagatify normalize-message nary-unpacking)
 
 (define (variable support marginal factor-terminals)
   (for-each
@@ -120,7 +120,7 @@
  (alist ((#t . 1.) (#f . 1.))) ; Message to earthquake
 |#
 
-(propagatify pointwise-sum-product nary-mapping)
+(propagatify pointwise-sum-product nary-unpacking)
 
 (define-propagator-syntax (factor-props factor terminals)
   ;; Ugh.  The factor comes in as a lisp procedure, because 
