@@ -109,17 +109,24 @@
 
 (define e:one-of (functionalize one-of))
 
+(define (make-arity-detecting-operator name default-operation)
+  (make-generic-operator (procedure-arity default-operation) name
+			 default-operation))
+
 (define-syntax propagatify
   (sc-macro-transformer
    (lambda (form use-env)
      (let* ((propagatee-name (cadr form))
 	    (propagator-name (symbol 'p: propagatee-name))
-	    (expression-oriented-name (symbol 'e: propagatee-name)))
+	    (expression-oriented-name (symbol 'e: propagatee-name))
+	    (generic-name (symbol 'generic- propagatee-name))
+	    (propagatee (close-syntax propagatee-name use-env)))
        `(begin
+	  (define ,generic-name
+	    (make-arity-detecting-operator ',propagatee-name ,propagatee))
 	  (define ,propagator-name
 	    (function->propagator-constructor
-	     (nary-unpacking
-	      (name! ,(close-syntax propagatee-name use-env) ',propagatee-name))))
+	     (nary-unpacking ,generic-name)))
 	  (define ,expression-oriented-name
 	    (functionalize ,propagator-name)))))))
 
