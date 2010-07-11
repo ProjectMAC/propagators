@@ -37,13 +37,13 @@
    "sudoku"
    "riddle-of-the-knights"
    "albatross-conundrum"
+   "belief-propagation"
    "selectors/data"
    ))
 
 (for-each
  load-relative
- '("belief-propagation"
-   "selectors/selectors"))
+ '("selectors/selectors"))
 
 (maybe-warn-low-memory)
 (initialize-scheduler)

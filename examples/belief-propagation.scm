@@ -17,6 +17,8 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
+(declare (usual-integrations))
+
 (define-structure message
   alist)
 
