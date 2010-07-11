@@ -44,10 +44,10 @@
 (propagatify deck-treasure nary-unpacking)
 (propagatify deck-supply nary-unpacking)
 
-(propagatify make-deck-from-name nary-unpacking)
-(propagatify make-deck-from-commander nary-unpacking)
-(propagatify make-deck-from-treasure nary-unpacking)
-(propagatify make-deck-from-supply nary-unpacking)
+(propagatify make-deck-from-name unary-mapping)
+(propagatify make-deck-from-commander unary-mapping)
+(propagatify make-deck-from-treasure unary-mapping)
+(propagatify make-deck-from-supply unary-mapping)
 
 (declare-coercion rtd:deck ->v&s)
 
