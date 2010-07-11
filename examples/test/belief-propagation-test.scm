@@ -50,7 +50,7 @@
      (list #t #f)			       ; Earthquake's support
      (make-message '((#t . .001) (#f . .999))) ; Message from burglary
      (make-message '((#t . 1)    (#f . 1)))))) ; Message from alarm
-#;
+
  (define-test (burglary)
    (interaction
     (initialize-scheduler)
@@ -61,6 +61,6 @@
      '(#(message ((#t . 1.6283729946769937e-2) (#f . .98371627005323)))
        #(message ((#t . 1.1394968773811182e-2) (#f . .9886050312261888)))
        #(message ((#t . .04343771179992706) (#f . .9565622882000729)))
-       #(message ((#t . 1.) (#f . 0.)))
+       #(message ((#t . 1.) (#f . 0)))
        #(message ((#t . .03997202114194967) (#f . .9600279788580504)))))))
 )

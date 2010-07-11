@@ -110,8 +110,12 @@
 (define e:one-of (functionalize one-of))
 
 (define (make-arity-detecting-operator name default-operation)
-  (make-generic-operator (procedure-arity default-operation) name
-			 default-operation))
+  (let ((arity (procedure-arity default-operation)))
+    ;; The generic machinery only likes fixed arity operations
+    (if (eqv? (procedure-arity-min arity)
+	      (procedure-arity-max arity))
+	(make-generic-operator arity name default-operation)
+	default-operation)))
 
 (define-syntax propagatify
   (sc-macro-transformer
