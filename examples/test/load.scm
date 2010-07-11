@@ -21,4 +21,5 @@
   '("smoke-test"
     "multiple-dwelling-test"
     "recursive-sqrt-test"
-    "sudoku-test"))
+    "sudoku-test"
+    "belief-propagation-test"))

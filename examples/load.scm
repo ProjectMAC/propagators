@@ -42,7 +42,8 @@
 
 (for-each
  load-relative
- '("selectors/selectors"))
+ '("belief-propagation"
+   "selectors/selectors"))
 
 (maybe-warn-low-memory)
 (initialize-scheduler)
