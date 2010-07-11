@@ -1,3 +1,18 @@
+Post-monadic progress:
+- Squeeze out uses of nary-unpacking where binary-mapping will suffice
+  - Check each use of propagatify for using the right wrapper.
+  - What's going on with (nary-unpacking (ineq-enforcer-func direction))?
+  - What's going on with (v-c-i/o-unpacking (nary-unpacking f))?
+  - Is it true that switch and accessors are the only uses left?
+- Review the existing code in light of the understanding that
+  autocomposition doesn't work; document map of which partial
+  information structures are implemented; test them?
+- Relate the results of that review to carrying cells;
+- Implement closures (dammit!)
+- Math about what monads become in the new world order?
+  - With the understanding that I am not trying to automatically compose them
+- Return to electricity
+
 Now:
 - Nice pictures, data of me, Gerry, David; add Guy?
 - Link to propagator page from the front page
