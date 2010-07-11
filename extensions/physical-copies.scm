@@ -80,8 +80,9 @@
       unspecific))
   (propagator closure-cell
     (lambda ()
-      (generic-bind (content closure-cell)
+      ((unary-mapping
 	(lambda (closure)
 	  (if (done? closure)
 	      unspecific
-	      (attach closure)))))))
+	      (attach closure))))
+       (content closure-cell)))))
