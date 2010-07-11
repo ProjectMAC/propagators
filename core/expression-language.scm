@@ -138,7 +138,7 @@
 	      (define ,expression-oriented-name
 		(functionalize ,propagator-name))))))))
 
-(propagatify eq? nary-unpacking)
+(propagatify eq? binary-mapping)
 (propagatify expt unary-mapping)
 
 (define c:+ sum-constraint)

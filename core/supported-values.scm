@@ -33,6 +33,8 @@
 (declare-coercion <number> ->v&s)
 (declare-coercion <boolean> ->v&s)
 (declare-coercion rtd:%interval ->v&s)
+;; For propagator closures as Scheme procedures
+(declare-coercion <procedure> ->v&s)
 
 (define (more-informative-support? v&s1 v&s2)
   (and (not (lset= eq? (v&s-support v&s1) (v&s-support v&s2)))
