@@ -46,12 +46,12 @@
 (propagatify trip-segment-pain nary-unpacking)
 (propagatify trip-segment-method nary-unpacking)
 
-(propagatify make-trip-segment-by-start nary-unpacking)
-(propagatify make-trip-segment-by-end nary-unpacking)
-(propagatify make-trip-segment-by-time nary-unpacking)
-(propagatify make-trip-segment-by-cost nary-unpacking)
-(propagatify make-trip-segment-by-pain nary-unpacking)
-(propagatify make-trip-segment-by-method nary-unpacking)
+(propagatify make-trip-segment-by-start unary-mapping)
+(propagatify make-trip-segment-by-end unary-mapping)
+(propagatify make-trip-segment-by-time unary-mapping)
+(propagatify make-trip-segment-by-cost unary-mapping)
+(propagatify make-trip-segment-by-pain unary-mapping)
+(propagatify make-trip-segment-by-method unary-mapping)
 
 (slotful-information-type trip-segment? make-trip-segment
   trip-segment-start trip-segment-end trip-segment-time
