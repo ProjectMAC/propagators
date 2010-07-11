@@ -21,6 +21,7 @@
 
 (define-structure message
   alist)
+(declare-type-tester message? rtd:message)
 
 ;;; TODO Not really slotful: imposes invariant that the alist is
 ;;; an alist; thus order-independent.
