@@ -72,12 +72,19 @@
      x 1) ;;; TODO Make this 1 a real "object that can be coerced into anything"
     ))
 
-;;; TODO Do nary applicative mapping for real
 (define (nary-mapping f)
-  (procedure-arity-dispatch
-   f (lambda (f)
-       (error "Don't know how to applicativize" f))
-   unary-mapping binary-mapping))
+  (lambda args
+    (case (length args)
+      ((0) (f))
+      ((1) ((unary-mapping f) (car args)))
+      ((2) ((binary-mapping f) (car args) (cadr args)))
+      (else
+       (let loop ((args '()) (rest args))
+	 (if (null? (cdr rest))
+	     ((binary-mapping (lambda (lst item)
+				(apply f (reverse (cons item lst)))))
+	      args (car rest))
+	     (loop ((binary-mapping cons) (car rest) args) (cdr rest))))))))
 
 ;;; General generic-monadic machinery
 
