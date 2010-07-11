@@ -57,7 +57,7 @@
 
 ;;; Here is a version that does (I think) do the right thing for
 ;;; interesting partial information types; at least those that have a
-;;; good generic-bind method defined on them.  This uses the strategy
+;;; good binary-map method defined on them.  This uses the strategy
 ;;; of copying the argument cells and identifying them with the formal
 ;;; parameter cells, so that the identification can be made
 ;;; conditional on the partialness of the information about the
