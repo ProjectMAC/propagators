@@ -29,9 +29,16 @@
 
 (load-relative "../core/load.scm")
 
+(define *virtual-copies* #t)
+
+(define (maybe thing bool)
+  (if bool
+      (list thing)
+      '()))
+
 (for-each load-relative-compiled
- '("environments"
-   "closures"
+ `(,@(maybe "environments" *virtual-copies*)
+   ,@(maybe "closures" *virtual-copies*)
    "info-alist"
    "algebraic-tms"
    "electric-parts"
@@ -43,9 +50,9 @@
    "test-utils"))
 
 (for-each load-relative
- '("carrying-cells"
+ `("carrying-cells"
    "physical-copies"
-   "example-closures"
+   ,@(maybe "example-closures" *virtual-copies*)
    "draw"
    "dot-writer"
    "graphml-writer"))

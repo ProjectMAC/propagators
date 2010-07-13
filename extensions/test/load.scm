@@ -19,15 +19,15 @@
 
 
 (for-each load-relative
-  '("inequality-test"
+  `("inequality-test"
     "symbolics-test"
     "symbolics-ineq-test"
     "voltage-divider-test"
     "bridge-rectifier-test"
     "functional-reactive-test"
     "physical-copies-test"
-    "environments-test"
-    "dynamic-closures-test"
+    ,@(maybe "environments-test" *virtual-copies*)
+    ,@(maybe "dynamic-closures-test" *virtual-copies*)
     "graph-drawing-test"))
 
 (load-relative "algebraic-tms-test")
