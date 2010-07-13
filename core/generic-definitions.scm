@@ -52,6 +52,7 @@
       (if (procedure? mapper)
 	  (mapper loop)
 	  (f x y))))
+  (name! loop f)
   loop)
 
 (define binary-map
@@ -67,10 +68,11 @@
   any? nothing?)
 
 (define (unary-mapping f)
-  (lambda (x)
-    ((binary-mapping (lambda (x y) (f x)))
-     x 1) ;;; TODO Make this 1 a real "object that can be coerced into anything"
-    ))
+  (name!
+   (lambda (x)
+     ((binary-mapping (lambda (x y) (f x)))
+      x 1) ;;; TODO Make this 1 a real "object that can be coerced into anything"
+     ) f))
 
 (define (nary-mapping f)
   (lambda args
