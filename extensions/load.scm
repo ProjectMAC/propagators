@@ -29,7 +29,7 @@
 
 (load-relative "../core/load.scm")
 
-(define *virtual-copies* #t)
+(define *virtual-copies* #f)
 
 (define (maybe thing bool)
   (if bool
@@ -50,7 +50,8 @@
    "test-utils"))
 
 (for-each load-relative
- `("carrying-cells"
+ `(,@(maybe "physical-closures" (not *virtual-copies*))
+   "carrying-cells"
    "physical-copies"
    ,@(maybe "example-closures" *virtual-copies*)
    "draw"

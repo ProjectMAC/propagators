@@ -17,19 +17,27 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
+(in-test-group
+ physical-closures
 
-(for-each load-relative
-  `("inequality-test"
-    "symbolics-test"
-    "symbolics-ineq-test"
-    "voltage-divider-test"
-    "bridge-rectifier-test"
-    "functional-reactive-test"
-    "physical-copies-test"
-    ,@(maybe "physical-closures-test" (not *virtual-copies*))
-    ,@(maybe "environments-test" *virtual-copies*)
-    ,@(maybe "dynamic-closures-test" *virtual-copies*)
-    "graph-drawing-test"))
+ (define-test (double)
+   (interaction
+    (initialize-scheduler)
+    (define-cell double
+      (make-closure
+       (lambda ()
+	 (lambda (x out)
+	   (p:+ x x out)))
+       '()))
 
-(load-relative "algebraic-tms-test")
-(load-relative "carrying-cells-test")
+    (define-cell x 2)
+    (define-cell out)
+    (application double x out)
+    (run)
+    (content out)
+    (produces 4)))
+#;
+ (define-test (repeat)
+   (interaction
+    (initialize-scheduler)
+    )))

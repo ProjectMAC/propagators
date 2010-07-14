@@ -60,6 +60,8 @@
 
 (propagatify equivalent-closures? binary-mapping)
 
+;;; This application applies the underlying closure propagator-style,
+;;; not expression-style.
 (define (application closure-cell . arg-cells)
   (define done-closures '())
   (define (done? closure)
