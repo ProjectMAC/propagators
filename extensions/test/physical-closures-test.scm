@@ -133,7 +133,7 @@
        '()))
     (define-cell square
       (make-closure
-       'double
+       'square
        (lambda ()
 	 (lambda (x out)
 	   (p:* x x out)))
@@ -177,8 +177,64 @@
     (content 4x^2)
     (produces 16)
     ))
-#;
+
  (define-test (repeat)
    (interaction
     (initialize-scheduler)
+    (define-cell double
+      (make-closure
+       'double
+       (lambda ()
+	 (lambda (x out)
+	   (p:+ x x out)))
+       '()))
+    (define-cell compose
+      (make-closure
+       'compose
+       (lambda ()
+	 (lambda (f g out)
+	   ((constant
+	     (make-closure
+	      'compose-inner
+	      (lambda (f g)
+		(lambda (x out)
+		  (let-cell gx
+		    (application g x gx)
+		    (application f gx out))))
+	      (list f g)))
+	    out)))
+       '()))
+    (define-cell repeat
+      (let-cell (repeat)
+	((constant
+	  (make-closure
+	   'repeat
+	   (lambda (compose repeat)
+	     (lambda (f n out)
+	       (let-cell (repeat? (e:> n 1))
+		 (let-cell (done? (e:not repeat?))
+		   (switch done? f out)
+		   (let-cells ((n-1 (e:- n 1))
+			       fn-1 f-again out-again n-1-again compose-again repeat-again)
+		     (switch repeat? n-1 n-1-again)
+		     (switch repeat? f f-again)
+		     (switch repeat? out-again out)
+		     (switch repeat? compose compose-again)
+		     (switch repeat? repeat repeat-again)
+		     (application compose-again fn-1 f-again out-again)
+		     (application repeat-again f-again n-1-again fn-1))))))
+	   (list compose repeat)))
+	 repeat)
+	repeat))
+
+    (define-cell n 4)
+    (define-cell sixteenify)
+    (application repeat double n sixteenify)
+    (define-cell x 2)
+    (define-cell 16x)
+    (application sixteenify x 16x)
+
+    (run)
+    (content 16x)
+    (produces 32)
     )))
