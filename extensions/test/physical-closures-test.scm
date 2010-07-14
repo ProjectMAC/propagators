@@ -237,4 +237,63 @@
     (run)
     (content 16x)
     (produces 32)
+    ))
+
+  (define-test (tms-addn)
+   (interaction
+    (initialize-scheduler)
+    
+    (define-cell addn
+      (make-closure
+       'addn
+       (lambda ()
+	 (lambda (n out)
+	   ((p:constant
+	     (make-closure
+	      'addn-internal
+	      (lambda (n)
+		(lambda (x out)
+		  (p:+ n x out)))
+	      (list n)))
+	    out)))
+       '()))
+
+    (define-cell n1 (make-interval 3 5))
+    (define-cell n2 (make-interval 4 7))
+    (define-cell add5-fred)
+    (define-cell add5-bill)
+    (application addn n1 add5-fred)
+    (application addn n2 add5-bill)
+    (define-cell add5)
+
+    (p:switch (make-tms (supported #t '(fred))) add5-fred add5)
+    (p:switch (make-tms (supported #t '(bill))) add5-bill add5)
+
+    (define-cell x (make-tms (supported 3 '(joe))))
+    (define-cell out)
+    (application add5 x out)
+    
+    (run)
+    (tms-query (content out))
+    (produces #(supported #(interval 7 8) (joe bill fred)))
+
+    (kick-out! 'bill)
+    (run)
+    (tms-query (content out))
+    (produces #(supported #(interval 6 8) (joe fred)))
+
+    (kick-out! 'fred)
+    (run)
+    (tms-query (content out))
+    (produces nothing)
+    
+    (bring-in! 'bill)
+    (run)
+    (tms-query (content out))
+    (produces #(supported #(interval 7 10) (joe bill)))
+    
+    (add-content n2 (make-tms (supported (make-interval 5 9) '(harry))))
+    (run)
+    (tms-query (content out))
+    (produces #(supported #(interval 8 10) (harry joe bill)))
     )))

@@ -54,6 +54,8 @@
        (equivalent? (closure-environment closure1)
 		    (closure-environment closure2))))
 
+(declare-coercion rtd:closure ->v&s)
+
 (defhandler merge closure-merge closure? closure?)
 (defhandler equivalent? equivalent-closures? closure? closure?)
 
