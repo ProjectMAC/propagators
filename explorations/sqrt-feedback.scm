@@ -17,11 +17,6 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (add-interval x y)
-  (make-interval (+ (interval-low x) (interval-low y))
-		 (+ (interval-high x) (interval-high y))))
-(defhandler-coercing generic-+ add-interval ->%interval)
-
 (define interval-maker
   (function->propagator-constructor (binary-mapping make-interval)))
 

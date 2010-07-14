@@ -64,6 +64,10 @@
   (and (= (interval-low int1) (interval-low int2))
        (= (interval-high int1) (interval-high int2))))
 
+(define (add-interval x y)
+  (make-interval (+ (interval-low x) (interval-low y))
+		 (+ (interval-high x) (interval-high y))))
+
 (define (mul-interval x y)
   (make-interval (* (interval-low x) (interval-low y))
                  (* (interval-high x) (interval-high y))))
@@ -92,6 +96,7 @@
    (exactness-max (interval-low x) (interval-low y))
    (exactness-min (interval-high x) (interval-high y))))
 
+(defhandler-coercing generic-+ add-interval ->%interval)
 (defhandler-coercing generic-* mul-interval ->%interval)
 (defhandler-coercing generic-/ div-interval ->%interval)
 (defhandler generic-square square-interval %interval?)
