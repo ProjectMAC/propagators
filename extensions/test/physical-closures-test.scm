@@ -120,6 +120,63 @@
     (content out)
     (produces 8)
     ))
+
+ (define-test (compose)
+   (interaction
+    (initialize-scheduler)
+    (define-cell double
+      (make-closure
+       'double
+       (lambda ()
+	 (lambda (x out)
+	   (p:+ x x out)))
+       '()))
+    (define-cell square
+      (make-closure
+       'double
+       (lambda ()
+	 (lambda (x out)
+	   (p:* x x out)))
+       '()))
+    (define-cell compose
+      (make-closure
+       'compose
+       (lambda ()
+	 (lambda (f g out)
+	   ((constant
+	     (make-closure
+	      'compose-inner
+	      (lambda (f g)
+		(lambda (x out)
+		  (let-cell gx
+		    (application g x gx)
+		    (application f gx out))))
+	      (list f g)))
+	    out)))
+       '()))
+    (define-cell double-square)
+    (application compose double square double-square)
+    (define-cell square-double)
+    (application compose square double square-double)
+    (define-cell x 2)
+    (define-cell 2x^2)
+    (application double-square x 2x^2)
+    (define-cell 4x^2)
+    (application square-double x 4x^2)
+    (run)
+    (content 2x^2)
+    (produces 8)
+    (content 4x^2)
+    (produces 16)
+    
+    ;; Stable under kicks:
+    (alert-all-propagators!)
+    (run)
+    (content 2x^2)
+    (produces 8)
+    (content 4x^2)
+    (produces 16)
+    ))
 #;
  (define-test (repeat)
    (interaction
