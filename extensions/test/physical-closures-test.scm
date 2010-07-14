@@ -35,7 +35,49 @@
     (application double x out)
     (run)
     (content out)
-    (produces 4)))
+    (produces 4)
+
+    ;; Stable under kicks:
+    (alert-all-propagators!)
+    (run)
+    (content out)
+    (produces 4)
+    ))
+
+ (define-test (addn)
+   (interaction
+    (initialize-scheduler)
+    (define-cell addn
+      (make-closure
+       (lambda ()
+	 (lambda (n out)
+	   ((p:constant
+	     (make-closure
+	      (lambda (n)
+		(lambda (x out)
+		  (p:+ n x out)))
+	      (list n)))
+	    out)))
+       '()))
+
+    (define-cell n 5)
+    (define-cell add5)
+    (application addn n add5)
+
+    (define-cell x 3)
+    (define-cell out)
+    (application add5 x out)
+    
+    (run)
+    (content out)
+    (produces 8)
+    
+    ;; Stable under kicks:
+    (alert-all-propagators!)
+    (run)
+    (content out)
+    (produces 8)
+    ))
 #;
  (define-test (repeat)
    (interaction
