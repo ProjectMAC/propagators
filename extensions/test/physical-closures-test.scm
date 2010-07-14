@@ -25,6 +25,7 @@
     (initialize-scheduler)
     (define-cell double
       (make-closure
+       'double
        (lambda ()
 	 (lambda (x out)
 	   (p:+ x x out)))
@@ -49,10 +50,12 @@
     (initialize-scheduler)
     (define-cell addn
       (make-closure
+       'addn
        (lambda ()
 	 (lambda (n out)
 	   ((p:constant
 	     (make-closure
+	      'addn-internal
 	      (lambda (n)
 		(lambda (x out)
 		  (p:+ n x out)))
@@ -74,6 +77,45 @@
     
     ;; Stable under kicks:
     (alert-all-propagators!)
+    (run)
+    (content out)
+    (produces 8)
+    ))
+
+ (define-test (merge-addn)
+   (interaction
+    (initialize-scheduler)
+    
+    (define-cell addn
+      (make-closure
+       'addn
+       (lambda ()
+	 (lambda (n out)
+	   ((p:constant
+	     (make-closure
+	      'addn-internal
+	      (lambda (n)
+		(lambda (x out)
+		  (p:+ n x out)))
+	      (list n)))
+	    out)))
+       '()))
+
+    (define-cell n1 (make-interval 3 5))
+    (define-cell n2 (make-interval 4 7))
+    (define-cell add5)
+    (application addn n1 add5)
+    (application addn n2 add5)
+    
+    (define-cell x 3)
+    (define-cell out)
+    (application add5 x out)
+    
+    (run)
+    (content out)
+    (produces #(interval 7 8))
+
+    (add-content n2 (make-interval 5 9))
     (run)
     (content out)
     (produces 8)

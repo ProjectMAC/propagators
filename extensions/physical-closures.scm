@@ -28,11 +28,9 @@
 
 (define-structure
   closure
+  code-tag
   code
   environment)
-
-(define (closure-code-tag closure)
-  (closure-code closure))
 
 (define (same-code? closure1 closure2)
   (eq? (closure-code-tag closure1) (closure-code-tag closure2)))
@@ -47,6 +45,7 @@
 			     (closure-environment closure2))
 	(lambda (new-env)
 	  (make-closure
+	   (closure-code-tag closure1)
 	   (closure-code closure1)
 	   new-env)))))
 
