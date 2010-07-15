@@ -227,15 +227,12 @@
 	 repeat)
 	repeat))
 
-    (define-cell n 4)
-    (define-cell sixteenify)
-    (application repeat double n sixteenify)
-    (define-cell x 2)
-    (define-cell 16x)
-    (application sixteenify x 16x)
+    (define-cell out
+      (e:application
+       (e:application repeat double 4) 2))
 
     (run)
-    (content 16x)
+    (content out)
     (produces 32)
     ))
 
