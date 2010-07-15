@@ -92,11 +92,11 @@
        (lambda ()
 	 (lambda (n)
 	   (e:constant
-	    (make-closure
+	    (make-e:closure
 	     'addn-internal
 	     (lambda (n)
-	       (lambda (x out)
-		 (p:+ n x out)))
+	       (lambda (x)
+		 (e:+ n x)))
 	     (list n)))))
        '()))
 
@@ -121,34 +121,31 @@
    (interaction
     (initialize-scheduler)
     (define-cell double
-      (make-closure
+      (make-e:closure
        'double
        (lambda ()
-	 (lambda (x out)
-	   (p:+ x x out)))
+	 (lambda (x)
+	   (e:+ x x)))
        '()))
     (define-cell square
-      (make-closure
+      (make-e:closure
        'square
        (lambda ()
-	 (lambda (x out)
-	   (p:* x x out)))
+	 (lambda (x)
+	   (e:* x x)))
        '()))
     (define-cell compose
-      (make-closure
+      (make-e:closure
        'compose
        (lambda ()
-	 (lambda (f g out)
-	   ((constant
-	     (make-closure
-	      'compose-inner
-	      (lambda (f g)
-		(lambda (x out)
-		  (let-cell gx
-		    (application g x gx)
-		    (application f gx out))))
-	      (list f g)))
-	    out)))
+	 (lambda (f g)
+	   (e:constant
+	    (make-e:closure
+	     'compose-inner
+	     (lambda (f g)
+	       (lambda (x)
+		 (e:application f (e:application g x))))
+	     (list f g)))))
        '()))
     (define-cell double-square (e:application compose double square))
     (define-cell square-double (e:application compose square double))
@@ -176,27 +173,24 @@
    (interaction
     (initialize-scheduler)
     (define-cell double
-      (make-closure
+      (make-e:closure
        'double
        (lambda ()
-	 (lambda (x out)
-	   (p:+ x x out)))
+	 (lambda (x)
+	   (e:+ x x)))
        '()))
     (define-cell compose
-      (make-closure
+      (make-e:closure
        'compose
        (lambda ()
-	 (lambda (f g out)
-	   ((constant
-	     (make-closure
-	      'compose-inner
-	      (lambda (f g)
-		(lambda (x out)
-		  (let-cell gx
-		    (application g x gx)
-		    (application f gx out))))
-	      (list f g)))
-	    out)))
+	 (lambda (f g)
+	   (e:constant
+	    (make-e:closure
+	     'compose-inner
+	     (lambda (f g)
+	       (lambda (x)
+		 (e:application f (e:application g x))))
+	     (list f g)))))
        '()))
     (define-cell repeat
       (let-cell (repeat)
