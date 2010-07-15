@@ -103,13 +103,10 @@
 
     (define-cell n1 (make-interval 3 5))
     (define-cell n2 (make-interval 4 7))
-    (define-cell add5)
-    (application addn n1 add5)
+    (define-cell add5 (e:application addn n1))
     (application addn n2 add5)
     
-    (define-cell x 3)
-    (define-cell out)
-    (application add5 x out)
+    (define-cell out (e:application add5 3))
     
     (run)
     (content out)
@@ -154,15 +151,13 @@
 	      (list f g)))
 	    out)))
        '()))
-    (define-cell double-square)
-    (application compose double square double-square)
-    (define-cell square-double)
-    (application compose square double square-double)
+    (define-cell double-square (e:application compose double square))
+    (define-cell square-double (e:application compose square double))
+    
     (define-cell x 2)
-    (define-cell 2x^2)
-    (application double-square x 2x^2)
-    (define-cell 4x^2)
-    (application square-double x 4x^2)
+    (define-cell 2x^2 (e:application double-square x))
+    (define-cell 4x^2 (e:application square-double x))
+    
     (run)
     (content 2x^2)
     (produces 8)
