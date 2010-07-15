@@ -87,3 +87,5 @@
 	      unspecific
 	      (attach closure))))
        (content closure-cell)))))
+
+(define e:application (functionalize application))
