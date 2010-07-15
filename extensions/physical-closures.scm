@@ -26,6 +26,14 @@
 ;;; done this way, instead of using Scheme closures, because I need to
 ;;; be able to merge the environments of different closures.
 
+;;; These closures embody the "carrying cells" strategy.  If I wanted
+;;; "copying data", make-closure would need to construct a propagator
+;;; that would rebuild the closure every time any of the cells the
+;;; enviornment grabs experienced any changes.  That would be
+;;; perfectly plausible too, with the same pros and cons of the
+;;; regular "carrying" vs "copying" debate.  I chose the carrying
+;;; strategy here.
+
 (define-structure
   (closure (constructor %make-closure))
   code-tag
@@ -34,10 +42,10 @@
   propagator-style?)
 
 (define (make-closure code-tag code environment)
-  (%make-closure code-tag code environment #t))
+  (%make-closure code-tag code (map ensure-cell environment) #t))
 
 (define (make-e:closure code-tag code environment)
-  (%make-closure code-tag code environment #f))
+  (%make-closure code-tag code (map ensure-cell environment) #f))
 
 (define (same-code? closure1 closure2)
   (eq? (closure-code-tag closure1) (closure-code-tag closure2)))
