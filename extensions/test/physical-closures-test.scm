@@ -87,18 +87,17 @@
     (initialize-scheduler)
     
     (define-cell addn
-      (make-closure
+      (make-e:closure
        'addn
        (lambda ()
-	 (lambda (n out)
-	   ((p:constant
-	     (make-closure
-	      'addn-internal
-	      (lambda (n)
-		(lambda (x out)
-		  (p:+ n x out)))
-	      (list n)))
-	    out)))
+	 (lambda (n)
+	   (e:constant
+	    (make-closure
+	     'addn-internal
+	     (lambda (n)
+	       (lambda (x out)
+		 (p:+ n x out)))
+	     (list n)))))
        '()))
 
     (define-cell n1 (make-interval 3 5))

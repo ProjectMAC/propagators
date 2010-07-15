@@ -27,10 +27,17 @@
 ;;; be able to merge the environments of different closures.
 
 (define-structure
-  closure
+  (closure (constructor %make-closure))
   code-tag
   code
-  environment)
+  environment
+  propagator-style?)
+
+(define (make-closure code-tag code environment)
+  (%make-closure code-tag code environment #t))
+
+(define (make-e:closure code-tag code environment)
+  (%make-closure code-tag code environment #f))
 
 (define (same-code? closure1 closure2)
   (eq? (closure-code-tag closure1) (closure-code-tag closure2)))
@@ -38,19 +45,19 @@
 (define (closure-prepare closure)
   (apply (closure-code closure) (closure-environment closure)))
 
-(define (closure-propagator-style? closure)
-  #t)
-
 (define (closure-merge closure1 closure2)
-  (if (not (same-code? closure1 closure2))
+  (if (or (not (same-code? closure1 closure2))
+	  (not (eqv? (closure-propagator-style? closure1)
+		     (closure-propagator-style? closure2))))
       the-contradiction
       (effectful-bind (merge (closure-environment closure1)
 			     (closure-environment closure2))
 	(lambda (new-env)
-	  (make-closure
+	  (%make-closure
 	   (closure-code-tag closure1)
 	   (closure-code closure1)
-	   new-env)))))
+	   new-env
+	   (closure-propagator-style? closure1))))))
 
 (define (equivalent-closures? closure1 closure2)
   (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
