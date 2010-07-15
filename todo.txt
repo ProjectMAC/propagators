@@ -8,7 +8,6 @@ Post-monadic progress:
   autocomposition doesn't work; document map of which partial
   information structures are implemented; test them?
 - Relate the results of that review to carrying cells;
-- Implement closures (dammit!)
 - Math about what monads become in the new world order?
   - With the understanding that I am not trying to automatically compose them
 - Return to electricity
