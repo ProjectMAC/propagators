@@ -38,6 +38,9 @@
 (define (closure-prepare closure)
   (apply (closure-code closure) (closure-environment closure)))
 
+(define (closure-propagator-style? closure)
+  #t)
+
 (define (closure-merge closure1 closure2)
   (if (not (same-code? closure1 closure2))
       the-contradiction
@@ -69,17 +72,31 @@
     (define done-closures '())
     (define (done? closure)
       (member closure done-closures equivalent-closures?))
+    (define (propagator-style-apply closure pass? arg-cells)
+      (apply (closure-prepare closure)
+	     (map (lambda (arg)
+		    (let-cell arg-copy
+		      (conditional-wire pass? arg arg-copy)
+		      arg-copy))
+		  arg-cells)))
+    (define (expression-style-apply closure pass? arg-cells)
+      (let ((input-cells (except-last-pair arg-cells))
+	    (output-cell (car (last-pair arg-cells))))
+	(conditional-wire pass? output-cell
+         (apply (closure-prepare closure)
+		(map (lambda (arg)
+		       (let-cell arg-copy
+			 (conditional-wire pass? arg arg-copy)
+			 arg-copy))
+		     input-cells)))))
     (define (attach closure)
       (set! done-closures (cons closure done-closures))
       (let-cells (pass? key)
 	(add-content key closure)
 	(p:equivalent-closures? closure-cell key pass?)
-	(apply (closure-prepare closure)
-	       (map (lambda (arg)
-		      (let-cell arg-copy
-			(conditional-wire pass? arg arg-copy)
-			arg-copy))
-		    arg-cells))
+	(if (closure-propagator-style? closure)
+	    (propagator-style-apply closure pass? arg-cells)
+	    (expression-style-apply closure pass? arg-cells))
 	unspecific))
     (propagator closure-cell
       (lambda ()
