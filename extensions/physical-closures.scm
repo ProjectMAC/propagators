@@ -64,28 +64,30 @@
 ;;; This application applies the underlying closure propagator-style,
 ;;; not expression-style.
 (define (application closure-cell . arg-cells)
-  (define done-closures '())
-  (define (done? closure)
-    (member closure done-closures equivalent-closures?))
-  (define (attach closure)
-    (set! done-closures (cons closure done-closures))
-    (let-cells (pass? key)
-      (add-content key closure)
-      (p:equivalent-closures? closure-cell key pass?)
-      (apply (closure-prepare closure)
-	     (map (lambda (arg)
-		    (let-cell arg-copy
-		      (conditional-wire pass? arg arg-copy)
-		      arg-copy))
-		  arg-cells))
-      unspecific))
-  (propagator closure-cell
-    (lambda ()
-      ((unary-mapping
-	(lambda (closure)
-	  (if (done? closure)
-	      unspecific
-	      (attach closure))))
-       (content closure-cell)))))
+  (let ((closure-cell (ensure-cell closure-cell))
+	(arg-cells (map ensure-cell arg-cells)))
+    (define done-closures '())
+    (define (done? closure)
+      (member closure done-closures equivalent-closures?))
+    (define (attach closure)
+      (set! done-closures (cons closure done-closures))
+      (let-cells (pass? key)
+	(add-content key closure)
+	(p:equivalent-closures? closure-cell key pass?)
+	(apply (closure-prepare closure)
+	       (map (lambda (arg)
+		      (let-cell arg-copy
+			(conditional-wire pass? arg arg-copy)
+			arg-copy))
+		    arg-cells))
+	unspecific))
+    (propagator closure-cell
+      (lambda ()
+	((unary-mapping
+	  (lambda (closure)
+	    (if (done? closure)
+		unspecific
+		(attach closure))))
+	 (content closure-cell))))))
 
 (define e:application (functionalize application))

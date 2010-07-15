@@ -258,17 +258,15 @@
 	    out)))
        '()))
 
-    (define-cell n1 (make-interval 3 5))
-    (define-cell n2 (make-interval 4 7))
-    (define-cell add5-fred (e:application addn n1))
-    (define-cell add5-bill (e:application addn n2))
-    (define-cell add5)
+    (define-cell add5-fred (e:application addn (make-interval 3 5)))
+    (define-cell bill (make-interval 4 7))
+    (define-cell add5-bill (e:application addn bill))
 
+    (define-cell add5)
     (p:switch (make-tms (supported #t '(fred))) add5-fred add5)
     (p:switch (make-tms (supported #t '(bill))) add5-bill add5)
 
-    (define-cell x (make-tms (supported 3 '(joe))))
-    (define-cell out (e:application add5 x))
+    (define-cell out (e:application add5 (make-tms (supported 3 '(joe)))))
     
     (run)
     (tms-query (content out))
@@ -289,7 +287,7 @@
     (tms-query (content out))
     (produces #(supported #(interval 7 10) (joe bill)))
     
-    (add-content n2 (make-tms (supported (make-interval 5 9) '(harry))))
+    (add-content bill (make-tms (supported (make-interval 5 9) '(harry))))
     (run)
     (tms-query (content out))
     (produces #(supported #(interval 8 10) (harry joe bill)))
