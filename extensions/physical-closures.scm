@@ -79,8 +79,6 @@
 
 (propagatify equivalent-closures? binary-mapping)
 
-;;; This application applies the underlying closure propagator-style,
-;;; not expression-style.
 (define (application closure-cell . arg-cells)
   (let ((closure-cell (ensure-cell closure-cell))
 	(arg-cells (map ensure-cell arg-cells)))
