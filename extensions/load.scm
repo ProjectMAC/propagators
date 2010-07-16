@@ -52,7 +52,6 @@
 (for-each load-relative
  `(,@(maybe "physical-closures" (not *virtual-copies*))
    "carrying-cells"
-   "physical-copies"
    ,@(maybe "example-closures" *virtual-copies*)
    "draw"
    "dot-writer"

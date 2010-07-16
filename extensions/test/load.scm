@@ -25,7 +25,6 @@
     "voltage-divider-test"
     "bridge-rectifier-test"
     "functional-reactive-test"
-    "physical-copies-test"
     ,@(maybe "physical-closures-test" (not *virtual-copies*))
     ,@(maybe "environments-test" *virtual-copies*)
     ,@(maybe "dynamic-closures-test" *virtual-copies*)
