@@ -65,7 +65,7 @@
   (cond ((closure? thing)
 	 (closure-propagator-style? thing))
 	((propagator-constructor? thing)
-	 (not (eq-get thing 'expression-style?)))
+	 (not (eq-get thing 'expression-style)))
 	(else (error "Propagator style question not applicable" thing))))
 
 (define (closure-merge closure1 closure2)

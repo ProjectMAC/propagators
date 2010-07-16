@@ -27,27 +27,30 @@
 (define (functionalize propagator #!optional num-outputs)
   (if (default-object? num-outputs)
       (set! num-outputs 1))
-  (lambda inputs
-    (define (manufacture-cell)
-      (eq-put! (make-named-cell 'cell) 'subexprs inputs))
-    (define outputs (map (lambda (k) (manufacture-cell))
-			 (iota num-outputs)))
-    (define true-inputs
-      (let loop ((inputs inputs)
-		 (outputs outputs))
-	(cond ((null? inputs)
-	       outputs)
-	      ((implicit-cell? (car inputs))
-	       (if (null? outputs)
-		   (error "Too many implicit cells" inputs)
-		   (cons (car outputs)
-			 (loop (cdr inputs) (cdr outputs)))))
-	      (else
-	       (cons (car inputs) (loop (cdr inputs) outputs))))))
-    (apply propagator (map ensure-cell true-inputs))
-    (if (= 1 (length outputs))
-	(car outputs)
-	(apply values outputs))))
+  (propagator-constructor!
+   (eq-put!
+    (lambda inputs
+      (define (manufacture-cell)
+	(eq-put! (make-named-cell 'cell) 'subexprs inputs))
+      (define outputs (map (lambda (k) (manufacture-cell))
+			   (iota num-outputs)))
+      (define true-inputs
+	(let loop ((inputs inputs)
+		   (outputs outputs))
+	  (cond ((null? inputs)
+		 outputs)
+		((implicit-cell? (car inputs))
+		 (if (null? outputs)
+		     (error "Too many implicit cells" inputs)
+		     (cons (car outputs)
+			   (loop (cdr inputs) (cdr outputs)))))
+		(else
+		 (cons (car inputs) (loop (cdr inputs) outputs))))))
+      (apply propagator (map ensure-cell true-inputs))
+      (if (= 1 (length outputs))
+	  (car outputs)
+	  (apply values outputs)))
+    'expression-style #t)))
 
 ;;; Naming convention:
 ;;;   p:foo  for the propagator version of foo

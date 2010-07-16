@@ -269,6 +269,12 @@
     (run)
     (check (= 7 (content out))))
 
+  (define-test (first-class-e:primitives)
+    (initialize-scheduler)
+    (define-cell out (e:application e:+ 3 4))
+    (run)
+    (check (= 7 (content out))))
+
   (define-test (first-class-primitives-tms)
     (interaction
      (initialize-scheduler)
