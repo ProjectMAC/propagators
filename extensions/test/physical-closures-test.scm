@@ -279,7 +279,7 @@
     (interaction
      (initialize-scheduler)
      (define-cell bill-op p:+)
-     (define-cell fred-op p:*)
+     (define-cell fred-op e:*)
      (define-cell the-op)
      (switch (make-tms (supported #t '(bill))) bill-op the-op)
      (switch (make-tms (supported #t '(fred))) fred-op the-op)
