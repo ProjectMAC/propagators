@@ -275,6 +275,14 @@
     (run)
     (check (= 7 (content out))))
 
+  (define-test (first-class-macro-primitives)
+    (initialize-scheduler)
+    (define-cell x)
+    (define-cell out (e:application sum-constraint 3 x))
+    (add-content out 7)
+    (run)
+    (check (= 4 (content x))))
+
   (define-test (first-class-primitives-tms)
     (interaction
      (initialize-scheduler)
