@@ -84,7 +84,9 @@
 
 (define (equivalent-closures? closure1 closure2)
   (or (eqv? closure1 closure2)
-      (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
+      (and (closure? closure1)
+	   (closure? closure2)
+	   (eq? (closure-code-tag closure1) (closure-code-tag closure2))
 	   (equivalent? (closure-environment closure1)
 			(closure-environment closure2)))))
 

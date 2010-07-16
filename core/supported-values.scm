@@ -33,6 +33,7 @@
 (declare-coercion <number> ->v&s)
 (declare-coercion <boolean> ->v&s)
 (declare-coercion rtd:%interval ->v&s)
+(declare-coercion propagator-constructor? ->v&s)
 
 (define (more-informative-support? v&s1 v&s2)
   (and (not (lset= eq? (v&s-support v&s1) (v&s-support v&s2)))
