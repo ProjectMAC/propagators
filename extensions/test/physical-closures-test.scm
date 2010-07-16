@@ -26,9 +26,8 @@
     (define-cell double
       (make-closure
        'double
-       (lambda ()
-	 (lambda (x out)
-	   (p:+ x x out)))
+       (lambda (x out)
+	 (p:+ x x out))
        '()))
 
     (define-cell x 2)
@@ -51,16 +50,14 @@
     (define-cell addn
       (make-closure
        'addn
-       (lambda ()
-	 (lambda (n out)
-	   ((p:constant
-	     (make-closure
-	      'addn-internal
-	      (lambda (n)
-		(lambda (x out)
-		  (p:+ n x out)))
-	      (list n)))
-	    out)))
+       (lambda (n out)
+	 ((p:constant
+	   (make-closure
+	    'addn-internal
+	    (lambda (x out)
+	      (p:+ n x out))
+	    (list n)))
+	  out))
        '()))
 
     (define-cell n 5)
@@ -89,15 +86,13 @@
     (define-cell addn
       (make-e:closure
        'addn
-       (lambda ()
-	 (lambda (n)
-	   (e:constant
-	    (make-e:closure
-	     'addn-internal
-	     (lambda (n)
-	       (lambda (x)
-		 (e:+ n x)))
-	     (list n)))))
+       (lambda (n)
+	 (e:constant
+	  (make-e:closure
+	   'addn-internal
+	   (lambda (x)
+	     (e:+ n x))
+	   (list n))))
        '()))
 
     (define-cell n1 (make-interval 3 5))
@@ -123,29 +118,25 @@
     (define-cell double
       (make-e:closure
        'double
-       (lambda ()
-	 (lambda (x)
-	   (e:+ x x)))
+       (lambda (x)
+	 (e:+ x x))
        '()))
     (define-cell square
       (make-e:closure
        'square
-       (lambda ()
-	 (lambda (x)
-	   (e:* x x)))
+       (lambda (x)
+	 (e:* x x))
        '()))
     (define-cell compose
       (make-e:closure
        'compose
-       (lambda ()
-	 (lambda (f g)
-	   (e:constant
-	    (make-e:closure
-	     'compose-inner
-	     (lambda (f g)
-	       (lambda (x)
-		 (e:application f (e:application g x))))
-	     (list f g)))))
+       (lambda (f g)
+	 (e:constant
+	  (make-e:closure
+	   'compose-inner
+	   (lambda (x)
+	     (e:application f (e:application g x)))
+	   (list f g))))
        '()))
     (define-cell double-square (e:application compose double square))
     (define-cell square-double (e:application compose square double))
@@ -175,42 +166,38 @@
     (define-cell double
       (make-e:closure
        'double
-       (lambda ()
-	 (lambda (x)
-	   (e:+ x x)))
+       (lambda (x)
+	 (e:+ x x))
        '()))
     (define-cell compose
       (make-e:closure
        'compose
-       (lambda ()
-	 (lambda (f g)
-	   (e:constant
-	    (make-e:closure
-	     'compose-inner
-	     (lambda (f g)
-	       (lambda (x)
-		 (e:application f (e:application g x))))
-	     (list f g)))))
+       (lambda (f g)
+	 (e:constant
+	  (make-e:closure
+	   'compose-inner
+	   (lambda (x)
+	     (e:application f (e:application g x)))
+	   (list f g))))
        '()))
     (define-cell repeat
       (let-cell (repeat)
 	((constant
 	  (make-closure
 	   'repeat
-	   (lambda (compose repeat)
-	     (lambda (f n out)
-	       (let-cell (repeat? (e:> n 1))
-		 (let-cell (done? (e:not repeat?))
-		   (switch done? f out)
-		   (let-cells ((n-1 (e:- n 1))
-			       fn-1 f-again out-again n-1-again compose-again repeat-again)
-		     (switch repeat? n-1 n-1-again)
-		     (switch repeat? f f-again)
-		     (switch repeat? out-again out)
-		     (switch repeat? compose compose-again)
-		     (switch repeat? repeat repeat-again)
-		     (application compose-again fn-1 f-again out-again)
-		     (application repeat-again f-again n-1-again fn-1))))))
+	   (lambda (f n out)
+	     (let-cell (repeat? (e:> n 1))
+	       (let-cell (done? (e:not repeat?))
+		 (switch done? f out)
+		 (let-cells ((n-1 (e:- n 1))
+			     fn-1 f-again out-again n-1-again compose-again repeat-again)
+		   (switch repeat? n-1 n-1-again)
+		   (switch repeat? f f-again)
+		   (switch repeat? out-again out)
+		   (switch repeat? compose compose-again)
+		   (switch repeat? repeat repeat-again)
+		   (application compose-again fn-1 f-again out-again)
+		   (application repeat-again f-again n-1-again fn-1)))))
 	   (list compose repeat)))
 	 repeat)
 	repeat))
@@ -231,16 +218,14 @@
     (define-cell addn
       (make-closure
        'addn
-       (lambda ()
-	 (lambda (n out)
-	   ((p:constant
-	     (make-closure
-	      'addn-internal
-	      (lambda (n)
-		(lambda (x out)
-		  (p:+ n x out)))
-	      (list n)))
-	    out)))
+       (lambda (n out)
+	 ((p:constant
+	   (make-closure
+	    'addn-internal
+	    (lambda (x out)
+	      (p:+ n x out))
+	    (list n)))
+	  out))
        '()))
 
     (define-cell add5-fred (e:application addn (make-interval 3 5)))

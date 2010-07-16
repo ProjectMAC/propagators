@@ -21,10 +21,14 @@
 
 ;;; A "closure" is a structure containing a code fragment and an
 ;;; environment.  The environment is a list of cells.  The code
-;;; fragment is a procedure that, when applied to the environment,
-;;; produces a procedure that can be applied to new cells.  This is
-;;; done this way, instead of using Scheme closures, because I need to
-;;; be able to merge the environments of different closures.
+;;; fragment is a Scheme closure, such that the only interesting
+;;; things it is closed over are cells listed in the environment.
+;;; This is done this way, instead of just using Scheme closures,
+;;; because I need to be able to merge the environments of different
+;;; closures.  If closures are desired that close over interesting
+;;; things that are not cells, a variant can be created where the
+;;; Scheme procedure accepts the environment and then returns a new
+;;; Scheme procedure to fill the role of the closure-code here.
 
 ;;; These closures embody the "carrying cells" strategy.  If I wanted
 ;;; "copying data", make-closure would need to construct a propagator
@@ -49,9 +53,6 @@
 
 (define (same-code? closure1 closure2)
   (eq? (closure-code-tag closure1) (closure-code-tag closure2)))
-
-(define (closure-prepare closure)
-  (apply (closure-code closure) (closure-environment closure)))
 
 (define (closure-merge closure1 closure2)
   (if (or (not (same-code? closure1 closure2))
@@ -86,7 +87,7 @@
     (define (done? closure)
       (member closure done-closures equivalent-closures?))
     (define (propagator-style-apply closure pass? arg-cells)
-      (apply (closure-prepare closure)
+      (apply (closure-code closure)
 	     (map (lambda (arg)
 		    (let-cell arg-copy
 		      (conditional-wire pass? arg arg-copy)
@@ -96,7 +97,7 @@
       (let ((input-cells (except-last-pair arg-cells))
 	    (output-cell (car (last-pair arg-cells))))
 	(conditional-wire pass? output-cell
-         (apply (closure-prepare closure)
+         (apply (closure-code closure)
 		(map (lambda (arg)
 		       (let-cell arg-copy
 			 (conditional-wire pass? arg arg-copy)
