@@ -280,12 +280,22 @@
      (define-cell out (e:application the-op 3 4))
      (run)
      (produces '(contradiction (bill fred)))
+     (check (equal? '(application) (map name (neighbors the-op))))
+
      (kick-out! 'bill)
      (run)
      (tms-query (content out))
      (produces #(supported 12 (fred)))
+     (check (equal? '(equivalent-closures? application)
+		    (map name (neighbors the-op))))
+
      (kick-out! 'fred)
      (bring-in! 'bill)
      (run)
      (tms-query (content out))
-     (produces #(supported 7 (bill))))))
+     (produces #(supported 7 (bill)))
+     (check (equal? '(equivalent-closures? equivalent-closures? application)
+		    (map name (neighbors the-op))))
+     ))
+
+  )
