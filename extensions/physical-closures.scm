@@ -54,6 +54,20 @@
 (define (same-code? closure1 closure2)
   (eq? (closure-code-tag closure1) (closure-code-tag closure2)))
 
+(define (closure-body thing)
+  (cond ((closure? thing)
+	 (closure-code thing))
+	((cell? thing)
+	 (error "Cells do not have closure bodies" thing))
+	((procedure? thing)
+	 thing)
+	(else (error "General things do not have closure bodies" thing))))
+
+(define (propagator-style? thing)
+  (if (closure? thing)
+      (closure-propagator-style? thing)
+      (not (eq-get thing 'expression-style?))))
+
 (define (closure-merge closure1 closure2)
   (if (or (not (same-code? closure1 closure2))
 	  (not (eqv? (closure-propagator-style? closure1)
@@ -87,7 +101,7 @@
     (define (done? closure)
       (member closure done-closures equivalent-closures?))
     (define (propagator-style-apply closure pass? arg-cells)
-      (apply (closure-code closure)
+      (apply (closure-body closure)
 	     (map (lambda (arg)
 		    (let-cell arg-copy
 		      (conditional-wire pass? arg arg-copy)
@@ -97,7 +111,7 @@
       (let ((input-cells (except-last-pair arg-cells))
 	    (output-cell (car (last-pair arg-cells))))
 	(conditional-wire pass? output-cell
-         (apply (closure-code closure)
+         (apply (closure-body closure)
 		(map (lambda (arg)
 		       (let-cell arg-copy
 			 (conditional-wire pass? arg arg-copy)
@@ -108,7 +122,7 @@
       (let-cells (pass? key)
 	(add-content key closure)
 	(p:equivalent-closures? closure-cell key pass?)
-	(if (closure-propagator-style? closure)
+	(if (propagator-style? closure)
 	    (propagator-style-apply closure pass? arg-cells)
 	    (expression-style-apply closure pass? arg-cells))
 	unspecific))
