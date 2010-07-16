@@ -99,6 +99,17 @@
           (add-content output
             (apply f (map content inputs))))))))
 
+(define (propagator-constructor? thing)
+  (or (eq-get thing 'propagator-constructor)
+      (and (procedure? thing)
+	   (not (cell? thing))
+	   (not (propagator? thing))
+	   (warn "Imputing propagator-contructor-hood" thing)
+	   #t)))
+
+(define (propagator-contructor! thing)
+  (eq-put! thing 'propagator-contructor #t))
+
 ;;; This version has additional metadata to allow the propagator
 ;;; network to be effectively traversed (see extensions/draw.scm)
 (define (function->propagator-constructor f)
