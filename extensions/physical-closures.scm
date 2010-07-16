@@ -130,12 +130,14 @@
 	    (expression-style-apply closure pass? arg-cells))
 	unspecific))
     (propagator closure-cell
-      (lambda ()
-	((unary-mapping
-	  (lambda (closure)
-	    (if (done? closure)
-		unspecific
-		(attach closure))))
-	 (content closure-cell))))))
+      (name!
+       (lambda ()
+	 ((unary-mapping
+	   (lambda (closure)
+	     (if (done? closure)
+		 unspecific
+		 (attach closure))))
+	  (content closure-cell)))
+       'application))))
 
 (define e:application (functionalize application))
