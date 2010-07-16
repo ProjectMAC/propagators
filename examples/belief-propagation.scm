@@ -143,6 +143,7 @@
       (let ((other-terminal-values (cdr values))
 	    (value-at-index (car values)))
 	(apply factor (splice other-terminal-values index value-at-index))))
+    (eq-put! fixed-factor 'not-propagator-constructor #t) ;; TODO Fix this!
     (let-cell factor-cell
       (add-content factor-cell fixed-factor)
       factor-cell))
