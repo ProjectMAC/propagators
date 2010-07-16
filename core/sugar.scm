@@ -183,11 +183,12 @@
 (define-syntax named-propagator-syntax
   (syntax-rules ()
     ((named-propagator-syntax (name arg-form ...) body-form ...)
-     (named-lambda (name arg-form ...)
-       (with-network-group (network-group-named 'name)
+     (propagator-constructor!
+      (named-lambda (name arg-form ...)
+	(with-network-group (network-group-named 'name)
 	 (lambda ()
 	   (name-locally! arg-form 'arg-form) ...
-	   body-form ...))))))
+	   body-form ...)))))))
 
 ;;; This version is just like define-propagator-syntax, but expects
 ;;; all its arguments to actually be cells, and enforces that
@@ -202,7 +203,8 @@
 (define-syntax named-macro-propagator
   (syntax-rules ()
     ((named-macro-propagator stuff ...)
-     (coercing ensure-cell (named-propagator-syntax stuff ...)))))
+     (propagator-constructor!
+      (coercing ensure-cell (named-propagator-syntax stuff ...))))))
 
 ;;; This version is just like define-macro-propagator, but
 ;;; additionally allows the body to be recursive by delaying its
