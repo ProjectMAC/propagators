@@ -90,6 +90,22 @@
 (define (propagator? thing)
   (eq-get thing 'propagator))
 
+(define (propagator-constructor? thing)
+  (or (eq-get thing 'propagator-constructor)
+      ;; TODO This is such a hack!  I probably should not represent
+      ;; propagator constructors quite this directly as Scheme
+      ;; procedures...
+      (and (not (eq-get thing 'not-propagator-constructor))
+	   (procedure? thing)
+	   (not (cell? thing))
+	   (not (propagator? thing))
+	   (warn "Imputing propagator-constructor-hood" thing)
+	   #t)))
+
+(define (propagator-constructor! thing)
+  (eq-put! thing 'propagator-constructor #t)
+  thing)
+
 (define (function->propagator-constructor f)
   (lambda cells
     (let ((output (ensure-cell (car (last-pair cells))))
@@ -99,29 +115,19 @@
           (add-content output
             (apply f (map content inputs))))))))
 
-(define (propagator-constructor? thing)
-  (or (eq-get thing 'propagator-constructor)
-      (and (procedure? thing)
-	   (not (cell? thing))
-	   (not (propagator? thing))
-	   (warn "Imputing propagator-contructor-hood" thing)
-	   #t)))
-
-(define (propagator-contructor! thing)
-  (eq-put! thing 'propagator-contructor #t))
-
 ;;; This version has additional metadata to allow the propagator
 ;;; network to be effectively traversed (see extensions/draw.scm)
 (define (function->propagator-constructor f)
-  (lambda cells
-    (let ((output (ensure-cell (car (last-pair cells))))
-          (inputs (map ensure-cell (except-last-pair cells))))
-      (let ((the-propagator
-             (lambda ()
-               (add-content output (apply f (map content inputs))))))
-        (eq-adjoin! output 'shadow-connections the-propagator)
-        (eq-label! the-propagator 'name f 'inputs inputs 'outputs (list output))
-        (propagator inputs the-propagator)))))
+  (propagator-constructor!
+   (lambda cells
+     (let ((output (ensure-cell (car (last-pair cells))))
+	   (inputs (map ensure-cell (except-last-pair cells))))
+       (let ((the-propagator
+	      (lambda ()
+		(add-content output (apply f (map content inputs))))))
+	 (eq-adjoin! output 'shadow-connections the-propagator)
+	 (eq-label! the-propagator 'name f 'inputs inputs 'outputs (list output))
+	 (propagator inputs the-propagator))))))
 
 ;;; Propagators that defer the construction of their bodies, as one
 ;;; mechanism of abstraction.
@@ -143,15 +149,16 @@
     (propagator neighbors test)))
 
 (define (delayed-propagator-constructor prop-ctor)
-  (lambda args
-    ;; TODO Can I autodetect "inputs" that should not trigger
-    ;; construction?
-    (let ((args (map ensure-cell args)))
-      (one-shot-propagator args
-        (apply eq-label!
-	  (lambda ()
-	    (apply prop-ctor args))
-	  (compute-aggregate-metadata prop-ctor args))))))
+  (propagator-constructor!
+   (lambda args
+     ;; TODO Can I autodetect "inputs" that should not trigger
+     ;; construction?
+     (let ((args (map ensure-cell args)))
+       (one-shot-propagator args
+	(apply eq-label!
+	       (lambda ()
+		 (apply prop-ctor args))
+	       (compute-aggregate-metadata prop-ctor args)))))))
 
 ;;;; Merging
 
