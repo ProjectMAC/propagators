@@ -83,9 +83,10 @@
 	   (closure-propagator-style? closure1))))))
 
 (define (equivalent-closures? closure1 closure2)
-  (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
-       (equivalent? (closure-environment closure1)
-		    (closure-environment closure2))))
+  (or (eqv? closure1 closure2)
+      (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
+	   (equivalent? (closure-environment closure1)
+			(closure-environment closure2)))))
 
 (declare-coercion rtd:closure ->v&s)
 

@@ -263,7 +263,7 @@
     (produces #(supported #(interval 8 10) (harry joe bill)))
     ))
 
-  (define (first-class-primitives)
+  (define-test (first-class-primitives)
     (define-cell out (e:application p:+ 3 4))
     (run)
     (check (= 7 (content out)))))
