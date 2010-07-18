@@ -39,7 +39,7 @@
 ;;; strategy here.
 
 (define-structure
-  (closure (constructor %make-closure))
+  (closure (constructor %make-closure) (safe-accessors #t))
   code-tag
   code
   environment
