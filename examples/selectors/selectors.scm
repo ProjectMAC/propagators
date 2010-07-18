@@ -141,11 +141,11 @@
   (p:make-trip-segment-by-end
    (e:trip-segment-end (car (last-pair subanswers))) out)
   (p:make-trip-segment-by-time
-   (reduce e:+ (e:constant 0) (map e:trip-segment-time subanswers)) out)
+   (reduce e:+ 0 (map e:trip-segment-time subanswers)) out)
   (p:make-trip-segment-by-cost
-   (reduce e:+ (e:constant 0) (map e:trip-segment-cost subanswers)) out)
+   (reduce e:+ 0 (map e:trip-segment-cost subanswers)) out)
   (p:make-trip-segment-by-pain
-   (reduce e:+ (e:constant 0) (map e:trip-segment-pain subanswers)) out)
+   (reduce e:+ 0 (map e:trip-segment-pain subanswers)) out)
   ;; TODO Do the method correctly; incl the waypoints, etc.
   )
 
@@ -162,7 +162,7 @@
 	 (lambda ()
 	   ((constant (make-trip-segment-by-method 'just-walk)) segment)
 	   (p:make-trip-segment-by-time
-	    (e:time-est segment (e:constant (& 3 (/ mile hour))))
+	    (e:time-est segment (& 3 (/ mile hour)))
 	    segment)
 	   ;; TODO Fix this hack
 	   (p:tag-not-estimate segment segment)
@@ -258,8 +258,7 @@
   ;; TODO Clean up which uses of time-est are actually estimates
   ;; and which are "hard"
   (p:make-trip-segment-by-time
-   (e:+ (e:time-est segment (e:constant (& 50 (/ mile hour))))
-	(e:constant (& 2 hour)))
+   (e:+ (e:time-est segment (& 50 (/ mile hour))) (& 2 hour))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 50 dollar))))
    segment)
