@@ -87,9 +87,6 @@
 (declare-type-tester kons? rtd:kons)
 
 (slotful-information-type kons? kons kons-kar kons-kdr)
-(define konser (function->propagator-constructor kons))
-(define karer (function->propagator-constructor (nary-unpacking kons-kar)))
-(define kdrer (function->propagator-constructor (nary-unpacking kons-kdr)))
 
 (define-method generic-match ((pattern <vector>) (object rtd:kons))
   (generic-match
