@@ -119,6 +119,6 @@
 	(v&s-value (tms-query (content (current n2t2)))))
       all-cells)
     (produces
-     '(#(symb-ineq #(symbolic 2 #(metadata (x) (((= x 6) ())) ())) () ())))))
+     '(#(symbolic 2 #(metadata (x) (((= x 6) ())) ()))))))
 
  )

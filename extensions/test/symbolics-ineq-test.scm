@@ -261,6 +261,39 @@
       '())
      ))
 
+   (generic-match #t ;; TODO Should this forward the metadata?
+    ((binary-mapping generic-<=)
+     (make-symbolic
+      -6
+      (make-symbolic-metadata '(x) '(((= x 0) ())) '()))
+     (make-symbolic
+      0
+      (make-symbolic-metadata '(x) '(((= x 0) ())) '()))))
+
+   (generic-match #t ;; TODO Should this detect the inconsistency?
+    ((binary-mapping generic-<=)
+     (make-symbolic
+      -6
+      (make-symbolic-metadata '(x) '(((= x 6) ())) '()))
+     (make-symbolic
+      0
+      (make-symbolic-metadata '(x) '(((= x 0) ())) '()))))
+
+   (generic-match #t ;; TODO Should this forward the metadata?
+    ((binary-mapping generic-<=)
+     (make-symb-ineq
+      (make-symbolic
+       -6
+       (make-symbolic-metadata '(x) '(((= x 0) ())) '()))
+      '()
+      '())
+     (make-symb-ineq
+      (make-symbolic
+       0
+       (make-symbolic-metadata '(x) '(((= x 0) ())) '()))
+      '()
+      '())))
+
    )
 
  (define-test (ineq-enforcer-smoke)

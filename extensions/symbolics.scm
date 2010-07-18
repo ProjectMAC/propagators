@@ -122,11 +122,13 @@
 (define (symbolic-binary-map symb1 symb2)
   (lambda (f)
     (let ((answer (f (symbolic-expression symb1) (symbolic-expression symb2))))
-      ;; This nothing? check protects against confusion engendered by
-      ;; > returning nothing.  I will need to understand more
-      ;; carefully what's going on to do this more cleanly.
-      (if (nothing? answer)
-	  nothing
+      ;; This check protects against confusion engendered by >
+      ;; returning nothing or a boolean.  I will need to understand
+      ;; more carefully what's going on to do this more cleanly.  In
+      ;; particular, doing things this way drops hard-earned metadata
+      ;; on the floor.
+      (if (or (nothing? answer) (boolean? answer))
+	  answer
 	  (make-symbolic
 	   answer
 	   (unify-metadata (symbolic-metadata symb1) (symbolic-metadata symb2)))))))

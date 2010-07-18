@@ -120,6 +120,9 @@
 		   the-contradiction
 		   ;; TODO eq?-normalize
 		   (make-symb-ineq new-expression '() new-global)))))
+	  ((boolean? new-expression)
+	   ;; TODO What about keeping track of the hard-earned metadata?
+	   new-expression)
 	  (else
 	   (error "Wah!  symb-ineq-merge doesn't know how to handle" new-expression)))))
 
