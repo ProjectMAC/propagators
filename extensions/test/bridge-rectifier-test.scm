@@ -57,45 +57,23 @@
     (define n4t2 (cadr n4))
     (define n4t3 (caddr n4))
 
-    (define-cell strength-Vs)
-    (define Vs (voltage-source strength-Vs))
-    (add-content strength-Vs 6)
-
-    (define-cell resistance-R1)
-    (define R1 (linear-resistor resistance-R1))
-    ((constant 3) resistance-R1)
-
+    (define Vs (voltage-source 6))
+    (define R1 (linear-resistor 3))
     (define D12 (ideal-diode))
     (define D42 (ideal-diode))
     (define D31 (ideal-diode))
     (define D34 (ideal-diode))
 
-    (define P1 (Vs n1t1 n4t1))
-
-    (define P2 (D12 n1t2 n2t1))
-
-    (define P3 (D42 n4t2 n2t3))
-
-    (define P4 (D31 n3t1 n1t3))
-
-    (define P5 (D34 n3t3 n4t3))
-
-    (define P6 (R1 n2t2 n3t2))
+    (define-cell P1 (Vs n1t1 n4t1))
+    (define-cell P2 (D12 n1t2 n2t1))
+    (define-cell P3 (D42 n4t2 n2t3))
+    (define-cell P4 (D31 n3t1 n1t3))
+    (define-cell P5 (D34 n3t3 n4t3))
+    (define-cell P6 (R1 n2t2 n3t2))
 
     (ground n4)
 
-    (define-cell P)
-    (define-cell P12)
-    (define-cell P34)
-    (define-cell P56)
-    (define-cell P1234)
-
-    (sum-constraint P1 P2 P12)
-    (sum-constraint P3 P4 P34)
-    (sum-constraint P5 P6 P56)
-
-    (sum-constraint P12 P34 P1234)
-    (sum-constraint P1234 P56 P)
+    (define-cell P (ce:+ (ce:+ (ce:+ P1 P2) (ce:+ P3 P4)) (ce:+ P5 P6)))
 
     (define all-cells
       (list (potential n1t1) (current n1t1)
