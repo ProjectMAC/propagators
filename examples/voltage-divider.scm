@@ -34,19 +34,11 @@
 ; (ground n0)
 (plunker (potential n0t1))
 
-(define Pv
-  ((voltage-source (e:constant 6))
-   n1t1 n0t1))
+(define-cell Pv ((voltage-source 6) n1t1 n0t1))
+(define-cell PR1 ((linear-resistor 4) n1t2 n2t1))
+(define-cell PR2 ((linear-resistor 2) n2t2 n0t2))
 
-(define PR1
-  ((linear-resistor (e:constant 4))
-   n1t2 n2t1))
-
-(define PR2
-  ((linear-resistor (e:constant 2))
-   n2t2 n0t2))
-
-(define power (e:+ Pv (e:+ PR1 PR2)))
+(define-cell power (e:+ Pv (e:+ PR1 PR2)))
 
 (plunker (potential n2t1))
 
