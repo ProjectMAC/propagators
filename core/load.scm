@@ -34,7 +34,7 @@
 (for-each load-relative-compiled
   '("scheduler"
     "metadata"
-    "core"
+    "cells"
     "propagators"
     "sugar"
     "generic-definitions"
