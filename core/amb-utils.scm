@@ -50,3 +50,18 @@
 	  (else
 	   (error "Inadequate choices for one-of"
 		  inputs output)))))
+
+(define p:amb binary-amb)
+(define (e:amb)
+  (let ((answer (make-named-cell 'cell)))
+    (binary-amb answer)
+    (eq-put! answer 'subexprs '())
+    answer))
+(define p:require require)
+(define p:forbid forbid)
+;; The expression versions of require and forbid are kinda dumb, but
+;; provided anyway
+(define e:require (functionalize p:require))
+(define e:forbid (functionalize p:forbid))
+
+(define e:one-of (functionalize one-of))

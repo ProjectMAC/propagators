@@ -40,6 +40,7 @@
     "sugar"
     "generic-definitions"
     "standard-propagators"
+    "expression-language"
     "intervals"
     "premises"
     "supported-values"
@@ -48,7 +49,6 @@
     "search"
     "amb-utils"
     "compound-data"
-    "expression-language"
     "example-networks"))
 
 (maybe-warn-low-memory)
