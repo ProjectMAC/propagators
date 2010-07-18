@@ -20,14 +20,16 @@
 (declare (usual-integrations make-cell cell?))
 
 ;;;; Propagators implementing the carrying cells strategy
+;;; for compound data structures.
 
-;;; The specific version
+;;; CONS looks like this:
 #;
-(define-macro-propagator (p:carry-cons a-cell d-cell output)
-  ((constant (cons a-cell d-cell))
-   output))
+ (define-macro-propagator (p:carry-cons a-cell d-cell output)
+   ((constant (cons a-cell d-cell))
+    output))
 
-;;; The general version
+;;; The general version for arbitrary constructors:
+
 (define (function->cell-carrier-constructor f)
   (lambda cells
     (let ((output (ensure-cell (car (last-pair cells))))
@@ -38,16 +40,28 @@
 (define p:carry-cons (function->cell-carrier-constructor cons))
 (define e:carry-cons (functionalize p:carry-cons))
 
+;;; Propagator-style accessors are remarkably easy:
+
 (define-macro-propagator (p:carry-car pair-cell output)
   (p:carry-cons output nothing pair-cell))
-(define %e:carry-car (functionalize p:carry-car))
-#;
-(define (e:carry-car pair-cell)
-  (if (and (cell? pair-cell)
-	   (pair? (content pair-cell))
-	   (cell? (car (content pair-cell))))
-      (car (content pair-cell))
-      (%e:carry-car pair-cell)))
+(define-macro-propagator (p:carry-cdr pair-cell output)
+  (p:carry-cons nothing output pair-cell))
+
+;;; Expression-style accessors are also just as easy in principle, but
+;;; there is an opportunity for a performance hack: if the cell
+;;; holding the accessed item is already present in the compound when
+;;; the accessor propagator is constructed (and no partialness of
+;;; information intervenes), then it's ok to just grab that cell and
+;;; return it.  The version for CAR looks like this:
+#|
+ (define (e:carry-car pair-cell)
+   (if (and (cell? pair-cell)
+	    (pair? (content pair-cell))
+	    (cell? (car (content pair-cell))))
+       (car (content pair-cell))
+       (%e:carry-car pair-cell)))
+|#
+;;; The general version looks like this:
 
 (define (early-access-hack type? accessor fallback)
   (lambda (structure-cell)
@@ -56,9 +70,9 @@
 	     (cell? (accessor (content structure-cell))))
 	(accessor (content structure-cell))
 	(fallback structure-cell))))
+
+(define %e:carry-car (functionalize p:carry-car))
 (define e:carry-car (early-access-hack pair? car %e:carry-car))
 
-(define-macro-propagator (p:carry-cdr pair-cell output)
-  (p:carry-cons nothing output pair-cell))
 (define %e:carry-cdr (functionalize p:carry-cdr))
 (define e:carry-cdr (early-access-hack pair? cdr %e:carry-cdr))
