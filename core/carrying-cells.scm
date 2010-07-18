@@ -40,6 +40,11 @@
 (define p:carry-cons (function->cell-carrier-constructor cons))
 (define e:carry-cons (functionalize p:carry-cons))
 
+;;; Type tester:
+
+(define p:carry-pair? (function->propagator-constructor (unary-mapping pair?)))
+(define e:carry-pair? (functionalize p:carry-pair?))
+
 ;;; Propagator-style accessors are remarkably easy:
 
 (define-macro-propagator (p:carry-car pair-cell output)

@@ -25,4 +25,6 @@
     "switches-test"
     "compound-merges-test"
     "copying-data-test"
+    "carrying-cells-test"
+    "physical-closures-test"
     "barometer-test"))
