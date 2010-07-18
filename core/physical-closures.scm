@@ -65,10 +65,21 @@
 
 ;; The ensure-cell here makes these be "carrying cells" structures.
 (define (make-closure code-tag code environment)
-  (%make-closure code-tag code (map ensure-cell environment) #t))
+  (name-closure!
+   (%make-closure code-tag code (map ensure-cell environment) #t)))
 
 (define (make-e:closure code-tag code environment)
-  (%make-closure code-tag code (map ensure-cell environment) #f))
+  (name-closure!
+   (%make-closure code-tag code (map ensure-cell environment) #f)))
+
+(define (name-closure! closure)
+  (cond ((eq-get closure 'name) closure) ; ok
+	((eq-get (closure-code closure) 'name)
+	 (name! closure (closure-code closure)))
+	((symbol? (closure-code-tag closure))
+	 (name! closure (closure-code-tag closure)))
+	(else ; nothing works
+	 closure)))
 
 (define (same-code? closure1 closure2)
   (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
