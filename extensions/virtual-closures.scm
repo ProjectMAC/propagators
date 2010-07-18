@@ -134,7 +134,7 @@
 ;;;; Call Sites
 
 (define-structure
-  v-closure
+  (v-closure (safe-accessors #t))
   inside
   interior
   default-parents)

@@ -106,7 +106,7 @@
    (define-cell out-squaree)
    (define-cell out-square)
    (static-call-site 
-    (make-closure (list in-squaree in-square) '() '())
+    (make-v-closure (list in-squaree in-square) '() '())
     (list out-squaree out-square))
    (add-content out-squaree
      (alist->virtual-copies `((,repl-frame . 4))))
@@ -132,7 +132,7 @@
    (define-cell empty)
 
    (define fact
-     (make-closure
+     (make-v-closure
       (list in-n in-n!)
       (list zero control not-control one n-again n-1 n-1! empty)
       '()))				; No global environment yet
@@ -181,7 +181,7 @@
    (define-cell n-1)
 
    (define fact-iter-loop
-     (make-closure
+     (make-v-closure
       (list in-accum in-n out)
       (list one done not-done recur-accum accum-again n-again out-again n-1)
       '())) 				; No global environment yet
@@ -202,7 +202,7 @@
    (define-cell n!)
    (define-cell init-accum)
    (define fact-start
-     (make-closure (list n n!) (list init-accum) '()))
+     (make-v-closure (list n n!) (list init-accum) '()))
 
    ((vc:const 1) init-accum)
    (static-call-site fact-iter-loop (list init-accum n n!))
@@ -236,7 +236,7 @@
     (define-cell fib-n-2)
    
     (define fib
-      (make-closure
+      (make-v-closure
        (list in-n fib-n)
        (list one two recur not-recur n-again n-1 n-2 fib-n-1 fib-n-2)
        '()))
