@@ -29,7 +29,7 @@
 
 (load-relative "../core/load.scm")
 
-(define *virtual-copies* #f)
+(define *virtual-copies* #t)
 
 (define (maybe thing bool)
   (if bool
@@ -39,8 +39,8 @@
 (for-each load-relative-compiled
  `("physical-closures"
    "carrying-cells"
-   ,@(maybe "environments" *virtual-copies*)
-   ,@(maybe "closures" *virtual-copies*)
+   ,@(maybe "virtual-environments" *virtual-copies*)
+   ,@(maybe "virtual-closures" *virtual-copies*)
    "info-alist"
    "algebraic-tms"
    "electric-parts"
