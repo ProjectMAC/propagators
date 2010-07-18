@@ -78,49 +78,6 @@
 		       (cons (make-tms (supported 3 '(bill))) nothing)
 		       '(joe)))))))
 
- (define-test (example)
-
-   (interaction
-    (initialize-scheduler)
-    (define-cell x)
-    (define-cell y)
-    (define-cell pair)
-    (conser x y pair)
-
-    (run)
-    (content pair)
-    (produces '( #(*the-nothing*) . #(*the-nothing*) ))
-
-    (define-cell control)
-    (define-cell switched-pair)
-    (switch control pair switched-pair)
-
-    (add-content control (make-tms (supported #t '(joe))))
-    (run)
-    (content switched-pair)
-    (produces #(tms (#(supported ( #(*the-nothing*) . #(*the-nothing*) ) (joe)))))
-
-    (define-cell x-again)
-    (carer switched-pair x-again)
-
-    (run)
-    (content x-again)
-    (produces #(*the-nothing*))
-
-    (add-content x (make-tms (supported 4 '(harry))))
-
-    (run)
-    (content pair)
-    (produces '( #(tms (#(supported 4 (harry)))) . #(*the-nothing*) ))
-
-    (content switched-pair)
-    (produces #(tms (#(supported ( #(tms (#(supported 4 (harry)))) . #(*the-nothing*) )
-				 (joe)))))
-
-    (content x-again)
-    (produces #(tms (#(supported 4 (harry joe)))))
-    ))
-
  (define-test (recursive-tms-merge-2)
    (check
     (generic-match

@@ -24,4 +24,5 @@
     "partial-compounds-test"
     "switches-test"
     "compound-merges-test"
+    "copying-data-test"
     "barometer-test"))

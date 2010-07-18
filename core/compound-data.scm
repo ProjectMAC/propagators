@@ -67,11 +67,11 @@
 
 ;;; The "copying data" strategy from the thesis is given by these
 ;;; definitions of the cons-car-cdr propagators:
-
+#|
 (define conser (function->propagator-constructor cons))
 (define carer (function->propagator-constructor (nary-unpacking car)))
 (define cdrer (function->propagator-constructor (nary-unpacking cdr)))
-
+|#
 ;;; The "carrying cells" strategy is elaborated in
 ;;; extensions/carrying-cells.scm.  Since the merging is the same in
 ;;; both cases, the two strategies may be intermixed within the same
