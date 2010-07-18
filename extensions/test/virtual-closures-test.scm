@@ -18,7 +18,7 @@
 ;;; ----------------------------------------------------------------------
 
 (in-test-group
- dynamic-closures
+ virtual-closures
 
  (define-test (smoke)
    (interaction

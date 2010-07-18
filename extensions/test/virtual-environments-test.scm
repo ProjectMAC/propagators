@@ -18,7 +18,7 @@
 ;;; ----------------------------------------------------------------------
 
 (in-test-group
- environments
+ virtual-environments
 
  (let* ((base (make-frame '()))
 	(derived (make-frame (list base)))
