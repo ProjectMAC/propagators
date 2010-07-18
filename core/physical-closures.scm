@@ -176,23 +176,26 @@
 		     input-cells)))))
     (define (attach closure)
       (set! done-closures (cons closure done-closures))
-      (let-cells (pass? key)
-	(add-content key closure)
-	(p:equivalent-closures? closure-cell key pass?)
-	(if (propagator-style? closure)
-	    (propagator-style-apply closure pass? arg-cells)
-	    (expression-style-apply closure pass? arg-cells))
-	unspecific))
-    (propagator closure-cell
-      (name!
-       (lambda ()
-	 ((unary-mapping
-	   (lambda (closure)
-	     (if (done? closure)
-		 unspecific
-		 (attach closure))))
-	  (content closure-cell)))
-       'application))))
+      (with-network-group (network-group-named `(attachment ,(name closure)))
+	(lambda ()
+	  (let-cells (pass? key)
+	    (add-content key closure)
+	    (p:equivalent-closures? closure-cell key pass?)
+	    (if (propagator-style? closure)
+		(propagator-style-apply closure pass? arg-cells)
+		(expression-style-apply closure pass? arg-cells))
+	    unspecific))))
+    (let ((the-propagator
+	   (lambda ()
+	     ((unary-mapping
+	       (lambda (closure)
+		 (if (done? closure)
+		     unspecific
+		     (attach closure))))
+	      (content closure-cell)))))
+      (eq-label! the-propagator
+       'name 'application 'inputs (list closure-cell) 'outputs arg-cells)
+      (propagator closure-cell the-propagator))))
 
 (define e:application (functionalize application))
 
