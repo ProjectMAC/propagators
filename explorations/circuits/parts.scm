@@ -31,13 +31,12 @@
       (begin (set! name (car terminals))
 	     (set! terminals (cdr terminals))))
   (let-cells (potential
-	      (residual
-	       (reduce ce:+ (e:constant 0) (map ce:current terminals)))
+	      (residual (reduce ce:+ 0 (map ce:current terminals)))
 	      capped?)
     (add-content capped?
       (make-tms (supported #t (list (make-kcl-premise name)))))
     (apply c:== potential (map ce:potential terminals))
-    (conditional-wire capped? residual (e:constant 0))
+    (conditional-wire capped? residual 0)
     (let-cell terminal-list
       (add-content terminal-list terminals)
       (e:inspectable-object potential residual capped? terminal-list))))
@@ -57,7 +56,7 @@
 		(current (ce:current t1))
 		(et2 (ce:potential t2))
 		(it2 (ce:current t2)))
-      (c:+ current it2 (e:constant 0))
+      (c:+ current it2 0)
       (let-cells ((voltage (ce:+ et2 %% et1)))
 	(c:* current voltage power)
 	(ce:append-inspectable-object
@@ -144,7 +143,7 @@
 	      (i-control (ce:current control))
 	      (e-controlled (ce:potential controlled))
 	      (i-controlled (ce:current controlled)))
-    (c:+ (ce:+ i-common i-control) i-controlled (e:constant 0))
+    (c:+ (ce:+ i-common i-control) i-controlled 0)
     (let-cells ((control-voltage (ce:+ e-common %% e-control))
 		(controlled-voltage (ce:+ e-common %% e-controlled)))
       (c:+ (ce:* control-voltage i-control)
