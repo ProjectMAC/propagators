@@ -26,19 +26,22 @@
 ;;; cells" representations.  I say "appears" because it might be
 ;;; wrong.
 
-(define (pair-equivalent? pair1 pair2)
-  (and (equivalent? (car pair1) (car pair2))
-       (equivalent? (cdr pair1) (cdr pair2))))
+;;; Cons looks like this:
+#|
+ (define (pair-equivalent? pair1 pair2)
+   (and (equivalent? (car pair1) (car pair2))
+	(equivalent? (cdr pair1) (cdr pair2))))
 
-(define (pair-merge pair1 pair2)
-  (effectful-bind (merge (car pair1) (car pair2))
-    (lambda (car-answer)
-      (effectful-bind (merge (cdr pair1) (cdr pair2))
-	(lambda (cdr-answer)
-	  (cons car-answer cdr-answer))))))
+ (define (pair-merge pair1 pair2)
+   (effectful-bind (merge (car pair1) (car pair2))
+     (lambda (car-answer)
+       (effectful-bind (merge (cdr pair1) (cdr pair2))
+	 (lambda (cdr-answer)
+	   (cons car-answer cdr-answer))))))
 
-(defhandler merge pair-merge pair? pair?)
-(defhandler equivalent? pair-equivalent? pair? pair?)
+ (defhandler merge pair-merge pair? pair?)
+ (defhandler equivalent? pair-equivalent? pair? pair?)
+|#
 
 ;;; The generalization to arbitrary product types:
 
@@ -64,6 +67,8 @@
 						 (accessor thing))
 					       accessors))))
   (defhandler contradictory? slotful-contradiction? predicate?))
+
+(slotful-information-type pair? cons car cdr)
 
 ;;; Test slotful structure
 (define-structure (kons (constructor kons))
