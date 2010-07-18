@@ -21,7 +21,60 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;; Propagator cells, in message-accepter style
+;;;; Merging
+
+;;; My original thought was that merge answers the question:
+;;; 
+;;; "What is the least-commitment information structure that captures
+;;; all the knowledge in these two information structures?"
+;;; 
+;;; That was a pretty good place to start, but it turns out not to be
+;;; quite adequate.  What's the problem with it, you might ask?  The
+;;; problem is that this question cannot have any side-effects.  But
+;;; side-effects appear necessary: when merging two TMSes, one must
+;;; check the result for consistency, and maybe signal a nogood set if
+;;; one discovers a supported contradiction.  Worse, the
+;;; carrying-cells strategy for compound data means that you might
+;;; have to merge cells, and the only way to do that is to attach
+;;; identity propagators between them, which is most definitely an
+;;; effect.
+;;; 
+;;; After long thought, I understand that the real question that a
+;;; cell asks (whether or not "merge" is a good name for the function
+;;; that computes the answer) is:
+;;; 
+;;; "What do I need to do to the network in order to make it reflect
+;;; the discovery that these two information structures are about the
+;;; same object?"
+;;; 
+;;; In the common case, the answer to this question is going to amount
+;;; to just an answer to the previous question, namely "You must
+;;; record that that object is best described by this information
+;;; structure, which is the least-commitment information structure
+;;; that captures all the knowledge in the given information
+;;; structures."  (That "you must record" is the set! in add-content).
+;;; Also consistent with the simpler idea is the answer "These two
+;;; information structures cannot describe the same object."  (This is
+;;; the contradictory? test in add-content.)  However, this refined
+;;; question provides the opening for more nuanced answers.  For
+;;; example, with TMSes, it becomes possible to answer "The object is
+;;; described by the following information structure, and you should
+;;; record the following nogood set."  Or, with carrying cells, the
+;;; answer can be "The object is described by the following
+;;; information structure, and you should identify these two cells."
+;;; 
+;;; The advantage of thinking about it this way is that merge can be a
+;;; pure function, which is allowed to return requests for these
+;;; effects in addition to refined information structures.  Then places
+;;; where merge is called recursively have a chance to intercept and
+;;; modify these requests for effects (for example noting that they
+;;; must be considered conditional on certain premises), and only 
+;;; add-content actually executes the effects that come to it.
+
+;;;; Propagator cells
+
+;;; message-accepter style
+
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
     (define (add-content increment)
@@ -75,56 +128,6 @@
       thing
       ;; TODO Retain forward reference to e:constant?  Copy the code?
       (e:constant thing)))
-
-;;;; Merging
-
-;;; My original thought was that merge answers the question:
-;;; 
-;;; "What is the least-commitment information structure that captures
-;;; all the knowledge in these two information structures?"
-;;; 
-;;; That was a pretty good place to start, but it turns out not to be
-;;; quite adequate.  What's the problem with it, you might ask?  The
-;;; problem is that this question cannot have any side-effects.  But
-;;; side-effects appear necessary: when merging two TMSes, one must
-;;; check the result for consistency, and maybe signal a nogood set if
-;;; one discovers a supported contradiction.  Worse, the
-;;; carrying-cells strategy for compound data means that you might
-;;; have to merge cells, and the only way to do that is to attach
-;;; identity propagators between them, which is most definitely an
-;;; effect.
-;;; 
-;;; After long thought, I understand that the real question that a
-;;; cell asks (whether or not "merge" is a good name for the function
-;;; that computes the answer) is:
-;;; 
-;;; "What do I need to do to the network in order to make it reflect
-;;; the discovery that these two information structures are about the
-;;; same object?"
-;;; 
-;;; In the common case, the answer to this question is going to amount
-;;; to just an answer to the previous question, namely "You must
-;;; record that that object is best described by this information
-;;; structure, which is the least-commitment information structure
-;;; that captures all the knowledge in the given information
-;;; structures."  (That "you must record" is the set! in add-content).
-;;; Also consistent with the simpler idea is the answer "These two
-;;; information structures cannot describe the same object."  (This is
-;;; the contradictory? test in add-content.)  However, this refined
-;;; question provides the opening for more nuanced answers.  For
-;;; example, with TMSes, it becomes possible to answer "The object is
-;;; described by the following information structure, and you should
-;;; record the following nogood set."  Or, with carrying cells, the
-;;; answer can be "The object is described by the following
-;;; information structure, and you should identify these two cells."
-;;; 
-;;; The advantage of thinking about it this way is that merge can be a
-;;; pure function, which is allowed to return requests for these
-;;; effects in addition to refined information structures.  Then places
-;;; where merge is called recursively have a chance to intercept and
-;;; modify these requests for effects (for example noting that they
-;;; must be considered conditional on certain premises), and only 
-;;; add-content actually executes the effects that come to it.
 
 ;;;; Cellular Generics
 
