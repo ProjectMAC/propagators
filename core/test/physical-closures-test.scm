@@ -65,17 +65,17 @@
     (application addn n add5)
 
     (define-cell x 3)
-    (define-cell out)
-    (application add5 x out)
+    (define-cell output)
+    (application add5 x output)
     
     (run)
-    (content out)
+    (content output)
     (produces 8)
     
     ;; Stable under kicks:
     (alert-all-propagators!)
     (run)
-    (content out)
+    (content output)
     (produces 8)
     ))
 
@@ -100,15 +100,15 @@
     (define-cell add5 (e:application addn n1))
     (application addn n2 add5)
     
-    (define-cell out (e:application add5 3))
+    (define-cell output (e:application add5 3))
     
     (run)
-    (content out)
+    (content output)
     (produces #(interval 7 8))
 
     (add-content n2 (make-interval 5 9))
     (run)
-    (content out)
+    (content output)
     (produces 8)
     ))
 
@@ -202,12 +202,12 @@
 	 repeat)
 	repeat))
 
-    (define-cell out
+    (define-cell output
       (e:application
        (e:application repeat double 4) 2))
 
     (run)
-    (content out)
+    (content output)
     (produces 32)
     ))
 
@@ -236,50 +236,50 @@
     (p:switch (make-tms (supported #t '(fred))) add5-fred add5)
     (p:switch (make-tms (supported #t '(bill))) add5-bill add5)
 
-    (define-cell out (e:application add5 (make-tms (supported 3 '(joe)))))
+    (define-cell output (e:application add5 (make-tms (supported 3 '(joe)))))
     
     (run)
-    (tms-query (content out))
+    (tms-query (content output))
     (produces #(supported #(interval 7 8) (joe bill fred)))
 
     (kick-out! 'bill)
     (run)
-    (tms-query (content out))
+    (tms-query (content output))
     (produces #(supported #(interval 6 8) (joe fred)))
 
     (kick-out! 'fred)
     (run)
-    (tms-query (content out))
+    (tms-query (content output))
     (produces nothing)
     
     (bring-in! 'bill)
     (run)
-    (tms-query (content out))
+    (tms-query (content output))
     (produces #(supported #(interval 7 10) (joe bill)))
     
     (add-content bill (make-tms (supported (make-interval 5 9) '(harry))))
     (run)
-    (tms-query (content out))
+    (tms-query (content output))
     (produces #(supported #(interval 8 10) (harry joe bill)))
     ))
 
   (define-test (first-class-primitives)
     (initialize-scheduler)
-    (define-cell out (e:application p:+ 3 4))
+    (define-cell output (e:application p:+ 3 4))
     (run)
-    (check (= 7 (content out))))
+    (check (= 7 (content output))))
 
   (define-test (first-class-e:primitives)
     (initialize-scheduler)
-    (define-cell out (e:application e:+ 3 4))
+    (define-cell output (e:application e:+ 3 4))
     (run)
-    (check (= 7 (content out))))
+    (check (= 7 (content output))))
 
   (define-test (first-class-macro-primitives)
     (initialize-scheduler)
     (define-cell x)
-    (define-cell out (e:application sum-constraint 3 x))
-    (add-content out 7)
+    (define-cell output (e:application sum-constraint 3 x))
+    (add-content output 7)
     (run)
     (check (= 4 (content x))))
 
@@ -291,14 +291,14 @@
      (define-cell the-op)
      (switch (make-tms (supported #t '(bill))) bill-op the-op)
      (switch (make-tms (supported #t '(fred))) fred-op the-op)
-     (define-cell out (e:application the-op 3 4))
+     (define-cell output (e:application the-op 3 4))
      (run)
      (produces '(contradiction (bill fred)))
      (check (equal? '(application) (map name (neighbors the-op))))
 
      (kick-out! 'bill)
      (run)
-     (tms-query (content out))
+     (tms-query (content output))
      (produces #(supported 12 (fred)))
      (check (equal? '(equivalent-closures? application)
 		    (map name (neighbors the-op))))
@@ -306,7 +306,7 @@
      (kick-out! 'fred)
      (bring-in! 'bill)
      (run)
-     (tms-query (content out))
+     (tms-query (content output))
      (produces #(supported 7 (bill)))
      (check (equal? '(equivalent-closures? equivalent-closures? application)
 		    (map name (neighbors the-op))))
