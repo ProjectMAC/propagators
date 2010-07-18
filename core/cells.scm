@@ -175,12 +175,6 @@
 (define (merge* infos-list)
   (fold-left effectful-merge nothing infos-list))
 
-(define-method generic-match ((pattern <vector>) (object rtd:effectful))
-  (generic-match
-   pattern
-   (vector 'effectful (effectful-info object)
-	   (effectful-effects object))))
-
 ;;; The nothing partial information structure
 
 (define nothing #(*the-nothing*))

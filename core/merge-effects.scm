@@ -74,3 +74,9 @@
       (make-effectful
        (->effectful (func (map effectful-info effectfuls)))
        (apply append (map effectful-effects effectfuls)))))))
+
+(define-method generic-match ((pattern <vector>) (object rtd:effectful))
+  (generic-match
+   pattern
+   (vector 'effectful (effectful-info object)
+	   (effectful-effects object))))
