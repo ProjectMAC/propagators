@@ -37,7 +37,9 @@
       '()))
 
 (for-each load-relative-compiled
- `(,@(maybe "environments" *virtual-copies*)
+ `(,@(maybe "physical-closures" (not *virtual-copies*))
+   "carrying-cells"
+   ,@(maybe "environments" *virtual-copies*)
    ,@(maybe "closures" *virtual-copies*)
    "info-alist"
    "algebraic-tms"
@@ -50,9 +52,7 @@
    "test-utils"))
 
 (for-each load-relative
- `(,@(maybe "physical-closures" (not *virtual-copies*))
-   "carrying-cells"
-   ,@(maybe "example-closures" *virtual-copies*)
+ `(,@(maybe "example-closures" *virtual-copies*)
    "draw"
    "dot-writer"
    "graphml-writer"))
