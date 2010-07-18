@@ -19,25 +19,41 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;; A "closure" is a structure containing a code fragment and an
-;;; environment.  The environment is a list of cells.  The code
-;;; fragment is a Scheme closure, such that the only interesting
-;;; things it is closed over are cells listed in the environment.
-;;; This is done this way, instead of just using Scheme closures,
-;;; because I need to be able to merge the environments of different
-;;; closures.  If closures are desired that close over interesting
-;;; things that are not cells, a variant can be created where the
-;;; Scheme procedure accepts the environment and then returns a new
-;;; Scheme procedure to fill the role of the closure-code here.
+;;; A normal propagator constructor in the physical copies style is a
+;;; Scheme procedure that, when given some cells, will build some
+;;; quantity of network structure onto those cells.  As stated, these
+;;; are expected not to be closed (in Scheme) over anything
+;;; interesting.
 
-;;; These closures embody the "carrying cells" strategy.  If I wanted
-;;; "copying data", make-closure would need to construct a propagator
+;;; A closure in the physical copies style is a propagator constructor
+;;; that may be closed over some cells, together with an explicit list
+;;; of those cells.  The list needs to be explicit because in order to
+;;; merge closures, I have to merge the cells they are closed over.
+;;; (Cell merging is such that the underlying Scheme closures that
+;;; implement the propagator construction do not need to be modified
+;;; when this happens).
+
+;;; Requiring physical-copies closures to close only over cells
+;;; amounts to specifying the "carrying cells" strategy for compound
+;;; data, at least with regard to closures.  This feels like the right
+;;; thing; but in principle there is no reason to insist on it.  To do
+;;; "copying data", MAKE-CLOSURE would need to construct a propagator
 ;;; that would rebuild the closure every time any of the cells the
-;;; enviornment grabs experienced any changes.  That would be
-;;; perfectly plausible too, with the same pros and cons of the
-;;; regular "carrying" vs "copying" debate.  I chose the carrying
-;;; strategy here.
+;;; enviornment grabs experienced any changes, and APPLICATION, below,
+;;; would need to be adjusted accordingly (how, exactly?)  All this
+;;; would be perfectly plausible too, with the same pros and cons of
+;;; the regular "carrying" vs "copying" debate.  Note that the actual
+;;; closure data structure, except for MAKE-CLOSURE, is completely
+;;; independent of the carrying vs copying choice, just like the
+;;; actual partial information type definition for CONS.
 
+;;; The code-tag field is a hack to let me detect "equality" between
+;;; two Scheme closures that have the same code but are closed over
+;;; different cells.  Such are the moral equivalent of identical data
+;;; structures with different contents, and so are mergeable; whereas
+;;; Scheme closures with different code are like data structures of
+;;; different types and so are not mergeable.
+
 (define-structure
   (closure (constructor %make-closure) (safe-accessors #t))
   code-tag
