@@ -41,6 +41,8 @@
     "generic-definitions"
     "standard-propagators"
     "expression-language"
+    "compound-data"
+
     "intervals"
     "premises"
     "supported-values"
@@ -48,7 +50,7 @@
     "contradictions"
     "search"
     "amb-utils"
-    "compound-data"
+
     "example-networks"))
 
 (maybe-warn-low-memory)

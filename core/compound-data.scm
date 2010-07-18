@@ -59,13 +59,10 @@
       (effectful-list-bind (map merge slots1 slots2)
 	(lambda (submerges)
 	  (apply constructor submerges)))))
+  (define (slotful-contradiction? thing)
+    (any contradictory? (map (lambda (accessor) (accessor thing)) accessors)))
   (defhandler merge slotful-merge predicate? predicate?)
   (defhandler equivalent? slotful-equivalent? predicate? predicate?)
-  
-  (define (slotful-contradiction? thing)
-    (apply boolean/or (map contradictory? (map (lambda (accessor)
-						 (accessor thing))
-					       accessors))))
   (defhandler contradictory? slotful-contradiction? predicate?))
 
 (slotful-information-type pair? cons car cdr)
