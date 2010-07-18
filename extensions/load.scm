@@ -37,9 +37,7 @@
       '()))
 
 (for-each load-relative-compiled
- `("physical-closures"
-   "carrying-cells"
-   ,@(maybe "virtual-environments" *virtual-copies*)
+ `(,@(maybe "virtual-environments" *virtual-copies*)
    ,@(maybe "virtual-closures" *virtual-copies*)
    "info-alist"
    "algebraic-tms"

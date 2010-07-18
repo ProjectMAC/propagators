@@ -101,8 +101,6 @@
 (defhandler merge closure-merge closure? closure?)
 (defhandler equivalent? equivalent-closures? closure? closure?)
 (defhandler contradictory? contradictory-closure? closure?)
-
-(declare-coercion rtd:closure ->v&s)
 
 ;;;; Applying the contents of cells
 

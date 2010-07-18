@@ -42,7 +42,9 @@
     "standard-propagators"
     "expression-language"
     "compound-data"
-
+    "carrying-cells"
+    "physical-closures"
+   
     "intervals"
     "premises"
     "supported-values"
