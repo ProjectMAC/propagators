@@ -126,7 +126,7 @@
 ;;; must be considered conditional on certain premises), and only 
 ;;; add-content actually executes the effects that come to it.
 
-;;; Basic merging
+;;;; Cellular Generics
 
 (define (merge info1 info2)
   (if (eq? info1 info2)
@@ -163,59 +163,6 @@
 
 (define execute-effect 
   (make-generic-operator 1 'execute-effect (lambda (effect) (effect))))
-
-;;; Data structure to represent a merge that may have effects.
-(define-structure effectful
-  info
-  effects)
-
-(define (effectful-return info)
-  (make-effectful info '()))
-
-(define (->effectful thing)
-  (if (effectful? thing)
-      thing
-      (effectful-return thing)))
-
-(define (effectful-> effectful)
-  (if (null? (effectful-effects effectful))
-      (effectful-info effectful)
-      effectful))
-
-(define (effectful-flatten effectful)
-  (let ((subeffectful (->effectful (effectful-info effectful))))
-    (let ((subinfo (effectful-info subeffectful))
-	  (subeffects (effectful-effects subeffectful))
-	  (effects (effectful-effects effectful)))
-      (make-effectful subinfo (append subeffects effects)))))
-
-(define (effectful-merge e1 e2)
-  (let ((e1 (->effectful e1))
-	(e2 (->effectful e2)))
-    (let ((info-merge (->effectful (merge (effectful-info e1)
-					  (effectful-info e2)))))
-      (effectful->
-       (make-effectful
-	(effectful-info info-merge)
-	(append (effectful-effects e1)
-		(effectful-effects info-merge)
-		(effectful-effects e2)))))))
-
-(define (effectful-bind effectful func)
-  (let ((effectful (->effectful effectful)))
-    (effectful->
-     (effectful-flatten
-      (make-effectful
-       (->effectful (func (effectful-info effectful)))
-       (effectful-effects effectful))))))
-
-(define (effectful-list-bind effectfuls func)
-  (let ((effectfuls (map ->effectful effectfuls)))
-    (effectful->
-     (effectful-flatten
-      (make-effectful
-       (->effectful (func (map effectful-info effectfuls)))
-       (apply append (map effectful-effects effectfuls)))))))
 
 ;;; Merging utilities
 

@@ -34,6 +34,7 @@
 (for-each load-relative-compiled
   '("scheduler"
     "metadata"
+    "merge-effects"
     "cells"
     "propagators"
     "sugar"
