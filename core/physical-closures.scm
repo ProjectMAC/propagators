@@ -155,25 +155,24 @@
     (define done-closures '())
     (define (done? closure)
       (member closure done-closures equivalent-closures?))
+    (define (arg-copier pass?)
+      (lambda (arg)
+	(let-cell arg-copy
+	  (conditional-wire pass? arg arg-copy)
+	  arg-copy)))
+    (define (do-apply-closure closure real-args)
+      (with-network-group (network-group-named (name closure))
+	(lambda ()
+	  (apply (closure-body closure) real-args))))
     ;; This assumes that closures are "carrying cells" compound
     ;; structures rather than "copying data".
     (define (propagator-style-apply closure pass? arg-cells)
-      (apply (closure-body closure)
-	     (map (lambda (arg)
-		    (let-cell arg-copy
-		      (conditional-wire pass? arg arg-copy)
-		      arg-copy))
-		  arg-cells)))
+      (do-apply-closure closure (map (arg-copier pass?) arg-cells)))
     (define (expression-style-apply closure pass? arg-cells)
       (let ((input-cells (except-last-pair arg-cells))
 	    (output-cell (car (last-pair arg-cells))))
 	(conditional-wire pass? output-cell
-         (apply (closure-body closure)
-		(map (lambda (arg)
-		       (let-cell arg-copy
-			 (conditional-wire pass? arg arg-copy)
-			 arg-copy))
-		     input-cells)))))
+	 (do-apply-closure closure (map (arg-copier pass?) input-cells)))))
     (define (attach closure)
       (set! done-closures (cons closure done-closures))
       (with-network-group (network-group-named `(attachment ,(name closure)))
