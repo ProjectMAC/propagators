@@ -52,7 +52,9 @@
   (%make-closure code-tag code (map ensure-cell environment) #f))
 
 (define (same-code? closure1 closure2)
-  (eq? (closure-code-tag closure1) (closure-code-tag closure2)))
+  (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
+       (eqv? (closure-propagator-style? closure1)
+	     (closure-propagator-style? closure2))))
 
 (define (closure-body thing)
   (cond ((closure? thing)
@@ -61,17 +63,8 @@
 	 thing)
 	(else (error "No closure body" thing))))
 
-(define (propagator-style? thing)
-  (cond ((closure? thing)
-	 (closure-propagator-style? thing))
-	((propagator-constructor? thing)
-	 (not (eq-get thing 'expression-style)))
-	(else (error "Propagator style question not applicable" thing))))
-
 (define (closure-merge closure1 closure2)
-  (if (or (not (same-code? closure1 closure2))
-	  (not (eqv? (closure-propagator-style? closure1)
-		     (closure-propagator-style? closure2))))
+  (if (not (same-code? closure1 closure2))
       the-contradiction
       (effectful-bind (merge (closure-environment closure1)
 			     (closure-environment closure2))
@@ -90,10 +83,23 @@
 	   (equivalent? (closure-environment closure1)
 			(closure-environment closure2)))))
 
-(declare-coercion rtd:closure ->v&s)
+(define (contradictory-closure? closure)
+  (contradictory? (closure-environment closure)))
 
 (defhandler merge closure-merge closure? closure?)
 (defhandler equivalent? equivalent-closures? closure? closure?)
+(defhandler contradictory? contradictory-closure? closure?)
+
+(declare-coercion rtd:closure ->v&s)
+
+;;; Applying closures (and non-closures)
+
+(define (propagator-style? thing)
+  (cond ((closure? thing)
+	 (closure-propagator-style? thing))
+	((propagator-constructor? thing)
+	 (not (eq-get thing 'expression-style)))
+	(else (error "Propagator style question not applicable" thing))))
 
 (propagatify equivalent-closures? binary-mapping)
 
