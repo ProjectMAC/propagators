@@ -134,20 +134,20 @@
 ;;;; Call Sites
 
 (define-structure
-  closure
+  v-closure
   inside
   interior
   default-parents)
-(declare-type-tester closure? rtd:closure)
+(declare-type-tester v-closure? rtd:v-closure)
 
 ;; This still requires the closure to be known statically.
-(define (static-call-site closure outside-cells)
-  (let ((inside-cells (closure-inside closure))
-	(interior-cells (closure-interior closure)))
+(define (static-call-site v-closure outside-cells)
+  (let ((inside-cells (v-closure-inside v-closure))
+	(interior-cells (v-closure-interior v-closure)))
     (if (not (= (length outside-cells)
 		(length inside-cells)))
 	(error "Differing boundary lengths" outside-cells inside-cells))
-    (let ((frame-map (make-frame-map '() (closure-default-parents closure)))
+    (let ((frame-map (make-frame-map '() (v-closure-default-parents v-closure)))
 	  (frame-map-cell (make-named-cell 'frame-map)))
       (add-content frame-map-cell frame-map)
       (interior-copier frame-map-cell outside-cells interior-cells)
@@ -322,7 +322,7 @@
     (for-each (lambda (cell)
 		(add-content cell (alist->virtual-copies
 				   `((,target-frame . ,nothing)))))
-	      (closure-interior closure)))
+	      (v-closure-interior closure)))
   (define (transfer-inward frame target-frame outside-cells inside-cells)
     (for-each
      (lambda (out-cell in-cell)
@@ -358,13 +358,13 @@
 			       (map content outside-cells))))
 	       'done
 	       (begin
-		 (update-map frame (closure-default-parents closure))
+		 (update-map frame (v-closure-default-parents closure))
 		 (let ((target-frame (frame-map-get (content frame-map-cell) frame)))
 		   (build-interior-occurrences closure target-frame)
 		   (transfer-inward
-		    frame target-frame outside-cells (closure-inside closure))
+		    frame target-frame outside-cells (v-closure-inside closure))
 		   (transfer-outward
-		    frame target-frame outside-cells (closure-inside closure)))
+		    frame target-frame outside-cells (v-closure-inside closure)))
 		 ;; TODO Wow, what a hack!  But yes, the transfer
 		 ;; outward portion of this does need to wake up when
 		 ;; the interior of the closure gets an answer.  I
@@ -374,11 +374,11 @@
 		 ;; do for now.
 		 (for-each (lambda (cell)
 			     (new-neighbor! cell self))
-			   (closure-inside closure))))))
+			   (v-closure-inside closure))))))
        (good-frames (cons (content closure-cell)
 			  (map content outside-cells))))))
 
-(define (closure-emitter boundary interior output)
+(define (v-closure-emitter boundary interior output)
   (propagator output
     (eq-label!
      (lambda ()
@@ -387,18 +387,18 @@
 	     (alist->virtual-copies
 	      (map (lambda (frame-content)
 		     (cons (car frame-content)
-			   (make-closure
+			   (make-v-closure
 			    boundary interior (list (car frame-content)))))
 		   (virtual-copies->alist (content output)))))))
-     'name 'closure-emitter
+     'name 'v-closure-emitter
      'inputs (list output)
      'outputs (list output))))
 
-(define (merge-closures cl1 cl2)
-  (if (and (equal? (closure-interior cl1) (closure-interior cl2))
-	   (equal? (closure-inside cl1) (closure-inside cl2))
-	   (equal? (closure-default-parents cl1) (closure-default-parents cl2)))
+(define (merge-v-closures cl1 cl2)
+  (if (and (equal? (v-closure-interior cl1) (v-closure-interior cl2))
+	   (equal? (v-closure-inside cl1) (v-closure-inside cl2))
+	   (equal? (v-closure-default-parents cl1) (v-closure-default-parents cl2)))
       cl1
       the-contradiction))
 
-(defhandler merge merge-closures closure? closure?)
+(defhandler merge merge-v-closures v-closure? v-closure?)

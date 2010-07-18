@@ -70,8 +70,8 @@
     (let-cells (x x-out)
       (let-cells (y y-out)
 	(vc:adder x y y-out)
-	(closure-emitter (list y y-out) '() x-out))
-      (closure-emitter (list x x-out) '() lambda-x))
+	(v-closure-emitter (list y y-out) '() x-out))
+      (v-closure-emitter (list x x-out) '() lambda-x))
     (define-cell outer-x)
     (define-cell lambda-y)
     (dynamic-call-site lambda-x (list outer-x lambda-y))
@@ -106,19 +106,19 @@
       (let-cells (arg composition-out intermediate)
 	(dynamic-call-site g (list arg intermediate))
 	(dynamic-call-site f (list intermediate composition-out))
-	(closure-emitter
+	(v-closure-emitter
 	 (list arg composition-out) (list intermediate) compose-out))
-      (closure-emitter (list f g compose-out) '() compose))
+      (v-closure-emitter (list f g compose-out) '() compose))
 
     (define-cell double)
     (let-cells (x out)
       (vc:adder x x out)
-      (closure-emitter (list x out) '() double))
+      (v-closure-emitter (list x out) '() double))
     
     (define-cell square)
     (let-cells (x out)
       (vc:multiplier x x out)
-      (closure-emitter (list x out) '() square))
+      (v-closure-emitter (list x out) '() square))
     
     (define-cell square-double)
     (dynamic-call-site compose (list square double square-double))
@@ -161,9 +161,9 @@
       (let-cells (arg composition-out intermediate)
 	(dynamic-call-site g (list arg intermediate))
 	(dynamic-call-site f (list intermediate composition-out))
-	(closure-emitter
+	(v-closure-emitter
 	 (list arg composition-out) (list intermediate) compose-out))
-      (closure-emitter (list f g compose-out) '() compose))
+      (v-closure-emitter (list f g compose-out) '() compose))
 
 
     (define-cell repeat)
@@ -179,7 +179,7 @@
       (vc:subtractor n-again one n-1)
       (dynamic-call-site repeat (list f-again n-1 f-n-1))
       (dynamic-call-site compose (list f-n-1 f-again out-again))
-      (closure-emitter
+      (v-closure-emitter
        (list f n repeat-out) 
        (list recur? not-recur? f-again n-again f-n-1 one n-1 out-again)
        repeat))
@@ -187,7 +187,7 @@
     (define-cell double)
     (let-cells (x out)
       (vc:adder x x out)
-      (closure-emitter (list x out) '() double))
+      (v-closure-emitter (list x out) '() double))
 
     (define-cell n)
     (define-cell n-double)
