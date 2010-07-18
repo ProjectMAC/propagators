@@ -38,19 +38,11 @@
 
     (ground n0)
 
-    (define Pv
-      ((voltage-source (e:constant 6))
-       n1t1 n0t1))
+    (define-cell Pv ((voltage-source 6) n1t1 n0t1))
+    (define-cell PR1 ((linear-resistor 4) n1t2 n2t1))
+    (define-cell PR2 ((linear-resistor 2) n2t2 n0t2))
 
-    (define PR1
-      ((linear-resistor (e:constant 4))
-       n1t2 n2t1))
-
-    (define PR2
-      ((linear-resistor (e:constant 2))
-       n2t2 n0t2))
-
-    (define power (e:+ Pv (e:+ PR1 PR2)))
+    (define-cell power (e:+ Pv (e:+ PR1 PR2)))
 
     (plunker (potential n2t1))
 
@@ -81,19 +73,11 @@
 
     (ground n0)
 
-    (define Pv
-      ((voltage-source (e:constant 6))
-       n1t1 n0t1))
+    (define-cell Pv ((voltage-source 6) n1t1 n0t1))
+    (define-cell PR1 ((linear-resistor 4) n1t2 n2t1))
+    (define-cell PR2 ((linear-resistor 2) n2t2 n0t2))
 
-    (define PR1
-      ((linear-resistor (e:constant 4))
-       n1t2 n2t1))
-
-    (define PR2
-      ((linear-resistor (e:constant 2))
-       n2t2 n0t2))
-
-    (define power (e:+ Pv (e:+ PR1 PR2)))
+    (define-cell power (e:+ Pv (e:+ PR1 PR2)))
 
     (plunker (potential n2t1))
 
@@ -126,21 +110,15 @@
 
     (ground n0)
 
-    (define Pv
-      ((voltage-source (e:constant 6))
-       n1t1 n0t1))
+    (define-cell Pv ((voltage-source 6) n1t1 n0t1))
 
-    (define R1 (e:constant 4))
+    (define-cell R1 4)
+    (define-cell PR1 ((linear-resistor R1) n1t2 n2t1))
 
-    (define PR1
-      ((linear-resistor R1) n1t2 n2t1))
+    (define-cell R2 2)
+    (define-cell PR2 ((linear-resistor R2) n2t2 n0t2))
 
-    (define R2 (e:constant 2))
-
-    (define PR2
-      ((linear-resistor R2) n2t2 n0t2))
-
-    (define power (e:+ Pv (e:+ PR1 PR2)))
+    (define-cell power (e:+ Pv (e:+ PR1 PR2)))
 
     ;; A slice
 
@@ -154,9 +132,7 @@
 
 
     ;; Note that PRS does not contribute to the power in the circuit.
-
-    (define PRS
-      ((linear-resistor R1+R2) n1t2* n0t2*))
+    (define-cell PRS ((linear-resistor R1+R2) n1t2* n0t2*))
 
     (run)
 
