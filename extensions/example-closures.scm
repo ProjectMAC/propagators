@@ -24,7 +24,7 @@
 	      zero control not-control one n-again n-1 n-1! empty)
 
     (define fact-cl
-      (make-closure
+      (make-v-closure
        (list in-n in-n!)
        (list zero control not-control one n-again n-1 n-1! empty)
        '()))				; No global environment yet
@@ -44,7 +44,7 @@
   (let-cells (in-n fib-n one two recur not-recur
 		   n-again n-1 n-2 fib-n-1 fib-n-2)
     (define fib-cl
-      (make-closure
+      (make-v-closure
        (list in-n fib-n)
        (list one two recur not-recur n-again n-1 n-2 fib-n-1 fib-n-2)
        '()))
@@ -66,13 +66,13 @@
   (let-cells (dividend divisor quot rem)
     (vc:quotient dividend divisor quot)
     (vc:remainder dividend divisor rem)
-    (make-closure (list dividend divisor quot rem) '() '())))
+    (make-v-closure (list dividend divisor quot rem) '() '())))
 
 (define euclid-cl
   (let-cells (a b gcd zero recur not-recur
 		a-again b-again a-mod-b a-quot-b gcd-again)
     (define euclid-cl
-      (make-closure 
+      (make-v-closure 
        (list a b gcd)
        (list zero recur not-recur a-again b-again a-mod-b a-quot-b gcd-again)
        '()))
