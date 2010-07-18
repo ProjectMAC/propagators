@@ -31,16 +31,16 @@
        '()))
 
     (define-cell x 2)
-    (define-cell out)
-    (application double x out)
+    (define-cell output)
+    (application double x output)
     (run)
-    (content out)
+    (content output)
     (produces 4)
 
     ;; Stable under kicks:
     (alert-all-propagators!)
     (run)
-    (content out)
+    (content output)
     (produces 4)
     ))
 
