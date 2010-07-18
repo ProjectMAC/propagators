@@ -19,42 +19,6 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define (cell-merge cell1 cell2)
-  (effectful->
-   (make-effectful
-    cell1
-    (list (make-cell-join-effect cell1 cell2 #t)))))
-
-(defhandler merge cell-merge cell? cell?)
-
-(define-structure cell-join-effect
-  cell1
-  cell2
-  control)
-
-(define (execute-cell-join effect)
-  (let ((cell1 (cell-join-effect-cell1 effect))
-	(cell2 (cell-join-effect-cell2 effect))
-	(control-info (cell-join-effect-control effect)))
-    (let ((control (the-bridge-control cell1 cell2)))
-      (add-content control control-info))))
-
-(defhandler execute-effect
-  execute-cell-join
-  cell-join-effect?)
-
-(define (the-bridge-control cell1 cell2)
-  (let ((candidate (eq-get cell1 cell2)))
-    (or candidate
-	(let ((control (make-named-cell 'bridge-control)))
-	  ;; TODO Think about whether this really needs to be
-	  ;; symmetric
-	  (switch control cell1 cell2)
-	  (switch control cell2 cell1)
-	  (eq-put! cell1 cell2 control)
-	  (eq-put! cell2 cell1 control)
-	  control))))
-
 (defhandler generic-attach-support
   (lambda (effect)
     (lambda (support)
@@ -109,32 +73,3 @@
   (p:carry-cons nothing output pair-cell))
 (define %e:carry-cdr (functionalize p:carry-cdr))
 (define e:carry-cdr (early-access-hack pair? cdr %e:carry-cdr))
-
-(define effectful->
-  (let ((effectful-> effectful->))
-    (lambda (effect)
-      (effectful->
-       (make-effectful
-	(effectful-info effect)
-	(filter (lambda (effect)
-		  (not (boring-cell-join? effect)))
-		(effectful-effects effect)))))))
-
-(define (boring-cell-join? effect)
-  (and (cell-join-effect? effect)
-       (let ((cell1 (cell-join-effect-cell1 effect))
-	     (cell2 (cell-join-effect-cell2 effect))
-	     (control-info (cell-join-effect-control effect)))
-	 (or (eq? cell1 cell2)
-	     (let ((candidate (eq-get cell1 cell2)))
-	       (and candidate
-		    (implies? (content candidate)
-			      control-info)))))))
-
-(define (equivalent-cells? cell1 cell2)
-  (or (eq? cell1 cell2)
-      (let ((candidate-bridge-control (eq-get cell1 cell2)))
-	(and candidate-bridge-control
-	     (equivalent? #t (content candidate-bridge-control))))))
-
-(defhandler equivalent? equivalent-cells? cell? cell?)
