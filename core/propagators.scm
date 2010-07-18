@@ -21,7 +21,16 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;; Propagators
+;;;; Propagators
+
+;;; A propagator is represented as a Scheme thunk that does that
+;;; propagator's job every time the scheduler invokes it.  The thunk
+;;; presumably reads the contents of some cells when doing its job;
+;;; the system needs to know what those cells are, so that it can wake
+;;; the propagator up if the contents of those cells change.  The
+;;; thunk also presumably writes to cells (though it can also create
+;;; more network structure if needed), but the system doesn't need to
+;;; know anything about that.
 
 (define (propagator neighbors to-do)
   (for-each (lambda (cell)
@@ -34,6 +43,14 @@
 
 (define (propagator? thing)
   (eq-get thing 'propagator))
+
+;;;; Propagator constructors
+
+;;; A propagator constructor is a Scheme procedure that can attach
+;;; some network structure to supplied cells.  These are used during
+;;; the build portion of the read-build-run propagator execution
+;;; model.  To allow for infinite (to wit, dynamically expandable)
+;;; networks, run and build can be interleaved.
 
 (define (propagator-constructor? thing)
   (or (eq-get thing 'propagator-constructor)
@@ -51,6 +68,8 @@
   (eq-put! thing 'propagator-constructor #t)
   thing)
 
+;;; Returns a propagator constructor that builds single propagators
+;;; that execute the supplied Scheme function.
 (define (function->propagator-constructor f)
   (lambda cells
     (let ((output (ensure-cell (car (last-pair cells))))
@@ -74,8 +93,22 @@
 	 (eq-label! the-propagator 'name f 'inputs inputs 'outputs (list output))
 	 (propagator inputs the-propagator))))))
 
-;;; Propagators that defer the construction of their bodies, as one
-;;; mechanism of abstraction.
+;;; Returns a version of the supplied propagator constructor that
+;;; creates a propagator that will wait until at least one of the
+;;; boundary cells has a non-nothing content and then perform the
+;;; indicated construction once.
+(define (delayed-propagator-constructor prop-ctor)
+  (propagator-constructor!
+   (lambda args
+     ;; TODO Can I autodetect "inputs" that should not trigger
+     ;; construction?
+     (let ((args (map ensure-cell args)))
+       (one-shot-propagator args
+	(apply eq-label!
+	       (lambda ()
+		 (apply prop-ctor args))
+	       (compute-aggregate-metadata prop-ctor args)))))))
+
 (define (one-shot-propagator neighbors action)
   (let ((done? #f) (neighbors (map ensure-cell (listify neighbors))))
     (define (test)
@@ -92,15 +125,3 @@
 			(action)))))))
     (eq-clone! action test)
     (propagator neighbors test)))
-
-(define (delayed-propagator-constructor prop-ctor)
-  (propagator-constructor!
-   (lambda args
-     ;; TODO Can I autodetect "inputs" that should not trigger
-     ;; construction?
-     (let ((args (map ensure-cell args)))
-       (one-shot-propagator args
-	(apply eq-label!
-	       (lambda ()
-		 (apply prop-ctor args))
-	       (compute-aggregate-metadata prop-ctor args)))))))
