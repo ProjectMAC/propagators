@@ -64,21 +64,6 @@
 						 (accessor thing))
 					       accessors))))
   (defhandler contradictory? slotful-contradiction? predicate?))
-
-;;; The "copying data" strategy from the thesis is given by these
-;;; definitions of the cons-car-cdr propagators:
-#|
-(define conser (function->propagator-constructor cons))
-(define carer (function->propagator-constructor (nary-unpacking car)))
-(define cdrer (function->propagator-constructor (nary-unpacking cdr)))
-|#
-;;; The "carrying cells" strategy is elaborated in
-;;; extensions/carrying-cells.scm.  Since the merging is the same in
-;;; both cases, the two strategies may be intermixed within the same
-;;; network --- just make sure your propagators know what to expect
-;;; (and there is as yet no good story for merging a piece of data and
-;;; a cell, so merging a carrying cons with a copying cons will not do
-;;; anything good).
 
 ;;; Test slotful structure
 (define-structure (kons (constructor kons))

@@ -17,16 +17,34 @@
 ;;; along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
+;;; The "copying data" strategy from the thesis is given by these
+;;; definitions of the cons-car-cdr propagators:
+#|
+ (define conser (function->propagator-constructor cons))
+ (define carer (function->propagator-constructor (nary-unpacking car)))
+ (define cdrer (function->propagator-constructor (nary-unpacking cdr)))
+|#
+;;; This strategy is tested here, with the definitions in question
+;;; appearing inside the test scope below.
+
+;;; The "carrying cells" strategy is elaborated in
+;;; extensions/carrying-cells.scm.  Since the merging is the same in
+;;; both cases, the two strategies may be intermixed within the same
+;;; network --- just make sure your propagators know what to expect
+;;; (and there is as yet no good story for merging a piece of data and
+;;; a cell, so merging a carrying cons with a copying cons will not do
+;;; anything good).
+
 (in-test-group
  copying-data
 
  (define-test (example)
    (interaction
-    (initialize-scheduler)
-
     (define conser (function->propagator-constructor cons))
     (define carer (function->propagator-constructor (nary-unpacking car)))
     (define cdrer (function->propagator-constructor (nary-unpacking cdr)))
+
+    (initialize-scheduler)
 
     (define-cell x)
     (define-cell y)
