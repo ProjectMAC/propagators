@@ -146,30 +146,6 @@
 
 (set-operator-record! merge (get-operator-record generic-merge))
 
-(define nothing #(*the-nothing*))
-
-(define (nothing? thing)
-  (eq? thing nothing))
-
-(define the-contradiction #(*the-contradiction*))
-
-(define contradictory?
-  (make-generic-operator 1 'contradictory?
-   (lambda (thing) (eq? thing the-contradiction))))
-
-(defhandler merge
- (lambda (content increment) content)
- any? nothing?)
-
-(defhandler merge
- (lambda (content increment) increment)
- nothing? any?)
-
-(define (implies? v1 v2)
-  ;; This is right on the assumption that trivial effects are squeezed
-  ;; out (for example by using effectful->).
-  (eq? v1 (merge v1 v2)))
-
 (define (equivalent? info1 info2)
   (or (eqv? info1 info2)
       (generic-equivalent? info1 info2)))
@@ -178,11 +154,17 @@
   (make-generic-operator 2 'equivalent? eqv?))
 
 (set-operator-record! equivalent? (get-operator-record generic-equivalent?))
-
-;;; Data structure to represent a merge that may have effects.
+
+(define the-contradiction #(*the-contradiction*))
+
+(define contradictory?
+  (make-generic-operator 1 'contradictory?
+   (lambda (thing) (eq? thing the-contradiction))))
+
 (define execute-effect 
   (make-generic-operator 1 'execute-effect (lambda (effect) (effect))))
-
+
+;;; Data structure to represent a merge that may have effects.
 (define-structure effectful
   info
   effects)
@@ -207,12 +189,6 @@
 	  (effects (effectful-effects effectful)))
       (make-effectful subinfo (append subeffects effects)))))
 
-(define-method generic-match ((pattern <vector>) (object rtd:effectful))
-  (generic-match
-   pattern
-   (vector 'effectful (effectful-info object)
-	   (effectful-effects object))))
-
 (define (effectful-merge e1 e2)
   (let ((e1 (->effectful e1))
 	(e2 (->effectful e2)))
@@ -224,10 +200,6 @@
 	(append (effectful-effects e1)
 		(effectful-effects info-merge)
 		(effectful-effects e2)))))))
-
-;;; This is the n-ary merge
-(define (merge* infos-list)
-  (fold-left effectful-merge nothing infos-list))
 
 (define (effectful-bind effectful func)
   (let ((effectful (->effectful effectful)))
@@ -244,3 +216,35 @@
       (make-effectful
        (->effectful (func (map effectful-info effectfuls)))
        (apply append (map effectful-effects effectfuls)))))))
+
+;;; Merging utilities
+
+(define (implies? v1 v2)
+  ;; This is right on the assumption that trivial effects are squeezed
+  ;; out (for example by using effectful->).
+  (eq? v1 (merge v1 v2)))
+
+;;; This is the n-ary merge
+(define (merge* infos-list)
+  (fold-left effectful-merge nothing infos-list))
+
+(define-method generic-match ((pattern <vector>) (object rtd:effectful))
+  (generic-match
+   pattern
+   (vector 'effectful (effectful-info object)
+	   (effectful-effects object))))
+
+;;; The nothing partial information structure
+
+(define nothing #(*the-nothing*))
+
+(define (nothing? thing)
+  (eq? thing nothing))
+
+(defhandler merge
+ (lambda (content increment) content)
+ any? nothing?)
+
+(defhandler merge
+ (lambda (content increment) increment)
+ nothing? any?)
