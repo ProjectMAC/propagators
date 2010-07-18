@@ -19,19 +19,8 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(defhandler generic-attach-support
-  (lambda (effect)
-    (lambda (support)
-      (make-cell-join-effect
-       (cell-join-effect-cell1 effect)
-       (cell-join-effect-cell2 effect)
-       (generic-flatten
-	(make-tms
-	 (supported
-	  (cell-join-effect-control effect)
-	  support))))))
-  cell-join-effect?)
-
+;;;; Propagators implementing the carrying cells strategy
+
 ;;; The specific version
 #;
 (define-macro-propagator (p:carry-cons a-cell d-cell output)

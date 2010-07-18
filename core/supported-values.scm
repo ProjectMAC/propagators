@@ -73,6 +73,19 @@
 
 (define generic-attach-support (make-generic-operator 1 'attach-support))
 
+(defhandler generic-attach-support
+  (lambda (effect)
+    (lambda (support)
+      (make-cell-join-effect
+       (cell-join-effect-cell1 effect)
+       (cell-join-effect-cell2 effect)
+       (generic-flatten ;; TODO Do I need to do this by flattening?
+	(make-tms ;; TODO Get rid of this forward reference
+	 (supported
+	  (cell-join-effect-control effect)
+	  support))))))
+  cell-join-effect?)
+
 (defhandler-coercing merge v&s-merge ->v&s)
 
 (defhandler contradictory?
