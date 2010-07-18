@@ -63,6 +63,7 @@
   environment
   propagator-style?)
 
+;; The ensure-cell here makes these be "carrying cells" structures.
 (define (make-closure code-tag code environment)
   (%make-closure code-tag code (map ensure-cell environment) #t))
 
@@ -137,6 +138,18 @@
 ;;; effect that both the arguments and the return values inherit any
 ;;; partialness of that particular propagator constructor indeed being
 ;;; the one applied.
+
+;;; There is also a less important thing that APPLICATION needs to
+;;; deal with, that doesn't happen in Scheme, and that's the
+;;; distinction between propagator-style and expression-style
+;;; propagator constructors.  The former are more general, but require
+;;; all their boundary cells, including those for holding "return"
+;;; values, to be passed in to them, and ignore the Scheme return
+;;; value channel.  The latter are more convenient, because they will
+;;; synthesize and return a cell for the "return value" of the
+;;; computation they represent.  APPLICATION needs to be able to apply
+;;; either kind; and being a propagator constructor itself,
+;;; APPLICATION comes in both flavors.
 
 (define (application closure-cell . arg-cells)
   (let ((closure-cell (ensure-cell closure-cell))
