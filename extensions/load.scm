@@ -37,7 +37,7 @@
       '()))
 
 (for-each load-relative-compiled
- `(,@(maybe "physical-closures" (not *virtual-copies*))
+ `("physical-closures"
    "carrying-cells"
    ,@(maybe "environments" *virtual-copies*)
    ,@(maybe "closures" *virtual-copies*)
