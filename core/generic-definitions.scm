@@ -23,6 +23,11 @@
 
 ;;; Base (generic) functions for standard propagators
 
+;;; One of the points of extensibility of propagator networks is that
+;;; the propagators should be able to handle many different partial
+;;; information types.  At the base level, this is accomplished by
+;;; making each individual propagator function generic:
+
 (define generic-+   (make-generic-operator 2 '+   +))
 (define generic--   (make-generic-operator 2 '-   -))
 (define generic-*   (make-generic-operator 2 '*   *))
@@ -43,8 +48,12 @@
   (if control input nothing))
 (name! switch-function 'switch)
 (name! identity 'identity)
-
+
 ;;; General generic applicative functor machinery
+
+;;; If a group of partial information structures fit into the
+;;; applicative functor paradigm, the network can be mechanically
+;;; extended to handle them and their compositions.
 
 (define (binary-mapping f)
   (define (loop x y)
@@ -71,8 +80,8 @@
   (name!
    (lambda (x)
      ((binary-mapping (lambda (x y) (f x)))
-      x 1) ;;; TODO Make this 1 a real "object that can be coerced into anything"
-     ) f))
+      ;; TODO Make this 1 a real "object that can be coerced into anything"
+      x 1)) f))
 
 (define (nary-mapping f)
   (lambda args
@@ -87,8 +96,18 @@
 				(apply f (reverse (cons item lst)))))
 	      args (car rest))
 	     (loop ((binary-mapping cons) (car rest) args) (cdr rest))))))))
-
+
 ;;; General generic-monadic machinery
+
+;;; If a partial information structure fits into the monad paradigm,
+;;; the portions of the network that are necessarily monadic rather
+;;; than applicative-functorial can be automatically extended to that
+;;; structure.  Of course, since monads do not compose naturally, it
+;;; is up to the user to effectively treat a group of partial
+;;; information structures as forming a single monad where
+;;; appropriate, and define corresponding cross-structure methods for
+;;; these operations.
+;;; TODO Does anything other than IF really need monads?
 
 (define (generic-bind thing function)
   (generic-flatten (generic-unpack thing function)))
