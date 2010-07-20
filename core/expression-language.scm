@@ -21,11 +21,34 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define %% (list 'the-implicit-cell))
-(define (implicit-cell? thing)
-  (eq? thing %%))
-(name! %% '%%)
+;;;; Expression style of propagator notation
 
+;;; The most general propagator notation supplies all the input and
+;;; output cells to the desired propagator constructor explicitly:
+;;;   (adder x y subtotal)
+;;;   (adder subtotal z total)
+;;; This "propagator style" notation is very flexible, because it
+;;; allows easy handling of multiple propagators writing to the same
+;;; cells, propagators having multiple output cells, having cells that
+;;; are ambiguous as to input vs output, etc.
+
+;;; A nested expression notation can be very convenient for simple
+;;; cases, however, because it allows the outputs of one propagator to
+;;; be piped directly into the inputs to another, without even naming
+;;; the intermediate value:
+;;;   (e:+ (e:+ x y) z)
+
+;;; Here, expression-style variants of propagator-style propagator
+;;; constructors are mechanically derived and defined.  It is also
+;;; convenient to provide multidirectional constraint versions of
+;;; standard propagator constructors with a uniform naming scheme.
+
+;;; The naming convention is:
+;;;   p:foo  for the propagator version of foo
+;;;   e:foo  for the expression-oriented propagator version of foo
+;;;   cp:foo for the constraint-propagator version of foo
+;;;   ce:foo for the expression-oriented constraint-propagator version of foo
+
 (define (functionalize propagator #!optional num-outputs)
   (if (default-object? num-outputs)
       (set! num-outputs 1))
@@ -54,11 +77,10 @@
 	  (apply values outputs)))
     'expression-style #t)))
 
-;;; Naming convention:
-;;;   p:foo  for the propagator version of foo
-;;;   e:foo  for the expression-oriented propagator version of foo
-;;;   cp:foo for the constraint-propagator version of foo
-;;;   ce:foo for the expression-oriented constraint-propagator version of foo
+(define %% (list 'the-implicit-cell))
+(define (implicit-cell? thing)
+  (eq? thing %%))
+(name! %% '%%)
 
 (define p:constant constant)
 (define (e:constant value)
@@ -99,6 +121,37 @@
 (define p:switch switch)
 (define e:switch (functionalize switch))
 
+(define c:+ sum-constraint)
+(define ce:+ (functionalize sum-constraint))
+(define c:* product-constraint)
+(define ce:* (functionalize product-constraint))
+(define c:not not-constraint)
+(define ce:not (functionalize not-constraint))
+
+(define (p:== . args)
+  (let ((target (car (last-pair args))))
+    (for-each (lambda (arg)
+		(pass-through arg target))
+	      (except-last-pair args))
+    target))
+(define e:== (functionalize p:==))
+
+(define (c:== . args)
+  (let ((lead (car args)))
+    (for-each (lambda (arg)
+		(identity-constraint lead arg))
+	      (cdr args))
+    lead))
+(define ce:== (functionalize c:==))
+
+(define p:conditional conditional)
+(define e:conditional (functionalize p:conditional))
+
+;;;; Propagatify macro
+
+;;; An experimental macro trying to abstract the propagator definition
+;;; cycle carried out between here and generic-definitions.scm.
+
 (define (make-arity-detecting-operator name default-operation)
   (let ((arity (procedure-arity default-operation)))
     ;; The generic machinery only likes fixed arity operations
@@ -135,32 +188,3 @@
 (propagatify eq? binary-mapping)
 (propagatify expt unary-mapping)
 
-(define c:+ sum-constraint)
-(define ce:+ (functionalize sum-constraint))
-(define c:* product-constraint)
-(define ce:* (functionalize product-constraint))
-(define c:not not-constraint)
-(define ce:not (functionalize not-constraint))
-;; (define c:and and-constraint)
-;; (define ce:and (functionalize and-constraint))
-;; (define c:or or-constraint)
-;; (define ce:or (functionalize or-constraint))
-
-(define (p:== . args)
-  (let ((target (car (last-pair args))))
-    (for-each (lambda (arg)
-		(pass-through arg target))
-	      (except-last-pair args))
-    target))
-(define e:== (functionalize p:==))
-
-(define (c:== . args)
-  (let ((lead (car args)))
-    (for-each (lambda (arg)
-		(identity-constraint lead arg))
-	      (cdr args))
-    lead))
-(define ce:== (functionalize c:==))
-
-(define p:conditional conditional)
-(define e:conditional (functionalize p:conditional))
