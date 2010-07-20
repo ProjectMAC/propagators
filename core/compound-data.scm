@@ -21,10 +21,12 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;; This appears to be the right story for merging compound data,
-;;; regardless of the choice between the "copying data" or "carrying
-;;; cells" representations.  I say "appears" because it might be
-;;; wrong.
+;;;; Compound data
+
+;;; The code for merging compound data turns out not to depend on the
+;;; choice between the "copying data" or "carrying cells" strategies
+;;; --- those are dependent entirely on what the constructor
+;;; and accessor propagators do.
 
 ;;; Cons looks like this:
 #|
@@ -42,7 +44,7 @@
  (defhandler merge pair-merge pair? pair?)
  (defhandler equivalent? pair-equivalent? pair? pair?)
 |#
-
+
 ;;; The generalization to arbitrary product types:
 
 (define (slotful-information-type predicate? constructor . accessors)
@@ -66,8 +68,9 @@
   (defhandler contradictory? slotful-contradiction? predicate?))
 
 (slotful-information-type pair? cons car cdr)
-
+
 ;;; Test slotful structure
+
 (define-structure (kons (constructor kons))
   kar
   kdr)
