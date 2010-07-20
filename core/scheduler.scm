@@ -31,31 +31,44 @@
 ;;; and specifically it is assumed acceptable not to count how many
 ;;; times a given job (by eq?-ness) was scheduled, but merely that it
 ;;; was scheduled.  When the scheduler runs out of jobs, it returns
-;;; the symbol 'done to its caller.
+;;; the symbol 'DONE to its caller.
 
 ;;; The scheduler supplies an escape mechanism: running the procedure
-;;; abort-process, with a value, will terminate the entire job run,
+;;; ABORT-PROCESS, with a value, will terminate the entire job run,
 ;;; and return the supplied value to the scheduler's caller.
 ;;; Subsequent calls to the scheduler without first scheduling more
-;;; jobs will also return that same value.  If abort-process is called
+;;; jobs will also return that same value.  If ABORT-PROCESS is called
 ;;; outside the dynamic extent of a run, it deschedules any jobs that
 ;;; might be scheduled and saves the value for future reference as
 ;;; above.
 
 ;;; This scheduler is meant as a low-level support for the propagator
-;;; network in this dissertation.  In that use case, the jobs would be
+;;; network in this prototype.  In that use case, the jobs would be
 ;;; propagators that the network knows need to be run.  Any cells in
 ;;; the network are invisible to the scheduler, but presumably help
 ;;; the network schedule more propagators to run (namely those that
 ;;; may be interested in the cell's goings on).
-
-;;; The public interface is
+
+;;; The main public interface is
 ;;;   (initialize-scheduler)      clear all scheduler state
 ;;;   (alert-propagators jobs)    schedule a list (or set) of jobs
 ;;;   (alert-all-propagators!)    reschedule all jobs ever scheduled
 ;;;   (run)                       run scheduled jobs until done
 ;;;   (abort-process x)           terminate the run returning x
-
+
+;;; The scheduler also provides
+;;; (with-independent-scheduler thunk)
+;;;   Run thunk in a fresh scheduler, then restore current scheduler.
+;;; (make-scheduler) 
+;;;   Mutation point that can be configured to expriment with
+;;;   different scheduling strategies.
+;;; (execute-propagator propagator)
+;;;   Execute a propagator immediately rather than scheduling it for
+;;;   later.  Use judiciously.
+;;; (all-propagators)
+;;;   Returns a list of all known propagators.  Mainly for debugging
+;;;   a propagator network.
+
 (define *scheduler*)
 (define *abort-process*)
 (define *last-value-of-run*)
@@ -82,7 +95,7 @@
 
 (define (execute-propagator propagator)
   (propagator))
-
+
 (define (alert-propagators propagators)
   (for-each
    (lambda (propagator)
@@ -166,7 +179,7 @@
 
 (define (make-stack-scheduler)
   (make-oset-scheduler stack-policy))
-
+
 (define (make-fast-slow-scheduler fast-policy slow-policy)
   (let ((propagators-left (make-eq-oset))
 	(slow-propagators (make-eq-oset)))
@@ -215,9 +228,7 @@
 ;;; examples when tagging amb-choose propagators as slow.
 (define (make-two-stack-scheduler)
   (make-fast-slow-scheduler stack-policy stack-policy))
-
 (define (make-robin-stack-scheduler)
   (make-fast-slow-scheduler round-robin-policy stack-policy))
-
 (define (make-two-robin-scheduler)
   (make-fast-slow-scheduler round-robin-policy round-robin-policy))
