@@ -45,19 +45,19 @@
 ;;; that would rebuild the closure every time any of the cells the
 ;;; enviornment grabs experienced any changes, and APPLICATION, below,
 ;;; would need to be adjusted accordingly (how, exactly?)  All this
-;;; would be perfectly plausible too, with the same pros and cons of
-;;; the regular "carrying" vs "copying" debate.  Note that the actual
+;;; would be perfectly plausible, with the same pros and cons as the
+;;; regular "carrying" vs "copying" debate.  Note that the actual
 ;;; closure data structure, except for MAKE-CLOSURE, is completely
 ;;; independent of the carrying vs copying choice, just like the
 ;;; actual partial information type definition for CONS.
-
+
 ;;; The code-tag field is a hack to let me detect "equality" between
 ;;; two Scheme closures that have the same code but are closed over
 ;;; different cells.  Such are the moral equivalent of identical data
 ;;; structures with different contents, and so are mergeable; whereas
 ;;; Scheme closures with different code are like data structures of
 ;;; different types and so are not mergeable.
-
+
 (define-structure
   (closure (constructor %make-closure) (safe-accessors #t))
   code-tag
@@ -87,7 +87,7 @@
   (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
        (eqv? (closure-propagator-style? closure1)
 	     (closure-propagator-style? closure2))))
-
+
 (define (closure-merge closure1 closure2)
   (if (not (same-code? closure1 closure2))
       the-contradiction
@@ -161,7 +161,7 @@
 ;;; computation they represent.  APPLICATION needs to be able to apply
 ;;; either kind; and being a propagator constructor itself,
 ;;; APPLICATION comes in both flavors.
-
+
 (define (application closure-cell . arg-cells)
   (let ((closure-cell (ensure-cell closure-cell))
 	(arg-cells (map ensure-cell arg-cells)))
@@ -210,7 +210,7 @@
       (propagator closure-cell the-propagator))))
 
 (define e:application (functionalize application))
-
+
 (define (closure-body thing)
   (cond ((closure? thing)
 	 (closure-code thing))
