@@ -50,7 +50,7 @@
 
 (define boring-effect?
   (make-generic-operator 1 'boring-effect? (lambda (thing) #f)))
-
+
 (define (effectful-flatten effectful)
   (let ((subeffectful (->effectful (effectful-info effectful))))
     (let ((subinfo (effectful-info subeffectful))
