@@ -73,8 +73,7 @@
 
 ;;;; Propagator cells
 
-;;; message-accepter style
-
+;; message-accepter style
 (define (make-cell)
   (let ((neighbors '()) (content nothing))
     (define (add-content increment)
@@ -104,19 +103,14 @@
     (eq-put! me 'cell #t)
     (network-register me)
     me))
-
 (define (content cell)
   (cell 'content))
-
 (define (add-content cell increment)
   ((cell 'add-content) increment))
-
 (define (neighbors cell)
   (cell 'neighbors))
-
 (define (new-neighbor! cell neighbor)
   ((cell 'new-neighbor!) neighbor))
-
 (define (cell? thing)
   (eq-get thing 'cell))
 
@@ -192,7 +186,7 @@
 (defhandler merge
  (lambda (content increment) increment)
  nothing? any?)
-
+
 ;;;; Cells as partial information
 
 (define (equivalent-cells? cell1 cell2)
@@ -210,6 +204,8 @@
     (list (make-cell-join-effect cell1 cell2 #t)))))
 
 (defhandler merge cell-merge cell? cell?)
+
+;;; Cell joining effects
 
 (define-structure cell-join-effect
   cell1
