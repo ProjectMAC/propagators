@@ -239,23 +239,14 @@
 	  (eq-put! cell2 cell1 control)
 	  control))))
 
-(define effectful->
-  (let ((effectful-> effectful->))
-    (lambda (effect)
-      (effectful->
-       (make-effectful
-	(effectful-info effect)
-	(filter (lambda (effect)
-		  (not (boring-cell-join? effect)))
-		(effectful-effects effect)))))))
-
 (define (boring-cell-join? effect)
-  (and (cell-join-effect? effect)
-       (let ((cell1 (cell-join-effect-cell1 effect))
-	     (cell2 (cell-join-effect-cell2 effect))
-	     (control-info (cell-join-effect-control effect)))
-	 (or (eq? cell1 cell2)
-	     (let ((candidate (eq-get cell1 cell2)))
-	       (and candidate
-		    (implies? (content candidate)
-			      control-info)))))))
+  (let ((cell1 (cell-join-effect-cell1 effect))
+	(cell2 (cell-join-effect-cell2 effect))
+	(control-info (cell-join-effect-control effect)))
+    (or (eq? cell1 cell2)
+	(let ((candidate (eq-get cell1 cell2)))
+	  (and candidate
+	       (implies? (content candidate)
+			 control-info))))))
+
+(defhandler boring-effect? boring-cell-join? cell-join-effect?)
