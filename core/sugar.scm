@@ -21,6 +21,13 @@
 
 (declare (usual-integrations make-cell cell?))
 
+;;;; Carcinogens for the semicolon
+
+;;; Here be macros that provide syntactic sugar for playing with the
+;;; propagator language as embedded in Scheme.  Syntactic regularities
+;;; in patterns of definition of cells and propagator constructors are
+;;; captured.
+
 ;;;; Defining cells
 
 ;; (define-cell foo form)
@@ -34,13 +41,14 @@
 ;; expands into
 ;; (define-cell foo (make-named-cell 'foo))
 ;; The metadata is then available two ways.
+
 (define-syntax define-cell
   (syntax-rules ()
     ((define-cell symbol form)
      (define symbol (name-locally! (ensure-cell form) 'symbol)))
     ((define-cell symbol)
      (define-cell symbol (make-named-cell 'symbol)))))
-
+
 ;; (let-cells ((foo foo-form)
 ;;             (bar bar-form)
 ;;             (baz baz-form))
@@ -62,22 +70,22 @@
 ;;             (baz (make-named-cell 'baz)))
 ;;   stuff)
 ;; The metadata is then available two ways.
-;;
-;; The following would suffice for the above.
+
+;; The following would suffice for the above:
 #;
  (define-syntax let-cells
    (syntax-rules ()
-     ((let-cells ((cell-name cell-form) ...)
+     ((let-cells ((name form) ...)
 	form ...)
-      (let ((cell-name (name-locally! (ensure-cell cell-form) 'cell-name)) ...)
+      (let ((name (name-locally! (ensure-cell form) 'name)) ...)
 	form ...))
-     ((let-cells (cell-name ...)
+     ((let-cells (name ...)
 	form ...)
-      (let-cells ((cell-name (make-named-cell 'cell-name))...)
+      (let-cells ((name (make-named-cell 'name))...)
 	form ...))))
 
-;; The much more horrible macro below allows the two use patterns
-;; above to mix, as follows,
+;; The much more horrible LET-CELLS macro below allows the two use
+;; patterns above to mix, as follows,
 ;; (let-cells ((foo foo-form)
 ;;             bar
 ;;             (baz baz-form))
@@ -89,6 +97,7 @@
 ;;             (baz baz-form))
 ;;   stuff)
 ;; in agreement with Scheme's let.
+
 (define-syntax let-cells
   (syntax-rules ()
     ((let-cells (cell-binding ...)
@@ -127,12 +136,13 @@
        (clause ...)
        ((cell-name (make-named-cell 'cell-name)) done-clause ...)
        form ...))))
-
+
 ;; This version is a grammatical convenience if there is only one
 ;; cell.  (let-cell (foo foo-form) stuff) and (let-cell foo stuff) are
 ;; both ok and equivalent to (let-cells ((foo foo-form)) stuff) and
 ;; (let-cells (foo) stuff), respectively, which are more awkward to
 ;; read.
+
 (define-syntax let-cell
   (syntax-rules ()
     ((let-cell cell-binding
@@ -205,8 +215,7 @@
     ((named-macro-propagator stuff ...)
      (propagator-constructor!
       (coercing ensure-cell (named-propagator-syntax stuff ...))))))
-
-;;; This version is just like define-macro-propagator, but
+;;; This version is just like define-macro-propagator, but
 ;;; additionally allows the body to be recursive by delaying its
 ;;; expansion until there is some information in at least one of the
 ;;; neighbor cells.
@@ -224,41 +233,38 @@
      (delayed-propagator-constructor
       (named-macro-propagator stuff ...)))))
 
-;;; More remains to be done before I can really make a
-;;; propagator-lambda macro, or its corresponding define.  I would
-;;; need to settle on the representation of closures --- all the above
-;;; produce raw Scheme procedures.  I would also need to settle on the
-;;; behavior of closures --- the above use physical copies and
-;;; primitive delaying as their abstraction strategy.  Finally, I
-;;; would need a story for variable arity procedures, which is
+;;;     TODO Is it now time to refactor the above propagator macro
+;;; nonsense into a propagator-lambda macro that emits closures, per
+;;; physical-closures.scm?
+;;;     TODO I need a story for variable arity procedures, which is
 ;;; basically the same as the story for compound data.  (And at the
-;;; end I would need to adjust the above to define-cell instead of
-;;; define, and to return cells instead raw values, but that's easy.)
-
-;;; TODO Here's an idea: maybe the arguments to the Scheme procedures
-;;; produced by define-macro-propagator and company should be
-;;; optional.  If any are not supplied, that macro can just generate
-;;; them.  It may also be fun to standardize on a mechanism like
-;;; E:INSPECTABLE-OBJECT and THE from the circuits exploration for
-;;; reaching in and grabbing such cells from the outside.
-
-;;; TODO Philosophical clarification that probably needs to be
-;;; implemented: Abstractions should always make their own cells for
-;;; their formal parameters.  Call sites should attach arguments to
-;;; callees with identity-like propagators. (If some argument cells
-;;; are omitted from the argument list, just fail to attach anything
-;;; to those parameters).  Cons should operate the same as it would
-;;; under Church encoding: make its own cells, id-copy its arguments
-;;; into them, and then carry those cells around.  This is neither the
-;;; "carrying cells" strategy, because the argument cells are not
-;;; carried, nor the "copying data" strategy, because the contents of
-;;; the cons are not copied every time.  The advantage of this pattern
-;;; is that cells really become very analagous to Scheme memory
-;;; locations.  Incidentally, this idea is independent of physical vs
-;;; virtual copies.  Hm.  It appears that carrying cells is actually
-;;; just a slight optimization of this --- if the closure constructor's
-;;; call site knows that it is about to make a few new cells and attach
-;;; them to existing cells with unconditional identity propagators,
-;;; then might as well just grab those cells in the first place.
-;;; But if those propagators do something funny like shift levels
-;;; in a virtual copies scheme, then that's another story.
+;;; end I need to adjust the above to define-cell instead of define,
+;;; and to return cells instead raw values, but that's easy.)
+;;;     TODO Here's an idea: maybe the arguments to the Scheme
+;;; procedures produced by define-macro-propagator and company should
+;;; be optional.  If any are not supplied, that macro can just
+;;; generate them.  It may also be fun to standardize on a mechanism
+;;; like E:INSPECTABLE-OBJECT and THE from the circuits exploration
+;;; for reaching in and grabbing such cells from the outside.
+;;;     TODO Philosophical clarification that probably needs to be
+;;; implemented: Abstractions should nominally always make their own
+;;; cells for their formal parameters.  Call sites should attach
+;;; arguments to callees with identity-like propagators. (If some
+;;; argument cells are omitted from the argument list, just fail to
+;;; attach anything to those parameters).  Cons should operate the
+;;; same as it would under Church encoding: make its own cells,
+;;; id-copy its arguments into them, and then carry those cells
+;;; around.  This is neither the "carrying cells" strategy, because
+;;; the argument cells are not carried, nor the "copying data"
+;;; strategy, because the contents of the cons are not copied every
+;;; time.  The advantage of this pattern is that cells really become
+;;; very analagous to Scheme memory locations.  Incidentally, this
+;;; idea is independent of physical vs virtual copies.  Hm.  It
+;;; appears that carrying cells is actually just a slight optimization
+;;; of this --- if the closure constructor's call site knows that it
+;;; is about to make a few new cells and attach them to existing cells
+;;; with unconditional identity propagators, then might as well just
+;;; grab those cells in the first place.  But if those propagators do
+;;; something funny like shift levels in a virtual copies scheme, or
+;;; attach the provenance of the procedure being applied, then that's
+;;; another story.
