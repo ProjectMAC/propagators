@@ -27,8 +27,7 @@
 ;;; CONS looks like this:
 #;
  (define-macro-propagator (p:carry-cons a-cell d-cell output)
-   ((constant (cons a-cell d-cell))
-    output))
+   ((constant (cons a-cell d-cell)) output))
 
 ;;; The general version for arbitrary constructors:
 
@@ -37,16 +36,16 @@
     (let ((output (ensure-cell (car (last-pair cells))))
           (inputs (map ensure-cell (except-last-pair cells))))
       (execute-propagator ; To enable the early-access-hack below
-       ((constant (apply f inputs))
-	output)))))
+       ((constant (apply f inputs)) output)))))
 (define p:carry-cons (function->cell-carrier-constructor cons))
 (define e:carry-cons (functionalize p:carry-cons))
 
 ;;; Type tester:
 
-(define p:carry-pair? (function->propagator-constructor (unary-mapping pair?)))
+(define p:carry-pair?
+  (function->propagator-constructor (unary-mapping pair?)))
 (define e:carry-pair? (functionalize p:carry-pair?))
-
+
 ;;; Propagator-style accessors are remarkably easy:
 
 (define-macro-propagator (p:carry-car pair-cell output)
