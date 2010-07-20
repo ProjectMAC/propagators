@@ -90,9 +90,10 @@
 	      (lambda ()
 		(add-content output (apply f (map content inputs))))))
 	 (eq-adjoin! output 'shadow-connections the-propagator)
-	 (eq-label! the-propagator 'name f 'inputs inputs 'outputs (list output))
+	 (eq-label! the-propagator 'name f
+                    'inputs inputs 'outputs (list output))
 	 (propagator inputs the-propagator))))))
-
+
 ;;; Returns a version of the supplied propagator constructor that
 ;;; creates a propagator that will wait until at least one of the
 ;;; boundary cells has a non-nothing content and then perform the
