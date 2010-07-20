@@ -21,6 +21,34 @@
 
 (declare (usual-integrations make-cell cell?))
 
+;;;; Network Metadata
+
+;;; The purpose of this steaming pile is to allow the collection of
+;;; metadata sufficient to traverse and inspect a running propagator
+;;; network, for the purpose of debugging it.  As an extreme case,
+;;; extensions/draw.scm uses the collected metadata to draw pictures
+;;; of (small, simple) networks in dot and yFiles.
+
+(define (propagator-inputs propagator)
+  (or (eq-get propagator 'inputs)
+      (eq-get propagator 'neighbors)
+      '()))
+
+(define (propagator-outputs propagator)
+  (or (eq-get propagator 'outputs)
+      (eq-get propagator 'neighbors)
+      '()))
+
+(define (cell-non-readers cell)
+  (or (eq-get cell 'shadow-connections)
+      '()))
+
+(define (cell-connections cell)
+  ;; The neighbors are the ones that need to be woken up; the
+  ;; connections are the ones that touch the cell at all.  This
+  ;; concept is useful for walking the graph structure of the network.
+  (append (neighbors cell) (cell-non-readers cell)))
+
 (define-structure network-group
   elements
   names)
@@ -70,6 +98,20 @@
 (define (with-network-group group thunk)
   (network-register group)
   (in-network-group group thunk))
+
+(define (name-locally! thing name)
+  (name-in-group! *current-network-group* thing name))
+
+(define (local-name thing)
+  (name-in-group *current-network-group* thing))
+
+(define name
+  (let ((name name))
+    (lambda (thing)
+      (let ((group-name (name-in-group (network-group-of thing) thing)))
+	(if group-name
+	    (name group-name)
+	    (name thing))))))
 
 (define (clear-network-group thing)
   (eq-rem! thing 'shadow-connections 'inputs 'outputs 'network-group)
@@ -91,40 +133,6 @@
     (lambda args
       (fluid-let ((*current-network-group* #f))
 	(apply with-independent-scheduler args)))))
-
-(define (propagator-inputs propagator)
-  (or (eq-get propagator 'inputs)
-      (eq-get propagator 'neighbors)
-      '()))
-
-(define (propagator-outputs propagator)
-  (or (eq-get propagator 'outputs)
-      (eq-get propagator 'neighbors)
-      '()))
-
-(define (name-locally! thing name)
-  (name-in-group! *current-network-group* thing name))
-
-(define (local-name thing)
-  (name-in-group *current-network-group* thing))
-
-(define name
-  (let ((name name))
-    (lambda (thing)
-      (let ((group-name (name-in-group (network-group-of thing) thing)))
-	(if group-name
-	    (name group-name)
-	    (name thing))))))
-
-(define (cell-non-readers cell)
-  (or (eq-get cell 'shadow-connections)
-      '()))
-
-(define (cell-connections cell)
-  ;; The neighbors are the ones that need to be woken up; the
-  ;; connections are the ones that touch the cell at all.  This
-  ;; concept is useful for walking the graph structure of the network.
-  (append (neighbors cell) (cell-non-readers cell)))
 
 ;;; Oof!
 ;;; TODO Figure out what network-group-expression-substructure is
@@ -172,7 +180,8 @@
 		  (delete-duplicates
 		   (append (network-group-elements group)
 			   ;; TODO Oops!  Travesing keys of a weak table!
-			   (hash-table/key-list (network-group-names group)))))))
+			   (hash-table/key-list
+			    (network-group-names group)))))))
     (define (functionalized-to thing)
       (and (not (cell? thing))
 	   (let ((connections (connections-of thing)))
@@ -225,6 +234,7 @@
 	  (cons (name head) (map loop (lset-intersection eq?
 					(connections-of head)
 					elements))))))
+
   (let loop ((target-subgroups
 	      (map list (filter should-hide?
 				(network-group-elements group))))
@@ -269,8 +279,7 @@
 		shown-elements)
 	  (append (map make-subgroup target-subgroups)
 		  (map car hidable-elements)
-		  shown-elements))))
-  )
+		  shown-elements)))))
 
 ;;; Stuff for automatically determining the i/o characteristics of a
 ;;; compound box by expanding it out (in a sandbox) and looking at the
