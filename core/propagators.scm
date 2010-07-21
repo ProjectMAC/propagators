@@ -70,14 +70,15 @@
 
 ;;; Returns a propagator constructor that builds single propagators
 ;;; that execute the supplied Scheme function.
-(define (function->propagator-constructor f)
-  (lambda cells
-    (let ((output (ensure-cell (car (last-pair cells))))
-          (inputs (map ensure-cell (except-last-pair cells))))
-      (propagator inputs                ; The output isn't a neighbor!
-        (lambda ()
-          (add-content output
-            (apply f (map content inputs))))))))
+#;
+ (define (function->propagator-constructor f)
+   (lambda cells
+     (let ((output (ensure-cell (car (last-pair cells))))
+	   (inputs (map ensure-cell (except-last-pair cells))))
+       (propagator inputs                ; The output isn't a neighbor!
+	 (lambda ()
+	   (add-content output
+	     (apply f (map content inputs))))))))
 
 ;;; This version has additional metadata to allow the propagator
 ;;; network to be effectively traversed (see extensions/draw.scm)

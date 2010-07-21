@@ -43,7 +43,7 @@
 ;;; thing; but in principle there is no reason to insist on it.  To do
 ;;; "copying data", MAKE-CLOSURE would need to construct a propagator
 ;;; that would rebuild the closure every time any of the cells the
-;;; enviornment grabs experienced any changes, and APPLICATION, below,
+;;; environment grabs experienced any changes, and APPLICATION, below,
 ;;; would need to be adjusted accordingly (how, exactly?)  All this
 ;;; would be perfectly plausible, with the same pros and cons as the
 ;;; regular "carrying" vs "copying" debate.  Note that the actual

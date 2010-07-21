@@ -52,8 +52,9 @@
 ;;; General generic applicative functor machinery
 
 ;;; If a group of partial information structures fit into the
-;;; applicative functor paradigm, the network can be mechanically
-;;; extended to handle them and their compositions.
+;;; applicative functor (TODO: Reference Paterson and McBride)
+;;; paradigm, the network can be mechanically extended to handle them
+;;; and their compositions.
 
 (define (binary-mapping f)
   (define (loop x y)
@@ -81,7 +82,8 @@
    (lambda (x)
      ((binary-mapping (lambda (x y) (f x)))
       ;; TODO Make this 1 a real "object that can be coerced into anything"
-      x 1)) f))
+      x 1))
+   f))
 
 (define (nary-mapping f)
   (lambda args

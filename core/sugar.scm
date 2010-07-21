@@ -236,10 +236,10 @@
 ;;;     TODO Is it now time to refactor the above propagator macro
 ;;; nonsense into a propagator-lambda macro that emits closures, per
 ;;; physical-closures.scm?
-;;;     TODO I need a story for variable arity procedures, which is
-;;; basically the same as the story for compound data.  (And at the
-;;; end I need to adjust the above to define-cell instead of define,
-;;; and to return cells instead raw values, but that's easy.)
+;;;     TODO I need variable arity propagator constructors; this can
+;;; be taken from the story for compound data.  (And at the end I need
+;;; to adjust the above to define-cell instead of define, and to
+;;; return cells instead raw values, but that's easy.)
 ;;;     TODO Here's an idea: maybe the arguments to the Scheme
 ;;; procedures produced by define-macro-propagator and company should
 ;;; be optional.  If any are not supplied, that macro can just
