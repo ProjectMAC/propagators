@@ -23,30 +23,30 @@
 
 ;;;; Standard primitive propagators
 
-(define adder
-  (function->propagator-constructor (binary-mapping generic-+)))
-(define subtractor
-  (function->propagator-constructor (binary-mapping generic--)))
-(define multiplier
-  (function->propagator-constructor (binary-mapping generic-*)))
-(define divider
-  (function->propagator-constructor (binary-mapping generic-/)))
+;; (define adder
+;;   (function->propagator-constructor (binary-mapping generic-+)))
+;; (define subtractor
+;;   (function->propagator-constructor (binary-mapping generic--)))
+;; (define multiplier
+;;   (function->propagator-constructor (binary-mapping generic-*)))
+;; (define divider
+;;   (function->propagator-constructor (binary-mapping generic-/)))
 
-(define absolute-value
-  (function->propagator-constructor (unary-mapping generic-abs)))
-(define squarer
-  (function->propagator-constructor (unary-mapping generic-square)))
-(define sqrter
-  (function->propagator-constructor (unary-mapping generic-sqrt)))
+;; (define absolute-value
+;;   (function->propagator-constructor (unary-mapping generic-abs)))
+;; (define squarer
+;;   (function->propagator-constructor (unary-mapping generic-square)))
+;; (define sqrter
+;;   (function->propagator-constructor (unary-mapping generic-sqrt)))
 
-(define =? (function->propagator-constructor (binary-mapping generic-=)))
-(define <? (function->propagator-constructor (binary-mapping generic-<)))
-(define >? (function->propagator-constructor (binary-mapping generic->)))
-(define <=? (function->propagator-constructor (binary-mapping generic-<=)))
-(define >=? (function->propagator-constructor (binary-mapping generic->=)))
+;; (define =? (function->propagator-constructor (binary-mapping generic-=)))
+;; (define <? (function->propagator-constructor (binary-mapping generic-<)))
+;; (define >? (function->propagator-constructor (binary-mapping generic->)))
+;; (define <=? (function->propagator-constructor (binary-mapping generic-<=)))
+;; (define >=? (function->propagator-constructor (binary-mapping generic->=)))
 
-(define inverter
-  (function->propagator-constructor (unary-mapping generic-not)))
+;; (define inverter
+;;   (function->propagator-constructor (unary-mapping generic-not)))
 (define conjoiner
   (function->propagator-constructor (binary-mapping generic-and)))
 (define disjoiner

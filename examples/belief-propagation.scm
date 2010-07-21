@@ -54,7 +54,12 @@
 				    messages))))
 	support)))
 
-(propagatify pointwise-product nary-mapping)
+;;; TODO Can I get propagatify to support this usage, where the
+;;; generic is not wanted, and also the usages for + and / where the
+;;; generic is wanted?
+(define p:pointwise-product
+  (function->propagator-constructor (nary-mapping pointwise-product)))
+(define e:pointwise-product (functionalize p:pointwise-product))
 
 (define (normalize-message message)
   (let ((constant (sum (map cdr (message-alist message)))))
@@ -130,7 +135,9 @@
  (alist ((#t . 1.) (#f . 1.))) ; Message to earthquake
 |#
 
-(propagatify pointwise-sum-product nary-mapping)
+(define p:pointwise-sum-product
+  (function->propagator-constructor (nary-mapping pointwise-sum-product)))
+(define e:pointwise-sum-product (functionalize p:pointwise-sum-product))
 
 (define-propagator-syntax (factor-props factor terminals)
   ;; Ugh.  The factor comes in as a lisp procedure, because 
