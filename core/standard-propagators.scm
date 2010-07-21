@@ -47,6 +47,35 @@
 
 ;; (define inverter
 ;;   (function->propagator-constructor (unary-mapping generic-not)))
+
+(propagatify + binary-mapping)
+(propagatify - binary-mapping)
+(propagatify * binary-mapping)
+(propagatify / binary-mapping)
+(propagatify abs unary-mapping)
+(propagatify square unary-mapping)
+(propagatify sqrt unary-mapping)
+(propagatify = binary-mapping)
+(propagatify < binary-mapping)
+(propagatify > binary-mapping)
+(propagatify <= binary-mapping)
+(propagatify >= binary-mapping)
+(propagatify not unary-mapping)
+
+(define adder p:+)
+(define subtractor p:-)
+(define multiplier p:*)
+(define divider p:/)
+(define absolute-value p:abs)
+(define squarer p:square)
+(define sqrter p:sqrt)
+(define =? p:=)
+(define <? p:<)
+(define >? p:>)
+(define <=? p:<=)
+(define >=? p:>=)
+(define inverter p:not)
+
 (define conjoiner
   (function->propagator-constructor (binary-mapping generic-and)))
 (define disjoiner
@@ -61,6 +90,23 @@
   (function->propagator-constructor
    #; (lambda () value)
    (eq-label! (lambda () value) 'name `(constant ,value))))
+
+(propagatify eq? binary-mapping)
+(propagatify expt unary-mapping)
+
+(define p:constant constant)
+(define (e:constant value)
+  (let ((answer (make-named-cell 'cell)))
+    ((constant value) answer)
+    (eq-put! answer 'subexprs '())
+    answer))
+
+(define p:and conjoiner)
+(define e:and (functionalize conjoiner))
+(define p:or disjoiner)
+(define e:or (functionalize disjoiner))
+(define p:switch switch)
+(define e:switch (functionalize switch))
 
 ;;;; Standard "propagator macros"
 
@@ -101,3 +147,30 @@
 (define-macro-propagator (identity-constraint c1 c2)
   (pass-through c1 c2)
   (pass-through c2 c1))
+
+
+(define c:+ sum-constraint)
+(define ce:+ (functionalize sum-constraint))
+(define c:* product-constraint)
+(define ce:* (functionalize product-constraint))
+(define c:not not-constraint)
+(define ce:not (functionalize not-constraint))
+
+(define (p:== . args)
+  (let ((target (car (last-pair args))))
+    (for-each (lambda (arg)
+		(pass-through arg target))
+	      (except-last-pair args))
+    target))
+(define e:== (functionalize p:==))
+
+(define (c:== . args)
+  (let ((lead (car args)))
+    (for-each (lambda (arg)
+		(identity-constraint lead arg))
+	      (cdr args))
+    lead))
+(define ce:== (functionalize c:==))
+
+(define p:conditional conditional)
+(define e:conditional (functionalize p:conditional))
