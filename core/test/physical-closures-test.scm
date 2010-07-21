@@ -67,18 +67,26 @@
     (application addn n add5)
 
     (define-cell x 3)
-    (define-cell output)
-    (application add5 x output)
+    (define-cell x-output)
+    (application add5 x x-output)
+
+    (define-cell y 5)
+    (define-cell y-output)
+    (application add5 y y-output)
     
     (run)
-    (content output)
+    (content x-output)
     (produces 8)
+    (content y-output)
+    (produces 10)
     
     ;; Stable under kicks:
     (alert-all-propagators!)
     (run)
-    (content output)
+    (content x-output)
     (produces 8)
+    (content y-output)
+    (produces 10)
     ))
 
  (define-test (merge-addn)
