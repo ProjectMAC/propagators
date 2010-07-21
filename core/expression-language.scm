@@ -154,11 +154,17 @@
 
 (define (make-arity-detecting-operator name default-operation)
   (let ((arity (procedure-arity default-operation)))
-    ;; The generic machinery only likes fixed arity operations
-    (if (eqv? (procedure-arity-min arity)
-	      (procedure-arity-max arity))
-	(make-generic-operator arity name default-operation)
-	default-operation)))
+    ;; The generic machinery only likes fixed arity operations; assume
+    ;; that a fully variadic input operation is really the associative
+    ;; version of a binary one, and the binary one will do for
+    ;; extensibility.
+    (cond ((eqv? (procedure-arity-min arity)
+		 (procedure-arity-max arity))
+	   (make-generic-operator arity name default-operation))
+	  ((and (eqv? 0 (procedure-arity-min arity))
+		(eqv? #f (procedure-arity-max arity)))
+	   (make-generic-operator 2 name default-operation))
+	  (else default-operation))))
 
 (define-syntax propagatify
   (sc-macro-transformer
