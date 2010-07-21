@@ -1,0 +1,24 @@
+#!/usr/bin/ruby
+
+def run command
+  puts command
+  puts `#{command}`
+end
+
+files =
+  ["scheduler",
+   "metadata",
+   "merge-effects",
+   "cells",
+   "propagators",
+   "sugar",
+   "generic-definitions",
+   "standard-propagators",
+   "expression-language",
+   "compound-data",
+   "carrying-cells",
+   "physical-closures"].map do |base|
+  "core/#{base}.scm"
+end
+
+run "enscript -M letter -fCourier-Bold12 -o workbook.ps --file-align=2 #{files.join(" ")}"
