@@ -86,18 +86,20 @@
    f))
 
 (define (nary-mapping f)
-  (lambda args
-    (case (length args)
-      ((0) (f))
-      ((1) ((unary-mapping f) (car args)))
-      ((2) ((binary-mapping f) (car args) (cadr args)))
-      (else
-       (let loop ((args '()) (rest args))
-	 (if (null? (cdr rest))
-	     ((binary-mapping (lambda (lst item)
-				(apply f (reverse (cons item lst)))))
-	      args (car rest))
-	     (loop ((binary-mapping cons) (car rest) args) (cdr rest))))))))
+  (name!
+   (lambda args
+     (case (length args)
+       ((0) (f))
+       ((1) ((unary-mapping f) (car args)))
+       ((2) ((binary-mapping f) (car args) (cadr args)))
+       (else
+	(let loop ((args '()) (rest args))
+	  (if (null? (cdr rest))
+	      ((binary-mapping (lambda (lst item)
+				 (apply f (reverse (cons item lst)))))
+	       args (car rest))
+	      (loop ((binary-mapping cons) (car rest) args) (cdr rest)))))))
+   f))
 
 ;;; General generic-monadic machinery
 
