@@ -23,30 +23,16 @@
 
 ;;;; Standard primitive propagators
 
-;; (define adder
-;;   (function->propagator-constructor (binary-mapping generic-+)))
-;; (define subtractor
-;;   (function->propagator-constructor (binary-mapping generic--)))
-;; (define multiplier
-;;   (function->propagator-constructor (binary-mapping generic-*)))
-;; (define divider
-;;   (function->propagator-constructor (binary-mapping generic-/)))
-
-;; (define absolute-value
-;;   (function->propagator-constructor (unary-mapping generic-abs)))
-;; (define squarer
-;;   (function->propagator-constructor (unary-mapping generic-square)))
-;; (define sqrter
-;;   (function->propagator-constructor (unary-mapping generic-sqrt)))
-
-;; (define =? (function->propagator-constructor (binary-mapping generic-=)))
-;; (define <? (function->propagator-constructor (binary-mapping generic-<)))
-;; (define >? (function->propagator-constructor (binary-mapping generic->)))
-;; (define <=? (function->propagator-constructor (binary-mapping generic-<=)))
-;; (define >=? (function->propagator-constructor (binary-mapping generic->=)))
-
-;; (define inverter
-;;   (function->propagator-constructor (unary-mapping generic-not)))
+(define generic-and (make-generic-operator 2 'and boolean/and))
+(define generic-or  (make-generic-operator 2 'or  boolean/or))
+(define conjoiner
+  (function->propagator-constructor (binary-mapping generic-and)))
+(define disjoiner
+  (function->propagator-constructor (binary-mapping generic-or)))
+(define p:and conjoiner)
+(define e:and (functionalize conjoiner))
+(define p:or disjoiner)
+(define e:or (functionalize disjoiner))
 
 (propagatify + binary-mapping)
 (propagatify - binary-mapping)
@@ -76,23 +62,13 @@
 (define >=? p:>=)
 (define inverter p:not)
 
-(define conjoiner
-  (function->propagator-constructor (binary-mapping generic-and)))
-(define disjoiner
-  (function->propagator-constructor (binary-mapping generic-or)))
-(define pass-through
-  (function->propagator-constructor identity))
-
-(define switch
-  (function->propagator-constructor (nary-unpacking switch-function)))
+(propagatify eq? binary-mapping)
+(propagatify expt unary-mapping)
 
 (define (constant value)
   (function->propagator-constructor
    #; (lambda () value)
    (eq-label! (lambda () value) 'name `(constant ,value))))
-
-(propagatify eq? binary-mapping)
-(propagatify expt unary-mapping)
 
 (define p:constant constant)
 (define (e:constant value)
@@ -101,12 +77,20 @@
     (eq-put! answer 'subexprs '())
     answer))
 
-(define p:and conjoiner)
-(define e:and (functionalize conjoiner))
-(define p:or disjoiner)
-(define e:or (functionalize disjoiner))
+;; I want a name for the function that does the switch job
+(define (switch-function control input)
+  (if control input nothing))
+(name! switch-function 'switch)
+
+(define switch
+  (function->propagator-constructor (nary-unpacking switch-function)))
+
 (define p:switch switch)
 (define e:switch (functionalize switch))
+
+(name! identity 'identity)
+(define pass-through
+  (function->propagator-constructor identity))
 
 ;;;; Standard "propagator macros"
 

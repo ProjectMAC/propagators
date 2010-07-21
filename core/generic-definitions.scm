@@ -27,27 +27,6 @@
 ;;; the propagators should be able to handle many different partial
 ;;; information types.  At the base level, this is accomplished by
 ;;; making each individual propagator function generic:
-
-;; (define generic-+   (make-generic-operator 2 '+   +))
-;; (define generic--   (make-generic-operator 2 '-   -))
-;; (define generic-*   (make-generic-operator 2 '*   *))
-;; (define generic-/   (make-generic-operator 2 '/   /))
-;; (define generic-abs (make-generic-operator 1 'abs abs))
-;; (define generic-square (make-generic-operator 1 'square square))
-;; (define generic-sqrt (make-generic-operator 1 'sqrt sqrt))
-;; (define generic-=   (make-generic-operator 2 '=   =))
-;; (define generic-<   (make-generic-operator 2 '<   <))
-;; (define generic->   (make-generic-operator 2 '>   >))
-;; (define generic-<=  (make-generic-operator 2 '<=  <=))
-;; (define generic->=  (make-generic-operator 2 '>=  >=))
-;; (define generic-not (make-generic-operator 1 'not not))
-(define generic-and (make-generic-operator 2 'and boolean/and))
-(define generic-or  (make-generic-operator 2 'or  boolean/or))
-;; I want a name for the function that does the switch job
-(define (switch-function control input)
-  (if control input nothing))
-(name! switch-function 'switch)
-(name! identity 'identity)
 
 ;;; General generic applicative functor machinery
 
