@@ -152,20 +152,26 @@
 ;;; An experimental macro trying to abstract the propagator definition
 ;;; cycle carried out between here and generic-definitions.scm.
 
-(define (make-arity-detecting-operator name default-operation)
-  (let ((arity (procedure-arity default-operation)))
-    ;; The generic machinery only likes fixed arity operations; assume
-    ;; that a fully variadic input operation is really the associative
-    ;; version of a binary one, and the binary one will do for
-    ;; extensibility.
-    (cond ((eqv? (procedure-arity-min arity)
-		 (procedure-arity-max arity))
-	   (make-generic-operator arity name default-operation))
-	  ((and (or (eqv? 0 (procedure-arity-min arity))
-		    (eqv? 1 (procedure-arity-min arity)))
-		(eqv? #f (procedure-arity-max arity)))
-	   (make-generic-operator 2 name default-operation))
-	  (else default-operation))))
+(define (make-arity-detecting-operator name default-operation #!optional arity)
+  (if (default-object? arity)
+      (set! arity (procedure-arity default-operation)))
+  ;; The generic machinery only likes fixed arity operations; assume
+  ;; that a fully variadic input operation is really the associative
+  ;; version of a binary one, and the binary one will do for
+  ;; extensibility.
+  (cond ((not (procedure-arity? arity))
+	 ;; This allows the user to explictly prevent the construction
+	 ;; of the generic operation by specifying a bogus arity for
+	 ;; it.
+	 default-operation)
+	((eqv? (procedure-arity-min arity)
+	       (procedure-arity-max arity))
+	 (make-generic-operator arity name default-operation))
+	((and (or (eqv? 0 (procedure-arity-min arity))
+		  (eqv? 1 (procedure-arity-min arity)))
+	      (eqv? #f (procedure-arity-max arity)))
+	 (make-generic-operator 2 name default-operation))
+	(else default-operation)))
 
 (define-syntax propagatify
   (sc-macro-transformer
@@ -185,7 +191,8 @@
 		(functionalize ,propagator-name)))
 	   `(begin
 	      (define ,generic-name
-		(make-arity-detecting-operator ',propagatee-name ,propagatee))
+		(make-arity-detecting-operator
+		 ',propagatee-name ,propagatee ,@(cdddr form)))
 	      (define ,propagator-name
 		(function->propagator-constructor
 		 (,(caddr form) ,generic-name)))
