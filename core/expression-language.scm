@@ -108,6 +108,49 @@
 	 (make-generic-operator 2 name default-operation))
 	(else default-operation)))
 
+
+;;; FUNCTION->PROPAGATOR-CONSTRUCTOR turns Scheme procedures into
+;;; propagator constructors (that make primitive propagators).  In
+;;; principle, that's good enough; but two things can be done to make
+;;; the resulting propagator easier to extend to different partial
+;;; information structures.  First, a generic operation can be defined
+;;; and second, a uniform wrapper from generic-definitions.scm can be
+;;; applied.  Finally, to complete the definition, an expression
+;;; version of the propagator constructor is usually defined.
+
+;;; The PROPAGATIFY macro automates this process.
+
+;;; The first argument to the macro is the operation to propagatify
+;;; (and also the base of the name to give to the result).  Without
+;;; further arguments, PROPAGATIFY will assume that the operation is
+;;; suitable for propagatification directly:
+;;;   (propagatify +)
+;;; would be equivalent to
+;;;   (define p:+ (function->propagator-constructor +))
+;;;   (define e:+ (functionalize p:+)
+;;; 
+
+;;; If supplied, the second argument is a wrapper to use to add
+;;; generic functionality.  Since this indicates that generic
+;;; functionality is desired, propagatify will also construct a
+;;; generic operation with a standard name (whose arity is deduced
+;;; from the arity of the operation being propagatified).  So
+;;;   (propagatify + binary-mapping)
+;;; is equivalent to
+;;;   (define generic-+ (make-generic-operator 2 '+ +))
+;;;   (define p:+ (function->propagator-constructor (binary-mapping generic-+)))
+;;;   (define e:+ (functionalize p:+))
+
+;;; Finally, the third argument can either be an explicit arity for
+;;; circumstances when the arity of the generic would be guessed
+;;; wrong, or the expression 'no-generic to indicate that no generic
+;;; operation should be defined.  For example,
+;;;   (propagatify + binary-mapping 'no-generic)
+;;; would be equivalent to
+;;;   (define p:+ (function->propagator-constructor (binary-mapping +)))
+;;;   (define e:+ (functionalize p:+))
+;;; Compare (propagatify +).
+
 (define-syntax propagatify
   (sc-macro-transformer
    (lambda (form use-env)

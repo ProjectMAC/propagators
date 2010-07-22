@@ -23,17 +23,6 @@
 
 ;;;; Standard primitive propagators
 
-(define generic-and (make-generic-operator 2 'and boolean/and))
-(define generic-or  (make-generic-operator 2 'or  boolean/or))
-(define conjoiner
-  (function->propagator-constructor (binary-mapping generic-and)))
-(define disjoiner
-  (function->propagator-constructor (binary-mapping generic-or)))
-(define p:and conjoiner)
-(define e:and (functionalize conjoiner))
-(define p:or disjoiner)
-(define e:or (functionalize disjoiner))
-
 (propagatify + binary-mapping)
 (propagatify - binary-mapping)
 (propagatify * binary-mapping)
@@ -48,6 +37,43 @@
 (propagatify >= binary-mapping)
 (propagatify not unary-mapping)
 
+;; Not using propagatify because the name AND names syntax, and I want the procedure BOOLEAN/AND
+(define generic-and (make-generic-operator 2 'and boolean/and))
+(define p:and
+  (function->propagator-constructor (binary-mapping generic-and)))
+(define e:and (functionalize p:and))
+(define generic-or  (make-generic-operator 2 'or  boolean/or))
+(define p:or
+  (function->propagator-constructor (binary-mapping generic-or)))
+(define e:or (functionalize p:or))
+
+(propagatify eq? binary-mapping)
+(propagatify expt unary-mapping)
+
+(define (p:constant value)
+  (function->propagator-constructor
+   #; (lambda () value)
+   (eq-label! (lambda () value) 'name `(constant ,value))))
+(define (e:constant value)
+  (let ((answer (make-named-cell 'cell)))
+    ((constant value) answer)
+    (eq-put! answer 'subexprs '())
+    answer))
+
+;; I want a name for the function that does the switch job
+(define (switch-function control input)
+  (if control input nothing))
+(name! switch-function 'switch)
+(define p:switch
+  (function->propagator-constructor (nary-unpacking switch-function)))
+(define e:switch (functionalize p:switch))
+
+(name! identity 'identity)
+(define pass-through
+  (function->propagator-constructor identity))
+
+;; TODO Do I still want to provide these old names for these things?
+
 (define adder p:+)
 (define subtractor p:-)
 (define multiplier p:*)
@@ -61,36 +87,10 @@
 (define <=? p:<=)
 (define >=? p:>=)
 (define inverter p:not)
-
-(propagatify eq? binary-mapping)
-(propagatify expt unary-mapping)
-
-(define (constant value)
-  (function->propagator-constructor
-   #; (lambda () value)
-   (eq-label! (lambda () value) 'name `(constant ,value))))
-
-(define p:constant constant)
-(define (e:constant value)
-  (let ((answer (make-named-cell 'cell)))
-    ((constant value) answer)
-    (eq-put! answer 'subexprs '())
-    answer))
-
-;; I want a name for the function that does the switch job
-(define (switch-function control input)
-  (if control input nothing))
-(name! switch-function 'switch)
-
-(define switch
-  (function->propagator-constructor (nary-unpacking switch-function)))
-
-(define p:switch switch)
-(define e:switch (functionalize switch))
-
-(name! identity 'identity)
-(define pass-through
-  (function->propagator-constructor identity))
+(define conjoiner p:and)
+(define disjoiner p:or)
+(define constant p:constant)
+(define switch p:switch)
 
 ;;;; Standard "propagator macros"
 
@@ -131,7 +131,6 @@
 (define-macro-propagator (identity-constraint c1 c2)
   (pass-through c1 c2)
   (pass-through c2 c1))
-
 
 (define c:+ sum-constraint)
 (define ce:+ (functionalize sum-constraint))
