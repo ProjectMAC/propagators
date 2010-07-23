@@ -52,8 +52,7 @@
 (propagatify expt unary-mapping)
 
 (define (p:constant value)
-  (function->propagator-constructor
-   #; (lambda () value)
+  (function->propagator-constructor #; (lambda () value)
    (eq-label! (lambda () value) 'name `(constant ,value))))
 (define (e:constant value)
   (let ((answer (make-named-cell 'cell)))
@@ -70,14 +69,11 @@
 (define e:switch (functionalize p:switch))
 
 (name! identity 'identity)
-(define pass-through
-  (function->propagator-constructor identity))
+(define pass-through (function->propagator-constructor identity))
 
 ;; TODO Do I still want to provide these old names for these things?
+(define constant p:constant) (define switch p:switch)
 
-(define constant p:constant)
-(define switch p:switch)
-
 ;;;; Standard "propagator macros"
 
 (define-macro-propagator (conditional control if-true if-false output)
@@ -93,26 +89,19 @@
   (switch control end2 end1))
 
 (define-macro-propagator (c:+ a1 a2 sum)
-  (p:+ a1 a2 sum)
-  (p:- sum a1 a2)
-  (p:- sum a2 a1))
+  (p:+ a1 a2 sum)      (p:- sum a1 a2)      (p:- sum a2 a1))
 
 (define-macro-propagator (c:* m1 m2 product)
-  (p:* m1 m2 product)
-  (p:/ product m1 m2)
-  (p:/ product m2 m1))
+  (p:* m1 m2 product)  (p:/ product m1 m2)  (p:/ product m2 m1))
 
 (define-macro-propagator (c:square x x^2)
-  (p:square x x^2)
-  (p:sqrt x^2 x))
+  (p:square x x^2)     (p:sqrt x^2 x))
 
 (define-macro-propagator (c:not p1 p2)
-  (p:not p1 p2)
-  (p:not p2 p1))
+  (p:not p1 p2)        (p:not p2 p1))
 
 (define-macro-propagator (c:id c1 c2)
-  (pass-through c1 c2)
-  (pass-through c2 c1))
+  (pass-through c1 c2) (pass-through c2 c1))
 
 (define ce:+ (functionalize c:+))
 (define ce:* (functionalize c:*))
