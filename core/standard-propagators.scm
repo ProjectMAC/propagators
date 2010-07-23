@@ -92,7 +92,7 @@
   (switch control end1 end2)
   (switch control end2 end1))
 
-(define-macro-propagator (sum-constraint a1 a2 sum)
+(define-macro-propagator (c:+ a1 a2 sum)
   (p:+ a1 a2 sum)
   (p:- sum a1 a2)
   (p:- sum a2 a1))
@@ -114,8 +114,8 @@
   (pass-through c1 c2)
   (pass-through c2 c1))
 
-(define c:+ sum-constraint)
-(define ce:+ (functionalize sum-constraint))
+(define sum-constraint c:+)
+(define ce:+ (functionalize c:+))
 (define c:* product-constraint)
 (define ce:* (functionalize product-constraint))
 (define c:square quadratic-constraint)

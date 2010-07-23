@@ -52,9 +52,7 @@
 
 (define n0t2* (clone-terminal n0t2))
 
-(define-cell R1+R2)
-  
-(sum-constraint R1 R2 R1+R2)
+(define-cell R1+R2 (ce:+ R1 R2))
 
 
 ;;; Note that PRS does not contribute to the power in the circuit.

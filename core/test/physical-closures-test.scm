@@ -288,7 +288,7 @@
   (define-test (first-class-macro-primitives)
     (initialize-scheduler)
     (define-cell x)
-    (define-cell output (e:application sum-constraint 3 x))
+    (define-cell output (e:application c:+ 3 x))
     (add-content output 7)
     (run)
     (check (= 4 (content x))))
