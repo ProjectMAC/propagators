@@ -357,7 +357,7 @@
     (>=-constraint ctl three victim2)
     (define-cell zero)
     ((constant 0) zero)
-    (sum-constraint zero victim1 victim2)
+    (c:+ zero victim1 victim2)
     ;; Doesn't detect the contradiction without a boolean plunk on the
     ;; control
     (run)
@@ -384,7 +384,7 @@
     (>=-constraint ctl three victim2)
     (define-cell zero)
     ((constant 0) zero)
-    (sum-constraint zero victim1 victim2)
+    (c:+ zero victim1 victim2)
     ;; Doesn't detect the contradiction without a boolean plunk on the
     ;; control.
     (run)
@@ -399,7 +399,7 @@
     ((constant 4) four)
     (define-cell x)
     (plunker x)
-    (multiplier four x victim1)
+    (p:* four x victim1)
 
     (run)
     (produces '(contradiction (joe)))))
