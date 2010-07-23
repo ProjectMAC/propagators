@@ -30,7 +30,7 @@
    (define-cell foo)
    (define-cell bar)
    (define-cell baz)
-   (adder foo bar baz)
+   (p:+ foo bar baz)
    (check (= 1 (length (neighbors foo))))
    (check (= 1 (length (neighbors bar))))
    (check (= 0 (length (neighbors baz))))

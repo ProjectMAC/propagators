@@ -31,7 +31,7 @@
     (define-cell one)
     (define-cell seconds)
     (define-cell seconds+one)
-    (adder one seconds seconds+one)
+    (p:+ one seconds seconds+one)
     (add-content one 1)
     (add-content seconds (make-frs 0 (make-frpremise 'seconds 0)))
     (run)

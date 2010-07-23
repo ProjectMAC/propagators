@@ -23,10 +23,10 @@
 
 (define-compound-propagator (heron-step x g h)
   (let-cells (x/g g+x/g two)
-    (divider x g x/g)
-    (adder g x/g g+x/g)
+    (p:/ x g x/g)
+    (p:+ g x/g g+x/g)
     ((constant 2) two)
-    (divider g+x/g two h)))
+    (p:/ g+x/g two h)))
 
 (define-compound-propagator (sqrt-iter x g answer)
   (let-cells (done x-if-done x-if-not-done g-if-done g-if-not-done
@@ -46,10 +46,10 @@
 (define-compound-propagator (good-enuf? x g done)
   (let-cells (g^2 eps x-g^2 ax-g^2)
     ((constant .00000001) eps)
-    (multiplier g g g^2)
-    (subtractor x g^2 x-g^2)
-    (absolute-value x-g^2 ax-g^2)
-    (<? ax-g^2 eps done)))
+    (p:* g g g^2)
+    (p:- x g^2 x-g^2)
+    (p:abs x-g^2 ax-g^2)
+    (p:< ax-g^2 eps done)))
 
 #|
  (initialize-scheduler)
