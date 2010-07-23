@@ -32,5 +32,5 @@
 
     *number-of-calls-to-fail*
     (produces (if *false-premise-starts-out*
-		  (if *avoid-false-true-flips* 38 54) 63))
+		  (if *avoid-false-true-flips* 36 54) 63))
     )))

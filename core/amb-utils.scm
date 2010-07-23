@@ -30,23 +30,17 @@
 (define-propagator-syntax (require-distinct cells)
   (for-each-distinct-pair
    (lambda (c1 c2)
-     (define-cell p)
-     (=? c1 c2 p)
-     (forbid p))
+     (forbid (e:= c1 c2)))
    cells))
 
 (define-propagator-syntax (one-of . cells)
   (let ((output (ensure-cell (car (last-pair cells))))
 	(inputs (map ensure-cell (except-last-pair cells))))
     (cond ((= (length inputs) 2)
-	   (let-cell p
-	     (conditional p (car inputs) (cadr inputs) output)
-	     (binary-amb p)))
+	   (conditional (e:amb) (car inputs) (cadr inputs) output))
 	  ((> (length inputs) 2)
-	   (let-cells (link p)
-	     (apply one-of `(,@(cdr inputs) ,link))
-	     (conditional p (car inputs) link output)
-	     (binary-amb p)))
+	   (conditional (e:amb) (car inputs)
+			(apply e:one-of (cdr inputs)) output))
 	  (else
 	   (error "Inadequate choices for one-of"
 		  inputs output)))))
