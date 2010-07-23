@@ -137,6 +137,8 @@
 (define ce:+ (functionalize sum-constraint))
 (define c:* product-constraint)
 (define ce:* (functionalize product-constraint))
+(define c:square quadratic-constraint)
+(define ce:square (functionalize quadratic-constraint))
 (define c:not not-constraint)
 (define ce:not (functionalize not-constraint))
 

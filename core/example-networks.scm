@@ -30,9 +30,9 @@
     ((constant 32) thirty-two)
     ((constant 5) five)
     ((constant 9) nine)
-    (subtractor f thirty-two f-32)
-    (multiplier f-32 five c*9)
-    (divider c*9 nine c)))
+    (p:- f thirty-two f-32)
+    (p:* f-32 five c*9)
+    (p:/ c*9 nine c)))
 
 #|
  (initialize-scheduler)
@@ -54,14 +54,14 @@
     ((constant 32) thirty-two)
     ((constant 5) five)
     ((constant 9) nine)
-    (sum-constraint thirty-two f-32 f)
-    (product-constraint f-32 five c*9)
-    (product-constraint c nine c*9)))
+    (c:+ thirty-two f-32 f)
+    (c:* f-32 five c*9)
+    (c:* c nine c*9)))
 
 (define (celsius-kelvin c k)
   (let-cell many
     ((constant 273.15) many)
-    (sum-constraint c many k)))
+    (c:+ c many k)))
 
 #|
  (initialize-scheduler)
@@ -89,9 +89,9 @@
   (let-cells (g one-half t^2 gt^2)
     ((constant (make-interval 9.789 9.832)) g)
     ((constant (make-interval 1/2 1/2)) one-half)
-    (quadratic-constraint t t^2)
-    (product-constraint g t^2 gt^2)
-    (product-constraint one-half gt^2 h)))
+    (c:square t t^2)
+    (c:* g t^2 gt^2)
+    (c:* one-half gt^2 h)))
 
 #|
  (initialize-scheduler)
@@ -109,8 +109,8 @@
 
 (define (similar-triangles s-ba h-ba s h)
   (let-cell ratio
-    (product-constraint s-ba ratio h-ba)
-    (product-constraint s ratio h)))
+    (c:* s-ba ratio h-ba)
+    (c:* s ratio h)))
 
 #|
  (initialize-scheduler)
