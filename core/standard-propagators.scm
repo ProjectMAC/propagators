@@ -114,13 +114,9 @@
   (pass-through c1 c2)
   (pass-through c2 c1))
 
-(define sum-constraint c:+)
 (define ce:+ (functionalize c:+))
-(define product-constraint c:*)
 (define ce:* (functionalize c:*))
-(define quadratic-constraint c:square)
 (define ce:square (functionalize c:square))
-(define not-constraint c:not)
 (define ce:not (functionalize c:not))
 
 (define (p:== . args)
