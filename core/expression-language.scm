@@ -84,30 +84,8 @@
 
 ;;;; Propagatify macro
 
-;;; An experimental macro trying to abstract the propagator definition
-;;; cycle carried out between here and generic-definitions.scm.
-
-(define (make-arity-detecting-operator name default-operation #!optional arity)
-  (if (default-object? arity)
-      (set! arity (procedure-arity default-operation)))
-  ;; The generic machinery only likes fixed arity operations; assume
-  ;; that a fully variadic input operation is really the associative
-  ;; version of a binary one, and the binary one will do for
-  ;; extensibility.
-  (cond ((not (procedure-arity? arity))
-	 ;; This allows the user to explictly prevent the construction
-	 ;; of the generic operation by specifying a bogus arity for
-	 ;; it.
-	 default-operation)
-	((eqv? (procedure-arity-min arity)
-	       (procedure-arity-max arity))
-	 (make-generic-operator arity name default-operation))
-	((and (or (eqv? 0 (procedure-arity-min arity))
-		  (eqv? 1 (procedure-arity-min arity)))
-	      (eqv? #f (procedure-arity-max arity)))
-	 (make-generic-operator 2 name default-operation))
-	(else default-operation)))
-
+;;; The PROPAGATIFY macro automates the process of defining extensible
+;;; propagators whose basic operations are Scheme procedures.
 
 ;;; FUNCTION->PROPAGATOR-CONSTRUCTOR turns Scheme procedures into
 ;;; propagator constructors (that make primitive propagators).  In
@@ -118,21 +96,19 @@
 ;;; applied.  Finally, to complete the definition, an expression
 ;;; version of the propagator constructor is usually defined.
 
-;;; The PROPAGATIFY macro automates this process.
-
 ;;; The first argument to the macro is the operation to propagatify
 ;;; (and also the base of the name to give to the result).  Without
 ;;; further arguments, PROPAGATIFY will assume that the operation is
-;;; suitable for propagatification directly:
+;;; suitable for propagatification directly, and does not require the
+;;; extensibility mechanisms:
 ;;;   (propagatify +)
 ;;; would be equivalent to
 ;;;   (define p:+ (function->propagator-constructor +))
 ;;;   (define e:+ (functionalize p:+)
-;;; 
 
 ;;; If supplied, the second argument is a wrapper to use to add
 ;;; generic functionality.  Since this indicates that generic
-;;; functionality is desired, propagatify will also construct a
+;;; functionality is desired, PROPAGATIFY will also construct a
 ;;; generic operation with a standard name (whose arity is deduced
 ;;; from the arity of the operation being propagatified).  So
 ;;;   (propagatify + binary-mapping)
@@ -177,3 +153,23 @@
 	      (define ,expression-oriented-name
 		(functionalize ,propagator-name))))))))
 
+(define (make-arity-detecting-operator name default-operation #!optional arity)
+  (if (default-object? arity)
+      (set! arity (procedure-arity default-operation)))
+  ;; The generic machinery only likes fixed arity operations; assume
+  ;; that a fully variadic input operation is really the associative
+  ;; version of a binary one, and the binary one will do for
+  ;; extensibility.
+  (cond ((not (procedure-arity? arity))
+	 ;; This allows the user to explictly prevent the construction
+	 ;; of the generic operation by specifying a bogus arity for
+	 ;; it.
+	 default-operation)
+	((eqv? (procedure-arity-min arity)
+	       (procedure-arity-max arity))
+	 (make-generic-operator arity name default-operation))
+	((and (or (eqv? 0 (procedure-arity-min arity))
+		  (eqv? 1 (procedure-arity-min arity)))
+	      (eqv? #f (procedure-arity-max arity)))
+	 (make-generic-operator 2 name default-operation))
+	(else default-operation)))
