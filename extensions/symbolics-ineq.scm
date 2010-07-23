@@ -264,10 +264,10 @@
     ((toggled-enforcer (negate-sense dir)) not-control in out)
     ((toggled-enforcer (reverse-sense (negate-sense dir))) not-control out in)))
 
-(define >-constraint  (ineq-constraint >?  '>))
-(define >=-constraint (ineq-constraint >=? '>=))
-(define <=-constraint (ineq-constraint <=? '<=))
-(define <-constraint  (ineq-constraint <?  '<))
+(define c:>  (ineq-constraint p:>  '>))
+(define c:>= (ineq-constraint p:>= '>=))
+(define c:<= (ineq-constraint p:<= '<=))
+(define c:<  (ineq-constraint p:<  '<))
 
 (define (determined-symbolic? thing)
   (or (and (symbolic? thing)
