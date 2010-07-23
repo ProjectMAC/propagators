@@ -73,7 +73,7 @@
     (define n2t1 (car n2))
     (define n2t2 (cadr n2))
 
-    (ground n0)
+    (plunker (potential (car n0)))
 
     (define-cell Pv ((voltage-source 6) n1t1 n0t1))
     (define-cell PR1 ((linear-resistor 4) n1t2 n2t1))
