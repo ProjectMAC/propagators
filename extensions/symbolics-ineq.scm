@@ -252,12 +252,12 @@
 
 (define ((toggled-enforcer direction) control in out)
   (let-cell intermediate
-    (switch control in intermediate)
+    (p:switch control in intermediate)
     ((ineq-enforcer (reverse-sense direction)) intermediate out)))
 
 (define ((ineq-constraint prop dir) control in out)
   (let-cell not-control
-    (inverter control not-control)
+    (p:not control not-control)
     (prop in out control)
     ((toggled-enforcer dir) control in out)
     ((toggled-enforcer (reverse-sense dir)) control out in)
