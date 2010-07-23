@@ -97,16 +97,16 @@
   (p:- sum a1 a2)
   (p:- sum a2 a1))
 
-(define-macro-propagator (product-constraint m1 m2 product)
+(define-macro-propagator (c:* m1 m2 product)
   (p:* m1 m2 product)
   (p:/ product m1 m2)
   (p:/ product m2 m1))
 
-(define-macro-propagator (quadratic-constraint x x^2)
+(define-macro-propagator (c:square x x^2)
   (p:square x x^2)
   (p:sqrt x^2 x))
 
-(define-macro-propagator (not-constraint p1 p2)
+(define-macro-propagator (c:not p1 p2)
   (p:not p1 p2)
   (p:not p2 p1))
 
@@ -116,12 +116,12 @@
 
 (define sum-constraint c:+)
 (define ce:+ (functionalize c:+))
-(define c:* product-constraint)
-(define ce:* (functionalize product-constraint))
-(define c:square quadratic-constraint)
-(define ce:square (functionalize quadratic-constraint))
-(define c:not not-constraint)
-(define ce:not (functionalize not-constraint))
+(define product-constraint c:*)
+(define ce:* (functionalize c:*))
+(define quadratic-constraint c:square)
+(define ce:square (functionalize c:square))
+(define not-constraint c:not)
+(define ce:not (functionalize c:not))
 
 (define (p:== . args)
   (let ((target (car (last-pair args))))
