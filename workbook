@@ -13,8 +13,8 @@ files =
    "propagators",
    "sugar",
    "generic-definitions",
-   "standard-propagators",
    "expression-language",
+   "standard-propagators",
    "compound-data",
    "carrying-cells",
    "physical-closures"].map do |base|
