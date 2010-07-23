@@ -40,7 +40,7 @@
 
     (define-cell seconds+one-again)
     (define-cell glitchable)
-    (<? seconds seconds+one-again glitchable)
+    (p:< seconds seconds+one-again glitchable)
     (add-content seconds+one-again (content seconds+one))
     (run)
     (content glitchable)
