@@ -43,12 +43,12 @@
    ,@(maybe "virtual-closures" *virtual-copies*)
    "info-alist"
    "algebraic-tms"
-   "electric-parts"
-   "solve"
-   "inequalities"
-   "symbolics"
-   "symbolics-ineq"
    "functional-reactivity"
+   "solve"          ; Requires mechanics to work
+   "inequalities"   ; Requires mechanics to work
+   "symbolics"      ; Requires mechanics to work
+   "symbolics-ineq" ; Requires mechanics to work
+   "electric-parts" ; Not really an extension, but requires mechanics
    "test-utils"))
 
 (for-each load-relative
