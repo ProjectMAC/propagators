@@ -3,18 +3,19 @@ Copyright 2009-2010 Alexey Radul.
 ----------------------------------------------------------------------
 This file is part of Propagator Network Prototype.
 
-Propagator Network Prototype is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Propagator Network Prototype is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-Propagator Network Prototype is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Propagator Network Prototype is distributed in the hope that it will
+be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Propagator Network Prototype.  If not, see <http://www.gnu.org/licenses/>.
+along with Propagator Network Prototype.  If not, see
+<http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------
 
 
@@ -45,8 +46,7 @@ The doc/ directory
   thesis and the Art of the Propagator paper.
 
 The core/ directory
-  implements Alexey's thesis, much sanitized and somewhat extended and
-  updated.
+  implements Alexey's thesis, much sanitized and extended and updated.
 
 The extensions/ directory
   adds (or attempts to add) various additional features and ideas.
@@ -63,7 +63,7 @@ The support/ directory
   useful helpers and langauge facilities.
   - eq-properties
   - generic operations
-  - a profiler
+  - profilers
   - miscellaneous utilities
 
 The explorations/ directory
@@ -96,7 +96,7 @@ run-tests scripts run the unit tests for the portion of system in that
 directory.  The toplevel run-tests runs all the unit tests.
 
 examples/run-examples exercises all the extended examples.  This takes
-several minutes, so is not considered part of the normal test suite.
+a minute, so is not considered part of the normal test suite.
 
 Unit tests are in test/ subdirectories of their respective
 directories.  The test suites are independent of each other, and
