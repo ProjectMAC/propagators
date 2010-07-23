@@ -21,13 +21,6 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;; Base (generic) functions for standard propagators
-
-;;; One of the points of extensibility of propagator networks is that
-;;; the propagators should be able to handle many different partial
-;;; information types.  At the base level, this is accomplished by
-;;; making each individual propagator function generic:
-
 ;;; General generic applicative functor machinery
 
 ;;; If a group of partial information structures fit into the

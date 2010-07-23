@@ -25,8 +25,8 @@
 
 ;;; The most general propagator notation supplies all the input and
 ;;; output cells to the desired propagator constructor explicitly:
-;;;   (adder x y subtotal)
-;;;   (adder subtotal z total)
+;;;   (p:+ x y subtotal)
+;;;   (p:+ subtotal z total)
 ;;; This "propagator style" notation is very flexible, because it
 ;;; allows easy handling of multiple propagators writing to the same
 ;;; cells, propagators having multiple output cells, having cells that
@@ -38,10 +38,11 @@
 ;;; the intermediate value:
 ;;;   (e:+ (e:+ x y) z)
 
-;;; Here, expression-style variants of propagator-style propagator
-;;; constructors are mechanically derived and defined.  It is also
-;;; convenient to provide multidirectional constraint versions of
-;;; standard propagator constructors with a uniform naming scheme.
+;;; The FUNCTIONALIZE procedure mechanically derives an
+;;; expression-style variant of a propagator-style propagator
+;;; constructor.  It is also convenient to provide multidirectional
+;;; constraint versions of standard propagator constructors with a
+;;; uniform naming scheme.
 
 ;;; The naming convention is:
 ;;;   p:foo  for the propagator version of foo

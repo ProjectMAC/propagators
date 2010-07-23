@@ -37,7 +37,8 @@
 (propagatify >= binary-mapping)
 (propagatify not unary-mapping)
 
-;; Not using propagatify because the name AND names syntax, and I want the procedure BOOLEAN/AND
+;; Not using propagatify because the name AND names syntax, and I want
+;; the procedure BOOLEAN/AND
 (define generic-and (make-generic-operator 2 'and boolean/and))
 (define p:and
   (function->propagator-constructor (binary-mapping generic-and)))
