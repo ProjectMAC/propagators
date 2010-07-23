@@ -49,7 +49,7 @@ well, it can be ignored, dynamically and without disruption.
 			  Propagator System
 
 Although most of this document introduces you to the Scheme-Propagator
-system that we have developed in MIT Scheme the Propagator Model is
+system that we have developed in MIT Scheme, the Propagator Model is
 really independent of the language.  You should be able to write
 propagators in any language you choose, and others should be able to
 write subsystems in their favorite language, that cooperate with your
@@ -74,7 +74,8 @@ idempotent.  The behavior of propagators must be monotonic with
 respect to the lattice induced by the merge operation.  
 
 
-			     Hello world
+Getting Started
+======================================================================
 
 Scheme-Propagators is implemented in `MIT/GNU Scheme`_, which you will
 need in order to use it.  You will also need Scheme-Propagators
@@ -83,8 +84,8 @@ have it, go to the ``propagator/`` directory, start up your Scheme and
 load the main entry file with ``(load "load")``.  This gives you a
 read-eval-print loop (traditionally called a REPL for short) for both
 the Scheme-Propagators system and the underlying Scheme
-implementation.  Check out the README for more on this.  TODO Real
-releases?  From a real web place?
+implementation.  Check out the README for more on this.
+TODO Real releases?  From a real web place?
 
 .. _`MIT/GNU Scheme`: http://www.gnu.org/software/mit-scheme/
 .. _`MMP git archive`: git@github.com:MIT-MMP/propagator.git
