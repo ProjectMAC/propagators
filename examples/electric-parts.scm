@@ -23,7 +23,7 @@
 
 ;;; Primitive data structures
 
-(define (make-terminal i e)
+(define (electric-terminal i e)
   (cons i e))
 (define (current terminal)
   (car terminal))
@@ -91,15 +91,15 @@ and the current is measured as flowing into t1."
 		 (else (error))))))
     ((constant 0) (car is))
     (map (lambda (i)
-	   (make-terminal i e))
+	   (electric-terminal i e))
 	 (cdr is))))
 
 
 ;;; Support for slices -- GJS
 
 (define (clone-terminal terminal)
-  (make-terminal (current terminal)
-		 (potential terminal)))
+  (electric-terminal (current terminal)
+		     (potential terminal)))
 
 (define (ideal-diode)
   (2-terminal-device

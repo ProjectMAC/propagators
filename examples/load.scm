@@ -40,6 +40,7 @@
    "riddle-of-the-knights"
    "albatross-conundrum"
    "belief-propagation"
+   "electric-parts"
    "selectors/data"
    ))
 

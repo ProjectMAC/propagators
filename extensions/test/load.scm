@@ -24,8 +24,6 @@
   `("inequality-test"
     "symbolics-test"
     "symbolics-ineq-test"
-    "voltage-divider-test"
-    "bridge-rectifier-test"
     "functional-reactive-test"
     "algebraic-tms-test"
     ,@(maybe "virtual-environments-test" *virtual-copies*)
