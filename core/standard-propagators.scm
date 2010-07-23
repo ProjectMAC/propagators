@@ -110,7 +110,7 @@
   (p:not p1 p2)
   (p:not p2 p1))
 
-(define-macro-propagator (identity-constraint c1 c2)
+(define-macro-propagator (c:id c1 c2)
   (pass-through c1 c2)
   (pass-through c2 c1))
 
@@ -130,7 +130,7 @@
 (define (c:== . args)
   (let ((lead (car args)))
     (for-each (lambda (arg)
-		(identity-constraint lead arg))
+		(c:id lead arg))
 	      (cdr args))
     lead))
 (define ce:== (functionalize c:==))

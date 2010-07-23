@@ -126,13 +126,13 @@
     (initialize-scheduler)
     (define-cell foo)
     (define-cell bar)
-    (identity-constraint foo bar)
+    (c:id foo bar)
     (draw:write-graph-to-string)
     (check (equal?
 "digraph G {
   ratio=fill;
   subgraph cluster_240 { label=\"top-group\"; 
-    subgraph cluster_241 { label=\"identity-constraint\"; 
+    subgraph cluster_241 { label=\"c:id\"; 
       \"prop-242\" [label=\"identity\", shape=\"box\" ];
       \"prop-245\" [label=\"identity\", shape=\"box\" ];
     }

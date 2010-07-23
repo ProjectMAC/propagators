@@ -51,12 +51,12 @@ and the current is measured as flowing into t1."
 (define (voltage-source strength)
   (2-terminal-device
    (lambda (v i)
-     (identity-constraint strength v))))
+     (c:== strength v))))
 
 (define (current-source strength)
   (2-terminal-device
    (lambda (v i)
-     (identity-constraint strength i))))
+     (c:== strength i))))
 
 (define (ground node)
   ((constant 0) (potential (car node))))
