@@ -33,6 +33,72 @@
       victim)
     (produces '(#t #f))))
 
+ (define-test (ideal-diode-test)
+   (interaction
+    (initialize-scheduler)
+    
+    (define n0 (node 2))
+    (define n0t1 (car n0))
+    (define n0t2 (cadr n0))
+
+    (define n1 (node 2))
+    (define n1t1 (car n1))
+    (define n1t2 (cadr n1))
+
+    (define n2 (node 2))
+    (define n2t1 (car n2))
+    (define n2t2 (cadr n2))
+
+    (ground n0)
+    (define-cell Pv ((voltage-source 6) n1t1 n0t1))
+    (define-cell PR1 ((linear-resistor 3) n1t2 n2t1))
+    ;; Diode allows current
+    (define-cell PD ((ideal-diode) n2t2 n0t2))
+
+    (define-cell power (e:+ Pv (e:+ PR1 PD)))
+
+    (run)
+    (v&s-value (tms-query (content (potential n2t1))))
+    (produces 0)
+    (v&s-value (tms-query (content (current   n2t2))))
+    (produces 2)
+    (v&s-value (tms-query (content power)))
+    (produces 0)
+    ))
+
+ (define-test (ideal-diode-test-2)
+   (interaction
+    (initialize-scheduler)
+    
+    (define n0 (node 2))
+    (define n0t1 (car n0))
+    (define n0t2 (cadr n0))
+
+    (define n1 (node 2))
+    (define n1t1 (car n1))
+    (define n1t2 (cadr n1))
+
+    (define n2 (node 2))
+    (define n2t1 (car n2))
+    (define n2t2 (cadr n2))
+
+    (ground n0)
+    (define-cell Pv ((voltage-source 6) n1t1 n0t1))
+    (define-cell PR1 ((linear-resistor 3) n1t2 n2t1))
+    ;; Diode disallows current
+    (define-cell PD ((ideal-diode) n0t2 n2t2))
+
+    (define-cell power (e:+ Pv (e:+ PR1 PD)))
+
+    (run)
+    (v&s-value (tms-query (content (potential n2t1))))
+    (produces 6)
+    (v&s-value (tms-query (content (current   n2t2))))
+    (produces 0)
+    (v&s-value (tms-query (content power)))
+    (produces 0)
+    ))
+
  ;; This test takes a very long time to run
  #;
  (define-test (plunking-rectifier)
