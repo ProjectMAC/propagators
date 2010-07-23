@@ -21,7 +21,7 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;; General generic applicative functor machinery
+;;;; General generic applicative functor machinery
 
 ;;; If a group of partial information structures fit into the
 ;;; applicative functor (TODO: Reference Paterson and McBride)
@@ -48,7 +48,7 @@
 (defhandler binary-map
   (lambda (x y) (lambda (f) nothing))
   any? nothing?)
-
+
 (define (unary-mapping f)
   (name!
    (lambda (x)
@@ -73,7 +73,7 @@
 	      (loop ((binary-mapping cons) (car rest) args) (cdr rest)))))))
    f))
 
-;;; General generic-monadic machinery
+;;;; General generic-monadic machinery
 
 ;;; If a partial information structure fits into the monad paradigm,
 ;;; the portions of the network that are necessarily monadic rather

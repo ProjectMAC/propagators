@@ -50,7 +50,7 @@
 
 (propagatify eq? binary-mapping)
 (propagatify expt unary-mapping)
-
+
 (define (p:constant value)
   (function->propagator-constructor
    #; (lambda () value)
@@ -92,7 +92,7 @@
 (define disjoiner p:or)
 (define constant p:constant)
 (define switch p:switch)
-
+
 ;;;; Standard "propagator macros"
 
 (define-macro-propagator (conditional control if-true if-false output)
@@ -132,7 +132,7 @@
 (define-macro-propagator (identity-constraint c1 c2)
   (pass-through c1 c2)
   (pass-through c2 c1))
-
+
 (define c:+ sum-constraint)
 (define ce:+ (functionalize sum-constraint))
 (define c:* product-constraint)

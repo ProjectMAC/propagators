@@ -115,7 +115,8 @@
 ;;;   (propagatify + binary-mapping)
 ;;; is equivalent to
 ;;;   (define generic-+ (make-generic-operator 2 '+ +))
-;;;   (define p:+ (function->propagator-constructor (binary-mapping generic-+)))
+;;;   (define p:+
+;;;     (function->propagator-constructor (binary-mapping generic-+)))
 ;;;   (define e:+ (functionalize p:+))
 
 ;;; Finally, the third argument can either be an explicit arity for
@@ -127,7 +128,7 @@
 ;;;   (define p:+ (function->propagator-constructor (binary-mapping +)))
 ;;;   (define e:+ (functionalize p:+))
 ;;; Compare (propagatify +).
-
+
 (define-syntax propagatify
   (sc-macro-transformer
    (lambda (form use-env)
@@ -154,7 +155,8 @@
 	      (define ,expression-oriented-name
 		(functionalize ,propagator-name))))))))
 
-(define (make-arity-detecting-operator name default-operation #!optional arity)
+(define (make-arity-detecting-operator
+	 name default-operation #!optional arity)
   (if (default-object? arity)
       (set! arity (procedure-arity default-operation)))
   ;; The generic machinery only likes fixed arity operations; assume
