@@ -75,21 +75,6 @@
 
 ;; TODO Do I still want to provide these old names for these things?
 
-(define adder p:+)
-(define subtractor p:-)
-(define multiplier p:*)
-(define divider p:/)
-(define absolute-value p:abs)
-(define squarer p:square)
-(define sqrter p:sqrt)
-(define =? p:=)
-(define <? p:<)
-(define >? p:>)
-(define <=? p:<=)
-(define >=? p:>=)
-(define inverter p:not)
-(define conjoiner p:and)
-(define disjoiner p:or)
 (define constant p:constant)
 (define switch p:switch)
 
