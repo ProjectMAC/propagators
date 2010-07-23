@@ -96,38 +96,34 @@
 ;;;; Standard "propagator macros"
 
 (define-macro-propagator (conditional control if-true if-false output)
-  (let-cell not-control
-    (inverter control not-control)
-    (switch control if-true output)
-    (switch not-control if-false output)))
+  (switch control if-true output)
+  (switch (e:not control) if-false output))
 
 (define-macro-propagator (conditional-writer control input if-true if-false)
-  (let-cell not-control
-    (inverter control not-control)
-    (switch control input if-true)
-    (switch not-control input if-false)))
+  (switch control input if-true)
+  (switch (e:not control) input if-false))
 
 (define-macro-propagator (conditional-wire control end1 end2)
   (switch control end1 end2)
   (switch control end2 end1))
 
 (define-macro-propagator (sum-constraint a1 a2 sum)
-  (adder a1 a2 sum)
-  (subtractor sum a1 a2)
-  (subtractor sum a2 a1))
+  (p:+ a1 a2 sum)
+  (p:- sum a1 a2)
+  (p:- sum a2 a1))
 
 (define-macro-propagator (product-constraint m1 m2 product)
-  (multiplier m1 m2 product)
-  (divider product m1 m2)
-  (divider product m2 m1))
+  (p:* m1 m2 product)
+  (p:/ product m1 m2)
+  (p:/ product m2 m1))
 
 (define-macro-propagator (quadratic-constraint x x^2)
-  (squarer x x^2)
-  (sqrter x^2 x))
+  (p:square x x^2)
+  (p:sqrt x^2 x))
 
 (define-macro-propagator (not-constraint p1 p2)
-  (inverter p1 p2)
-  (inverter p2 p1))
+  (p:not p1 p2)
+  (p:not p2 p1))
 
 (define-macro-propagator (identity-constraint c1 c2)
   (pass-through c1 c2)
