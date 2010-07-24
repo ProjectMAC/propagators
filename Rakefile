@@ -20,7 +20,17 @@ def files
    "standard-propagators",
    "compound-data",
    "carrying-cells",
-   "physical-closures"].map do |base|
+   "physical-closures",
+
+    "intervals",
+    "premises",
+    "supported-values",
+    "truth-maintenance",
+    "contradictions",
+    "search",
+    "amb-utils",
+
+    "example-networks"].map do |base|
   "core/#{base}.scm"
   end
 end
