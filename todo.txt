@@ -1,6 +1,8 @@
 For the revised report:
 - Where is Scheme-Propagators distributed?
 - How are the MMP-specifics dealt with?
+- Explicit access to propagators that merge, check equivalence,
+  check contrasictions?
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice

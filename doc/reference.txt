@@ -1,0 +1,121 @@
+			   Running Networks
+
+initialize-scheduler
+run
+add-content
+content
+
+			      Debugging
+
+name
+cell?
+propagator?
+alert-all-propagators!
+all-propagators
+propagator-inputs
+propagator-outputs
+neighbors
+cell-connections
+cell-non-readers
+network-group-of
+
+draw:show-graph
+
+			  Defining Networks
+
+define-cell
+let-cells
+let-cell
+let-cells*
+
+		       Propagator Constructors
+
+p:+ e:+
+p:+ e:+
+p:- e:-
+p:* e:*
+p:/ e:/
+p:abs e:abs
+p:square e:square
+p:sqrt e:sqrt
+p:= e:=
+p:< e:<
+p:> e:>
+p:<= e:<=
+p:>= e:>=
+p:not e:not
+p:and e:and
+p:or e:or
+p:eq? e:eq?
+p:eqv? e:eqv?
+p:expt e:expt
+
+(constant value) (p:constant value)
+(e:constant value)
+
+p:switch switch
+e:switch
+
+pass-through
+
+conditional p:conditional
+e:conditional
+
+conditional-writer
+conditional-wire
+c:+
+ce:+
+c:*
+ce:*
+c:square
+ce:square
+c:not
+ce:not
+c:id
+p:==
+e:==
+c:==
+ce:==
+
+p:carry-cons  e:carry-cons
+p:carry-pair? e:carry-pair?
+p:carry-car   e:carry-car
+p:carry-cdr   e:carry-cdr
+
+make-closure
+make-e:closure
+application
+e:application
+
+		      Making Custom Propagators
+
+propagatify
+
+define-macro-propagator
+named-macro-propagator
+define-propagator-syntax
+named-propagator-syntax
+define-compound-propagator
+named-compound-propagator
+
+function->propagator-constructor
+delayed-propagator-constructor
+functionalize
+
+propagator
+one-shot-propagator
+
+			 Points of Extension
+
+merge
+equivalent?
+contradictory?
+boring-effect?
+
+binary-map
+generic-unpack
+generic-flatten
+
+slotful-information-type
+function->cell-carrier-constructor
+early-access-hack TODO
