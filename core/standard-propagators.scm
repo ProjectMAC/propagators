@@ -49,8 +49,8 @@
 (define e:or (functionalize p:or))
 
 (propagatify eq? binary-mapping)
-(propagatify expt unary-mapping)
-
+(propagatify eqv? binary-mapping)
+(propagatify expt unary-mapping)
 (define (p:constant value)
   (function->propagator-constructor #; (lambda () value)
    (eq-label! (lambda () value) 'name `(constant ,value))))
