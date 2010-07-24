@@ -69,16 +69,3 @@
 
 (slotful-information-type pair? cons car cdr)
 
-;;; Test slotful structure
-
-(define-structure (kons (constructor kons))
-  kar
-  kdr)
-(declare-type-tester kons? rtd:kons)
-
-(slotful-information-type kons? kons kons-kar kons-kdr)
-
-(define-method generic-match ((pattern <vector>) (object rtd:kons))
-  (generic-match
-   pattern
-   (vector 'kons (kons-kar object) (kons-kdr object))))

@@ -67,8 +67,3 @@
       (make-nogood-effect
        (lset-union eq? (nogood-effect-nogood effect) support))))
   nogood-effect?)
-
-(define-method generic-match ((pattern <vector>) (object rtd:nogood-effect))
-  (generic-match
-   pattern
-   (vector 'nogood-effect (nogood-effect-nogood object))))

@@ -54,11 +54,6 @@
 
 (define (make-interval low high)
   (%interval-> (make-%interval low high)))
-
-(define-method generic-match ((pattern <vector>) (object rtd:%interval))
-  (generic-match
-   pattern
-   (vector 'interval (interval-low object) (interval-high object))))
 
 (define (interval-equal? int1 int2)
   (and (= (interval-low int1) (interval-low int2))

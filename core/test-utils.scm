@@ -1,5 +1,5 @@
 ;;; ----------------------------------------------------------------------
-;;; Copyright 2009 Massachusetts Institute of Technology.
+;;; Copyright 2009-2010 Alexey Radul.
 ;;; ----------------------------------------------------------------------
 ;;; This file is part of Propagator Network Prototype.
 ;;; 
@@ -19,42 +19,34 @@
 ;;; <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
 
-(define (self-relatively thunk)
-  (if (current-eval-unit #f)
-      (with-working-directory-pathname
-       (directory-namestring (current-load-pathname))
-       thunk)
-      (thunk)))
+(declare (usual-integrations make-cell cell?))
 
-(define (load-relative filename)
-  (self-relatively (lambda () (load filename))))
+(define-method generic-match ((pattern <vector>) (object rtd:effectful))
+  (generic-match
+   pattern
+   (vector 'effectful (effectful-info object)
+	   (effectful-effects object))))
 
-(load-relative "../support/load")
+;;; Test slotful structure
 
-(for-each load-relative-compiled
-  '("scheduler"
-    "metadata"
-    "merge-effects"
-    "cells"
-    "propagators"
-    "sugar"
-    "generic-definitions"
-    "expression-language"
-    "standard-propagators"
-    "compound-data"
-    "carrying-cells"
-    "physical-closures"
-   
-    "intervals"
-    "premises"
-    "supported-values"
-    "truth-maintenance"
-    "contradictions"
-    "search"
-    "amb-utils"
+(define-structure (kons (constructor kons))
+  kar
+  kdr)
+(declare-type-tester kons? rtd:kons)
 
-    "example-networks"
-    "test-utils"))
+(slotful-information-type kons? kons kons-kar kons-kdr)
 
-(maybe-warn-low-memory)
-(initialize-scheduler)
+(define-method generic-match ((pattern <vector>) (object rtd:kons))
+  (generic-match
+   pattern
+   (vector 'kons (kons-kar object) (kons-kdr object))))
+
+(define-method generic-match ((pattern <vector>) (object rtd:%interval))
+  (generic-match
+   pattern
+   (vector 'interval (interval-low object) (interval-high object))))
+
+(define-method generic-match ((pattern <vector>) (object rtd:nogood-effect))
+  (generic-match
+   pattern
+   (vector 'nogood-effect (nogood-effect-nogood object))))
