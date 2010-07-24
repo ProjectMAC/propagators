@@ -49,7 +49,7 @@
   (set! *worldview-number* 0)
   (set! *premise-outness* (make-eq-hash-table))
   (set! *premise-nogoods* (make-eq-hash-table)))
-
+
 ;;; We also need to arrange for the premise states to be reset for
 ;;; every new example.  Better creativity having failed me, I will
 ;;; hang that action onto the initialize-scheduler procedure.

@@ -44,7 +44,7 @@
 	  (else
 	   (error "Inadequate choices for one-of"
 		  inputs output)))))
-
+
 (define p:amb binary-amb)
 (define (e:amb)
   (let ((answer (make-named-cell 'cell)))

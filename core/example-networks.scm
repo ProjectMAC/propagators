@@ -46,7 +46,7 @@
  (content c)
  ;Value: 25
 |#
-
+
 ;;; Multidirectional Fahrenheit to Celsius to Kelvin conversion
 
 (define (fahrenheit-celsius f c)
@@ -83,6 +83,16 @@
  ;Value: 298.15
 |#
 
+;;; Factorial
+
+(define-compound-propagator (p:factorial n n!)
+  (let-cells* ((done? (e:= 0 n))
+	       (n-again (e:switch (e:not done?) n))
+	       (n!-again (e:* n-again (e:factorial (e:- n-again 1)))))
+    (conditional done? 1 n!-again n!)))
+
+(define e:factorial (functionalize p:factorial))
+
 ;;; Measuring the height of a building using a barometer
 
 (define (fall-duration t h)
@@ -134,7 +144,7 @@
  (add-content fall-time (make-interval 2.9 3.1))
  (run)
  (content building-height)
- ;Value: #(interval 44.514 47.243)
+ ;Value: #(interval 44.514 47.243)
 
  (content barometer-height)
  ;Value: #(interval .3 .31839)
@@ -158,13 +168,5 @@
  (content fall-time)
  ;Value: #(interval 3.0255 3.0322)
 |#
-
-(define-compound-propagator (p:factorial n n!)
-  (let-cells* ((done? (e:= 0 n))
-	       (n-again (e:switch (e:not done?) n))
-	       (n!-again (e:* n-again (e:factorial (e:- n-again 1)))))
-    (conditional done? 1 n!-again n!)))
-
-(define e:factorial (functionalize p:factorial))
 
 ;;; More goodies in ../examples/*

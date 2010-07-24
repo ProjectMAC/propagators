@@ -50,6 +50,7 @@
 		   (process-contradictions
 		    (pairwise-resolve reasons-against-true
 				      reasons-against-false)))))))
+
     (eq-label! amb-choose 'name 'amb-choose 'outputs (list cell))
     ;; This only affects run order, and only in some experimental
     ;; schedulers
@@ -61,7 +62,7 @@
                 (list (supported #t (list true-premise))
                       (supported #f (list false-premise)))))
      cell)
-    ;; The cell is a spiritual neighbor...\footnotemark
+    ;; The cell is a spiritual neighbor...
     (propagator cell amb-choose)))
 
 (define (pairwise-resolve nogoods1 nogoods2)
@@ -98,7 +99,7 @@
           (set-premise-nogoods! premise
             (lset-adjoin eq?
               (lset-difference eq? set subsumed) item))))))
-
+
 (define *number-of-calls-to-fail* 0)
 
 (define initialize-scheduler

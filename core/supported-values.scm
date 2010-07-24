@@ -43,7 +43,7 @@
 
 (define (merge-supports . v&ss)
   (apply lset-union eq? (map v&s-support v&ss)))
-
+
 (define (v&s-merge v&s1 v&s2)
   (let* ((v&s1-value (v&s-value v&s1))
          (v&s2-value (v&s-value v&s2))

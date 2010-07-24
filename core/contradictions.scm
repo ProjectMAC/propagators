@@ -47,7 +47,7 @@
 (define (check-consistent! v&s)
   (if (contradictory? v&s)
       (process-nogood! (v&s-support v&s))))
-
+
 ;; Will be replaced by process-nogood! in search.scm
 (define (process-nogood! nogood)
   (abort-process `(contradiction ,nogood)))

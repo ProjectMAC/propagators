@@ -49,7 +49,7 @@
 (define (subsumes? v&s1 v&s2)
   (and (lset<= eq? (v&s-support v&s1) (v&s-support v&s2))
        (implies? (v&s-value v&s1) (v&s-value v&s2))))
-
+
 (define (tms-assimilate-one tms v&s)
   (if (any (lambda (old-v&s) (subsumes? old-v&s v&s))
            (tms-values tms))
@@ -91,7 +91,7 @@
 
 (define (all-premises-in? premise-list)
    (every premise-in? premise-list))
-
+
 (define initialize-scheduler
   (let ((initialize-scheduler initialize-scheduler))
     (lambda ()
