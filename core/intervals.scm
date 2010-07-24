@@ -31,12 +31,9 @@
 		       (interval-high interval))))))
   low high)
 (declare-type-tester %interval? rtd:%interval)
-
 (declare-coercion-target %interval)
-
 (declare-coercion <number> ->%interval (lambda (x) (make-%interval x x)))
 
-;;; TODO Make %interval-> generic?
 (define (%interval-> int)
   (if (= (interval-low int) (interval-high int))
       (interval-low int)
@@ -53,8 +50,7 @@
   (%interval-high (->%interval thing)))
 
 (define (make-interval low high)
-  (%interval-> (make-%interval low high)))
-
+  (%interval-> (make-%interval low high)))
 (define (interval-equal? int1 int2)
   (and (= (interval-low int1) (interval-low int2))
        (= (interval-high int1) (interval-high int2))))
