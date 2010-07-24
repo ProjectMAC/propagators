@@ -143,9 +143,10 @@ slotful-information-type
 define-structure
 defhandler
 defhandler-coercing
-declare-type-tester
 declare-coersion-target
 declare-coersion
+declare-type-tester
+guard
 
 			 Points of Extension
 
