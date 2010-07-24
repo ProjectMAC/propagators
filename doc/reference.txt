@@ -102,10 +102,26 @@ function->propagator-constructor
 delayed-propagator-constructor
 functionalize
 
+function->cell-carrier-constructor
+early-access-hack TODO
+
 propagator
 one-shot-propagator
 
+			  Means of Extension
+
+slotful-information-type
+
+define-structure
+defhandler
+defhandler-coercing
+declare-type-tester
+declare-coersion-target
+declare-coersion
+
 			 Points of Extension
+
+generic-foo
 
 merge
 equivalent?
@@ -116,6 +132,3 @@ binary-map
 generic-unpack
 generic-flatten
 
-slotful-information-type
-function->cell-carrier-constructor
-early-access-hack TODO
