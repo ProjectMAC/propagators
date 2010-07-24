@@ -108,6 +108,34 @@ early-access-hack TODO
 propagator
 one-shot-propagator
 
+		   Extant Partial Information Types
+
+intervals  TODO flesh out the definition?
+make-interval
+interval?
+interval-low
+interval-high
+
+supported values
+supported
+v&s-value
+v&s-support
+Any object can be used as a premise
+
+truth maintenance
+make-tms
+tms-values
+tms-query
+kick-out!
+bring-in!
+
+binary-amb
+p:amb e:amb
+require p:require e:require
+forbid p:forbid e:forbid
+require-distinct
+one-of e:one-of
+
 			  Means of Extension
 
 slotful-information-type
@@ -127,6 +155,7 @@ merge
 equivalent?
 contradictory?
 boring-effect?
+generic-attach-support
 
 binary-map
 generic-unpack
