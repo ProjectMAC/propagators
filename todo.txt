@@ -1,3 +1,7 @@
+For the revised report:
+- Where is Scheme-Propagators distributed?
+- How are the MMP-specifics dealt with?
+
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice
   - Check each use of propagatify for using the right wrapper.
