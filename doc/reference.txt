@@ -28,9 +28,10 @@ let-cells
 let-cell
 let-cells*
 
+make-cell
+
 		       Propagator Constructors
 
-p:+ e:+
 p:+ e:+
 p:- e:-
 p:* e:*
@@ -61,7 +62,7 @@ pass-through
 conditional p:conditional
 e:conditional
 
-conditional-writer
+conditional-writer p:conditional-writer
 conditional-wire
 c:+
 ce:+
@@ -84,8 +85,8 @@ p:carry-cdr   e:carry-cdr
 
 make-closure
 make-e:closure
-application
-e:application
+application p:apply
+e:application e:application
 
 		      Making Custom Propagators
 

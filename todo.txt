@@ -3,6 +3,16 @@ For the revised report:
 - How are the MMP-specifics dealt with?
 - Explicit access to propagators that merge, check equivalence,
   check contrasictions?
+- The letrec scoping rule is useful.  The fact that "unassigned" is a
+  non-problem just makes letrec easier to implement and more useful.
+  (letrec ((z (e:+ x y))
+           (x (e:- z y))
+           (y (e:- z x)))
+    ...)
+  is a perfectly sensible propagator program.
+- What is the right analogue of named let?
+- Rename the current p:cons & co to p:copy-cons
+- Name and document p:cons to be p:carry-cons (& co).
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice

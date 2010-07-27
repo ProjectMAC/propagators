@@ -210,6 +210,8 @@
       (propagator closure-cell the-propagator))))
 
 (define e:application (functionalize application))
+(define p:apply application)
+(define e:apply e:application)
 
 (define (closure-body thing)
   (cond ((closure? thing)
