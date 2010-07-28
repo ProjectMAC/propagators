@@ -70,7 +70,7 @@
   (make-entity
    (lambda (self . args)
      (apply (if propagator-style?
-		application
+		p:application
 		e:application)
 	    self args))
    (make-%closure code environment propagator-style?)))
@@ -187,73 +187,76 @@
 ;;; either kind; and being a propagator constructor itself,
 ;;; APPLICATION comes in both flavors.
 
-(define (application closure-cell . arg-cells)
-  (define (do-apply-closure closure real-args)
-    (with-network-group (network-group-named (name closure))
-      (lambda ()
-	(apply (closure-body closure) real-args))))
-  (let ((arg-cells (map ensure-cell arg-cells)))
-    (define (slow-path closure-cell)
-      (define done-closures '())
-      (define (done? closure)
-	(member closure done-closures equivalent-closures?))
-      (define (arg-copier pass?)
-	(lambda (arg)
-	  (let-cell arg-copy
-	    (conditional-wire pass? arg arg-copy)
-	    arg-copy)))
-      ;; This assumes that closures are "carrying cells" compound
-      ;; structures rather than "copying data".
-      (define (propagator-style-apply closure pass? arg-cells)
-	(do-apply-closure closure (map (arg-copier pass?) arg-cells)))
-      (define (expression-style-apply closure pass? arg-cells)
-	(let ((input-cells (except-last-pair arg-cells))
-	      (output-cell (car (last-pair arg-cells))))
-	  (conditional-wire pass? output-cell
-	    (do-apply-closure
-	     closure (map (arg-copier pass?) input-cells)))))
-      (define (attach closure)
-	(set! done-closures (cons closure done-closures))
-	(with-network-group
-	 (network-group-named `(attachment ,(name closure)))
+(define (do-apply-closure closure real-args)
+  (with-network-group (network-group-named (name closure))
+    (lambda ()
+      (apply (closure-body closure) real-args))))
+
+(define (general-p:apply closure-cell arg-cells)
+  (define done-closures '())
+  (define (done? closure)
+    (member closure done-closures equivalent-closures?))
+  (define (arg-copier pass?)
+    (lambda (arg)
+      (let-cell arg-copy
+	(conditional-wire pass? arg arg-copy)
+	arg-copy)))
+  ;; This assumes that closures are "carrying cells" compound
+  ;; structures rather than "copying data".
+  (define (propagator-style-apply closure pass? arg-cells)
+    (do-apply-closure closure (map (arg-copier pass?) arg-cells)))
+  (define (expression-style-apply closure pass? arg-cells)
+    (let ((input-cells (except-last-pair arg-cells))
+	  (output-cell (car (last-pair arg-cells))))
+      (conditional-wire pass? output-cell
+	(do-apply-closure
+	 closure (map (arg-copier pass?) input-cells)))))
+  (define (attach closure)
+    (set! done-closures (cons closure done-closures))
+    (with-network-group
+     (network-group-named `(attachment ,(name closure)))
+     (lambda ()
+       (let-cells (pass? key)
+	 (add-content key closure)
+	 (p:equivalent-closures? closure-cell key pass?)
+	 (if (propagator-style? closure)
+	     (propagator-style-apply closure pass? arg-cells)
+	     (expression-style-apply closure pass? arg-cells))
+	 unspecific))))
+  (let ((the-propagator
 	 (lambda ()
-	   (let-cells (pass? key)
-	     (add-content key closure)
-	     (p:equivalent-closures? closure-cell key pass?)
-	     (if (propagator-style? closure)
-		 (propagator-style-apply closure pass? arg-cells)
-		 (expression-style-apply closure pass? arg-cells))
-	     unspecific))))
-      (let ((the-propagator
-	     (lambda ()
-	       ((unary-mapping
-		 (lambda (closure)
-		   (if (done? closure)
-		       unspecific
-		       (attach closure))))
-		(content closure-cell)))))
-	(eq-label! the-propagator
-	 'name 'application 'inputs (list closure-cell) 'outputs arg-cells)
-	(propagator closure-cell the-propagator)))
-
-    (define (fast-path closure)
-      (if (propagator-style? closure)
-	  (do-apply-closure closure arg-cells)
-	  (c:== (car (last-pair arg-cells))
-		(do-apply-closure closure (except-last-pair arg-cells)))))
-    (define (directly-applicable? thing)
-      (or (closure? thing)
-	  (propagator-constructor? thing)))
+	   ((unary-mapping
+	     (lambda (closure)
+	       (if (done? closure)
+		   unspecific
+		   (attach closure))))
+	    (content closure-cell)))))
+    (eq-label! the-propagator
+     'name 'application 'inputs (list closure-cell) 'outputs arg-cells)
+    (propagator closure-cell the-propagator)))
+
+(define (eager-p:apply closure arg-cells)
+  (if (propagator-style? closure)
+      (do-apply-closure closure arg-cells)
+      (c:== (car (last-pair arg-cells))
+	    (do-apply-closure closure (except-last-pair arg-cells)))))
+
+(define (directly-applicable? thing)
+  (or (closure? thing)
+      (propagator-constructor? thing)))
+
+(define (p:application closure-cell . arg-cells)
+  (let ((arg-cells (map ensure-cell arg-cells)))
     (if (cell? closure-cell)
 	(if (directly-applicable? (content closure-cell))
-	    (fast-path (content closure-cell))
-	    (slow-path closure-cell))
+	    (eager-p:apply (content closure-cell) arg-cells)
+	    (general-p:apply closure-cell arg-cells))
 	(if (directly-applicable? closure-cell)
-	    (fast-path closure-cell)
-	    (slow-path (ensure-cell closure-cell))))))
+	    (eager-p:apply closure-cell arg-cells)
+	    (general-p:apply (ensure-cell closure-cell) arg-cells)))))
 
-(define e:application (functionalize application))
-(define p:apply application)
+(define e:application (functionalize p:application))
+(define p:apply p:application)
 (define e:apply e:application)
 
 (define (closure-body thing)

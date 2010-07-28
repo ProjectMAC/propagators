@@ -33,7 +33,7 @@
 
     (define-cell x 2)
     (define-cell output)
-    (application double x output)
+    (p:application double x output)
     (run)
     (content output)
     (produces 4)
@@ -53,7 +53,7 @@
 
     (define-cell x 2)
     (define-cell output)
-    (application double x output)
+    (p:application double x output)
     (run)
     (content output)
     (produces 4)
@@ -81,15 +81,15 @@
 
     (define-cell n 5)
     (define-cell add5)
-    (application addn n add5)
+    (p:application addn n add5)
 
     (define-cell x 3)
     (define-cell x-output)
-    (application add5 x x-output)
+    (p:application add5 x x-output)
 
     (define-cell y 5)
     (define-cell y-output)
-    (application add5 y y-output)
+    (p:application add5 y y-output)
     
     (run)
     (content x-output)
@@ -123,7 +123,7 @@
     (define-cell n1 (make-interval 3 5))
     (define-cell n2 (make-interval 4 7))
     (define-cell add5 (e:application addn n1))
-    (application addn n2 add5)
+    (p:application addn n2 add5)
     
     (define-cell output (e:application add5 3))
     
@@ -150,7 +150,7 @@
     (define-cell n1 (make-interval 3 5))
     (define-cell n2 (make-interval 4 7))
     (define-cell add5 (e:application addn n1))
-    (application addn n2 add5)
+    (p:application addn n2 add5)
     
     (define-cell output (e:application add5 3))
     
@@ -233,8 +233,8 @@
 		  (switch repeat? out-again out)
 		  (switch repeat? compose compose-again)
 		  (switch repeat? repeat repeat-again)
-		  (application compose-again fn-1 f-again out-again)
-		  (application repeat-again f-again n-1-again fn-1))))))
+		  (p:application compose-again fn-1 f-again out-again)
+		  (p:application repeat-again f-again n-1-again fn-1))))))
 	 repeat)
 	repeat))
 
