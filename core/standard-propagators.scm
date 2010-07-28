@@ -87,6 +87,56 @@
 	 '())
 	'name)))))
 
+(define-syntax lambda-propagator
+  (syntax-rules (import)
+    ((lambda-propagator (arg ...)
+       (import cell ...)
+       body ...)
+     (make-closure
+      (naming-lambda (arg ...)
+	body ...)
+      (list cell ...)))
+    ((lambda-propagator (arg ...)
+       body ...)
+     (lambda-propagator (arg ...)
+       (import)
+       body ...))))
+
+(define-syntax define-propagator
+  (syntax-rules ()
+    ((define-propagator (name arg ...)
+       body ...)
+     (define-cell name
+       (name!
+	(lambda-propagator (arg ...)
+	  body ...)
+	'name)))))
+
+(define-syntax lambda-e:propagator
+  (syntax-rules (import)
+    ((lambda-e:propagator (arg ...)
+       (import cell ...)
+       body ...)
+     (make-e:closure
+      (naming-lambda (arg ...)
+	body ...)
+      (list cell ...)))
+    ((lambda-e:propagator (arg ...)
+       body ...)
+     (lambda-e:propagator (arg ...)
+       (import)
+       body ...))))
+
+(define-syntax define-e:propagator
+  (syntax-rules ()
+    ((define-e:propagator (name arg ...)
+       body ...)
+     (define-cell name
+       (name!
+	(lambda-e:propagator (arg ...)
+	  body ...)
+	'name)))))
+
 (define-simple-closure (conditional control if-true if-false output)
   (switch control if-true output)
   (switch (e:not control) if-false output))

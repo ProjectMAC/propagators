@@ -22,7 +22,7 @@
 (in-test-group
  physical-closures
 
- (define-test (double)
+ (define-test (neanderthalic-double)
    (interaction
     (initialize-scheduler)
     (define-cell double
@@ -30,6 +30,26 @@
        (lambda (x out)
 	 (p:+ x x out))
        '()))
+
+    (define-cell x 2)
+    (define-cell output)
+    (application double x output)
+    (run)
+    (content output)
+    (produces 4)
+
+    ;; Stable under kicks:
+    (alert-all-propagators!)
+    (run)
+    (content output)
+    (produces 4)
+    ))
+
+ (define-test (double)
+   (interaction
+    (initialize-scheduler)
+    (define-propagator (double x out)
+      (p:+ x x out))
 
     (define-cell x 2)
     (define-cell output)
