@@ -76,13 +76,6 @@
 
 ;;;; Standard "propagator macros"
 
-(define-syntax naming-lambda
-  (syntax-rules ()
-    ((naming-lambda (arg-form ...) body-form ...)
-     (lambda (arg-form ...)
-       (name-locally! arg-form 'arg-form) ...
-       body-form ...))))
-
 (define-syntax define-simple-closure
   (syntax-rules ()
     ((define-simple-closure (name arg-form ...) body-form ...)
@@ -100,10 +93,16 @@
 (define-simple-closure (conditional-writer control input if-true if-false)
   (switch control input if-true)
   (switch (e:not control) input if-false))
-
+
 (define-simple-closure (conditional-wire control end1 end2)
   (switch control end1 end2)
   (switch control end2 end1))
+
+(define p:conditional conditional)
+(define e:conditional (functionalize p:conditional))
+(define p:conditional-writer conditional-writer)
+
+;;; Constraining propagators
 
 (define-simple-closure (c:+ a1 a2 sum)
   (p:+ a1 a2 sum)      (p:- sum a1 a2)      (p:- sum a2 a1))
@@ -140,7 +139,3 @@
 	      (cdr args))
     lead))
 (define ce:== (functionalize c:==))
-
-(define p:conditional conditional)
-(define e:conditional (functionalize p:conditional))
-(define p:conditional-writer conditional-writer)

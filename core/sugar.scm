@@ -217,6 +217,15 @@
     ((named-recursive-propagator stuff ...)
      (delayed-propagator-constructor (named-propagator-syntax stuff ...)))))
 
+;;; This is a convenience for defining closures (with make-closure)
+;;; that track the Scheme names given to the incoming cells.
+(define-syntax naming-lambda
+  (syntax-rules ()
+    ((naming-lambda (arg-form ...) body-form ...)
+     (lambda (arg-form ...)
+       (name-locally! arg-form 'arg-form) ...
+       body-form ...))))
+
 ;;;     TODO Is it now time to refactor the above propagator macro
 ;;; nonsense into a propagator-lambda macro that emits closures, per
 ;;; physical-closures.scm?
