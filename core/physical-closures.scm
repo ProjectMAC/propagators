@@ -69,10 +69,7 @@
 (define (%make-closure code environment propagator-style?)
   (make-entity
    (lambda (self . args)
-     (apply (if propagator-style?
-		p:application
-		e:application)
-	    self args))
+     (apply application self args))
    (make-%closure code environment propagator-style?)))
 
 (define (closure? thing)
@@ -253,6 +250,16 @@
 	    (general-p:apply closure-cell arg-cells))
 	(if (directly-applicable? closure-cell)
 	    (eager-p:apply closure-cell arg-cells)
+	    (general-p:apply (ensure-cell closure-cell) arg-cells)))))
+
+(define (application closure-cell . arg-cells)
+  (let ((arg-cells (map ensure-cell arg-cells)))
+    (if (cell? closure-cell)
+	(if (directly-applicable? (content closure-cell))
+	    (do-apply-closure (content closure-cell) arg-cells)
+	    (general-p:apply closure-cell arg-cells))
+	(if (directly-applicable? closure-cell)
+	    (do-apply-closure closure-cell arg-cells)
 	    (general-p:apply (ensure-cell closure-cell) arg-cells)))))
 
 (define e:application (functionalize p:application))
