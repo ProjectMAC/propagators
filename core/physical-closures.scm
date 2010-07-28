@@ -58,13 +58,40 @@
 ;;; Scheme closures with different code are like data structures of
 ;;; different types and so are not mergeable.
 
+;;; TODO Capture this pattern in a version of define-structure that
+;;; creates applicable records?
 (define-structure
-  (closure (constructor %make-closure) (safe-accessors #t))
+  (%closure (safe-accessors #t))
   code-tag
   code
   environment
   propagator-style?)
 
+(define (%make-closure code-tag code environment propagator-style?)
+  (make-entity
+   (lambda (self . args)
+     (apply (if propagator-style?
+		application
+		e:application)
+	    self args))
+   (make-%closure code-tag code environment propagator-style?)))
+
+(define (closure? thing)
+  (and (entity? thing)
+       (%closure? (entity-extra thing))))
+
+(define (closure-code-tag thing)
+  (%closure-code-tag (entity-extra thing)))
+
+(define (closure-code thing)
+  (%closure-code (entity-extra thing)))
+
+(define (closure-environment thing)
+  (%closure-environment (entity-extra thing)))
+
+(define (closure-propagator-style? thing)
+  (%closure-propagator-style? (entity-extra thing)))
+
 ;; The ensure-cell here makes these be "carrying cells" structures.
 (define (make-closure code-tag code environment)
   (name-closure!
@@ -87,7 +114,7 @@
   (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
        (eqv? (closure-propagator-style? closure1)
 	     (closure-propagator-style? closure2))))
-
+
 (define (closure-merge closure1 closure2)
   (if (not (same-code? closure1 closure2))
       the-contradiction

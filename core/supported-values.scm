@@ -34,7 +34,7 @@
 (declare-coercion <boolean> ->v&s)
 (declare-coercion rtd:%interval ->v&s)
 (declare-coercion propagator-constructor? ->v&s)
-(declare-coercion rtd:closure ->v&s)
+(declare-coercion closure? ->v&s)
 (declare-coercion pair? ->v&s)
 
 (define (more-informative-support? v&s1 v&s2)

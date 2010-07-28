@@ -61,6 +61,7 @@
 	   (procedure? thing)
 	   (not (cell? thing))
 	   (not (propagator? thing))
+	   (not (closure? thing)) ; TODO Forward reference :(
 	   (warn "Imputing propagator-constructor-hood" thing)
 	   #t)))
 
