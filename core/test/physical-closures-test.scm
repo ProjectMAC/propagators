@@ -250,7 +250,7 @@
     
     (run)
     (tms-query (content output))
-    (produces #(supported #(interval 7 8) (joe bill fred)))
+    (produces #(supported #(interval 7 8) (joe fred bill)))
 
     (kick-out! 'bill)
     (run)
@@ -303,7 +303,7 @@
      (switch (make-tms (supported #t '(fred))) fred-op the-op)
      (define-cell output (e:application the-op 3 4))
      (run)
-     (produces '(contradiction (bill fred)))
+     (produces '(contradiction (fred bill)))
      (check (equal? '(application) (map name (neighbors the-op))))
 
      (kick-out! 'bill)

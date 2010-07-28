@@ -73,8 +73,7 @@
 
 ;;;; Propagator cells
 
-;; message-accepter style
-(define (make-cell)
+(define (make-cell)			; message-accepter style
   (let ((neighbors '()) (content nothing))
     (define (add-content increment)
       (let ((info+effects (->effectful (merge content increment))))
@@ -121,8 +120,9 @@
   (if (cell? thing)
       thing
       ;; TODO Retain forward reference to e:constant?  Copy the code?
-      (e:constant thing)))
-
+      (let ((answer (e:constant thing)))
+	(add-content answer thing)	; Enables early access
+	answer)))
 ;;;; Cellular Generics
 
 (define (merge info1 info2)
