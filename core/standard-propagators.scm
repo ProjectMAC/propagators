@@ -101,6 +101,7 @@
 (define p:conditional conditional)
 (define e:conditional (functionalize p:conditional))
 (define p:conditional-writer conditional-writer)
+(define e:conditional-wire (functionalize conditional-wire))
 
 ;;; Constraining propagators
 

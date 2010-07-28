@@ -63,3 +63,40 @@
  (content answer)
  ;Value: 1.4142135623746899
 |#
+
+(define-syntax shielded-when
+  (syntax-rules ()
+    ((shielded-when conditional (shieldee ...) body ...)
+     (let-cells ((shieldee (e:conditional-wire conditional shieldee)) ...)
+       ((delayed-propagator-constructor
+	 (lambda (shieldee ...)
+	   body ...))
+	shieldee ...)))))
+
+(define-simple-closure (p:factorial-1 n n!)
+  (shielded-when
+   (e:not (e:= 0 n))
+   (n n!)
+   (p:== (e:* n (e:factorial-1 (e:- n 1))) n!))
+  (switch (e:= 0 n) 1 n!))
+(define e:factorial-1 (functionalize p:factorial-1))
+
+(define-syntax shielded-unless
+  (syntax-rules ()
+    ((shielded-unless conditional stuff ...)
+     (shielded-when (e:not conditional) stuff ...))))
+
+(define-syntax shielded-if
+  (syntax-rules ()
+    ((shielded-if conditional shieldees consequent alternate)
+     (begin
+       (shielded-when conditional shieldees consequent)
+       (shielded-unless conditional shieldees alternate)))))
+
+(define-simple-closure (p:factorial-2 n n!)
+  (shielded-if
+   (e:= 0 n)
+   (n n!)
+   (p:== 1 n!)
+   (p:== (e:* n (e:factorial-2 (e:- n 1))) n!)))
+(define e:factorial-2 (functionalize p:factorial-2))

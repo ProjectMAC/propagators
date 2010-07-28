@@ -51,5 +51,21 @@
     (content answer)
     (produces 1.4142135623746899)
     ))
+
+ (define-test (factorial-1)
+   (interaction
+    (initialize-scheduler)
+    (define-cell n! (e:factorial-1 5))
+    (run)
+    (content n!)
+    (produces 120)))
+ 
+ (define-test (factorial-2)
+   (interaction
+    (initialize-scheduler)
+    (define-cell n! (e:factorial-2 5))
+    (run)
+    (content n!)
+    (produces 120)))
  
  )
