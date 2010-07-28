@@ -21,7 +21,7 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-macro-propagator (guess-link cell1 cell2)
+(define-simple-closure (guess-link cell1 cell2)
   (let ((control (e:amb)))
     (conditional-wire control cell1 cell2)
     control))
