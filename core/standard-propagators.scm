@@ -82,7 +82,6 @@
      (define name
        (name!
 	(make-closure
-	 'name
 	 (naming-lambda (arg-form ...)
 	   body-form ...)
 	 '())

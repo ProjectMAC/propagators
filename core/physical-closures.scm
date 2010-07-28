@@ -92,11 +92,11 @@
   (%closure-propagator-style? (entity-extra thing)))
 
 ;; The ensure-cell here makes these be "carrying cells" structures.
-(define (make-closure code-tag code environment)
+(define (make-closure code environment)
   (name-closure!
    (%make-closure code (map ensure-cell environment) #t)))
 
-(define (make-e:closure code-tag code environment)
+(define (make-e:closure code environment)
   (name-closure!
    (%make-closure code (map ensure-cell environment) #f)))
 

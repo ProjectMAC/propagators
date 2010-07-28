@@ -27,7 +27,6 @@
     (initialize-scheduler)
     (define-cell double
       (make-closure
-       'double
        (lambda (x out)
 	 (p:+ x x out))
        '()))
@@ -51,11 +50,9 @@
     (initialize-scheduler)
     (define-cell addn
       (make-closure
-       'addn
        (lambda (n out)
 	 ((p:constant
 	   (make-closure
-	    'addn-internal
 	    (lambda (x out)
 	      (p:+ n x out))
 	    (list n)))
@@ -95,11 +92,9 @@
     
     (define-cell addn
       (make-e:closure
-       'addn
        (lambda (n)
 	 (e:constant
 	  (make-e:closure
-	   'addn-internal
 	   (lambda (x)
 	     (e:+ n x))
 	   (list n))))
@@ -127,23 +122,19 @@
     (initialize-scheduler)
     (define-cell double
       (make-e:closure
-       'double
        (lambda (x)
 	 (e:+ x x))
        '()))
     (define-cell square
       (make-e:closure
-       'square
        (lambda (x)
 	 (e:* x x))
        '()))
     (define-cell compose
       (make-e:closure
-       'compose
        (lambda (f g)
 	 (e:constant
 	  (make-e:closure
-	   'compose-inner
 	   (lambda (x)
 	     (e:application f (e:application g x)))
 	   (list f g))))
@@ -175,17 +166,14 @@
     (initialize-scheduler)
     (define-cell double
       (make-e:closure
-       'double
        (lambda (x)
 	 (e:+ x x))
        '()))
     (define-cell compose
       (make-e:closure
-       'compose
        (lambda (f g)
 	 (e:constant
 	  (make-e:closure
-	   'compose-inner
 	   (lambda (x)
 	     (e:application f (e:application g x)))
 	   (list f g))))
@@ -194,7 +182,6 @@
       (let-cell (repeat)
 	((constant
 	  (make-closure
-	   'repeat
 	   (lambda (f n out)
 	     (let-cell (repeat? (e:> n 1))
 	       (let-cell (done? (e:not repeat?))
@@ -227,11 +214,9 @@
     
     (define-cell addn
       (make-closure
-       'addn
        (lambda (n out)
 	 ((p:constant
 	   (make-closure
-	    'addn-internal
 	    (lambda (x out)
 	      (p:+ n x out))
 	    (list n)))
