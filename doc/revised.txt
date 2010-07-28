@@ -260,7 +260,7 @@ Others do not correspond to Scheme procedures exactly:
 (p:constant value)
 p:swtich
 p:conditional
-p:conditional-writer
+p:conditional-router
 p:==
 p:cons
 p:pair?
@@ -275,28 +275,27 @@ as arguments.  By convention, cells used as outputs go last.
 Propagator Expressions: e:foo
 ----------------------------------------------------------------------
 
-The ``p:foo`` style is foundational, and is the right underlying way
+The ``p:foo`` style is the right underlying way
 think about the construction of propagator networks.  However, it has
 the unfortunate feature that it requires the naming of cells for
 holding all intermediate values in a computation, and in that sense
 programming with those propagator constructors feels a lot like
 writing assembly language.
 
-It is pretty common that one's propagator networks will have some
-intermediate values that are produced by only one propagator.  In this
-case it is a drag to have to define and name a cell for that value, if
-one would just name it "the output of foo".  Scheme-Propagators
-provides a syntactic sugar for writing cases like in an expression
-style, like a traditional programming language.
+It is pretty common to have expressions: one's propagator networks
+will have some intermediate values that are produced by only one
+propagator.  In this case it is a drag to have to define and name a
+cell for that value, if one would just name it "the output of foo".
+Scheme-Propagators provides a syntactic sugar for writing cases like
+in an expression style, like a traditional programming language.
 
-Every ``p:foo`` propagator constructor (TODO p:conditional-writer has
-two outputs, what to do for an e: variant?) has a variant named
-``e:foo``.  ``e:`` stands for "expression".  A thing named ``e:foo``
-is a Scheme procedure (so Scheme-Propagators syntax) just like
-``p:foo``, except that it takes one argument fewer than ``p:foo``, and
-synthesizes and then returns a fresh cell in the place of the last
-argument of ``p:foo``.  Here are two different ways to write the same
-thing::
+Every ``p:foo`` propagator constructor (except p:conditional-router,
+which has two "outputs") has a variant named ``e:foo``.  ``e:`` stands
+for "expression".  A thing named ``e:foo`` is a Scheme procedure (so
+Scheme-Propagators syntax) just like ``p:foo``, except that it takes
+one argument fewer than ``p:foo``, and synthesizes and then returns a
+fresh cell in the place of the last argument of ``p:foo``.  Here are
+two different ways to write the same thing::
 
   (define-cell x)
   (define-cell y)
@@ -339,8 +338,6 @@ and get a multidirectional constraint::
   (run)
   (content y) ==> 2
 
-
-TODO Provide a list of available propagator constructors. (Don't forget binary-amb and company)
 
 Attaching Propagator Constraints: c:foo and ce:foo
 ----------------------------------------------------------------------
@@ -415,15 +412,12 @@ In fact, inserting constants is so important, that there is one more
 nicification of this: whenever possible, the system will convert a raw
 constant (i.e. a non-cell Scheme object) into a cell, using
 ``e:constant``.
+
 Some examples::
 
   (e:+ x 2)          ==>   (e:+ x (e:constant 2))
   (define-cell x 4)  ==>   (define-cell x (e:constant 4))
   (c:+ x y 0)        ==>   (c:+ x y (e:constant 0))
-
-  (define-macro-propagator (p:double x y)
-    (p:+ x x y))
-  (p:double 4 z)     ==>   (p:double (e:constant 4) z)
 
 Making Cells
 ----------------------------------------------------------------------
@@ -446,11 +440,11 @@ you could write::
 
 which would also make a Scheme variable named ``x`` and bind a cell to
 it.  In fact, that is almost exactly what ``define-cell`` does, except
-that ``define-cell`` attaches
-some metadata to the cell it creates to make it easier to debug the
-network (see below) and also does constant conversion (so ``(define-cell x
-5)`` makes ``x`` a cell that will get a ``5`` put into it, whereas
-``(define x 5)`` would just bind ``x`` to ``5``).
+that ``define-cell`` attaches some metadata to the cell it creates to
+make it easier to debug the network (see below) and also does constant
+conversion (so ``(define-cell x 5)`` makes ``x`` a cell that will get
+a ``5`` put into it, whereas ``(define x 5)`` would just bind ``x`` to
+``5``).
 
 Just as Scheme has several mechanisms of making variables, so
 Scheme-Propagators has corresponding ones.  Corresponding to Scheme's
