@@ -66,7 +66,7 @@ end
 
 try_by_executable
 try_by_band("/sw" + mechanics_band)
-try_by_band("/usr/local"+ mechanics_band64)
 try_by_band("/usr/local"+ mechanics_band)
+try_by_band("/usr/local"+ mechanics_band64)
 puts "No Scheme at #{scheme} and no Mechanics bands at {/sw|/usr/local}#{mechanics_band} :("
 
