@@ -157,7 +157,7 @@
 (define %p:null? (function->propagator-constructor
 		  (unary-mapping null?)))
 
-(define-macro-propagator (p:null? thing answer)
+(define-propagator-syntax (p:null? thing answer)
   (let-cell tag
     (%p:tag thing tag)
     (%p:null? tag answer)))
@@ -183,7 +183,7 @@
 
 (define %p:pair? (function->propagator-constructor (unary-mapping pair?)))
 
-(define-macro-propagator (p:pair? thing answer)
+(define-propagator-syntax (p:pair? thing answer)
   (let-cell tag
     (%p:tag thing tag)
     (%p:pair? tag answer)))

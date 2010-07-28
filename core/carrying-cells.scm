@@ -26,7 +26,7 @@
 
 ;;; CONS looks like this:
 #;
- (define-macro-propagator (p:carry-cons a-cell d-cell output)
+ (define (p:carry-cons a-cell d-cell output)
    ((constant (cons a-cell d-cell)) output))
 
 ;;; The general version for arbitrary constructors:
@@ -48,9 +48,9 @@
 
 ;;; Propagator-style accessors are remarkably easy:
 
-(define-macro-propagator (p:carry-car pair-cell output)
+(define (p:carry-car pair-cell output)
   (p:carry-cons output nothing pair-cell))
-(define-macro-propagator (p:carry-cdr pair-cell output)
+(define (p:carry-cdr pair-cell output)
   (p:carry-cons nothing output pair-cell))
 
 ;;; Expression-style accessors are also just as easy in principle, but
