@@ -62,26 +62,25 @@
 ;;; creates applicable records?
 (define-structure
   (%closure (safe-accessors #t))
-  code-tag
   code
   environment
   propagator-style?)
 
-(define (%make-closure code-tag code environment propagator-style?)
+(define (%make-closure code environment propagator-style?)
   (make-entity
    (lambda (self . args)
      (apply (if propagator-style?
 		application
 		e:application)
 	    self args))
-   (make-%closure code-tag code environment propagator-style?)))
+   (make-%closure code environment propagator-style?)))
 
 (define (closure? thing)
   (and (entity? thing)
        (%closure? (entity-extra thing))))
 
 (define (closure-code-tag thing)
-  (%closure-code-tag (entity-extra thing)))
+  (procedure-lambda (%closure-code (entity-extra thing))))
 
 (define (closure-code thing)
   (%closure-code (entity-extra thing)))
@@ -95,11 +94,11 @@
 ;; The ensure-cell here makes these be "carrying cells" structures.
 (define (make-closure code-tag code environment)
   (name-closure!
-   (%make-closure code-tag code (map ensure-cell environment) #t)))
+   (%make-closure code (map ensure-cell environment) #t)))
 
 (define (make-e:closure code-tag code environment)
   (name-closure!
-   (%make-closure code-tag code (map ensure-cell environment) #f)))
+   (%make-closure code (map ensure-cell environment) #f)))
 
 (define (name-closure! closure)
   (cond ((eq-get closure 'name) closure) ; ok
@@ -122,7 +121,6 @@
 			     (closure-environment closure2))
 	(lambda (new-env)
 	  (%make-closure
-	   (closure-code-tag closure1)
 	   (closure-code closure1)
 	   new-env
 	   (closure-propagator-style? closure1))))))

@@ -80,11 +80,13 @@
   (syntax-rules ()
     ((define-simple-closure (name arg-form ...) body-form ...)
      (define name
-       (make-closure
-	'name
-	(naming-lambda (arg-form ...)
-	  body-form ...)
-	'())))))
+       (name!
+	(make-closure
+	 'name
+	 (naming-lambda (arg-form ...)
+	   body-form ...)
+	 '())
+	'name)))))
 
 (define-simple-closure (conditional control if-true if-false output)
   (switch control if-true output)
