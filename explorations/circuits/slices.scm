@@ -21,11 +21,11 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-macro-propagator (terminal-equivalence ok? t1 t2)
+(define-simple-closure (terminal-equivalence ok? t1 t2)
   (conditional-wire ok? (ce:current t1) (ce:current t2))
   (conditional-wire ok? (ce:potential t1) (ce:potential t2)))
 
-(define-macro-propagator (exact-voltage-divider-slice R1 node R2)
+(define-simple-closure (exact-voltage-divider-slice R1 node R2)
   ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
   ;; in common, and are the only terminals on that node
   (let-cells ((Requiv (resistor)))
@@ -59,7 +59,7 @@
 (define p:override-premise (function->propagator-constructor premise-overrider))
 (define e:override-premise (functionalize p:override-premise))
 
-(define-macro-propagator (approximate-voltage-divider-slice R1 center R2 bottom)
+(define-simple-closure (approximate-voltage-divider-slice R1 center R2 bottom)
   (let ((center-terminals (the-terminals center)))
     (assert (memq (the t2 R1) center-terminals))
     (assert (memq (the t1 R2) center-terminals))

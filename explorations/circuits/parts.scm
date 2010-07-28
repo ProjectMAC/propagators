@@ -65,7 +65,7 @@
 	 (vic voltage current)
 	 t1 t2 power voltage current)))))
 
-(define-macro-propagator (resistor)
+(define-simple-closure (resistor)
   (let-cell resistance
     (two-terminal-device
      ;; TODO Properly propagatify this?
@@ -93,10 +93,10 @@
 ;; voltage.  This object is equivalent to a voltage source of
 ;; unconstrained strength, and to a current source of unconstrained
 ;; strength.
-(define-macro-propagator (leakage-current)
+(define-simple-closure (leakage-current)
   (two-terminal-device (lambda (v i) (e:inspectable-object))))
 
-(define-macro-propagator (voltage-source)
+(define-simple-closure (voltage-source)
   (two-terminal-device (voltage-source-vic)))
 
 (define (use-all . functions)
@@ -107,31 +107,31 @@
 		(apply f args))
 	      functions))))
 
-(define-macro-propagator (bias-voltage-source)
+(define-simple-closure (bias-voltage-source)
   (two-terminal-device
     (use-all
      (in-layer 'bias (voltage-source-vic))
      (in-layer 'incremental short-circuit-vic))))
 
-(define-macro-propagator (signal-voltage-source)
+(define-simple-closure (signal-voltage-source)
   (two-terminal-device
     (use-all
      (in-layer 'incremental (voltage-source-vic))
      (in-layer 'bias short-circuit-vic))))
 
-(define-macro-propagator (short-circuit)
+(define-simple-closure (short-circuit)
   (two-terminal-device short-circuit-vic))
 
-(define-macro-propagator (open-circuit)
+(define-simple-closure (open-circuit)
   (two-terminal-device open-circuit-vic))
 
-(define-macro-propagator (capacitor)
+(define-simple-closure (capacitor)
   (two-terminal-device
     (use-all
      (in-layer 'bias open-circuit-vic)
      (in-layer 'incremental short-circuit-vic))))
 
-(define-macro-propagator (inductor)
+(define-simple-closure (inductor)
   (two-terminal-device
     (use-all
      (in-layer 'incremental open-circuit-vic)
@@ -155,7 +155,7 @@
        (vic control-voltage i-control controlled-voltage i-controlled)
        common control controlled power))))
 
-(define-macro-propagator (infinite-beta-bjt)
+(define-simple-closure (infinite-beta-bjt)
   (let-cells (emitter base collector)
    (three-terminal-device emitter base collector
      (lambda (control-voltage control-current
