@@ -82,3 +82,14 @@
 
 (define %e:carry-cdr (functionalize p:carry-cdr))
 (define e:carry-cdr (early-access-hack pair? cdr %e:carry-cdr))
+
+;;; Carrying data is standard
+
+(define p:cons  p:carry-cons)
+(define e:cons  e:carry-cons)
+(define p:pair? p:carry-pair?)
+(define e:pair? e:carry-pair?)
+(define p:car   p:carry-car)
+(define e:car   e:carry-car)
+(define p:cdr   p:carry-cdr)
+(define e:cdr   e:carry-cdr)
