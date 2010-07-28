@@ -17,10 +17,10 @@ def files
    "sugar",
    "generic-definitions",
    "expression-language",
-   "standard-propagators",
    "compound-data",
-   "carrying-cells",
    "physical-closures",
+   "standard-propagators",
+   "carrying-cells",
 
     "intervals",
     "premises",

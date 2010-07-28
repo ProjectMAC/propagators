@@ -53,7 +53,7 @@
 (propagatify expt unary-mapping)
 (define (p:constant value)
   (function->propagator-constructor #; (lambda () value)
-   (eq-label! (lambda () value) 'name `(constant ,value))))
+   (eq-label! (lambda () value) 'name `(constant ,(name value)))))
 (define (e:constant value)
   (let ((answer (make-named-cell 'cell)))
     ((constant value) answer)
@@ -76,31 +76,48 @@
 
 ;;;; Standard "propagator macros"
 
-(define-macro-propagator (conditional control if-true if-false output)
+(define-syntax naming-lambda
+  (syntax-rules ()
+    ((naming-lambda (arg-form ...) body-form ...)
+     (lambda (arg-form ...)
+       (name-locally! arg-form 'arg-form) ...
+       body-form ...))))
+
+(define-syntax define-simple-closure
+  (syntax-rules ()
+    ((define-simple-closure (name arg-form ...) body-form ...)
+     (define name
+       (make-closure
+	'name
+	(naming-lambda (arg-form ...)
+	  body-form ...)
+	'())))))
+
+(define-simple-closure (conditional control if-true if-false output)
   (switch control if-true output)
   (switch (e:not control) if-false output))
 
-(define-macro-propagator (conditional-writer control input if-true if-false)
+(define-simple-closure (conditional-writer control input if-true if-false)
   (switch control input if-true)
   (switch (e:not control) input if-false))
 
-(define-macro-propagator (conditional-wire control end1 end2)
+(define-simple-closure (conditional-wire control end1 end2)
   (switch control end1 end2)
   (switch control end2 end1))
 
-(define-macro-propagator (c:+ a1 a2 sum)
+(define-simple-closure (c:+ a1 a2 sum)
   (p:+ a1 a2 sum)      (p:- sum a1 a2)      (p:- sum a2 a1))
 
-(define-macro-propagator (c:* m1 m2 product)
+(define-simple-closure (c:* m1 m2 product)
   (p:* m1 m2 product)  (p:/ product m1 m2)  (p:/ product m2 m1))
 
-(define-macro-propagator (c:square x x^2)
+(define-simple-closure (c:square x x^2)
   (p:square x x^2)     (p:sqrt x^2 x))
 
-(define-macro-propagator (c:not p1 p2)
+(define-simple-closure (c:not p1 p2)
   (p:not p1 p2)        (p:not p2 p1))
 
-(define-macro-propagator (c:id c1 c2)
+(define-simple-closure (c:id c1 c2)
   (pass-through c1 c2) (pass-through c2 c1))
 
 (define ce:+ (functionalize c:+))
