@@ -171,6 +171,18 @@
    (check (eq? 'foo (local-name foo)))
    (frobnicate foo))
 
+ (define-test (more-macrology-smoke-2)
+   (initialize-scheduler)
+   (define-simple-closure (frobnicate frob)
+     (check (not (network-group-contains? *current-network-group* frob)))
+     (check (eq? 'frob (local-name frob)))
+     (check (eq? 'foo (name frob))))
+   (define-cell foo)
+   (check (network-group-contains? *current-network-group* foo))
+   (check (eq? 'foo (name foo)))
+   (check (eq? 'foo (local-name foo)))
+   (frobnicate foo))
+
  (define-test (expression-substructure-test)
    (initialize-scheduler)
    (define-macro-propagator (frobnicate frob)

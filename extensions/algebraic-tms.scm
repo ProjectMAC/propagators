@@ -164,11 +164,11 @@
 
 (define p:null (function->propagator-constructor null))
 
-(define-macro-propagator (c:null? thing answer)
+(define-simple-closure (c:null? thing answer)
   (p:null? thing answer)
   (switch answer (e:null) thing))
 
-(define-macro-propagator (c:null answer)
+(define-simple-closure (c:null answer)
   (p:null answer))
 
 (define e:null? (functionalize p:null?))
@@ -196,20 +196,20 @@
 (define p:cdr (function->propagator-constructor
 	       (handling-algebraic-partial-information cdr)))
 
-(define-macro-propagator (c:pair? pair answer)
+(define-simple-closure (c:pair? pair answer)
   (p:pair? pair answer)
   (switch answer (e:cons nothing nothing) pair))
 
-(define-macro-propagator (c:cons thing1 thing2 pair)
+(define-simple-closure (c:cons thing1 thing2 pair)
   (p:cons thing1 thing2 pair)
   (p:car pair thing1)
   (p:cdr pair thing2))
 
-(define-macro-propagator (c:car pair answer)
+(define-simple-closure (c:car pair answer)
   (p:car pair answer)
   (p:cons answer nothing pair))
 
-(define-macro-propagator (c:cdr pair answer)
+(define-simple-closure (c:cdr pair answer)
   (p:cdr pair answer)
   (p:cons nothing answer pair))
 
