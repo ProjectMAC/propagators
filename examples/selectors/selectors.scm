@@ -180,7 +180,7 @@
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
-    (conditional-writer same-city? segment same-city-answer intercity-answer)
+    (conditional-router same-city? segment same-city-answer intercity-answer)
     (fast-incity-air-estimate same-city-answer)
     (fast-intercity-air-estimate intercity-answer)))
 
@@ -238,7 +238,7 @@
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
-    (conditional-writer same-city? segment same-city-answer intercity-answer)
+    (conditional-router same-city? segment same-city-answer intercity-answer)
     (fast-incity-train-estimate same-city-answer)
     (fast-intercity-train-estimate intercity-answer)))
 
@@ -285,7 +285,7 @@
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
-    (conditional-writer same-city? segment same-city-answer intercity-answer)
+    (conditional-router same-city? segment same-city-answer intercity-answer)
     (fast-incity-subway-estimate same-city-answer)
     (fast-intercity-subway-estimate intercity-answer)))
 

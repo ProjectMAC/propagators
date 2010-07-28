@@ -90,7 +90,7 @@
   (switch control if-true output)
   (switch (e:not control) if-false output))
 
-(define-simple-closure (conditional-writer control input if-true if-false)
+(define-simple-closure (conditional-router control input if-true if-false)
   (switch control input if-true)
   (switch (e:not control) input if-false))
 
@@ -100,7 +100,7 @@
 
 (define p:conditional conditional)
 (define e:conditional (functionalize p:conditional))
-(define p:conditional-writer conditional-writer)
+(define p:conditional-router conditional-router)
 (define e:conditional-wire (functionalize conditional-wire))
 
 ;;; Constraining propagators
