@@ -89,9 +89,9 @@
 (define-syntax shielded-if
   (syntax-rules ()
     ((shielded-if conditional shieldees consequent alternate)
-     (begin
-       (shielded-when conditional shieldees consequent)
-       (shielded-unless conditional shieldees alternate)))))
+     (let-cell (conditional-value conditional)
+       (shielded-when conditional-value shieldees consequent)
+       (shielded-unless conditional-value shieldees alternate)))))
 
 (define-simple-closure (p:factorial-2 n n!)
   (shielded-if
