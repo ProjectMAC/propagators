@@ -154,71 +154,73 @@
 
 (declare-algebraic null? null)
 
-(define %p:null? (function->propagator-constructor
-		  (unary-mapping null?)))
+(define %p:copy-null?
+  (function->propagator-constructor
+   (unary-mapping null?)))
 
-(define-propagator-syntax (p:null? thing answer)
+(define-propagator-syntax (p:copy-null? thing answer)
   (let-cell tag
     (%p:tag thing tag)
-    (%p:null? tag answer)))
+    (%p:copy-null? tag answer)))
 
-(define p:null (function->propagator-constructor null))
+(define p:copy-null (function->propagator-constructor null))
 
-(define-simple-closure (c:null? thing answer)
-  (p:null? thing answer)
-  (switch answer (e:null) thing))
+(define-simple-closure (c:copy-null? thing answer)
+  (p:copy-null? thing answer)
+  (switch answer (e:copy-null) thing))
 
-(define-simple-closure (c:null answer)
-  (p:null answer))
+(define-simple-closure (c:copy-null answer)
+  (p:copy-null answer))
 
-(define e:null? (functionalize p:null?))
-(define e:null (functionalize p:null))
+(define e:copy-null? (functionalize p:copy-null?))
+(define e:copy-null (functionalize p:copy-null))
 
-(define ce:null? (functionalize c:null?))
-(define ce:null (functionalize c:null))
+(define ce:copy-null? (functionalize c:copy-null?))
+(define ce:copy-null (functionalize c:copy-null))
 
 ;;; Pairs
 
 (declare-algebraic pair? cons car cdr)
 
-(define %p:pair? (function->propagator-constructor (unary-mapping pair?)))
+(define %p:copy-pair?
+  (function->propagator-constructor (unary-mapping pair?)))
 
-(define-propagator-syntax (p:pair? thing answer)
+(define-propagator-syntax (p:copy-pair? thing answer)
   (let-cell tag
     (%p:tag thing tag)
-    (%p:pair? tag answer)))
+    (%p:copy-pair? tag answer)))
 
-(define p:cons (function->propagator-constructor cons))
+(define p:copy-cons (function->propagator-constructor cons))
 
-(define p:car (function->propagator-constructor
-	       (handling-algebraic-partial-information car)))
+(define p:copy-car (function->propagator-constructor
+		    (handling-algebraic-partial-information car)))
 
-(define p:cdr (function->propagator-constructor
-	       (handling-algebraic-partial-information cdr)))
+(define p:copy-cdr (function->propagator-constructor
+		    (handling-algebraic-partial-information cdr)))
 
-(define-simple-closure (c:pair? pair answer)
-  (p:pair? pair answer)
-  (switch answer (e:cons nothing nothing) pair))
+(define-simple-closure (c:copy-pair? pair answer)
+  (p:copy-pair? pair answer)
+  (switch answer (e:copy-cons nothing nothing) pair))
 
-(define-simple-closure (c:cons thing1 thing2 pair)
-  (p:cons thing1 thing2 pair)
-  (p:car pair thing1)
-  (p:cdr pair thing2))
+(define-simple-closure (c:copy-cons thing1 thing2 pair)
+  (p:copy-cons thing1 thing2 pair)
+  (p:copy-car pair thing1)
+  (p:copy-cdr pair thing2))
 
-(define-simple-closure (c:car pair answer)
-  (p:car pair answer)
-  (p:cons answer nothing pair))
+(define-simple-closure (c:copy-car pair answer)
+  (p:copy-car pair answer)
+  (p:copy-cons answer nothing pair))
 
-(define-simple-closure (c:cdr pair answer)
-  (p:cdr pair answer)
-  (p:cons nothing answer pair))
+(define-simple-closure (c:copy-cdr pair answer)
+  (p:copy-cdr pair answer)
+  (p:copy-cons nothing answer pair))
 
-(define e:pair?  (functionalize p:pair?))
-(define e:cons   (functionalize p:cons))
-(define e:car    (functionalize p:car))
-(define e:cdr    (functionalize p:cdr))
+(define e:copy-pair?  (functionalize p:copy-pair?))
+(define e:copy-cons   (functionalize p:copy-cons))
+(define e:copy-car    (functionalize p:copy-car))
+(define e:copy-cdr    (functionalize p:copy-cdr))
 
-(define ce:pair? (functionalize c:pair?))
-(define ce:cons  (functionalize c:cons))
-(define ce:car   (functionalize c:car))
-(define ce:cdr   (functionalize c:cdr))
+(define ce:copy-pair? (functionalize c:copy-pair?))
+(define ce:copy-cons  (functionalize c:copy-cons))
+(define ce:copy-car   (functionalize c:copy-car))
+(define ce:copy-cdr   (functionalize c:copy-cdr))
