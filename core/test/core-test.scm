@@ -151,6 +151,7 @@
 
  (define-test (factorial)
    (interaction
+    (initialize-scheduler)
     (define-cell n! (e:factorial 5))
     (run)
     (content n!)
