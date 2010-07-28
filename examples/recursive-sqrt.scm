@@ -21,14 +21,14 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-compound-propagator (heron-step x g h)
+(define-recursive-propagator (heron-step x g h)
   (let-cells (x/g g+x/g two)
     (p:/ x g x/g)
     (p:+ g x/g g+x/g)
     ((constant 2) two)
     (p:/ g+x/g two h)))
 
-(define-compound-propagator (sqrt-iter x g answer)
+(define-recursive-propagator (sqrt-iter x g answer)
   (let-cells (done x-if-done x-if-not-done g-if-done g-if-not-done
 		   new-g recursive-answer)
     (good-enuf? x g done)
@@ -38,12 +38,12 @@
     (sqrt-iter x-if-not-done new-g recursive-answer)
     (conditional done g-if-done recursive-answer answer)))
 
-(define-compound-propagator (sqrt-network x answer)
+(define-recursive-propagator (sqrt-network x answer)
   (let-cell one
     ((constant 1.0) one)
     (sqrt-iter x one answer)))
 
-(define-compound-propagator (good-enuf? x g done)
+(define-recursive-propagator (good-enuf? x g done)
   (let-cells (g^2 eps x-g^2 ax-g^2)
     ((constant .00000001) eps)
     (p:* g g g^2)

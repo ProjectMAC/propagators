@@ -200,24 +200,23 @@
 	   (name-locally! arg-form 'arg-form) ...
 	   body-form ...)))))))
 
-;;; This version is just like define-macro-propagator, but
-;;; additionally allows the body to be recursive by delaying its
-;;; expansion until there is some information in at least one of the
-;;; neighbor cells.
-(define-syntax define-compound-propagator
+;;; This version is just like define-propagator-syntax, but allows the
+;;; body to be recursive by delaying its expansion until there is some
+;;; information in at least one of the neighbor cells.  This has the
+;;; effect of requiring the neighbors to indeed be cells.
+(define-syntax define-recursive-propagator
   (syntax-rules ()
-    ((define-compound-propagator (name arg-form ...) body-form ...)
+    ((define-recursive-propagator (name arg-form ...) body-form ...)
      (define name
-       (named-compound-propagator (name arg-form ...)
+       (named-recursive-propagator (name arg-form ...)
 	 body-form ...)))))
 
-;;; This is the "lambda" to define-compound-propagator's "define".
-(define-syntax named-compound-propagator
+;;; This is the "lambda" to define-recursive-propagator's "define".
+(define-syntax named-recursive-propagator
   (syntax-rules ()
-    ((named-compound-propagator stuff ...)
-     (delayed-propagator-constructor
-      (named-propagator-syntax stuff ...)))))
-
+    ((named-recursive-propagator stuff ...)
+     (delayed-propagator-constructor (named-propagator-syntax stuff ...)))))
+
 ;;;     TODO Is it now time to refactor the above propagator macro
 ;;; nonsense into a propagator-lambda macro that emits closures, per
 ;;; physical-closures.scm?

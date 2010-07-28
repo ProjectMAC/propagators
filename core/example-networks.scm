@@ -85,7 +85,7 @@
 
 ;;; Factorial
 
-(define-compound-propagator (p:factorial n n!)
+(define-recursive-propagator (p:factorial n n!)
   (let-cells* ((done? (e:= 0 n))
 	       (n-again (e:switch (e:not done?) n))
 	       (n!-again (e:* n-again (e:factorial (e:- n-again 1)))))
