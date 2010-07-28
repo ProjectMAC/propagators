@@ -141,9 +141,15 @@
  (define answer (show-time find-albatross-solution))
  (map v&s-value (map tms-query answer))
  (produces
-  '(#(deck poop windlass galliard-lute rum)
-    #(deck quarter bosun tamarind-jewels biscuits)
-    #(deck main draconio calypso-figure firearms)
-    #(deck gun scurvy casket-of-magenta ropes)
-    #(deck lower kraken goldenhall-talisman spare-sails)))
+  '(#(deck poop     windlass  galliard-lute        rum)
+    #(deck quarter  bosun     tamarind-jewels      biscuits)
+    #(deck main     draconio  calypso-figure       firearms)
+    #(deck gun      scurvy    casket-of-magenta    ropes)
+    #(deck lower    kraken    goldenhall-talisman  spare-sails)))
+;; or
+  '(#(deck poop     windlass  galliard-lute        rum)
+    #(deck quarter  scurvy    tamarind-jewels      biscuits)
+    #(deck main     bosun     calypso-figure       firearms)
+    #(deck gun      draconio  casket-of-magenta    ropes)
+    #(deck lower    kraken    goldenhall-talisman  spare-sails))
 |#
