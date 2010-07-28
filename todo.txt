@@ -16,6 +16,9 @@ For the revised report:
 - ensure-cell had a strange, unexpected effect on the pictures
   (namely the identification of expression-orinented code, and
   the consequent boxing and naming thereof).  Redo?
+- Adjust functionalize to turn closures into e:closures?
+  (instead of directly propagator constructors as it currently
+  does).  That was functionalized closures will be more mergeable...
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice

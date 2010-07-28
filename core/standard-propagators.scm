@@ -100,7 +100,7 @@
 (define-simple-closure (conditional-writer control input if-true if-false)
   (switch control input if-true)
   (switch (e:not control) input if-false))
-
+
 (define-simple-closure (conditional-wire control end1 end2)
   (switch control end1 end2)
   (switch control end2 end1))
@@ -119,7 +119,7 @@
 
 (define-simple-closure (c:id c1 c2)
   (pass-through c1 c2) (pass-through c2 c1))
-
+
 (define ce:+ (functionalize c:+))
 (define ce:* (functionalize c:*))
 (define ce:square (functionalize c:square))
