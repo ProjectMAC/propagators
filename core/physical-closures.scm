@@ -197,22 +197,33 @@
 		(propagator-style-apply closure pass? arg-cells)
 		(expression-style-apply closure pass? arg-cells))
 	    unspecific))))
-    (let ((the-propagator
-	   (lambda ()
-	     ((unary-mapping
-	       (lambda (closure)
-		 (if (done? closure)
-		     unspecific
-		     (attach closure))))
-	      (content closure-cell)))))
-      (eq-label! the-propagator
-       'name 'application 'inputs (list closure-cell) 'outputs arg-cells)
-      (propagator closure-cell the-propagator))))
+    (define (slow-path)
+      (let ((the-propagator
+	     (lambda ()
+	       ((unary-mapping
+		 (lambda (closure)
+		   (if (done? closure)
+		       unspecific
+		       (attach closure))))
+		(content closure-cell)))))
+	(eq-label! the-propagator
+	 'name 'application 'inputs (list closure-cell) 'outputs arg-cells)
+	(propagator closure-cell the-propagator)))
+
+    (define (fast-path closure)
+      (if (propagator-style? closure)
+	  (do-apply-closure closure arg-cells)
+	  (c:== (car (last-pair arg-cells))
+		(do-apply-closure closure (except-last-pair arg-cells)))))
+    (if (or (propagator-constructor? (content closure-cell))
+	    (closure? (content closure-cell)))
+	(fast-path (content closure-cell))
+	(slow-path))))
 
 (define e:application (functionalize application))
 (define p:apply application)
 (define e:apply e:application)
-
+
 (define (closure-body thing)
   (cond ((closure? thing)
 	 (closure-code thing))
