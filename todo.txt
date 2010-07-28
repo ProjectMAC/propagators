@@ -13,6 +13,9 @@ For the revised report:
 - What is the right analogue of named let?
 - Rename the current p:cons & co to p:copy-cons
 - Name and document p:cons to be p:carry-cons (& co).
+- ensure-cell had a strange, unexpected effect on the pictures
+  (namely the identification of expression-orinented code, and
+  the consequent boxing and naming thereof).  Redo?
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice
