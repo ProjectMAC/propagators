@@ -200,21 +200,6 @@
 	   (name-locally! arg-form 'arg-form) ...
 	   body-form ...)))))))
 
-;;; This version is just like define-propagator-syntax, but expects
-;;; all its arguments to actually be cells, and enforces that
-;;; expectation with ENSURE-CELL.
-(define-syntax define-macro-propagator
-  (syntax-rules ()
-    ((define-macro-propagator (name arg-form ...) body-form ...)
-     (define name
-       (named-macro-propagator (name arg-form ...) body-form ...)))))
-
-;;; This is the "lambda" to define-macro-propagator's "define".
-(define-syntax named-macro-propagator
-  (syntax-rules ()
-    ((named-macro-propagator stuff ...)
-     (propagator-constructor!
-      (coercing ensure-cell (named-propagator-syntax stuff ...))))))
 ;;; This version is just like define-macro-propagator, but
 ;;; additionally allows the body to be recursive by delaying its
 ;;; expansion until there is some information in at least one of the
@@ -231,7 +216,7 @@
   (syntax-rules ()
     ((named-compound-propagator stuff ...)
      (delayed-propagator-constructor
-      (named-macro-propagator stuff ...)))))
+      (named-propagator-syntax stuff ...)))))
 
 ;;;     TODO Is it now time to refactor the above propagator macro
 ;;; nonsense into a propagator-lambda macro that emits closures, per
