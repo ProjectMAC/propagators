@@ -121,7 +121,6 @@
 (define (reset-network-groups!)
   (clear-network-group *current-network-group*)
   (set! *current-network-group* (network-group-named 'top-group)))
-(reset-network-groups!)
 
 (define initialize-scheduler
   (let ((initialize-scheduler initialize-scheduler))
