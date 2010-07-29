@@ -53,7 +53,7 @@
 
     (define-cell x 2)
     (define-cell output)
-    (application double x output)
+    (double x output)
     (run)
     (content output)
     (produces 4)
@@ -149,7 +149,7 @@
 
     (define-cell n1 (make-interval 3 5))
     (define-cell n2 (make-interval 4 7))
-    (define-cell add5 (application addn n1))
+    (define-cell add5 (addn n1))
     (p:application addn n2 add5)
     
     (define-cell output (e:application add5 3))

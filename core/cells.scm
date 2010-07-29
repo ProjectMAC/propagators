@@ -73,7 +73,7 @@
 
 ;;;; Propagator cells
 
-(define (make-cell)			; message-accepter style
+(define (%make-cell)			; message-accepter style
   (let ((neighbors '()) (content nothing))
     (define (add-content increment)
       (let ((info+effects (->effectful (merge content increment))))
@@ -99,17 +99,26 @@
             ((eq? message 'neighbors) neighbors)
             ((eq? message 'new-neighbor!) new-neighbor!)
             (else (error "Unknown message" message))))
-    (eq-put! me 'cell #t)
-    (network-register me)
     me))
+
+(define (make-cell)
+  (define me
+    (make-entity
+     (lambda (self . args)
+       (apply application self args))
+     (%make-cell)))
+  (eq-put! me 'cell #t)
+  (network-register me)
+  me)
+
 (define (content cell)
-  (cell 'content))
+  ((entity-extra cell) 'content))
 (define (add-content cell increment)
-  ((cell 'add-content) increment))
+  (((entity-extra cell) 'add-content) increment))
 (define (neighbors cell)
-  (cell 'neighbors))
+  ((entity-extra cell) 'neighbors))
 (define (new-neighbor! cell neighbor)
-  ((cell 'new-neighbor!) neighbor))
+  (((entity-extra cell) 'new-neighbor!) neighbor))
 (define (cell? thing)
   (eq-get thing 'cell))
 
