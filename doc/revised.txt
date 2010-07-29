@@ -339,7 +339,7 @@ and get a multidirectional constraint::
   (content y) ==> 2
 
 
-Attaching Propagator Constraints: c:foo and ce:foo
+Propagator Constraints: c:foo and ce:foo
 ----------------------------------------------------------------------
 
 Speaking of constraints, they are so useful that many are predefined,
@@ -529,9 +529,10 @@ cells, and it makes an actual propagator for addition whose inputs and
 outputs are those cells.  How do you make compound propagator
 constructors?
 
-::
+The main way to abstract propagator construction is with the
+``define-propagator`` and ``define-e:propagator`` Scheme macros::
 
-  (define-propagator (my-sum-constraint x y z)
+  (define-propagator (p:my-sum-constraint x y z)
     (p:+ x y z)
     (p:- z y x)
     (p:- z x y))
@@ -539,16 +540,20 @@ constructors?
   (define-e:propagator (e:double x)
     (e:+ x x))
 
+``define-propagator`` makes propagator constructors that expect to see
+all their arguments, in the ``p:`` style, and ``define-e:propagator``
+makes propagators that behave in the ``e:``.
+
 With these definitions we can use those pieces to build more complex
 structures::
 
-  (my-sum-constraint x (e:double x) z)
+  (p:my-sum-constraint x (e:double x) z)
 
 which can themselves be abstracted so that they can be used
 as if they were primitive::
 
   (define-propagator (foo x z)
-    (my-sum-constraint x (e:double x) z))
+    (p:my-sum-constraint x (e:double x) z))
 
 Just like in Scheme, the definition syntaxes have a corresponding
 syntax for anonymous compound propagators, ``lambda-propagator`` and
@@ -556,7 +561,7 @@ syntax for anonymous compound propagators, ``lambda-propagator`` and
 
 Compound propagator constructors perform constant conversion::
 
-  (my-sum-constraint x 3 z)  ==>  (my-sum-constraint x (e:constant 3) z)
+  (p:my-sum-constraint x 3 z)  ==>  (p:my-sum-constraint x (e:constant 3) z)
 
 Lexical Scope
 ----------------------------------------------------------------------
