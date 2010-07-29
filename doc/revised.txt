@@ -216,14 +216,14 @@ make cells in the form of ``define-cell``; we will talk about more
 later, but let's talk about propagators first.
 
 
-Attaching Basic Propagators: p:foo
+Attaching Basic Propagators: d@ and p:foo
 ----------------------------------------------------------------------
 
-To attach propagators to cells call an appropriate Scheme procedure
-that does that.  For example, the procedure ``p:+`` attaches an adding
-propagator::
+The Scheme procedure ``d@`` attaches propagators to cells.  The
+name ``d@`` is mnemonic for "diagram apply".  For
+example, ``p:+`` makes adder propagators::
 
-  (p:+ foo bar baz)
+  (d@ p:+ foo bar baz)
 
 means attach a propagator that will add the contents of the cells
 named ``foo`` and ``bar`` and write them into the cell named ``baz``.
@@ -266,60 +266,57 @@ p:cons
 p:pair?
 p:car
 p:cdr
-p:apply
 
-The common theme is that all these propagator constructors take the
-full set of cells that the corresponding propagators will operate on
-as arguments.  By convention, cells used as outputs go last.
+By convention, cells used as outputs go last.
 
-Propagator Expressions: e:foo
+Propagator Expressions: e@
 ----------------------------------------------------------------------
 
-The ``p:foo`` style is the right underlying way
-think about the construction of propagator networks.  However, it has
-the unfortunate feature that it requires the naming of cells for
-holding all intermediate values in a computation, and in that sense
-programming with those propagator constructors feels a lot like
-writing assembly language.
+The ``d@`` style is the right underlying way to think about the
+construction of propagator networks.  However, it has the unfortunate
+feature that it requires the naming of cells for holding all
+intermediate values in a computation, and in that sense programming
+with ``d@`` feels a lot like writing assembly language.
 
 It is pretty common to have expressions: one's propagator networks
 will have some intermediate values that are produced by only one
-propagator.  In this case it is a drag to have to define and name a
-cell for that value, if one would just name it "the output of foo".
-Scheme-Propagators provides a syntactic sugar for writing cases like
-in an expression style, like a traditional programming language.
+propagator, and consumed by only one propagator.  In this case it is a
+drag to have to define and name a cell for that value, if one would
+just name it "the output of foo".  Scheme-Propagators provides a
+syntactic sugar for writing cases like in an expression style, like a
+traditional programming language.
 
-Every ``p:foo`` propagator constructor (except p:conditional-router,
-which has two "outputs") has a variant named ``e:foo``.  ``e:`` stands
-for "expression".  A thing named ``e:foo`` is a Scheme procedure (so
-Scheme-Propagators syntax) just like ``p:foo``, except that it takes
-one argument fewer than ``p:foo``, and synthesizes and then returns a
-fresh cell in the place of the last argument of ``p:foo``.  Here are
-two different ways to write the same thing::
+The Scheme procedure ``e@`` attaches propagators in expression style.
+The name ``e@`` is mnemonic for "expression apply".  The ``e@``
+procedure is just like ``d@``, except it synthesizes an extra cell to
+serve as the last argument to ``d@``, and returns it as the Scheme
+return from the ``e@`` expression (whereas the return value of ``d@``
+is unspecified).  For example, here are two ways to do the same
+thing::
 
   (define-cell x)
   (define-cell y)
   (define-cell z)
-  (p:* x y z)
+  (d@ p:* x y z)
 
 and::
 
   (define-cell x)
   (define-cell y)
-  (define-cell z (e:* x y))
+  (define-cell z (e@ p:* x y))
 
-Generally the ``e:`` procedures are convenient because they chain in
+Generally the ``e@`` style is convenient because it chains in
 the familiar way
 
 ::
 
-  (e:- w (e:* (e:+ x y) z))
+  (e@ p:- w (e@ p:* (e@ p:+ x y) z))
 
 Because of the convention that output cells are listed last,
-expressions of ``e:`` procedures build propagator networks that
+expressions in ``e@`` style build propagator networks that
 compute corresponding Lisp expressions.
 
-On the other hand, the ``p:`` version is necessary when a propagator
+On the other hand, the ``d@`` style is necessary when a propagator
 needs to be attached to a full set of cells that are already there.
 For example, if one wanted to be able to go back from ``z`` and one of
 ``x`` or ``y`` to the other, rather than just from ``x`` and ``y`` to
@@ -327,9 +324,9 @@ For example, if one wanted to be able to go back from ``z`` and one of
 
   (define-cell x)
   (define-cell y)
-  (define-cell z (e:* x y))
-  (p:/ z x y)
-  (p:/ z y x)
+  (define-cell z (e@ p:* x y))
+  (d@ p:/ z x y)
+  (d@ p:/ z y x)
 
 and get a multidirectional constraint::
 
@@ -337,6 +334,25 @@ and get a multidirectional constraint::
   (add-content x 3)
   (run)
   (content y) ==> 2
+
+To save typing when the propagator being attached is known at network
+construction time, the ``p:foo`` objects are also themselves
+applicable in Scheme, defaulting to applying themselves in the ``d@``
+style.  Each (except p:conditional-router, which has two "outputs")
+also has an ``e:foo`` variant that defaults to the ``e@`` style.  So
+the following also works::
+
+  (define-cell x)
+  (define-cell y)
+  (define-cell z (e:* x y))
+  (p:/ z x y)
+  (p:/ z y x)
+
+TODO Discuss explicitly applying cells whose content propagator
+constructors are not yet known.
+
+TODO Discuss the default behavior of applying cells that do not know
+what propagator constructors they are goind to carry?
 
 
 Propagator Constraints: c:foo and ce:foo
