@@ -11,12 +11,19 @@ For the revised report:
     ...)
   is a perfectly sensible propagator program.
 - What is the right analogue of named let?
+- (define-cell z (e:+ x y))
+  (define-cell x (e:- z y))
+  (define-cell y (e:- z x))
+- (define-e:propagator ((addn n) x) ...)
+- functionalize on a cell that contains something interesting
+  should produce a cell that contains something interesting
+  - should there be a functionalize propagator?
+- Adjust functionalize to turn closures into e:closures?
+  (instead of directly propagator constructors as it currently
+  does).  That way functionalized closures will be more mergeable...
 - ensure-cell had a strange, unexpected effect on the pictures
   (namely the identification of expression-orinented code, and
   the consequent boxing and naming thereof).  Redo?
-- Adjust functionalize to turn closures into e:closures?
-  (instead of directly propagator constructors as it currently
-  does).  That was functionalized closures will be more mergeable...
 - initialize-scheduler really should properly clean up the neighbor
   lists of toplevel cells defined by e.g. define-propagator during
   system loading.  At the moment this is a non-problem, because

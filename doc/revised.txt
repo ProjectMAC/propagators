@@ -522,51 +522,60 @@ Making New Compound Propagators
 
 So, you know the primitives (the supplied propagators) and the means
 of combination (how to make cells and wire bunches of propagators up
-into networks).  Now for the means of abstraction.  A procedure like
-``p:+`` is like a wiring diagram with a few holes where it can be
-attached to other structures.  Supply that procedure with cells,
-and it makes an actual propagator for addition whose inputs and outputs
-are those cells.  How do you make compound such procedures?
-
-Well, you can always just use the underlying Scheme::
-
-  (define (my-diagram x y z)
-    (p:+ x y z)
-    (p:- z y x)
-    (p:- z x y))
-
-Then ``my-diagram`` would be almost like ``p:+``, in that it would
-also be a Scheme variable bound to a Scheme procedure that, if given
-three cells, would construct some propagators attached to those cells.
-``p:+`` does a little more than that basic job, however, so you should
-use ``define-macro-propagator`` instead of ``define``::
-
-  (define-macro-propagator (my-diagram x y z)
-    (p:+ x y z)
-    (p:- z y x)
-    (p:- z x y))
-
-makes a much nicer ``my-diagram`` that, in addition to doing the basic
-job you would expect, also keeps track of metadata that is very helpful
-for debugging (namely that the adder and two subtractors inside were
-created by a ``my-diagram`` rather than just hanging out), and performs
-constant conversion on its inputs, so you can write::
-
-  (my-diagram x 3 z)  
-
-and get
+into networks).  Now for the means of abstraction.  A propagator
+constructor such as ``p:+`` is like a wiring diagram with a few holes
+where it can be attached to other structures.  Supply ``p:+`` with
+cells, and it makes an actual propagator for addition whose inputs and
+outputs are those cells.  How do you make compound propagator
+constructors?
 
 ::
 
-  (my-diagram x (e:constant 3) z)
+  (define-propagator (my-sum-constraint x y z)
+    (p:+ x y z)
+    (p:- z y x)
+    (p:- z x y))
 
-The Scheme macro ``define-macro-propagator`` is called that because
-the object it creates is not first-class in Scheme-Propagators.  At
-the moment, Scheme-Propagators has no (stable) first-class
-representation of wiring diagrams; so all abstraction is effectively
-at the level of "macros", and ``define-macro-propagator`` is part of
-that system.  But the only "macroness" about it, really, is that the
-resulting ``my-diagram`` does not and cannot live in a cell.
+  (define-e:propagator (e:double x)
+    (e:+ x x))
+
+With these definitions we can use those pieces to build more complex
+structures::
+
+  (my-sum-constraint x (e:double x) z)
+
+which can themselves be abstracted so that they can be used
+as if they were primitive::
+
+  (define-propagator (foo x z)
+    (my-sum-constraint x (e:double x) z))
+
+Just like in Scheme, the definition syntaxes have a corresponding
+syntax for anonymous compound propagators, ``lambda-propagator`` and
+``lambda-e:propagator``.
+
+Compound propagator constructors perform constant conversion::
+
+  (my-sum-constraint x 3 z)  ==>  (my-sum-constraint x (e:constant 3) z)
+
+Lexical Scope
+----------------------------------------------------------------------
+
+Compound propagator definitions can be closed over cells available in
+their lexical environment::
+
+  (define-e:propagator (addn n)
+    (define-e:propagator (the-adder x)
+      (import n)
+      (e:+ n x))
+    the-adder)
+
+``import`` is a kludge, which is a consequence of the embedding of
+Scheme-Propagators into Scheme.  Without enough access to the Scheme
+interpreter, we cannot detect the free variables in an expression, so
+they must be listed explicitly by the user.  Globally bound objects
+like ``e:+`` (and ``addn`` if the above were evaluated at the top
+level) need not be mentioned.
 
 Recursion
 ----------------------------------------------------------------------
@@ -649,6 +658,14 @@ provides and ``define`` does not.  This is what
        (=? c1 c2 p)
        (forbid p))
      cells))
+
+
+
+  (define (my-diagram x y z)
+    (p:+ x y z)
+    (p:- z y x)
+    (p:- z x y))
+
 
 
 Using Partial Information
