@@ -266,6 +266,10 @@
 (define e:application (functionalize p:application))
 (define p:apply p:application)
 (define e:apply e:application)
+(define @e e:apply)
+(define e@ e:apply)
+(define @d d:apply)
+(define d@ d:apply)
 
 (define (closure-body thing)
   (cond ((closure? thing)
