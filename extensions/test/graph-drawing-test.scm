@@ -161,7 +161,7 @@
 
  (define-test (more-macrology-smoke-2)
    (initialize-scheduler)
-   (define-simple-closure (frobnicate frob)
+   (define-propagator (frobnicate frob)
      (check (not (network-group-contains? *current-network-group* frob)))
      (check (eq? 'frob (local-name frob)))
      (check (eq? 'foo (name frob))))
@@ -173,7 +173,7 @@
 
  (define-test (expression-substructure-test)
    (initialize-scheduler)
-   (define-simple-closure (frobnicate frob)
+   (define-propagator (frobnicate frob)
      (let* ((first-internal (e:+ frob frob))
 	    (second-internal (e:+ frob first-internal)))
        (let-cells ((sum (e:+ frob second-internal)))
