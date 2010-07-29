@@ -142,10 +142,9 @@
     (initialize-scheduler)
     
     (define-e:propagator (addn n)
-      (e:constant
-       (lambda-e:propagator (x)
-	 (import n)
-	 (e:+ n x))))
+      (lambda-e:propagator (x)
+	(import n)
+	(e:+ n x)))
 
     (define-cell n1 (make-interval 3 5))
     (define-cell n2 (make-interval 4 7))
@@ -214,10 +213,9 @@
     (define-e:propagator (double x)
       (e:+ x x))
     (define-e:propagator (compose f g)
-      (e:constant
-       (lambda-e:propagator (x)
-	 (import f g)
-	 (e:application f (e:application g x)))))
+      (lambda-e:propagator (x)
+	(import f g)
+	(e:application f (e:application g x))))
     (define-cell repeat
       (let-cell (repeat)
 	((constant

@@ -206,8 +206,9 @@
     (let ((input-cells (except-last-pair arg-cells))
 	  (output-cell (car (last-pair arg-cells))))
       (conditional-wire pass? output-cell
-	(do-apply-closure
-	 closure (map (arg-copier pass?) input-cells)))))
+	(ensure-cell
+	 (do-apply-closure
+	  closure (map (arg-copier pass?) input-cells))))))
   (define (attach closure)
     (set! done-closures (cons closure done-closures))
     (with-network-group
