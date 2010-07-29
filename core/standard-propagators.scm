@@ -137,15 +137,17 @@
 	  body ...)
 	'name)))))
 
-(define-simple-closure (conditional control if-true if-false output)
+(initialize-scheduler)			; define-propagator makes cells!
+
+(define-propagator (conditional control if-true if-false output)
   (switch control if-true output)
   (switch (e:not control) if-false output))
 
-(define-simple-closure (conditional-router control input if-true if-false)
+(define-propagator (conditional-router control input if-true if-false)
   (switch control input if-true)
   (switch (e:not control) input if-false))
 
-(define-simple-closure (conditional-wire control end1 end2)
+(define-propagator (conditional-wire control end1 end2)
   (switch control end1 end2)
   (switch control end2 end1))
 
@@ -156,19 +158,19 @@
 
 ;;; Constraining propagators
 
-(define-simple-closure (c:+ a1 a2 sum)
+(define-propagator (c:+ a1 a2 sum)
   (p:+ a1 a2 sum)      (p:- sum a1 a2)      (p:- sum a2 a1))
 
-(define-simple-closure (c:* m1 m2 product)
+(define-propagator (c:* m1 m2 product)
   (p:* m1 m2 product)  (p:/ product m1 m2)  (p:/ product m2 m1))
 
-(define-simple-closure (c:square x x^2)
+(define-propagator (c:square x x^2)
   (p:square x x^2)     (p:sqrt x^2 x))
 
-(define-simple-closure (c:not p1 p2)
+(define-propagator (c:not p1 p2)
   (p:not p1 p2)        (p:not p2 p1))
 
-(define-simple-closure (c:id c1 c2)
+(define-propagator (c:id c1 c2)
   (pass-through c1 c2) (pass-through c2 c1))
 
 (define ce:+ (functionalize c:+))

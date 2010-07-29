@@ -21,10 +21,10 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-simple-closure (require cell)
+(define-propagator (require cell)
   ((constant #t) cell))
 
-(define-simple-closure (forbid cell)
+(define-propagator (forbid cell)
   ((constant #f) cell))
 
 (define-propagator-syntax (require-distinct cells)
