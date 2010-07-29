@@ -379,12 +379,12 @@ The ``c:foo`` objects, like the ``p:foo`` objects, are also
 self-applicable, and also default to applying themselves
 in diagram style::
 
-  (c:* x y z)  ==>  (d@ c:* x y z)
+  (c:* x y z)  ==  (d@ c:* x y z)
 
 The ``c:foo`` objects also have ``ce:foo`` analogues, that
 apply themselves in expression style::
 
-  (ce:* x y)  ==>  (e@ c:* x y)
+  (ce:* x y)  ==  (e@ c:* x y)
 
 Of course, not every operation has a useful inverse, so there are
 fewer ``c:`` procedures defined than ``p:``:
@@ -432,15 +432,14 @@ constant (i.e. a non-cell Scheme object) into a cell, using
 
 Some examples::
 
-  (e:+ x 2)          ==>   (e:+ x (e:constant 2))
-  (define-cell x 4)  ==>   (define-cell x (e:constant 4))
-  (c:+ x y 0)        ==>   (c:+ x y (e:constant 0))
+  (e:+ x 2)          ==   (e:+ x (e:constant 2))
+  (define-cell x 4)  ==   (define-cell x (e:constant 4))
+  (c:+ x y 0)        ==   (c:+ x y (e:constant 0))
 
 Making Cells
 ----------------------------------------------------------------------
 
-In order to have something to attach propagators to, you need to have
-cells.  Cells are the memory locations of the Scheme-Propagators
+Cells are the memory locations of the Scheme-Propagators
 language; Scheme variables whose bindings are cells correspond to
 Scheme-Propagators variables (Scheme variables whose bindings are
 other things look like syntax to Scheme-Propagators).  We've
@@ -527,9 +526,9 @@ Scheme-Propagators currently has no analogues of Scheme's ``letrec``
 or named ``let`` syntax.
 
 Finally, there is one more, somewhat sneaky way to make cells.
-All the ``e:`` and ``ce:``
-procedures make and return cells to hold the "outputs" of their
-underlying ``p:`` and ``c:`` variants.  These implicit cells are just
+The ``e@`` 
+procedure makes and returns a cell to hold the "output" of the
+propagator being applied.  These implicit cells are just
 like the implicit memory locations that Scheme creates under the hood
 for holding the return values of expressions before they get used by
 the next expression or assigned to variables.
@@ -547,14 +546,14 @@ outputs are those cells.  How do you make compound propagator
 constructors?
 
 The main way to abstract propagator construction is with the
-``define-propagator`` and ``define-e:propagator`` Scheme macros::
+``define-d:propagator`` and ``define-e:propagator`` Scheme macros::
 
-  (define-propagator (p:my-sum-constraint x y z)
+  (define-d:propagator (my-sum-constraint x y z)
     (p:+ x y z)
     (p:- z y x)
     (p:- z x y))
 
-  (define-e:propagator (e:double x)
+  (define-e:propagator (double x)
     (e:+ x x))
 
 ``define-propagator`` makes propagator constructors that expect to see
