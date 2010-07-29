@@ -226,7 +226,7 @@ example, ``p:+`` makes adder propagators::
   (d@ p:+ foo bar baz)
 
 means attach a propagator that will add the contents of the cells
-named ``foo`` and ``bar`` and write them into the cell named ``baz``.
+named ``foo`` and ``bar`` and write the sum into the cell named ``baz``.
 Once attached, whenever either the ``foo`` cell or the ``bar`` cell
 gets any new interesting information, the adding propagator will
 eventually compute the appropriate sum and give it to ``baz`` as an
@@ -289,10 +289,9 @@ traditional programming language.
 The Scheme procedure ``e@`` attaches propagators in expression style.
 The name ``e@`` is mnemonic for "expression apply".  The ``e@``
 procedure is just like ``d@``, except it synthesizes an extra cell to
-serve as the last argument to ``d@``, and returns it as the Scheme
-return from the ``e@`` expression (whereas the return value of ``d@``
-is unspecified).  For example, here are two ways to do the same
-thing::
+serve as the last argument to ``d@``, and returns it from the ``e@``
+expression (whereas the return value of ``d@`` is unspecified).  For
+example, here are two ways to do the same thing::
 
   (define-cell x)
   (define-cell y)
@@ -352,38 +351,40 @@ TODO Discuss explicitly applying cells whose content propagator
 constructors are not yet known.
 
 TODO Discuss the default behavior of applying cells that do not know
-what propagator constructors they are goind to carry?
+what propagator constructors they are going to carry?
 
 
 Propagator Constraints: c:foo and ce:foo
 ----------------------------------------------------------------------
 
-Speaking of constraints, they are so useful that many are predefined,
-and they have their own naming convention.  ``c:`` stands for
-"constraining".  A thing named ``c:foo`` is the constraining analogue
-of ``p:foo``, in that in addition to attaching a propagator that does
-``foo`` to its cells, it also attaches ``foo-inverse`` propagators
-that deduce "inputs" from "outputs".  For example, the product
-constraint that we built in the previous section is available as
-``c:*``::
+Constraints are so useful that many are predefined, and they have
+their own naming convention.  ``c:`` stands for "constraining".  A
+thing named ``c:foo`` is the constraining analogue of ``p:foo``, in
+that in addition to attaching a propagator that does ``foo`` to its
+cells, it also attaches ``foo-inverse`` propagators that deduce
+"inputs" from "outputs".  For example, the product constraint that we
+built in the previous section is available as ``c:*``::
 
   (define-cell x)
   (define-cell y)
   (define-cell z)
-  (c:* x y z)
+  (d@ c:* x y z)
 
   (add-content z 12)
   (add-content y 4)
   (run)
   (content x) ==> 3
   
-The ``c:`` procedures also have expression versions:::
+The ``c:foo`` objects, like the ``p:foo`` objects, are also
+self-applicable, and also default to applying themselves
+in diagram style::
 
-  (define-cell x)
-  (define-cell y)
-  (define-cell z (ce:* x y))
+  (c:* x y z)  ==>  (d@ c:* x y z)
 
-``ce:foo`` is to ``c:foo`` as ``e:foo`` is to ``p:foo``.
+The ``c:foo`` objects also have ``ce:foo`` analogues, that
+apply themselves in expression style::
+
+  (ce:* x y)  ==>  (e@ c:* x y)
 
 Of course, not every operation has a useful inverse, so there are
 fewer ``c:`` procedures defined than ``p:``:
