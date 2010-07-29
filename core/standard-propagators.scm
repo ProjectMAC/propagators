@@ -76,17 +76,6 @@
 
 ;;;; Standard "propagator macros"
 
-(define-syntax define-simple-closure
-  (syntax-rules ()
-    ((define-simple-closure (name arg-form ...) body-form ...)
-     (define name
-       (name!
-	(make-closure
-	 (naming-lambda (arg-form ...)
-	   body-form ...)
-	 '())
-	'name)))))
-
 (define-syntax lambda-propagator
   (syntax-rules (import)
     ((lambda-propagator (arg ...)
