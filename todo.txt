@@ -17,6 +17,14 @@ For the revised report:
 - Adjust functionalize to turn closures into e:closures?
   (instead of directly propagator constructors as it currently
   does).  That was functionalized closures will be more mergeable...
+- initialize-scheduler really should properly clean up the neighbor
+  lists of toplevel cells defined by e.g. define-propagator during
+  system loading.  At the moment this is a non-problem, because
+  ensure-cell makes the constants that initialize-scheduler blows away
+  irrelevant, and because eager application means that no one
+  (currently) actually attaches any propagators to those toplevel
+  cells.  But if anyone did, those user propagators would need to be
+  brushed off on initialize-scheduler.
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice
