@@ -176,7 +176,7 @@
 	 'inputs (list go? segment)
 	 'outputs (list segment))))))
 
-(define-simple-closure (fast-air-estimate segment)
+(define-propagator (fast-air-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
@@ -184,7 +184,7 @@
     (fast-incity-air-estimate same-city-answer)
     (fast-intercity-air-estimate intercity-answer)))
 
-(define-simple-closure (fast-incity-air-estimate segment)
+(define-propagator (fast-incity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
    segment)
   ;; TODO notate impossibility
@@ -196,7 +196,7 @@
   ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap))))
    segment))
 
-(define-simple-closure (fast-intercity-air-estimate segment)
+(define-propagator (fast-intercity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
    segment)
   ((constant (make-trip-segment-by-time (make-estimate (& 7 hour))))
@@ -220,7 +220,7 @@
 		  last-waypoint))
   (p:make-trip-segment-by-end   (e:trip-segment-end   segment) end))
 
-(define-simple-closure (between-airports go? segment)
+(define-propagator (between-airports go? segment)
   (one-shot-propagator (list go?)
     (eq-label!
      (lambda ()
@@ -234,7 +234,7 @@
   (delay (split-node 'plan-air fast-air-estimate (splitter e:pick-airport)
 		     (force plan-trip) between-airports (force plan-trip))))
 
-(define-simple-closure (fast-train-estimate segment)
+(define-propagator (fast-train-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
@@ -242,7 +242,7 @@
     (fast-incity-train-estimate same-city-answer)
     (fast-intercity-train-estimate intercity-answer)))
 
-(define-simple-closure (fast-incity-train-estimate segment)
+(define-propagator (fast-incity-train-estimate segment)
   ((constant (make-trip-segment-by-method 'take-the-train))
    segment)
   ;; TODO notate impossibility
@@ -254,7 +254,7 @@
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
 
-(define-simple-closure (fast-intercity-train-estimate segment)
+(define-propagator (fast-intercity-train-estimate segment)
   ((constant (make-trip-segment-by-method 'take-the-train)) segment)
   ;; Plus two hours for to-from the station?
   ;; TODO Clean up which uses of time-est are actually estimates
@@ -267,7 +267,7 @@
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
 
-(define-simple-closure (between-stations go? segment)
+(define-propagator (between-stations go? segment)
   (one-shot-propagator (list go?)
     (eq-label!
      (lambda ()
@@ -281,7 +281,7 @@
   (delay (split-node 'plan-train fast-train-estimate (splitter e:pick-station)
 		     (force plan-trip) between-stations (force plan-trip))))
 
-(define-simple-closure (fast-subway-estimate segment)
+(define-propagator (fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
@@ -289,7 +289,7 @@
     (fast-incity-subway-estimate same-city-answer)
     (fast-intercity-subway-estimate intercity-answer)))
 
-(define-simple-closure (fast-incity-subway-estimate segment)
+(define-propagator (fast-incity-subway-estimate segment)
   ((constant (make-trip-segment-by-method 'subway))
    segment)
   ((constant (make-trip-segment-by-time (make-estimate (& 1 hour))))
@@ -299,7 +299,7 @@
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
 
-(define-simple-closure (fast-intercity-subway-estimate segment)
+(define-propagator (fast-intercity-subway-estimate segment)
   ((constant (make-trip-segment-by-method 'subway))
    segment)
   ;; TODO notate impossibility
@@ -311,7 +311,7 @@
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
 
-(define-simple-closure (between-stops go? segment)
+(define-propagator (between-stops go? segment)
   (one-shot-propagator (list go?)
     (eq-label!
      (lambda ()

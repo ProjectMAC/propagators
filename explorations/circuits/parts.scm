@@ -65,7 +65,7 @@
 	 (vic voltage current)
 	 t1 t2 power voltage current)))))
 
-(define-simple-closure (resistor)
+(define-propagator (resistor)
   (let-cell resistance
     (two-terminal-device
      ;; TODO Properly propagatify this?
@@ -93,10 +93,10 @@
 ;; voltage.  This object is equivalent to a voltage source of
 ;; unconstrained strength, and to a current source of unconstrained
 ;; strength.
-(define-simple-closure (leakage-current)
+(define-propagator (leakage-current)
   (two-terminal-device (lambda (v i) (e:inspectable-object))))
 
-(define-simple-closure (voltage-source)
+(define-propagator (voltage-source)
   (two-terminal-device (voltage-source-vic)))
 
 (define (use-all . functions)
@@ -107,31 +107,31 @@
 		(apply f args))
 	      functions))))
 
-(define-simple-closure (bias-voltage-source)
+(define-propagator (bias-voltage-source)
   (two-terminal-device
     (use-all
      (in-layer 'bias (voltage-source-vic))
      (in-layer 'incremental short-circuit-vic))))
 
-(define-simple-closure (signal-voltage-source)
+(define-propagator (signal-voltage-source)
   (two-terminal-device
     (use-all
      (in-layer 'incremental (voltage-source-vic))
      (in-layer 'bias short-circuit-vic))))
 
-(define-simple-closure (short-circuit)
+(define-propagator (short-circuit)
   (two-terminal-device short-circuit-vic))
 
-(define-simple-closure (open-circuit)
+(define-propagator (open-circuit)
   (two-terminal-device open-circuit-vic))
 
-(define-simple-closure (capacitor)
+(define-propagator (capacitor)
   (two-terminal-device
     (use-all
      (in-layer 'bias open-circuit-vic)
      (in-layer 'incremental short-circuit-vic))))
 
-(define-simple-closure (inductor)
+(define-propagator (inductor)
   (two-terminal-device
     (use-all
      (in-layer 'incremental open-circuit-vic)
@@ -155,7 +155,7 @@
        (vic control-voltage i-control controlled-voltage i-controlled)
        common control controlled power))))
 
-(define-simple-closure (infinite-beta-bjt)
+(define-propagator (infinite-beta-bjt)
   (let-cells (emitter base collector)
    (three-terminal-device emitter base collector
      (lambda (control-voltage control-current

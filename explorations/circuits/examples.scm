@@ -21,7 +21,7 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-simple-closure (resistor-circuit)
+(define-propagator (resistor-circuit)
   (let-cells ((R (resistor))
 	      (V (voltage-source)))
     (let-cells ((n1 (node 'n1 (the t1 V) (the t1 R)))
@@ -57,7 +57,7 @@
  ;Value 24: #(tms (#(supported -2 (#(kcl-premise n2))) #(supported -2 (#(kcl-premise n1)))))
 |#
 
-(define-simple-closure (voltage-divider-circuit)
+(define-propagator (voltage-divider-circuit)
   (let-cells ((R1 (resistor))
 	      (R2 (resistor))
 	      (V (voltage-source)))
@@ -96,7 +96,7 @@
  ;Value 34: #(tms (#(supported 4 (#(hypothetical)))))
 |#
 
-(define-simple-closure (voltage-divider-circuit-2)
+(define-propagator (voltage-divider-circuit-2)
   (let-cells ((R1 (resistor))
 	      (R2 (resistor))
 	      (load (resistor))
@@ -144,7 +144,7 @@
  ;Value 36: #(tms (#(supported 1/250 (#(hypothetical)))))
 |#
 
-(define-simple-closure (resistor-circuit-2)
+(define-propagator (resistor-circuit-2)
   (let-cells ((R (resistor))
 	      (V (bias-voltage-source)))
     (let-cells ((n1 (node 'n1 (the t1 V) (the t1 R)))
@@ -180,7 +180,7 @@
  ;Value 335: #[layered 335 (bias . #(tms (#(supported -2 (#(kcl-premise n2))) #(supported -2 (#(kcl-premise n1)))))) (incremental . #(tms (#(supported 0 (#(kcl-premise n2))) #(supported 0 (#(kcl-premise n1))))))]
 |#
 
-(define-simple-closure (ce-amplifier)
+(define-propagator (ce-amplifier)
   (let-cells ((Rb1 (resistor))
 	      (Rb2 (resistor))
 	      (Rc  (resistor))
@@ -215,7 +215,7 @@
 		   en bn cn +rail-node -rail-node +rail-w -rail-w
 		   )))))
 
-(define-simple-closure (breadboard)
+(define-propagator (breadboard)
   (let-cells ((VCC (bias-voltage-source))
 	      (vin (signal-voltage-source))
 	      (vout (open-circuit))
@@ -228,7 +228,7 @@
       ((constant 0) (the potential gnd))
       (e:inspectable-object VCC vin vout amp gnd +V in out))))
 
-(define-simple-closure (ce:parallel resistance1 resistance2)
+(define-propagator (ce:parallel resistance1 resistance2)
   (ce:* (ce:+ resistance1 resistance2) %% (ce:* resistance1 resistance2)))
 
 #|
@@ -276,7 +276,7 @@
  (content Q-power)
 |#
 
-(define-simple-closure (bias-voltage-divider-slice R1 node R2)
+(define-propagator (bias-voltage-divider-slice R1 node R2)
   ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
   ;; in common.
   (define (allow-discrepancy capped-cell done-cell)
