@@ -165,11 +165,11 @@
 
 (define p:copy-null (function->propagator-constructor null))
 
-(define-simple-closure (c:copy-null? thing answer)
+(define-propagator (c:copy-null? thing answer)
   (p:copy-null? thing answer)
   (switch answer (e:copy-null) thing))
 
-(define-simple-closure (c:copy-null answer)
+(define-propagator (c:copy-null answer)
   (p:copy-null answer))
 
 (define e:copy-null? (functionalize p:copy-null?))
@@ -198,20 +198,20 @@
 (define p:copy-cdr (function->propagator-constructor
 		    (handling-algebraic-partial-information cdr)))
 
-(define-simple-closure (c:copy-pair? pair answer)
+(define-propagator (c:copy-pair? pair answer)
   (p:copy-pair? pair answer)
   (switch answer (e:copy-cons nothing nothing) pair))
 
-(define-simple-closure (c:copy-cons thing1 thing2 pair)
+(define-propagator (c:copy-cons thing1 thing2 pair)
   (p:copy-cons thing1 thing2 pair)
   (p:copy-car pair thing1)
   (p:copy-cdr pair thing2))
 
-(define-simple-closure (c:copy-car pair answer)
+(define-propagator (c:copy-car pair answer)
   (p:copy-car pair answer)
   (p:copy-cons answer nothing pair))
 
-(define-simple-closure (c:copy-cdr pair answer)
+(define-propagator (c:copy-cdr pair answer)
   (p:copy-cdr pair answer)
   (p:copy-cons nothing answer pair))
 

@@ -73,7 +73,7 @@
 	   body ...))
 	shieldee ...)))))
 
-(define-simple-closure (p:factorial-1 n n!)
+(define-propagator (p:factorial-1 n n!)
   (shielded-when
    (e:not (e:= 0 n))
    (n n!)
@@ -93,7 +93,7 @@
        (shielded-when conditional-value shieldees consequent)
        (shielded-unless conditional-value shieldees alternate)))))
 
-(define-simple-closure (p:factorial-2 n n!)
+(define-propagator (p:factorial-2 n n!)
   (shielded-if
    (e:= 0 n)
    (n n!)
