@@ -170,32 +170,37 @@
 	 (make-generic-operator 2 name default-operation))
 	(else default-operation)))
 
+(define (naming-convention name)
+  (let* ((name-string (symbol->string name))
+	 (long-named? (and (>= (string-length name-string) 3)
+			   (equal? "ce:" (substring name-string 0 3))))
+	 (propagator-named? (and (>= (string-length name-string) 2)
+				 (or (equal? "p:" (substring name-string 0 2))
+				     (equal? "e:" (substring name-string 0 2)))))
+	 (constraint-named? (and (>= (string-length name-string) 2)
+				 (or (equal? "c:" (substring name-string 0 2))
+				     long-named?)))
+	 (prefix-length (cond (long-named? 3)
+			      ((or constraint-named? propagator-named?) 2)
+			      (else 0)))
+	 (base-name (string-tail name-string prefix-length)))
+    (if constraint-named?
+	(list (symbol 'c: base-name)
+	      (symbol 'ce: base-name))
+	(list (symbol 'p: base-name)
+	      (symbol 'e: base-name)))))
+
 (define-syntax define-names-by-style
-  (sc-macro-transformer
+  (rsc-macro-transformer
    (lambda (form use-env)
-     (define (naming-convention name-string)
-       (let* ((long-named? (and (>= (string-length name-string) 3)
-				(equal? "ce:" (substring name-string 0 3))))
-	      (propagator-named? (and (>= (string-length name-string) 2)
-				      (or (equal? "p:" (substring name-string 0 2))
-					  (equal? "e:" (substring name-string 0 2)))))
-	      (constraint-named? (and (>= (string-length name-string) 2)
-				      (or (equal? "c:" (substring name-string 0 2))
-					  long-named?)))
-	      (prefix-length (cond (long-named? 3)
-				   ((or constraint-named? propagator-named?) 2)
-				   (else 0)))
-	      (base-name (string-tail name-string prefix-length)))
-	 (if constraint-named?
-	     (cons (symbol 'c: base-name)
-		   (symbol 'ce: base-name))
-	     (cons (symbol 'p: base-name)
-		   (symbol 'e: base-name)))))
      (let* ((definee-name (cadr form))
 	    (definee-rest (cddr form))
-	    (names (naming-convention (symbol->string definee-name)))
-	    (diagram-style-name (car names))
-	    (expression-style-name (cdr names)))
-       `(begin
-	  (define-cell ,diagram-style-name ,@definee-rest)
-	  (define-cell ,expression-style-name (functionalize ,diagram-style-name)))))))
+	    (names (naming-convention definee-name)))
+       `(define-functionalized ,names ,@definee-rest)))))
+
+(define-syntax define-functionalized
+  (syntax-rules ()
+    ((define-functionalized (diagram-name expression-name) form)
+     (begin
+       (define-cell diagram-name form)
+       (define-cell expression-name (functionalize diagram-name))))))

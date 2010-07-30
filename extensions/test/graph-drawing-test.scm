@@ -159,6 +159,7 @@
      (check (not (eq-get baz 'name)))
      ))
 
+ #;
  (define-test (more-macrology-smoke-2)
    (initialize-scheduler)
    (define-propagator (frobnicate frob)
@@ -169,7 +170,7 @@
    (check (network-group-contains? *current-network-group* foo))
    (check (eq? 'foo (name foo)))
    (check (eq? 'foo (local-name foo)))
-   (frobnicate foo))
+   (p:frobnicate foo))
 
  ;; TODO Reenable expression-substructure-test
  #;

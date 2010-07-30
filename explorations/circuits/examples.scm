@@ -30,7 +30,7 @@
       ((constant 6) (the strength V))
       ((constant 0) (the potential n2))
       (e:inspectable-object R V n1 n2))))
-
+(define resistor-circuit p:resistor-circuit)
 #|
  (initialize-scheduler)
  ;Value: 0
@@ -69,6 +69,7 @@
       ((constant 6) (the strength V))
       ((constant 0) (the potential n3))
       (e:inspectable-object R1 R2 V n1 n2 n3))))
+(define voltage-divider-circuit p:voltage-divider-circuit)
 
 #|
  (initialize-scheduler)
@@ -110,6 +111,7 @@
       ((constant 6) (the strength V))
       ((constant 0) (the potential n3))
       (e:inspectable-object R1 R2 load V n1 n2 n3))))
+(define voltage-divider-circuit-2 p:voltage-divider-circuit-2)
 
 #|
  (initialize-scheduler)
@@ -153,6 +155,7 @@
       ((constant 6) (the strength V))
       ((constant 0) (the potential n2))
       (e:inspectable-object R V n1 n2))))
+(define resistor-circuit-2 p:resistor-circuit-2)
 
 #|
  (initialize-scheduler)
@@ -214,6 +217,7 @@
 		   gain input-impedance output-impedance #;power
 		   en bn cn +rail-node -rail-node +rail-w -rail-w
 		   )))))
+(define ce-amplifier p:ce-amplifier)
 
 (define-propagator (breadboard)
   (let-cells ((VCC (bias-voltage-source))
@@ -227,8 +231,9 @@
 		(out (node 'out (the t1 vout) (the sigout amp))))
       ((constant 0) (the potential gnd))
       (e:inspectable-object VCC vin vout amp gnd +V in out))))
+(define breadboard p:breadboard)
 
-(define-propagator (ce:parallel resistance1 resistance2)
+(define-e:propagator (ce:parallel resistance1 resistance2)
   (ce:* (ce:+ resistance1 resistance2) %% (ce:* resistance1 resistance2)))
 
 #|
@@ -333,3 +338,4 @@
      go? ((ce:layered-get 'bias) (ce:current (the t2 R2)))
      (ce:current (the t2 Requiv)))
     (e:inspectable-object Requiv ok? node-cap discrepancy-allowed? go?)))
+(define bias-voltage-divider-slice p:bias-voltage-divider-slice)

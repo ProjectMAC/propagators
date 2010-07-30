@@ -24,6 +24,7 @@
 (define-propagator (terminal-equivalence ok? t1 t2)
   (conditional-wire ok? (ce:current t1) (ce:current t2))
   (conditional-wire ok? (ce:potential t1) (ce:potential t2)))
+(define terminal-equivalence p:terminal-equivalence)
 
 (define-propagator (exact-voltage-divider-slice R1 node R2)
   ;; TODO Need to verify that (the t2 R1) and (the t1 R2) have a node
@@ -34,6 +35,7 @@
 	 (the resistance Requiv))
     (terminal-equivalence #t (the t1 R1) (the t1 Requiv))
     (terminal-equivalence #t (the t2 R2) (the t2 Requiv))))
+(define exact-voltage-divider-slice p:exact-voltage-divider-slice)
 
 (define (collect-premises thing)
   (cond ((tms? thing)
@@ -93,6 +95,7 @@
 		   (new-bottom (apply node fresh-t2 (the-terminals bottom))))
 	(terminal-equivalence go? (the t1 leak) fresh-t1)
 	(terminal-equivalence go? (the t2 leak) fresh-t2)))))
+(define approximate-voltage-divider-slice p:approximate-voltage-divider-slice)
 
 (define ((model-terminal-equivalence model)
 	 ok? general-terminal model-terminal)

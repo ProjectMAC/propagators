@@ -72,6 +72,7 @@
      (lambda (v i)
        (c:* i resistance v)
        (e:inspectable-object resistance)))))
+(define resistor p:resistor)
 
 (define (voltage-source-vic)
   (let-cell strength
@@ -95,9 +96,11 @@
 ;; strength.
 (define-propagator (leakage-current)
   (two-terminal-device (lambda (v i) (e:inspectable-object))))
+(define leakage-current p:leakage-current)
 
 (define-propagator (voltage-source)
   (two-terminal-device (voltage-source-vic)))
+(define voltage-source p:voltage-source)
 
 (define (use-all . functions)
   (lambda args
@@ -112,30 +115,36 @@
     (use-all
      (in-layer 'bias (voltage-source-vic))
      (in-layer 'incremental short-circuit-vic))))
+(define bias-voltage-source p:bias-voltage-source)
 
 (define-propagator (signal-voltage-source)
   (two-terminal-device
     (use-all
      (in-layer 'incremental (voltage-source-vic))
      (in-layer 'bias short-circuit-vic))))
+(define signal-voltage-source p:signal-voltage-source)
 
 (define-propagator (short-circuit)
   (two-terminal-device short-circuit-vic))
+(define short-circuit p:short-circuit)
 
 (define-propagator (open-circuit)
   (two-terminal-device open-circuit-vic))
+(define open-circuit p:open-circuit)
 
 (define-propagator (capacitor)
   (two-terminal-device
     (use-all
      (in-layer 'bias open-circuit-vic)
      (in-layer 'incremental short-circuit-vic))))
+(define capacitor p:capacitor)
 
 (define-propagator (inductor)
   (two-terminal-device
     (use-all
      (in-layer 'incremental open-circuit-vic)
      (in-layer 'bias short-circuit-vic))))
+(define inductor p:inductor)
 
 (define (three-terminal-device common control controlled vic)
   (let-cells (power
@@ -164,3 +173,4 @@
        ((in-layer 'incremental (constant 0)) control-voltage)
        ((constant 0) control-current)
        (e:inspectable-object emitter base collector)))))
+(define infinite-beta-bjt p:infinite-beta-bjt)

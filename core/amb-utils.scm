@@ -51,11 +51,7 @@
     (binary-amb answer)
     (eq-put! answer 'subexprs '())
     answer))
-(define p:require require)
-(define p:forbid forbid)
-;; The expression versions of require and forbid are kinda dumb, but
-;; provided anyway
-(define e:require (functionalize p:require))
-(define e:forbid (functionalize p:forbid))
+(define require p:require)
+(define forbid p:forbid)
 
 (define e:one-of (functionalize one-of))

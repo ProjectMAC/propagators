@@ -92,15 +92,23 @@
        (import)
        body ...))))
 
-(define-syntax define-propagator
+(define-syntax define-%propagator
   (syntax-rules ()
-    ((define-propagator (name arg ...)
+    ((define-%propagator names (arg ...)
        body ...)
-     (define-cell name
+     (define-functionalized names
        (name!
 	(lambda-propagator (arg ...)
 	  body ...)
-	'name)))))
+	(car 'names))))))
+
+(define-syntax define-propagator
+  (rsc-macro-transformer
+   (lambda (form defn-env)
+     (let ((name (caadr form))
+	   (formals (cdadr form))
+	   (body (cddr form)))
+       `(define-%propagator ,(naming-convention name) ,formals ,@body)))))
 
 (define-syntax lambda-e:propagator
   (syntax-rules (import)
@@ -139,10 +147,9 @@
   (switch control end1 end2)
   (switch control end2 end1))
 
-(define p:conditional conditional)
-(define e:conditional (functionalize p:conditional))
-(define p:conditional-router conditional-router)
-(define e:conditional-wire (functionalize conditional-wire))
+(define conditional p:conditional)
+(define conditional-router p:conditional-router)
+(define conditional-wire p:conditional-wire)
 
 ;;; Constraining propagators
 

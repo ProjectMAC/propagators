@@ -25,6 +25,7 @@
   (let ((control (e:amb)))
     (conditional-wire control cell1 cell2)
     control))
+(define guess-link p:guess-link)
 
 (define-propagator-syntax (quadratic-guess-bijection cells1 cells2)
   (define (not-all-off . cells)

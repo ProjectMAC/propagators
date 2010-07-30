@@ -183,6 +183,7 @@
     (conditional-router same-city? segment same-city-answer intercity-answer)
     (fast-incity-air-estimate same-city-answer)
     (fast-intercity-air-estimate intercity-answer)))
+(define fast-air-estimate p:fast-air-estimate)
 
 (define-propagator (fast-incity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
@@ -195,6 +196,7 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap))))
    segment))
+(define fast-incity-air-estimate p:fast-incity-air-estimate)
 
 (define-propagator (fast-intercity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
@@ -205,6 +207,7 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap))))
    segment))
+(define fast-intercity-air-estimate p:fast-intercity-air-estimate)
 
 (define ((splitter e:pick-waypoint) go? segment beginning middle end)
   (p:make-trip-segment-by-start (e:trip-segment-start segment) beginning)
@@ -229,6 +232,7 @@
      'name 'between-airports
      'inputs (list go? segment)
      'outputs (list segment))))
+(define between-airports p:between-airports)
 
 (define plan-air
   (delay (split-node 'plan-air fast-air-estimate (splitter e:pick-airport)
@@ -241,6 +245,7 @@
     (conditional-router same-city? segment same-city-answer intercity-answer)
     (fast-incity-train-estimate same-city-answer)
     (fast-intercity-train-estimate intercity-answer)))
+(define fast-train-estimate p:fast-train-estimate)
 
 (define-propagator (fast-incity-train-estimate segment)
   ((constant (make-trip-segment-by-method 'take-the-train))
@@ -253,6 +258,7 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
+(define fast-incity-train-estimate p:fast-incity-train-estimate)
 
 (define-propagator (fast-intercity-train-estimate segment)
   ((constant (make-trip-segment-by-method 'take-the-train)) segment)
@@ -266,6 +272,7 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
+(define fast-intercity-train-estimate p:fast-intercity-train-estimate)
 
 (define-propagator (between-stations go? segment)
   (one-shot-propagator (list go?)
@@ -276,6 +283,7 @@
      'name 'between-stations
      'inputs (list go? segment)
      'outputs (list segment))))
+(define between-stations p:between-stations)
 
 (define plan-train
   (delay (split-node 'plan-train fast-train-estimate (splitter e:pick-station)
@@ -288,6 +296,7 @@
     (conditional-router same-city? segment same-city-answer intercity-answer)
     (fast-incity-subway-estimate same-city-answer)
     (fast-intercity-subway-estimate intercity-answer)))
+(define fast-subway-estimate p:fast-subway-estimate)
 
 (define-propagator (fast-incity-subway-estimate segment)
   ((constant (make-trip-segment-by-method 'subway))
@@ -298,6 +307,7 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
+(define fast-incity-subway-estimate p:fast-incity-subway-estimate)
 
 (define-propagator (fast-intercity-subway-estimate segment)
   ((constant (make-trip-segment-by-method 'subway))
@@ -310,6 +320,7 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
+(define fast-intercity-subway-estimate p:fast-intercity-subway-estimate)
 
 (define-propagator (between-stops go? segment)
   (one-shot-propagator (list go?)
@@ -320,6 +331,7 @@
      'name 'between-stops
      'inputs (list go? segment)
      'outputs (list segment))))
+(define between-stops p:between-stops)
 
 (define plan-subway
   (delay (split-node 'plan-subway fast-subway-estimate (splitter e:pick-stop)

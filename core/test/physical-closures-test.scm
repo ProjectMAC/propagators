@@ -53,7 +53,7 @@
 
     (define-cell x 2)
     (define-cell output)
-    (double x output)
+    (p:double x output)
     (run)
     (content output)
     (produces 4)
@@ -256,9 +256,9 @@
 	  (p:+ n x out)))
        out))
 
-    (define-cell add5-fred (e:application addn (make-interval 3 5)))
+    (define-cell add5-fred (e:application p:addn (make-interval 3 5)))
     (define-cell bill (make-interval 4 7))
-    (define-cell add5-bill (e:application addn bill))
+    (define-cell add5-bill (e:application p:addn bill))
 
     (define-cell add5)
     (p:switch (make-tms (supported #t '(fred))) add5-fred add5)
