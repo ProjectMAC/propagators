@@ -245,7 +245,7 @@
        (get-terminal mary-calls 0))
       ;; Evidence: John called.
       (conditional-probability-table
-       '((() . 1))
+       '((() . 1.))
        (get-terminal john-calls 1))
       nodes)))
 
