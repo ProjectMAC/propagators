@@ -176,16 +176,15 @@
 	 'inputs (list go? segment)
 	 'outputs (list segment))))))
 
-(define-propagator (fast-air-estimate segment)
+(define-propagator (p:fast-air-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
     (conditional-router same-city? segment same-city-answer intercity-answer)
-    (fast-incity-air-estimate same-city-answer)
-    (fast-intercity-air-estimate intercity-answer)))
-(define fast-air-estimate p:fast-air-estimate)
+    (p:fast-incity-air-estimate same-city-answer)
+    (p:fast-intercity-air-estimate intercity-answer)))
 
-(define-propagator (fast-incity-air-estimate segment)
+(define-propagator (p:fast-incity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
    segment)
   ;; TODO notate impossibility
@@ -196,9 +195,8 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap))))
    segment))
-(define fast-incity-air-estimate p:fast-incity-air-estimate)
 
-(define-propagator (fast-intercity-air-estimate segment)
+(define-propagator (p:fast-intercity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
    segment)
   ((constant (make-trip-segment-by-time (make-estimate (& 7 hour))))
@@ -207,7 +205,6 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 200 crap))))
    segment))
-(define fast-intercity-air-estimate p:fast-intercity-air-estimate)
 
 (define ((splitter e:pick-waypoint) go? segment beginning middle end)
   (p:make-trip-segment-by-start (e:trip-segment-start segment) beginning)
@@ -235,19 +232,18 @@
 (define between-airports p:between-airports)
 
 (define plan-air
-  (delay (split-node 'plan-air fast-air-estimate (splitter e:pick-airport)
+  (delay (split-node 'plan-air p:fast-air-estimate (splitter e:pick-airport)
 		     (force plan-trip) between-airports (force plan-trip))))
 
-(define-propagator (fast-train-estimate segment)
+(define-propagator (p:fast-train-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
     (conditional-router same-city? segment same-city-answer intercity-answer)
-    (fast-incity-train-estimate same-city-answer)
-    (fast-intercity-train-estimate intercity-answer)))
-(define fast-train-estimate p:fast-train-estimate)
+    (p:fast-incity-train-estimate same-city-answer)
+    (p:fast-intercity-train-estimate intercity-answer)))
 
-(define-propagator (fast-incity-train-estimate segment)
+(define-propagator (p:fast-incity-train-estimate segment)
   ((constant (make-trip-segment-by-method 'take-the-train))
    segment)
   ;; TODO notate impossibility
@@ -258,9 +254,8 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
-(define fast-incity-train-estimate p:fast-incity-train-estimate)
 
-(define-propagator (fast-intercity-train-estimate segment)
+(define-propagator (p:fast-intercity-train-estimate segment)
   ((constant (make-trip-segment-by-method 'take-the-train)) segment)
   ;; Plus two hours for to-from the station?
   ;; TODO Clean up which uses of time-est are actually estimates
@@ -272,7 +267,6 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
-(define fast-intercity-train-estimate p:fast-intercity-train-estimate)
 
 (define-propagator (between-stations go? segment)
   (one-shot-propagator (list go?)
@@ -286,19 +280,18 @@
 (define between-stations p:between-stations)
 
 (define plan-train
-  (delay (split-node 'plan-train fast-train-estimate (splitter e:pick-station)
+  (delay (split-node 'plan-train p:fast-train-estimate (splitter e:pick-station)
 		     (force plan-trip) between-stations (force plan-trip))))
 
-(define-propagator (fast-subway-estimate segment)
+(define-propagator (p:fast-subway-estimate segment)
   (let-cells (same-city? same-city-answer intercity-answer)
     (p:same-city? segment same-city?)
     (conditional same-city? same-city-answer intercity-answer segment)
     (conditional-router same-city? segment same-city-answer intercity-answer)
-    (fast-incity-subway-estimate same-city-answer)
-    (fast-intercity-subway-estimate intercity-answer)))
-(define fast-subway-estimate p:fast-subway-estimate)
+    (p:fast-incity-subway-estimate same-city-answer)
+    (p:fast-intercity-subway-estimate intercity-answer)))
 
-(define-propagator (fast-incity-subway-estimate segment)
+(define-propagator (p:fast-incity-subway-estimate segment)
   ((constant (make-trip-segment-by-method 'subway))
    segment)
   ((constant (make-trip-segment-by-time (make-estimate (& 1 hour))))
@@ -307,9 +300,8 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
-(define fast-incity-subway-estimate p:fast-incity-subway-estimate)
 
-(define-propagator (fast-intercity-subway-estimate segment)
+(define-propagator (p:fast-intercity-subway-estimate segment)
   ((constant (make-trip-segment-by-method 'subway))
    segment)
   ;; TODO notate impossibility
@@ -320,7 +312,6 @@
    segment)
   ((constant (make-trip-segment-by-pain (make-estimate (& 25 crap))))
    segment))
-(define fast-intercity-subway-estimate p:fast-intercity-subway-estimate)
 
 (define-propagator (between-stops go? segment)
   (one-shot-propagator (list go?)
@@ -334,7 +325,7 @@
 (define between-stops p:between-stops)
 
 (define plan-subway
-  (delay (split-node 'plan-subway fast-subway-estimate (splitter e:pick-stop)
+  (delay (split-node 'plan-subway p:fast-subway-estimate (splitter e:pick-stop)
 		     (force plan-trip) between-stops (force plan-trip))))
 ;;; TODO How does one watch this search and adjust the fast estimates
 ;;; in light of backtracks caused by later refinements?

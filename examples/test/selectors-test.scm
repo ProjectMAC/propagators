@@ -39,7 +39,7 @@
     (initialize-scheduler)
     (define-cell fly-to-met)
     (add-content fly-to-met (make-trip-segment-key 'start 'home 'end 'met))
-    (fast-air-estimate fly-to-met)
+    (p:fast-air-estimate fly-to-met)
     (run)
     (check (estimate? (trip-segment-time (content fly-to-met))))
     (check (eq? 'fly (trip-segment-method (content fly-to-met))))))
@@ -49,7 +49,7 @@
     (initialize-scheduler)
     (define-cell subway-to-met)
     (add-content subway-to-met (make-trip-segment-key 'start 'home 'end 'met))
-    (fast-subway-estimate subway-to-met)
+    (p:fast-subway-estimate subway-to-met)
     (run)
     ;; TODO Estimates of impossibility?
     (check (estimate? (trip-segment-time (content subway-to-met))))
