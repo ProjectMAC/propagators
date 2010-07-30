@@ -137,14 +137,14 @@
 	    (propagatee (close-syntax propagatee-name use-env))
 	    (direct? (null? (cddr form))))
        (if direct?
-	   `(define-names-by-style ,propagatee-name
+	   `(define-functionalized ,(propagator-naming-convention propagatee-name)
 	      (function->propagator-constructor
 	       (name! ,propagatee ,propagatee-name)))
 	   `(begin
 	      (define ,generic-name
 		(make-arity-detecting-operator
 		 ',propagatee-name ,propagatee ,@(cdddr form)))
-	      (define-names-by-style ,propagatee-name
+	      (define-functionalized ,(propagator-naming-convention propagatee-name)
 		(function->propagator-constructor
 		 (,(caddr form) ,generic-name)))))))))
 
@@ -170,7 +170,7 @@
 	 (make-generic-operator 2 name default-operation))
 	(else default-operation)))
 
-(define (naming-convention name)
+(define (propagator-naming-convention name)
   (let* ((name-string (symbol->string name))
 	 (long-named? (and (>= (string-length name-string) 3)
 			   (equal? "ce:" (substring name-string 0 3))))
@@ -189,14 +189,6 @@
 	      (symbol 'ce: base-name))
 	(list (symbol 'p: base-name)
 	      (symbol 'e: base-name)))))
-
-(define-syntax define-names-by-style
-  (rsc-macro-transformer
-   (lambda (form use-env)
-     (let* ((definee-name (cadr form))
-	    (definee-rest (cddr form))
-	    (names (naming-convention definee-name)))
-       `(define-functionalized ,names ,@definee-rest)))))
 
 (define-syntax define-functionalized
   (syntax-rules ()

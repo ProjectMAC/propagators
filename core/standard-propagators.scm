@@ -108,7 +108,7 @@
      (let ((name (caadr form))
 	   (formals (cdadr form))
 	   (body (cddr form)))
-       `(define-%propagator ,(naming-convention name) ,formals ,@body)))))
+       `(define-%propagator ,(propagator-naming-convention name) ,formals ,@body)))))
 
 (define-syntax lambda-e:propagator
   (syntax-rules (import)
