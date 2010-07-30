@@ -21,11 +21,10 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-propagator (guess-link cell1 cell2)
+(define-propagator (p:guess-link cell1 cell2)
   (let ((control (e:amb)))
     (conditional-wire control cell1 cell2)
     control))
-(define guess-link p:guess-link)
 
 (define-propagator-syntax (quadratic-guess-bijection cells1 cells2)
   (define (not-all-off . cells)
@@ -33,7 +32,7 @@
   (let ((controls
 	 (map (lambda (cell1)
 		(map (lambda (cell2)
-		       (guess-link cell1 cell2))
+		       (p:guess-link cell1 cell2))
 		     cells2))
 	      cells1)))
     ;; I hope that the contents of cells1 and cells2 are forcibly
