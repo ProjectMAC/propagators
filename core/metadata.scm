@@ -49,7 +49,7 @@
   ;; concept is useful for walking the graph structure of the network.
   (append (neighbors cell) (cell-non-readers cell)))
 
-(define-structure network-group
+(define-structure (network-group (safe-accessors #t))
   elements
   names)
 
