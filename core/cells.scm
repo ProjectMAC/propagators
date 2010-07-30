@@ -125,13 +125,20 @@
 (define (make-named-cell name)
   (name! (make-cell) name))
 
+(define *ensure-cell-generates-constant-propagators* #f)
+
 (define (ensure-cell thing)
   (if (cell? thing)
       thing
-      ;; TODO Retain forward reference to e:constant?  Copy the code?
-      (let ((answer (e:constant thing)))
-	(add-content answer thing)	; Enables early access
-	answer)))
+      (if *ensure-cell-generates-constant-propagators*
+	  ;; TODO Retain forward reference to e:constant?  Copy the code?
+	  (let ((answer (e:constant thing)))
+	    (add-content answer thing)	; Enables early access
+	    answer)
+	  (let ((answer (make-named-cell (name thing))))
+	    (add-content (answer thing))
+	    answer))))
+
 ;;;; Cellular Generics
 
 (define (merge info1 info2)
