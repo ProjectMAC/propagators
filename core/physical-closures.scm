@@ -285,4 +285,6 @@
 	 (not (eq-get thing 'expression-style)))
 	(else (error "Propagator style question not applicable" thing))))
 
+(initialize-scheduler)			; propagatify makes cells!
+
 (propagatify equivalent-closures? binary-mapping)

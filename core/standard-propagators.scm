@@ -23,6 +23,15 @@
 
 ;;;; Standard primitive propagators
 
+(define (p:constant value)
+  (function->propagator-constructor #; (lambda () value)
+   (eq-label! (lambda () value) 'name `(constant ,(name value)))))
+(define (e:constant value)
+  (let ((answer (make-named-cell 'cell)))
+    ((constant value) answer)
+    (eq-put! answer 'subexprs '())
+    answer))
+
 (propagatify + binary-mapping)
 (propagatify - binary-mapping)
 (propagatify * binary-mapping)
@@ -50,16 +59,8 @@
 
 (propagatify eq? binary-mapping)
 (propagatify eqv? binary-mapping)
-(propagatify expt unary-mapping)
-(define (p:constant value)
-  (function->propagator-constructor #; (lambda () value)
-   (eq-label! (lambda () value) 'name `(constant ,(name value)))))
-(define (e:constant value)
-  (let ((answer (make-named-cell 'cell)))
-    ((constant value) answer)
-    (eq-put! answer 'subexprs '())
-    answer))
-
+(propagatify expt unary-mapping)
+
 ;; I want a name for the function that does the switch job
 (define (switch-function control input)
   (if control input nothing))
@@ -125,8 +126,6 @@
 	(lambda-e:propagator (arg ...)
 	  body ...)
 	'name)))))
-
-(initialize-scheduler)			; define-propagator makes cells!
 
 (define-propagator (conditional control if-true if-false output)
   (switch control if-true output)
