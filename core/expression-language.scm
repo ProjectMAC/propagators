@@ -133,27 +133,20 @@
   (sc-macro-transformer
    (lambda (form use-env)
      (let* ((propagatee-name (cadr form))
-	    (propagator-name (symbol 'p: propagatee-name))
-	    (expression-oriented-name (symbol 'e: propagatee-name))
 	    (generic-name (symbol 'generic- propagatee-name))
 	    (propagatee (close-syntax propagatee-name use-env))
 	    (direct? (null? (cddr form))))
        (if direct?
-	   `(begin
-	      (define-cell ,propagator-name
-		(function->propagator-constructor
-		 (name! ,propagatee ,propagatee-name)))
-	      (define-cell ,expression-oriented-name
-		(functionalize ,propagator-name)))
+	   `(define-names-by-style ,propagatee-name
+	      (function->propagator-constructor
+	       (name! ,propagatee ,propagatee-name)))
 	   `(begin
 	      (define ,generic-name
 		(make-arity-detecting-operator
 		 ',propagatee-name ,propagatee ,@(cdddr form)))
-	      (define-cell ,propagator-name
+	      (define-names-by-style ,propagatee-name
 		(function->propagator-constructor
-		 (,(caddr form) ,generic-name)))
-	      (define-cell ,expression-oriented-name
-		(functionalize ,propagator-name))))))))
+		 (,(caddr form) ,generic-name)))))))))
 
 (define (make-arity-detecting-operator
 	 name default-operation #!optional arity)
@@ -176,3 +169,33 @@
 	      (eqv? #f (procedure-arity-max arity)))
 	 (make-generic-operator 2 name default-operation))
 	(else default-operation)))
+
+(define-syntax define-names-by-style
+  (sc-macro-transformer
+   (lambda (form use-env)
+     (define (naming-convention name-string)
+       (let* ((long-named? (and (>= (string-length name-string) 3)
+				(equal? "ce:" (substring name-string 0 3))))
+	      (propagator-named? (and (>= (string-length name-string) 2)
+				      (or (equal? "p:" (substring name-string 0 2))
+					  (equal? "e:" (substring name-string 0 2)))))
+	      (constraint-named? (and (>= (string-length name-string) 2)
+				      (or (equal? "c:" (substring name-string 0 2))
+					  long-named?)))
+	      (prefix-length (cond (long-named? 3)
+				   ((or constraint-named? propagator-named?) 2)
+				   (else 0)))
+	      (base-name (string-tail name-string prefix-length)))
+	 (if constraint-named?
+	     (cons (symbol 'c: base-name)
+		   (symbol 'ce: base-name))
+	     (cons (symbol 'p: base-name)
+		   (symbol 'e: base-name)))))
+     (let* ((definee-name (cadr form))
+	    (definee-rest (cddr form))
+	    (names (naming-convention (symbol->string definee-name)))
+	    (diagram-style-name (car names))
+	    (expression-style-name (cdr names)))
+       `(begin
+	  (define-cell ,diagram-style-name ,@definee-rest)
+	  (define-cell ,expression-style-name (functionalize ,diagram-style-name)))))))
