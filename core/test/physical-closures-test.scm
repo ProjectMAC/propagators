@@ -141,15 +141,15 @@
    (interaction
     (initialize-scheduler)
     
-    (define-e:propagator (addn n)
+    (define-e:propagator (e:addn n)
       (lambda-e:propagator (x)
 	(import n)
 	(e:+ n x)))
 
     (define-cell n1 (make-interval 3 5))
     (define-cell n2 (make-interval 4 7))
-    (define-cell add5 (addn n1))
-    (p:application addn n2 add5)
+    (define-cell add5 (e:addn n1))
+    (p:application e:addn n2 add5)
     
     (define-cell output (e:application add5 3))
     
@@ -210,9 +210,9 @@
  (define-test (repeat)
    (interaction
     (initialize-scheduler)
-    (define-e:propagator (double x)
+    (define-e:propagator (e:double x)
       (e:+ x x))
-    (define-e:propagator (compose f g)
+    (define-e:propagator (e:compose f g)
       (lambda-e:propagator (x)
 	(import f g)
 	(e:application f (e:application g x))))
@@ -220,7 +220,7 @@
       (let-cell (repeat)
 	((constant
 	  (lambda-propagator (f n out)
-	    (import compose repeat)
+	    (import e:compose repeat)
 	    (let-cell (repeat? (e:> n 1))
 	      (let-cell (done? (e:not repeat?))
 		(switch done? f out)
@@ -229,7 +229,7 @@
 		  (switch repeat? n-1 n-1-again)
 		  (switch repeat? f f-again)
 		  (switch repeat? out-again out)
-		  (switch repeat? compose compose-again)
+		  (switch repeat? e:compose compose-again)
 		  (switch repeat? repeat repeat-again)
 		  (p:application compose-again fn-1 f-again out-again)
 		  (p:application repeat-again f-again n-1-again fn-1))))))
@@ -238,7 +238,7 @@
 
     (define-cell output
       (e:application
-       (e:application repeat double 4) 2))
+       (e:application repeat e:double 4) 2))
 
     (run)
     (content output)
