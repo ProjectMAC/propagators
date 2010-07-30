@@ -140,19 +140,19 @@
 	    (direct? (null? (cddr form))))
        (if direct?
 	   `(begin
-	      (define ,propagator-name
+	      (define-cell ,propagator-name
 		(function->propagator-constructor
 		 (name! ,propagatee ,propagatee-name)))
-	      (define ,expression-oriented-name
+	      (define-cell ,expression-oriented-name
 		(functionalize ,propagator-name)))
 	   `(begin
 	      (define ,generic-name
 		(make-arity-detecting-operator
 		 ',propagatee-name ,propagatee ,@(cdddr form)))
-	      (define ,propagator-name
+	      (define-cell ,propagator-name
 		(function->propagator-constructor
 		 (,(caddr form) ,generic-name)))
-	      (define ,expression-oriented-name
+	      (define-cell ,expression-oriented-name
 		(functionalize ,propagator-name))))))))
 
 (define (make-arity-detecting-operator
