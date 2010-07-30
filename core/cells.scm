@@ -136,7 +136,7 @@
 	    (add-content answer thing)	; Enables early access
 	    answer)
 	  (let ((answer (make-named-cell (name thing))))
-	    (add-content (answer thing))
+	    (add-content answer thing)
 	    answer))))
 
 ;;;; Cellular Generics
