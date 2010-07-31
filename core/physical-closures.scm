@@ -200,9 +200,9 @@
 	arg-copy)))
   ;; This assumes that closures are "carrying cells" compound
   ;; structures rather than "copying data".
-  (define (diagram-style-apply prop pass? arg-cells)
+  (define (apply-diagram-style prop pass? arg-cells)
     (do-apply-prop prop (map (arg-copier pass?) arg-cells)))
-  (define (expression-style-apply prop pass? arg-cells)
+  (define (apply-expression-style prop pass? arg-cells)
     (let ((input-cells (except-last-pair arg-cells))
 	  (output-cell (car (last-pair arg-cells))))
       (conditional-wire pass? output-cell
@@ -218,8 +218,8 @@
 	 (add-content key prop)
 	 (p:equivalent-closures? prop-cell key pass?)
 	 (if (diagram-style? prop)
-	     (diagram-style-apply prop pass? arg-cells)
-	     (expression-style-apply prop pass? arg-cells))
+	     (apply-diagram-style prop pass? arg-cells)
+	     (apply-expression-style prop pass? arg-cells))
 	 unspecific))))
   (let ((the-propagator
 	 (lambda ()
@@ -243,16 +243,6 @@
   (or (closure? thing)
       (propagator-constructor? thing)))
 
-(define (p:application object . arg-cells)
-  (let ((arg-cells (map ensure-cell arg-cells)))
-    (if (cell? object)
-	(if (directly-applicable? (content object))
-	    (eager-diagram-apply (content object) arg-cells)
-	    (general-propagator-apply object arg-cells))
-	(if (directly-applicable? object)
-	    (eager-diagram-apply object arg-cells)
-	    (general-propagator-apply (ensure-cell object) arg-cells)))))
-
 (define (prefers-diagram-style? thing)
   (let ((preference-tag (eq-get thing 'preferred-style)))
     (cond (preference-tag
@@ -269,6 +259,16 @@
 	    (do-apply-prop prop `(,@arg-cells output))
 	    output)
 	  (do-apply-prop prop arg-cells))))
+
+(define (p:application object . arg-cells)
+  (let ((arg-cells (map ensure-cell arg-cells)))
+    (if (cell? object)
+	(if (directly-applicable? (content object))
+	    (eager-diagram-apply (content object) arg-cells)
+	    (general-propagator-apply object arg-cells))
+	(if (directly-applicable? object)
+	    (eager-diagram-apply object arg-cells)
+	    (general-propagator-apply (ensure-cell object) arg-cells)))))
 
 (define (application object . arg-cells)
   (let ((arg-cells (map ensure-cell arg-cells)))
