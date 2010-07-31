@@ -27,7 +27,7 @@
 ;;; output cells to the desired propagator constructor explicitly:
 ;;;   (p:+ x y subtotal)
 ;;;   (p:+ subtotal z total)
-;;; This "propagator style" notation is very flexible, because it
+;;; This "diagram style" notation is very flexible, because it
 ;;; allows easy handling of multiple propagators writing to the same
 ;;; cells, propagators having multiple output cells, having cells that
 ;;; are ambiguous as to input vs output, etc.
@@ -39,7 +39,7 @@
 ;;;   (e:+ (e:+ x y) z)
 
 ;;; The FUNCTIONALIZE procedure mechanically derives an
-;;; expression-style variant of a propagator-style propagator
+;;; expression-style variant of a diagram-style propagator
 ;;; constructor.  It is also convenient to provide multidirectional
 ;;; constraint versions of standard propagator constructors with a
 ;;; uniform naming scheme.

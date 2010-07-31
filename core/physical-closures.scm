@@ -64,13 +64,13 @@
   (%closure (safe-accessors #t))
   code
   environment
-  propagator-style?)
+  diagram-style?)
 
-(define (%make-closure code environment propagator-style?)
+(define (%make-closure code environment diagram-style?)
   (make-entity
    (lambda (self . args)
      (apply application self args))
-   (make-%closure code environment propagator-style?)))
+   (make-%closure code environment diagram-style?)))
 
 (define (closure? thing)
   (and (entity? thing)
@@ -85,8 +85,8 @@
 (define (closure-environment thing)
   (%closure-environment (entity-extra thing)))
 
-(define (closure-propagator-style? thing)
-  (%closure-propagator-style? (entity-extra thing)))
+(define (closure-diagram-style? thing)
+  (%closure-diagram-style? (entity-extra thing)))
 
 ;; The ensure-cell here makes these be "carrying cells" structures.
 (define (make-closure code environment)
@@ -108,8 +108,8 @@
 
 (define (same-code? closure1 closure2)
   (and (eq? (closure-code-tag closure1) (closure-code-tag closure2))
-       (eqv? (closure-propagator-style? closure1)
-	     (closure-propagator-style? closure2))))
+       (eqv? (closure-diagram-style? closure1)
+	     (closure-diagram-style? closure2))))
 
 (define (closure-merge closure1 closure2)
   (if (not (same-code? closure1 closure2))
@@ -120,7 +120,7 @@
 	  (%make-closure
 	   (closure-code closure1)
 	   new-env
-	   (closure-propagator-style? closure1))))))
+	   (closure-diagram-style? closure1))))))
 
 (define (equivalent-closures? closure1 closure2)
   (or (eqv? closure1 closure2)
@@ -174,7 +174,7 @@
 
 ;;; There is also a less important thing that APPLICATION needs to
 ;;; deal with, that doesn't happen in Scheme, and that's the
-;;; distinction between propagator-style and expression-style
+;;; distinction between diagram-style and expression-style
 ;;; propagator constructors.  The former are more general, but require
 ;;; all their boundary cells, including those for holding "return"
 ;;; values, to be passed in to them, and ignore the Scheme return
@@ -200,7 +200,7 @@
 	arg-copy)))
   ;; This assumes that closures are "carrying cells" compound
   ;; structures rather than "copying data".
-  (define (propagator-style-apply closure pass? arg-cells)
+  (define (diagram-style-apply closure pass? arg-cells)
     (do-apply-closure closure (map (arg-copier pass?) arg-cells)))
   (define (expression-style-apply closure pass? arg-cells)
     (let ((input-cells (except-last-pair arg-cells))
@@ -217,8 +217,8 @@
        (let-cells (pass? key)
 	 (add-content key closure)
 	 (p:equivalent-closures? closure-cell key pass?)
-	 (if (propagator-style? closure)
-	     (propagator-style-apply closure pass? arg-cells)
+	 (if (diagram-style? closure)
+	     (diagram-style-apply closure pass? arg-cells)
 	     (expression-style-apply closure pass? arg-cells))
 	 unspecific))))
   (let ((the-propagator
@@ -234,7 +234,7 @@
     (propagator closure-cell the-propagator)))
 
 (define (eager-p:apply closure arg-cells)
-  (if (propagator-style? closure)
+  (if (diagram-style? closure)
       (do-apply-closure closure arg-cells)
       (c:== (car (last-pair arg-cells))
 	    (do-apply-closure closure (except-last-pair arg-cells)))))
@@ -253,20 +253,20 @@
 	    (eager-p:apply closure-cell arg-cells)
 	    (general-p:apply (ensure-cell closure-cell) arg-cells)))))
 
-(define (prefers-propagator-style? thing)
+(define (prefers-diagram-style? thing)
   (let ((preference-tag (eq-get thing 'preferred-style)))
     (cond (preference-tag
 	   (not (eq? preference-tag 'expression)))
 	  ((closure? thing)
-	   (closure-propagator-style? thing))
+	   (closure-diagram-style? thing))
 	  (else #t))))
 
 (define (application closure-cell . arg-cells)
   (let ((arg-cells (map ensure-cell arg-cells)))
     (define (eager-apply closure arg-cells)      
-      (if (prefers-propagator-style? closure)
+      (if (prefers-diagram-style? closure)
 	  (eager-p:apply closure arg-cells)
-	  (if (propagator-style? closure)
+	  (if (diagram-style? closure)
 	      (let ((output (make-cell)))
 		(do-apply-closure closure `(,@arg-cells output))
 		output)
@@ -294,9 +294,9 @@
 	 thing)
 	(else (error "No closure body" thing))))
 
-(define (propagator-style? thing)
+(define (diagram-style? thing)
   (cond ((closure? thing)
-	 (closure-propagator-style? thing))
+	 (closure-diagram-style? thing))
 	((propagator-constructor? thing)
 	 (not (eq-get thing 'expression-style)))
 	(else (error "Propagator style question not applicable" thing))))
