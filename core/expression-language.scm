@@ -54,7 +54,7 @@
   (if (default-object? num-outputs)
       (set! num-outputs 1))
   (propagator-constructor!
-   (eq-put!
+   (eq-label!
     (lambda inputs
       (define (manufacture-cell)
 	(eq-put! (make-named-cell 'cell) 'subexprs inputs))
@@ -76,7 +76,8 @@
       (if (= 1 (length outputs))
 	  (car outputs)
 	  (apply values outputs)))
-    'expression-style #t)))
+    'expression-style #t
+    'preferred-style 'expression)))
 
 (define %% (list 'the-implicit-cell))
 (define (implicit-cell? thing)
