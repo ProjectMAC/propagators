@@ -87,6 +87,12 @@
 
 (define (closure-diagram-style? thing)
   (%closure-diagram-style? (entity-extra thing)))
+
+(define (closure-copy closure)
+  (eq-clone! closure
+   (%make-closure (closure-code closure)
+		  (closure-environment closure)
+		  (closure-diagram-style? closure))))
 
 ;; The ensure-cell here makes these be "carrying cells" structures.
 (define (make-closure code environment)
