@@ -45,17 +45,13 @@
 (propagatify make-terminal-from-potential)
 (propagatify make-terminal-from-current)
 
-(define (c:potential terminal potential)
+(define-propagator (c:potential terminal potential)
   (p:terminal-potential terminal potential)
   (p:make-terminal-from-potential potential terminal))
 
-(define ce:potential (functionalize c:potential))
-
-(define (c:current terminal current)
+(define-propagator (c:current terminal current)
   (p:terminal-current terminal current)
   (p:make-terminal-from-current current terminal))
-
-(define ce:current (functionalize c:current))
 
 (define-structure
   (element-descriptor
