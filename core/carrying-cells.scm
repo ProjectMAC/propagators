@@ -32,11 +32,12 @@
 ;;; The general version for arbitrary constructors:
 
 (define (function->cell-carrier-constructor f)
-  (lambda cells
-    (let ((output (ensure-cell (car (last-pair cells))))
-          (inputs (map ensure-cell (except-last-pair cells))))
-      (execute-propagator ; To enable the early-access-hack below
-       ((constant (apply f inputs)) output)))))
+  (propagator-constructor!
+   (lambda cells
+     (let ((output (ensure-cell (car (last-pair cells))))
+	   (inputs (map ensure-cell (except-last-pair cells))))
+       (execute-propagator     ; To enable the early-access-hack below
+	((constant (apply f inputs)) output))))))
 (define p:carry-cons (function->cell-carrier-constructor cons))
 (define e:carry-cons (functionalize p:carry-cons))
 
