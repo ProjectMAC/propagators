@@ -83,6 +83,31 @@
 (define (implicit-cell? thing)
   (eq? thing %%))
 (name! %% '%%)
+
+(define ((tag-preferred-style style) thing)
+  (cond ((cell? thing)
+	 (let ((answer (make-cell)))
+	   (eq-clone! thing answer)
+	   (add-content answer ((tag-preferred-style style) (content thing)))
+	   answer))
+	((propagator-constructor? thing)
+	 (let ((answer (lambda args (apply thing args))))
+	   (eq-clone! thing answer)
+	   (eq-put! answer 'preferred-style style)
+	   answer))
+	((closure? thing)
+	 (eq-put! (closure-copy thing) 'preferred-style style))
+	(else 
+	 (warn "Ignoring" thing)
+	 thing)))
+
+(define *functionalize-only-tags* #f)
+
+(define really-functionalize functionalize)
+(define functionalize
+  (if *functionalize-only-tags*
+      (tag-preferred-style 'expression)
+      really-functionalize))
 
 ;;;; Propagatify macro
 

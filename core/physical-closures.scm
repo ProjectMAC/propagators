@@ -250,7 +250,7 @@
       (let ((output (make-cell)))
 	(do-apply-prop prop `(,@arg-cells ,output))
 	output)
-      (do-apply-prop prop arg-cells))) 
+      (do-apply-prop prop arg-cells)))
 
 (define (directly-applicable? thing)
   (or (closure? thing)
@@ -291,7 +291,7 @@
      (lambda (cell)
        (general-propagator-apply cell arg-cells)))))
 
-(define e:application (functionalize p:application))
+(define e:application (really-functionalize p:application))
 (define d@ p:application)
 (define @d d@)
 (define e@ e:application)
