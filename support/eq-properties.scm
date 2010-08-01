@@ -91,7 +91,8 @@
 
 (define (eq-clone! source target)
   (hash-table/put! eq-properties target
-    (hash-table/get eq-properties source '())))
+    (hash-table/get eq-properties source '()))
+  target)
 
 ;;; Path names are built with properties.
 
