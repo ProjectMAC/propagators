@@ -248,7 +248,7 @@
 (define (eager-expression-apply prop arg-cells)
   (if (diagram-style? prop)
       (let ((output (make-cell)))
-	(do-apply-prop prop `(,@arg-cells output))
+	(do-apply-prop prop `(,@arg-cells ,output))
 	output)
       (do-apply-prop prop arg-cells))) 
 
