@@ -67,7 +67,7 @@
      target cell)))
 
 (define (ce:layered-get name)
-  (functionalize (cp:layered-get name)))
+  (really-functionalize (cp:layered-get name)))
 
 (define (layered-binary-map layered1 layered2)
   (lambda (f)
