@@ -239,6 +239,13 @@
       (c:== (car (last-pair arg-cells))
 	    (do-apply-prop prop (except-last-pair arg-cells)))))
 
+(define (eager-expression-apply prop arg-cells)
+  (if (diagram-style? prop)
+      (let ((output (make-cell)))
+	(do-apply-prop prop `(,@arg-cells output))
+	output)
+      (do-apply-prop prop arg-cells))) 
+
 (define (directly-applicable? thing)
   (or (closure? thing)
       (propagator-constructor? thing)))
@@ -250,15 +257,6 @@
 	  ((closure? thing)
 	   (closure-diagram-style? thing))
 	  (else #t))))
-
-(define (eager-apply prop arg-cells)      
-  (if (prefers-diagram-style? prop)
-      (eager-diagram-apply prop arg-cells)
-      (if (diagram-style? prop)
-	  (let ((output (make-cell)))
-	    (do-apply-prop prop `(,@arg-cells output))
-	    output)
-	  (do-apply-prop prop arg-cells))))
 
 (define (try-eager-application object direct-apply general-apply)
   (if (cell? object)
@@ -281,7 +279,9 @@
   (let ((arg-cells (map ensure-cell arg-cells)))
     (try-eager-application object
      (lambda (object)
-       (eager-apply object arg-cells))
+       (if (prefers-diagram-style? object)
+	   (eager-diagram-apply object arg-cells)
+	   (eager-expression-apply object arg-cells)))
      (lambda (cell)
        (general-propagator-apply cell arg-cells)))))
 
