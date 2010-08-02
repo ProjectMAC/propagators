@@ -109,7 +109,8 @@
 (define really-functionalize functionalize)
 (define functionalize
   (if *functionalize-only-tags*
-      (tag-preferred-style 'expression)
+      (lambda (thing)
+	(ensure-cell ((tag-preferred-style 'expression) thing)))
       really-functionalize))
 
 ;;;; Propagatify macro
