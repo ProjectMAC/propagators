@@ -104,13 +104,15 @@
 	 (warn "Ignoring" thing)
 	 thing)))
 
+(define (expression-style-variant thing)
+  (ensure-cell ((tag-preferred-style 'expression) thing)))
+
 (define *functionalize-only-tags* #f)
 
 (define really-functionalize functionalize)
 (define functionalize
   (if *functionalize-only-tags*
-      (lambda (thing)
-	(ensure-cell ((tag-preferred-style 'expression) thing)))
+      expression-style-variant
       really-functionalize))
 
 ;;;; Propagatify macro
