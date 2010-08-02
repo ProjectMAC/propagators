@@ -147,7 +147,10 @@
    (= 7 (let-cells* ((x 3)
 		     (y (e:+ x 4)))
 	  (run)
-	  (content y))))
+	  (content y)))
+   (= 1 (let-cell ((answer (ce:+ 2 %% 3)))
+	  (run)
+	  (content answer))))
 
  (define-test (factorial)
    (interaction
