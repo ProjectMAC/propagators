@@ -25,48 +25,63 @@
 
 ;;; APPLICATION is to the propagator world what APPLY is to Scheme.
 
-;;; Propagator networks may be constructed by directly writing Scheme
-;;; code that defines cells and calls various of the propagator
-;;; constructor procedures at desired junctures.  This is the moral
-;;; equivalent of macrology, the pleasantness and sophistication of
-;;; the macro language (Scheme) notwithstanding.  But there is another
-;;; way: just as Scheme interprets a combination as a call to the
-;;; distinguished procedure APPLY which collects a procedure from a
-;;; variable and applies it to arguments, it is sensible to define a
-;;; distinguished propagator constructor called APPLICATION which
-;;; collects a propagator constructor from a cell and invokes it on
-;;; argument cells.
+;;; Just as putting a Scheme variable into operator position produces
+;;; a call to APPLY, putting a cell into operator position produces a
+;;; call the APPLICATION.  APPLICATION is a distinguished propagator
+;;; constructor which collects a propagator constructor from a cell
+;;; and invokes it on argument cells.
 
 ;;; The propagator constructors found in cells may either be
 ;;; primitive, as defined for example by
-;;; FUNCTION->PROPAGATOR-CONSTRUCTOR, DEFINE-MACRO-PROPAGATOR, etc, or
-;;; may be closures, per the closure data structure above.  That
-;;; distinction is the same as the distinction between primitive and
-;;; compound Scheme procedures.
+;;; FUNCTION->PROPAGATOR-CONSTRUCTOR, or may be closures, per the
+;;; closure data structure in physical-closures.scm.  That distinction
+;;; is the same as the distinction between primitive and compound
+;;; Scheme procedures.
 
 ;;; The important thing for APPLICATION to deal with, that's new to
 ;;; the propagator world and is not found in Scheme, is, of course,
 ;;; the fact that the available information about the propagator
-;;; constructor being applied may be partial; and that APPLICATION
-;;; needs to be properly idempotent, because it may be called multiple
-;;; times as that partial information is refined.  This is done by
-;;; making the transfer of information across the call boundary
-;;; conditional on the propagator constructor being applied, with the
-;;; effect that both the arguments and the return values inherit any
-;;; partialness of that particular propagator constructor indeed being
-;;; the one applied.
+;;; constructor being applied may be partial; and that the propagator
+;;; created by APPLICATION needs to be properly idempotent, because it
+;;; may be called multiple times as that partial information is
+;;; refined.  This is done by making the transfer of information
+;;; across the call boundary conditional on the propagator constructor
+;;; being applied, with the effect that both the arguments and the
+;;; return values inherit any partialness of that particular
+;;; propagator constructor indeed being the one applied.
 
-;;; There is also a less important thing that APPLICATION needs to
-;;; deal with, that doesn't happen in Scheme, and that's the
-;;; distinction between diagram-style and expression-style
-;;; propagator constructors.  The former are more general, but require
-;;; all their boundary cells, including those for holding "return"
-;;; values, to be passed in to them, and ignore the Scheme return
-;;; value channel.  The latter are more convenient, because they will
-;;; synthesize and return a cell for the "return value" of the
-;;; computation they represent.  APPLICATION needs to be able to apply
-;;; either kind; and being a propagator constructor itself,
-;;; APPLICATION comes in both flavors.
+;;; APPLICATION is the locus of a nontrivial optimization: if the cell
+;;; containing the object to be applied is fully determined at network
+;;; construction time, the appropriate propagator can be extracted
+;;; therefrom and attached immediately, without creating an additional
+;;; propagator whose only job would be to pull it out and apply it.
+
+;;; There is also a linguistic matter that APPLICATION needs to deal
+;;; with, that doesn't happen in Scheme.  This matter is the
+;;; distinction between diagram-style and expression-style propagator
+;;; constructors:
+
+;;; The most general propagator notation supplies all the input and
+;;; output cells to the desired propagator constructor explicitly:
+;;;   (p:+ x y subtotal)
+;;;   (p:+ subtotal z total)
+;;; This "diagram style" notation is very flexible, because it
+;;; allows easy handling of multiple propagators writing to the same
+;;; cells, propagators having multiple output cells, having cells that
+;;; are ambiguous as to input vs output, etc.
+
+;;; A nested expression notation can be very convenient for simple
+;;; cases, however, because it allows the outputs of one propagator to
+;;; be piped directly into the inputs to another, without even naming
+;;; the intermediate value:
+;;;   (e:+ (e:+ x y) z)
+
+;;; APPLICATION comes in the user-callable flavors d@ and e@, which
+;;; force diagram-style or expression-style application, respectively.
+;;; The native APPLICATION will respect the preferred style of the
+;;; propagator being applied if that propagator is completely
+;;; determined at network-construction time; otherwise it defaults to
+;;; diagram-style.
 
 ;;; General application
 
@@ -146,6 +161,11 @@
 	  (general-apply (ensure-cell object)))))
 
 ;;; Dealing with implicit cells
+
+;;; The HANDLING-IMPLICIT-CELLS procedure mechanically derives an
+;;; expression-style variant of a diagram-style procedure that
+;;; operates on cells.  The FUNCTIONALIZE procedure augments it by
+;;; handling the metadata of propagator constructors.
 
 (define (handling-implicit-cells proc #!optional num-outputs)
   (if (default-object? num-outputs)

@@ -21,39 +21,10 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;;; Expression style of propagator notation
-
-;;; The most general propagator notation supplies all the input and
-;;; output cells to the desired propagator constructor explicitly:
-;;;   (p:+ x y subtotal)
-;;;   (p:+ subtotal z total)
-;;; This "diagram style" notation is very flexible, because it
-;;; allows easy handling of multiple propagators writing to the same
-;;; cells, propagators having multiple output cells, having cells that
-;;; are ambiguous as to input vs output, etc.
-
-;;; A nested expression notation can be very convenient for simple
-;;; cases, however, because it allows the outputs of one propagator to
-;;; be piped directly into the inputs to another, without even naming
-;;; the intermediate value:
-;;;   (e:+ (e:+ x y) z)
-
-;;; The HANDLING-IMPLICIT-CELLS procedure mechanically derives an
-;;; expression-style variant of a diagram-style procedure that
-;;; operates on cells.  The FUNCTIONALIZE procedure augments it by
-;;; handling the metadata of propagator constructors.  The
-;;; TAG-PREFERRED-STYLE procedure makes no meaningful change to its
-;;; argument, but attaches a tag to it that indicates that 
-
-
-;;; It is also convenient to provide
-;;; multidirectional constraint versions of standard propagator
-;;; constructors with a uniform naming scheme.
-
 ;;; The naming convention is:
 ;;;   p:foo  for the propagator version of foo
 ;;;   e:foo  for the expression-oriented propagator version of foo
-;;;   cp:foo for the constraint-propagator version of foo
+;;;   c:foo  for the constraint-propagator version of foo
 ;;;   ce:foo for the expression-oriented constraint-propagator version of foo
 
 ;;;; Propagatify macro
