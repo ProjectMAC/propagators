@@ -200,22 +200,40 @@
 	   (name-locally! arg-form 'arg-form) ...
 	   body-form ...)))))))
 
-;;; This version is just like define-propagator-syntax, but allows the
-;;; body to be recursive by delaying its expansion until there is some
-;;; information in at least one of the neighbor cells.  This has the
-;;; effect of requiring the neighbors to indeed be cells.
-(define-syntax define-delayed-propagator
-  (syntax-rules ()
-    ((define-delayed-propagator (name arg-form ...) body-form ...)
-     (define name
-       (named-delayed-propagator (name arg-form ...)
-	 body-form ...)))))
+(define-syntax lambda-delayed-propagator
+  (syntax-rules (import)
+    ((lambda-delayed-propagator (arg ...)
+       (import cell ...)
+       body ...)
+     (make-closure
+      (delayed-propagator-constructor
+       (naming-lambda (arg ...)
+	 body ...))
+      (list cell ...)))
+    ((lambda-delayed-propagator (arg ...)
+       body ...)
+     (lambda-delayed-propagator (arg ...)
+       (import)
+       body ...))))
 
-;;; This is the "lambda" to define-delayed-propagator's "define".
-(define-syntax named-delayed-propagator
+(define-syntax define-%delayed-propagator
   (syntax-rules ()
-    ((named-delayed-propagator stuff ...)
-     (delayed-propagator-constructor (named-propagator-syntax stuff ...)))))
+    ((define-%delayed-propagator names (arg ...)
+       body ...)
+     (define-by-diagram-variant names
+       (name!
+	(lambda-delayed-propagator (arg ...)
+	  body ...)
+	(car 'names))))))
+
+(define-syntax define-delayed-propagator
+  (rsc-macro-transformer
+   (lambda (form defn-env)
+     (let ((name (caadr form))
+	   (formals (cdadr form))
+	   (body (cddr form)))
+       `(define-%delayed-propagator
+	  ,(propagator-naming-convention name) ,formals ,@body)))))
 
 ;;; This is a convenience for defining closures (with make-closure)
 ;;; that track the Scheme names given to the incoming cells.
