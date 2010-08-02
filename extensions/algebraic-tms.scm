@@ -158,7 +158,7 @@
   (function->propagator-constructor
    (unary-mapping null?)))
 
-(define-propagator-syntax (p:copy-null? thing answer)
+(define-propagator (p:copy-null? thing answer)
   (let-cell tag
     (%p:tag thing tag)
     (%p:copy-null? tag answer)))
@@ -172,8 +172,6 @@
 
 (define-propagator (c:copy-null answer)
   (p:copy-null answer))
-
-(define e:copy-null? (expression-style-variant p:copy-null?))
 
 ;;; Pairs
 
@@ -182,18 +180,19 @@
 (define %p:copy-pair?
   (function->propagator-constructor (unary-mapping pair?)))
 
-(define-propagator-syntax (p:copy-pair? thing answer)
+(define-propagator (p:copy-pair? thing answer)
   (let-cell tag
     (%p:tag thing tag)
     (%p:copy-pair? tag answer)))
 
-(define p:copy-cons (function->propagator-constructor cons))
+(define copy-cons cons)
+(propagatify copy-cons)
 
-(define p:copy-car (function->propagator-constructor
-		    (handling-algebraic-partial-information car)))
+(define copy-car car)
+(propagatify copy-car handling-algebraic-partial-information 'no-generic)
 
-(define p:copy-cdr (function->propagator-constructor
-		    (handling-algebraic-partial-information cdr)))
+(define copy-cdr cdr)
+(propagatify copy-cdr handling-algebraic-partial-information 'no-generic)
 
 (define-propagator (c:copy-pair? pair answer)
   (p:copy-pair? pair answer)
@@ -211,8 +210,3 @@
 (define-propagator (c:copy-cdr pair answer)
   (p:copy-cdr pair answer)
   (p:copy-cons nothing answer pair))
-
-(define e:copy-pair?  (expression-style-variant p:copy-pair?))
-(define e:copy-cons   (expression-style-variant p:copy-cons))
-(define e:copy-car    (expression-style-variant p:copy-car))
-(define e:copy-cdr    (expression-style-variant p:copy-cdr))
