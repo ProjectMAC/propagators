@@ -51,11 +51,11 @@
 (define generic-and (make-generic-operator 2 'and boolean/and))
 (define-cell p:and
   (function->propagator-constructor (binary-mapping generic-and)))
-(define-cell e:and (functionalize p:and))
+(define-cell e:and (expression-style-variant p:and))
 (define generic-or  (make-generic-operator 2 'or  boolean/or))
 (define-cell p:or
   (function->propagator-constructor (binary-mapping generic-or)))
-(define-cell e:or (functionalize p:or))
+(define-cell e:or (expression-style-variant p:or))
 
 (propagatify eq? binary-mapping)
 (propagatify eqv? binary-mapping)
@@ -67,7 +67,7 @@
 (name! switch-function 'switch)
 (define-cell p:switch
   (function->propagator-constructor (nary-unpacking switch-function)))
-(define-cell e:switch (functionalize p:switch))
+(define-cell e:switch (expression-style-variant p:switch))
 
 (name! identity 'identity)
 (define-cell pass-through (function->propagator-constructor identity))
@@ -175,7 +175,7 @@
 	      (except-last-pair args))
     target))
 (propagator-constructor! p:==)
-(define-cell e:== (functionalize p:==))
+(define-cell e:== (expression-style-variant p:==))
 
 (define-cell (c:== . args)
   (let ((lead (car args)))
@@ -184,4 +184,4 @@
 	      (cdr args))
     lead))
 (propagator-constructor! c:==)
-(define-cell ce:== (functionalize c:==))
+(define-cell ce:== (expression-style-variant c:==))

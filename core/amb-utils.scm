@@ -55,4 +55,4 @@
 (define require p:require)
 (define forbid p:forbid)
 
-(define e:one-of (functionalize one-of))
+(define e:one-of (expression-style-variant one-of))

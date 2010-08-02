@@ -39,13 +39,12 @@
        (execute-propagator     ; To enable the early-access-hack below
 	((constant (apply f inputs)) output))))))
 (define-cell p:carry-cons (function->cell-carrier-constructor cons))
-(define-cell e:carry-cons (functionalize p:carry-cons))
+(define-cell e:carry-cons (expression-style-variant p:carry-cons))
 
 ;;; Type tester:
 
-(define-cell p:carry-pair?
-  (function->propagator-constructor (unary-mapping pair?)))
-(define-cell e:carry-pair? (functionalize p:carry-pair?))
+(define carry-pair? pair?)
+(propagatify carry-pair? unary-mapping)
 
 ;;; Propagator-style accessors are remarkably easy:
 
@@ -79,10 +78,10 @@
 	 (accessor (content structure-cell))
 	 (fallback structure-cell)))))
 
-(define-cell %e:carry-car (functionalize p:carry-car))
+(define-cell %e:carry-car (expression-style-variant p:carry-car))
 (define-cell e:carry-car (early-access-hack pair? car %e:carry-car))
 
-(define-cell %e:carry-cdr (functionalize p:carry-cdr))
+(define-cell %e:carry-cdr (expression-style-variant p:carry-cdr))
 (define-cell e:carry-cdr (early-access-hack pair? cdr %e:carry-cdr))
 
 ;;; Carrying data is standard
