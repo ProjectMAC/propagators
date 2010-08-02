@@ -40,14 +40,16 @@
     ((define-by-diagram-variant (diagram-name expression-name) form)
      (begin
        (define-cell diagram-name form)
-       (define-cell expression-name (expression-style-variant diagram-name))))))
+       (define-cell expression-name
+	 (expression-style-variant diagram-name))))))
 
 (define-syntax define-by-expression-variant
   (syntax-rules ()
     ((define-by-diagram-variant (diagram-name expression-name) form)
      (begin
        (define-cell expression-name form)
-       (define-cell diagram-name (diagram-style-variant expression-name))))))
+       (define-cell diagram-name
+	 (diagram-style-variant expression-name))))))
 
 ;;;; Propagator naming convention
 
@@ -69,15 +71,18 @@
   (let* ((name-string (symbol->string name))
 	 (long-named? (and (>= (string-length name-string) 3)
 			   (equal? "ce:" (substring name-string 0 3))))
-	 (propagator-named? (and (>= (string-length name-string) 2)
-				 (or (equal? "p:" (substring name-string 0 2))
-				     (equal? "e:" (substring name-string 0 2)))))
-	 (constraint-named? (and (>= (string-length name-string) 2)
-				 (or (equal? "c:" (substring name-string 0 2))
-				     long-named?)))
-	 (prefix-length (cond (long-named? 3)
-			      ((or constraint-named? propagator-named?) 2)
-			      (else 0)))
+	 (propagator-named?
+	  (and (>= (string-length name-string) 2)
+	       (or (equal? "p:" (substring name-string 0 2))
+		   (equal? "e:" (substring name-string 0 2)))))
+	 (constraint-named?
+	  (and (>= (string-length name-string) 2)
+	       (or (equal? "c:" (substring name-string 0 2))
+		   long-named?)))
+	 (prefix-length
+	  (cond (long-named? 3)
+		((or constraint-named? propagator-named?) 2)
+		(else 0)))
 	 (base-name (string-tail name-string prefix-length)))
     (if constraint-named?
 	(list (symbol 'c: base-name)
@@ -255,6 +260,15 @@
      (lambda-propagator (arg ...)
        (import)
        body ...))))
+
+;;; This is a convenience for defining closures (with make-closure)
+;;; that track the Scheme names given to the incoming cells.
+(define-syntax naming-lambda
+  (syntax-rules ()
+    ((naming-lambda (arg-form ...) body-form ...)
+     (lambda (arg-form ...)
+       (name-locally! arg-form 'arg-form) ...
+       body-form ...))))
 
 ;;; DEFINE-E:PROPAGATOR is just like DEFINE-PROPAGATOR, except that
 ;;; there is one more implicit boundary cell, which is expected to be
@@ -333,15 +347,6 @@
      (lambda-delayed-propagator (arg ...)
        (import)
        body ...))))
-
-;;; This is a convenience for defining closures (with make-closure)
-;;; that track the Scheme names given to the incoming cells.
-(define-syntax naming-lambda
-  (syntax-rules ()
-    ((naming-lambda (arg-form ...) body-form ...)
-     (lambda (arg-form ...)
-       (name-locally! arg-form 'arg-form) ...
-       body-form ...))))
 
 ;;;     TODO I need variable arity propagator constructors; this can
 ;;; be taken from the story for compound data.
