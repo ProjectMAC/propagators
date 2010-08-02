@@ -79,7 +79,6 @@
    (n n!)
    (p:== (e:* n (e:factorial-1 (e:- n 1))) n!))
   (switch (e:= 0 n) 1 n!))
-(define e:factorial-1 (functionalize p:factorial-1))
 
 (define-syntax shielded-unless
   (syntax-rules ()
@@ -99,4 +98,3 @@
    (n n!)
    (p:== 1 n!)
    (p:== (e:* n (e:factorial-2 (e:- n 1))) n!)))
-(define e:factorial-2 (functionalize p:factorial-2))

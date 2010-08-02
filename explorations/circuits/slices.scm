@@ -47,7 +47,7 @@
 			     (map cdr (layered-alist thing)))) eq?))
 	(else '())))
 
-(define (premise-overrider premised)
+(define (override-premise premised)
   (let ((premises (filter kcl-premise? (collect-premises premised))))
     (if (null? premises)
 	nothing
@@ -56,10 +56,7 @@
 	  ; (pp (map kcl-premise-name premises))
 	  (kick-out! (car premises))
 	  #t))))
-(name! premise-overrider 'premise-overrider)
-
-(define p:override-premise (function->propagator-constructor premise-overrider))
-(define e:override-premise (functionalize p:override-premise))
+(propagatify override-premise)
 
 (define-propagator (approximate-voltage-divider-slice R1 center R2 bottom)
   (let ((center-terminals (the-terminals center)))

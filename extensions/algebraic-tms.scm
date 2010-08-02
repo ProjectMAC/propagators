@@ -163,7 +163,8 @@
     (%p:tag thing tag)
     (%p:copy-null? tag answer)))
 
-(define p:copy-null (function->propagator-constructor null))
+(define copy-null null)
+(propagatify copy-null)
 
 (define-propagator (c:copy-null? thing answer)
   (p:copy-null? thing answer)
@@ -172,11 +173,7 @@
 (define-propagator (c:copy-null answer)
   (p:copy-null answer))
 
-(define e:copy-null? (functionalize p:copy-null?))
-(define e:copy-null (functionalize p:copy-null))
-
-(define ce:copy-null? (functionalize c:copy-null?))
-(define ce:copy-null (functionalize c:copy-null))
+(define e:copy-null? (expression-style-variant p:copy-null?))
 
 ;;; Pairs
 
@@ -215,12 +212,7 @@
   (p:copy-cdr pair answer)
   (p:copy-cons nothing answer pair))
 
-(define e:copy-pair?  (functionalize p:copy-pair?))
-(define e:copy-cons   (functionalize p:copy-cons))
-(define e:copy-car    (functionalize p:copy-car))
-(define e:copy-cdr    (functionalize p:copy-cdr))
-
-(define ce:copy-pair? (functionalize c:copy-pair?))
-(define ce:copy-cons  (functionalize c:copy-cons))
-(define ce:copy-car   (functionalize c:copy-car))
-(define ce:copy-cdr   (functionalize c:copy-cdr))
+(define e:copy-pair?  (expression-style-variant p:copy-pair?))
+(define e:copy-cons   (expression-style-variant p:copy-cons))
+(define e:copy-car    (expression-style-variant p:copy-car))
+(define e:copy-cdr    (expression-style-variant p:copy-cdr))
