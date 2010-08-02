@@ -96,7 +96,7 @@
   (syntax-rules ()
     ((define-%propagator names (arg ...)
        body ...)
-     (define-functionalized names
+     (define-by-diagram-variant names
        (name!
 	(lambda-propagator (arg ...)
 	  body ...)

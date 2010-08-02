@@ -169,14 +169,14 @@
 	    (propagatee (close-syntax propagatee-name use-env))
 	    (direct? (null? (cddr form))))
        (if direct?
-	   `(define-functionalized ,(propagator-naming-convention propagatee-name)
+	   `(define-by-diagram-variant ,(propagator-naming-convention propagatee-name)
 	      (function->propagator-constructor
 	       (name! ,propagatee ,propagatee-name)))
 	   `(begin
 	      (define ,generic-name
 		(make-arity-detecting-operator
 		 ',propagatee-name ,propagatee ,@(cdddr form)))
-	      (define-functionalized ,(propagator-naming-convention propagatee-name)
+	      (define-by-diagram-variant ,(propagator-naming-convention propagatee-name)
 		(function->propagator-constructor
 		 (,(caddr form) ,generic-name)))))))))
 
@@ -222,9 +222,9 @@
 	(list (symbol 'p: base-name)
 	      (symbol 'e: base-name)))))
 
-(define-syntax define-functionalized
+(define-syntax define-by-diagram-variant
   (syntax-rules ()
-    ((define-functionalized (diagram-name expression-name) form)
+    ((define-by-diagram-variant (diagram-name expression-name) form)
      (begin
        (define-cell diagram-name form)
-       (define-cell expression-name (functionalize diagram-name))))))
+       (define-cell expression-name (expression-style-variant diagram-name))))))
