@@ -144,24 +144,19 @@
 (define (eager-diagram-apply prop arg-cells)
   (if (diagram-style? prop)
       (do-apply-prop prop arg-cells)
-      (apply
-       (handling-explicit-output
-	(lambda cells
-	  (do-apply-prop prop cells)))
-       arg-cells)))
+      (handling-explicit-output arg-cells
+	(lambda (inputs)
+	  (do-apply-prop prop inputs)))))
 
-(define (handling-explicit-output proc)
-  (lambda boundary
-    (c:== (car (last-pair boundary))
-	  (apply proc (except-last-pair boundary)))))
+(define (handling-explicit-output boundary proc)
+  (c:== (car (last-pair boundary))
+	(proc (except-last-pair boundary))))
 
 (define (eager-expression-apply prop arg-cells)
   (if (diagram-style? prop)
-      (apply
-       (handling-implicit-cells
-	(lambda cells
-	  (do-apply-prop prop cells)))
-       arg-cells)
+      (handling-implicit-cells arg-cells
+	(lambda (boundary)
+	  (do-apply-prop prop boundary)))
       (do-apply-prop prop arg-cells)))
 
 (define (directly-applicable? thing)
@@ -184,35 +179,38 @@
 ;;; operates on cells.  The FUNCTIONALIZE procedure augments it by
 ;;; handling the metadata of propagator constructors.
 
-(define (handling-implicit-cells proc #!optional num-outputs)
+(define (handling-implicit-cells inputs proc #!optional num-outputs)
   (if (default-object? num-outputs)
       (set! num-outputs 1))
-  (lambda inputs
-    (define (manufacture-cell)
-      (eq-put! (make-named-cell 'cell) 'subexprs inputs))
-    (define outputs (map (lambda (k) (manufacture-cell))
-			 (iota num-outputs)))
-    (define true-inputs
-      (let loop ((inputs inputs)
-		 (outputs outputs))
-	(cond ((null? inputs)
-	       outputs)
-	      ((implicit-cell? (car inputs))
-	       (if (null? outputs)
-		   (error "Too many implicit cells" inputs)
-		   (cons (car outputs)
-			 (loop (cdr inputs) (cdr outputs)))))
-	      (else
-	       (cons (car inputs) (loop (cdr inputs) outputs))))))
-    (apply proc (map ensure-cell true-inputs))
-    (if (= 1 (length outputs))
-	(car outputs)
-	(apply values outputs))))
+  (define (manufacture-cell)
+    (eq-put! (make-named-cell 'cell) 'subexprs inputs))
+  (define outputs (map (lambda (k) (manufacture-cell))
+		       (iota num-outputs)))
+  (define true-inputs
+    (let loop ((inputs inputs)
+	       (outputs outputs))
+      (cond ((null? inputs)
+	     outputs)
+	    ((implicit-cell? (car inputs))
+	     (if (null? outputs)
+		 (error "Too many implicit cells" inputs)
+		 (cons (car outputs)
+		       (loop (cdr inputs) (cdr outputs)))))
+	    (else
+	     (cons (car inputs) (loop (cdr inputs) outputs))))))
+  (proc (map ensure-cell true-inputs))
+  (if (= 1 (length outputs))
+      (car outputs)
+      (apply values outputs)))
 
 (define (functionalize propagator #!optional num-outputs)
   (propagator-constructor!
    (eq-label!
-    (handling-implicit-cells propagator num-outputs)
+    (lambda inputs
+      (handling-implicit-cells inputs
+        (lambda (boundary)
+	  (apply propagator boundary))
+	num-outputs))
     'expression-style #t
     'preferred-style 'expression)))
 
