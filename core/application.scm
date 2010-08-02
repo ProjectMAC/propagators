@@ -49,7 +49,7 @@
 ;;; being applied, with the effect that both the arguments and the
 ;;; return values inherit any partialness of that particular
 ;;; propagator constructor indeed being the one applied.
-
+
 ;;; APPLICATION is the locus of a nontrivial optimization: if the cell
 ;;; containing the object to be applied is fully determined at network
 ;;; construction time, the appropriate propagator can be extracted
@@ -82,6 +82,15 @@
 ;;; propagator being applied if that propagator is completely
 ;;; determined at network-construction time; otherwise it defaults to
 ;;; diagram-style.
+
+(define (application object . arg-cells)
+  (try-eager-application object
+   (lambda (object)
+     (if (prefers-diagram-style? object)
+	 (eager-diagram-apply object arg-cells)
+	 (eager-expression-apply object arg-cells)))
+   (lambda (cell)
+     (general-propagator-apply cell arg-cells))))
 
 ;;; General application
 
@@ -204,7 +213,8 @@
   (eq? thing %%))
 (name! %% '%%)
 
-;;; User-facing frontend of applying things
+
+;;; User-facing frontend for forcing application style
 
 (define (p:application object . arg-cells)
   (try-eager-application object
@@ -213,21 +223,12 @@
    (lambda (cell)
      (general-propagator-apply cell arg-cells))))
 
-(define (application object . arg-cells)
-  (try-eager-application object
-   (lambda (object)
-     (if (prefers-diagram-style? object)
-	 (eager-diagram-apply object arg-cells)
-	 (eager-expression-apply object arg-cells)))
-   (lambda (cell)
-     (general-propagator-apply cell arg-cells))))
-
 (define e:application (functionalize p:application))
 (define d@ p:application)
 (define @d d@)
 (define e@ e:application)
 (define @e e@)
-
+
 ;;; Guts of applying things
 
 (define (do-apply-prop prop real-args)
