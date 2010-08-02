@@ -168,11 +168,6 @@
 (define-propagator (c:id c1 c2)
   (pass-through c1 c2) (pass-through c2 c1))
 
-(define ce:+ (functionalize c:+))
-(define ce:* (functionalize c:*))
-(define ce:square (functionalize c:square))
-(define ce:not (functionalize c:not))
-
 (define-cell p:==
   (propagator-constructor!
    (lambda args
