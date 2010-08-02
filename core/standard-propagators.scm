@@ -75,73 +75,7 @@
 ;; TODO Do I still want to provide these old names for these things?
 (define constant p:constant) (define switch p:switch)
 
-;;;; Standard "propagator macros"
-
-(define-syntax lambda-propagator
-  (syntax-rules (import)
-    ((lambda-propagator (arg ...)
-       (import cell ...)
-       body ...)
-     (make-closure
-      (naming-lambda (arg ...)
-	body ...)
-      (list cell ...)))
-    ((lambda-propagator (arg ...)
-       body ...)
-     (lambda-propagator (arg ...)
-       (import)
-       body ...))))
-
-(define-syntax define-%propagator
-  (syntax-rules ()
-    ((define-%propagator names (arg ...)
-       body ...)
-     (define-by-diagram-variant names
-       (name!
-	(lambda-propagator (arg ...)
-	  body ...)
-	(car 'names))))))
-
-(define-syntax define-propagator
-  (rsc-macro-transformer
-   (lambda (form defn-env)
-     (let ((name (caadr form))
-	   (formals (cdadr form))
-	   (body (cddr form)))
-       `(define-%propagator ,(propagator-naming-convention name) ,formals ,@body)))))
-
-(define-syntax lambda-e:propagator
-  (syntax-rules (import)
-    ((lambda-e:propagator (arg ...)
-       (import cell ...)
-       body ...)
-     (make-e:closure
-      (naming-lambda (arg ...)
-	body ...)
-      (list cell ...)))
-    ((lambda-e:propagator (arg ...)
-       body ...)
-     (lambda-e:propagator (arg ...)
-       (import)
-       body ...))))
-
-(define-syntax define-%e:propagator
-  (syntax-rules ()
-    ((define-%e:propagator names (arg ...)
-       body ...)
-     (define-by-expression-variant names
-       (name!
-	(lambda-e:propagator (arg ...)
-	  body ...)
-	(car 'names))))))
-
-(define-syntax define-e:propagator
-  (rsc-macro-transformer
-   (lambda (form defn-env)
-     (let ((name (caadr form))
-	   (formals (cdadr form))
-	   (body (cddr form)))
-       `(define-%e:propagator ,(propagator-naming-convention name) ,formals ,@body)))))
+;;;; Standard compound propagators
 
 (define-propagator (conditional control if-true if-false output)
   (switch control if-true output)

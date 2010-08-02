@@ -217,6 +217,107 @@
 
 ;;;; Defining compound propagators
 
+;;; DEFINE-PROPAGATOR is to the propagator language what DEFINE is to
+;;; Scheme.  These macros make closures --- see physical-closures.scm.
+;;; This one defines propagators in diagram style --- that is, all
+;;; boundary cells are explicitly named.
+
+(define-syntax define-propagator
+  (rsc-macro-transformer
+   (lambda (form defn-env)
+     (let ((name (caadr form))
+	   (formals (cdadr form))
+	   (body (cddr form)))
+       `(define-%propagator ,(propagator-naming-convention name)
+	  ,formals ,@body)))))
+
+(define-syntax define-%propagator
+  (syntax-rules ()
+    ((define-%propagator names (arg ...)
+       body ...)
+     (define-by-diagram-variant names
+       (name!
+	(lambda-propagator (arg ...)
+	  body ...)
+	(car 'names))))))
+
+(define-syntax lambda-propagator
+  (syntax-rules (import)
+    ((lambda-propagator (arg ...)
+       (import cell ...)
+       body ...)
+     (make-closure
+      (naming-lambda (arg ...)
+	body ...)
+      (list cell ...)))
+    ((lambda-propagator (arg ...)
+       body ...)
+     (lambda-propagator (arg ...)
+       (import)
+       body ...))))
+
+;;; DEFINE-E:PROPAGATOR is just like DEFINE-PROPAGATOR, except that
+;;; there is one more implicit boundary cell, which is expected to be
+;;; returned by the last form in the body being defined.
+
+(define-syntax define-e:propagator
+  (rsc-macro-transformer
+   (lambda (form defn-env)
+     (let ((name (caadr form))
+	   (formals (cdadr form))
+	   (body (cddr form)))
+       `(define-%e:propagator ,(propagator-naming-convention name)
+	  ,formals ,@body)))))
+
+(define-syntax define-%e:propagator
+  (syntax-rules ()
+    ((define-%e:propagator names (arg ...)
+       body ...)
+     (define-by-expression-variant names
+       (name!
+	(lambda-e:propagator (arg ...)
+	  body ...)
+	(car 'names))))))
+
+(define-syntax lambda-e:propagator
+  (syntax-rules (import)
+    ((lambda-e:propagator (arg ...)
+       (import cell ...)
+       body ...)
+     (make-e:closure
+      (naming-lambda (arg ...)
+	body ...)
+      (list cell ...)))
+    ((lambda-e:propagator (arg ...)
+       body ...)
+     (lambda-e:propagator (arg ...)
+       (import)
+       body ...))))
+
+;;; DEFINE-DELAYED-PROPAGATOR is one mechanism for achieving
+;;; recursion.  It is just like DEFINE-PROPAGATOR, except that the
+;;; closure it produces delays expansion until some content appears on
+;;; its boundary.
+
+(define-syntax define-delayed-propagator
+  (rsc-macro-transformer
+   (lambda (form defn-env)
+     (let ((name (caadr form))
+	   (formals (cdadr form))
+	   (body (cddr form)))
+       `(define-%delayed-propagator
+	  ,(propagator-naming-convention name) ,formals ,@body)))))
+
+(define-syntax define-%delayed-propagator
+  (syntax-rules ()
+    ((define-%delayed-propagator names (arg ...)
+       body ...)
+     (define-by-diagram-variant names
+       (name!
+	(lambda-delayed-propagator (arg ...)
+	  body ...)
+	(car 'names))))))
+
 (define-syntax lambda-delayed-propagator
   (syntax-rules (import)
     ((lambda-delayed-propagator (arg ...)
@@ -232,25 +333,6 @@
      (lambda-delayed-propagator (arg ...)
        (import)
        body ...))))
-
-(define-syntax define-%delayed-propagator
-  (syntax-rules ()
-    ((define-%delayed-propagator names (arg ...)
-       body ...)
-     (define-by-diagram-variant names
-       (name!
-	(lambda-delayed-propagator (arg ...)
-	  body ...)
-	(car 'names))))))
-
-(define-syntax define-delayed-propagator
-  (rsc-macro-transformer
-   (lambda (form defn-env)
-     (let ((name (caadr form))
-	   (formals (cdadr form))
-	   (body (cddr form)))
-       `(define-%delayed-propagator
-	  ,(propagator-naming-convention name) ,formals ,@body)))))
 
 ;;; This is a convenience for defining closures (with make-closure)
 ;;; that track the Scheme names given to the incoming cells.
