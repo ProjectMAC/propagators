@@ -121,7 +121,7 @@
   (((entity-extra cell) 'new-neighbor!) neighbor))
 (define (cell? thing)
   (eq-get thing 'cell))
-
+
 (define (make-named-cell name)
   (name! (make-cell) name))
 
