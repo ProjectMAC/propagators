@@ -67,5 +67,21 @@
     (run)
     (content n!)
     (produces 120)))
+
+ (define-test (factorial-3)
+   (interaction
+    (initialize-scheduler)
+    (define-cell n! (e:factorial-3 5))
+    (run)
+    (content n!)
+    (produces 120)))
+ 
+ (define-test (factorial-4)
+   (interaction
+    (initialize-scheduler)
+    (define-cell n! (e:factorial-4 5))
+    (run)
+    (content n!)
+    (produces 120)))
  
  )

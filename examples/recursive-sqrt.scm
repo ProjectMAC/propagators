@@ -94,3 +94,41 @@
   (p:if (n n!) (e:= 0 n)
    (p:== 1 n!)
    (p:== (e:* n (e:factorial-2 (e:- n 1))) n!)))
+
+(define-syntax e:when
+  (syntax-rules ()
+    ((e:when (shieldee ...) conditional body ...)
+     (let-cells ((shieldee (e:conditional-wire conditional shieldee)) ...)
+       (let-cell output
+	 ((delayed-propagator-constructor
+	   (lambda boundary
+	     (handle-explicit-output boundary
+	      (lambda (args)
+		(apply 
+		 (lambda (shieldee ...)
+		   body ...)
+		 args)))))
+	  shieldee ... output)
+	 (e:conditional-wire conditional output))))))
+
+(define-e:propagator (e:factorial-3 n)
+  (ce:== (e:when (n) (e:not (e:= 0 n))
+	   (e:* n (e:factorial-3 (e:- n 1))))
+	 (e:switch (e:= 0 n) 1)))
+
+(define-syntax e:unless
+  (syntax-rules ()
+    ((e:unless shieldees conditional stuff ...)
+     (e:when shieldees (e:not conditional) stuff ...))))
+
+(define-syntax e:if
+  (syntax-rules ()
+    ((e:if shieldees conditional consequent alternate)
+     (let-cell (conditional-value conditional)
+       (ce:== (e:when shieldees conditional-value consequent)
+	      (e:unless shieldees conditional-value alternate))))))
+
+(define-e:propagator (e:factorial-4 n)
+  (e:if (n) (e:= 0 n)
+	1
+	(e:* n (e:factorial-4 (e:- n 1)))))
