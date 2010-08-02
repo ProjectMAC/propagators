@@ -64,6 +64,11 @@
  ;Value: 1.4142135623746899
 |#
 
+;;; TODO Consider rewriting p:when and company in terms of
+;;; constructing and applying closures that correspond to the bodies
+;;; of the branches.  Then the introduction of switches becomes
+;;; automatic, and the possible zero-inputs bug is avoided.
+
 (define-syntax p:when
   (syntax-rules ()
     ((p:when (shieldee ...) conditional body ...)
