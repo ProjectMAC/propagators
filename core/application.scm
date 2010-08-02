@@ -144,23 +144,23 @@
 (define (eager-diagram-apply prop arg-cells)
   (if (diagram-style? prop)
       (do-apply-prop prop arg-cells)
-      (handling-explicit-output arg-cells
+      (handle-explicit-output arg-cells
 	(lambda (inputs)
 	  (do-apply-prop prop inputs)))))
 
-(define (handling-explicit-output boundary proc)
+(define (handle-explicit-output boundary proc)
   (c:== (car (last-pair boundary))
 	(proc (except-last-pair boundary))))
 
 (define (eager-expression-apply prop arg-cells)
   (if (diagram-style? prop)
-      (handling-implicit-cells arg-cells
+      (handle-implicit-cells arg-cells
 	(lambda (boundary)
 	  (do-apply-prop prop boundary)))
       (if (any implicit-cell? arg-cells)
-	  (handling-implicit-cells arg-cells
+	  (handle-implicit-cells arg-cells
 	    (lambda (boundary)
-	      (handling-explicit-output boundary
+	      (handle-explicit-output boundary
 		(lambda (inputs)
 		  (do-apply-prop prop inputs)))))
 	  (do-apply-prop prop arg-cells))))
@@ -180,12 +180,12 @@
 
 ;;; Dealing with implicit cells
 
-;;; The HANDLING-IMPLICIT-CELLS procedure mechanically derives an
+;;; The HANDLE-IMPLICIT-CELLS procedure mechanically derives an
 ;;; expression-style variant of a diagram-style procedure that
 ;;; operates on cells.  The FUNCTIONALIZE procedure augments it by
 ;;; handling the metadata of propagator constructors.
 
-(define (handling-implicit-cells inputs proc #!optional num-outputs)
+(define (handle-implicit-cells inputs proc #!optional num-outputs)
   (if (default-object? num-outputs)
       (set! num-outputs 1))
   (define (manufacture-cell)
@@ -213,7 +213,7 @@
   (propagator-constructor!
    (eq-label!
     (lambda inputs
-      (handling-implicit-cells inputs
+      (handle-implicit-cells inputs
         (lambda (boundary)
 	  (apply propagator boundary))
 	num-outputs))
