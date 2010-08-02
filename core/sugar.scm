@@ -343,38 +343,11 @@
        (name-locally! arg-form 'arg-form) ...
        body-form ...))))
 
-;;;     TODO Is it now time to refactor the above propagator macro
-;;; nonsense into a propagator-lambda macro that emits closures, per
-;;; physical-closures.scm?
 ;;;     TODO I need variable arity propagator constructors; this can
-;;; be taken from the story for compound data.  (And at the end I need
-;;; to adjust the above to define-cell instead of define, and to
-;;; return cells instead raw values, but that's easy.)
+;;; be taken from the story for compound data.
 ;;;     TODO Here's an idea: maybe the arguments to the Scheme
-;;; procedures produced by define-macro-propagator and company should
-;;; be optional.  If any are not supplied, that macro can just
+;;; procedures produced by define-propagator and company should
+;;; be optional.  If any are not supplied, that procedure can just
 ;;; generate them.  It may also be fun to standardize on a mechanism
 ;;; like E:INSPECTABLE-OBJECT and THE from the circuits exploration
 ;;; for reaching in and grabbing such cells from the outside.
-;;;     TODO Philosophical clarification that probably needs to be
-;;; implemented: Abstractions should nominally always make their own
-;;; cells for their formal parameters.  Call sites should attach
-;;; arguments to callees with identity-like propagators. (If some
-;;; argument cells are omitted from the argument list, just fail to
-;;; attach anything to those parameters).  Cons should operate the
-;;; same as it would under Church encoding: make its own cells,
-;;; id-copy its arguments into them, and then carry those cells
-;;; around.  This is neither the "carrying cells" strategy, because
-;;; the argument cells are not carried, nor the "copying data"
-;;; strategy, because the contents of the cons are not copied every
-;;; time.  The advantage of this pattern is that cells really become
-;;; very analagous to Scheme memory locations.  Incidentally, this
-;;; idea is independent of physical vs virtual copies.  Hm.  It
-;;; appears that carrying cells is actually just a slight optimization
-;;; of this --- if the closure constructor's call site knows that it
-;;; is about to make a few new cells and attach them to existing cells
-;;; with unconditional identity propagators, then might as well just
-;;; grab those cells in the first place.  But if those propagators do
-;;; something funny like shift levels in a virtual copies scheme, or
-;;; attach the provenance of the procedure being applied, then that's
-;;; another story.
