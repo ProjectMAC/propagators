@@ -358,7 +358,7 @@
 		    (map name (neighbors the-op))))
      ))
 
-  (define-test (returning-p:-vs-e:)
+  (define-test (returning-e:-vs-p:)
     (interaction
      (initialize-scheduler)
      (define-e:propagator (addn n)
