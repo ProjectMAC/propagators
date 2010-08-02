@@ -107,7 +107,7 @@
 (define (expression-style-variant thing)
   (ensure-cell ((tag-preferred-style 'expression) thing)))
 
-(define *functionalize-only-tags* #f)
+(define *functionalize-only-tags* #t)
 
 (define really-functionalize functionalize)
 (define functionalize
