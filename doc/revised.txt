@@ -547,7 +547,7 @@ constructors?
 
 The main way to abstract propagator construction is with the
 ``define-d:propagator`` and ``define-e:propagator`` Scheme macros.
-``define-propagator`` defines a compound propagator in diagram style,
+``define-d:propagator`` defines a compound propagator in diagram style,
 that is, with explicit named parameters for the entire boundary of the
 compound::
 
@@ -565,7 +565,8 @@ additional cell to add to the boundary at the end.
 
 Both defining forms will make variants with names beginning in ``p:``
 and ``e:``, that default to being applied in diagram and expression
-style, respectively.
+style, respectively.  Note that this definition does not bind
+``double``.
 
 With these definitions we can use those pieces to build more complex
 structures::
@@ -575,16 +576,19 @@ structures::
 which can themselves be abstracted so that they can be used
 as if they were primitive::
 
-  (define-propagator (foo x z)
+  (define-d:propagator (foo x z)
     (p:my-sum-constraint x (e:double x) z))
 
+``define-propagator`` is an alias for ``define-d:propagator`` because
+that's the most common use case.
+
 Just like in Scheme, the definition syntaxes have a corresponding
-syntax for anonymous compound propagators, ``lambda-propagator`` and
+syntax for anonymous compound propagators, ``lambda-d:propagator`` and
 ``lambda-e:propagator``.
 
 Compound propagator constructors perform constant conversion::
 
-  (p:my-sum-constraint x 3 z)  ==>  (p:my-sum-constraint x (e:constant 3) z)
+  (p:my-sum-constraint x 3 z)  ==  (p:my-sum-constraint x (e:constant 3) z)
 
 ``define-propagator`` and ``define-e:propagator`` respect the ``c:``
 and ``ce:`` naming convention, in that if the name supplied for
@@ -612,47 +616,67 @@ their lexical environment::
 
 ``import`` is a kludge, which is a consequence of the embedding of
 Scheme-Propagators into Scheme.  Without enough access to the Scheme
-interpreter, we cannot detect the free variables in an expression, so
-they must be listed explicitly by the user.  Globally bound objects
-like ``e:+`` (and ``p:addn`` and ``e:addn`` if the above were
-evaluated at the top level) need not be mentioned.
+interpreter, or enough Bawden-compliant wizardry, we cannot detect the
+free variables in an expression, so they must be listed explicitly by
+the user.  Globally bound objects like ``e:+`` (and ``p:addn`` and
+``e:addn`` if the above were evaluated at the top level) need not be
+mentioned.
 
 Recursion
 ----------------------------------------------------------------------
 
-Propagator abstractions defined by ``define-propagator`` have one
-flaw: they are expanded immediately when applied to cells.  Therefore,
-they cannot be used to build recursive structures, because the
-structure would be expanded infinitely far (TODO unless if is
-adjusted).  For this purpose, there is ``define-delayed-propagator``.
-It's just like ``define-propagator``, except that the expansion of the
-wiring diagram represented by the resulting closure is
-delayed until some (however partial) information shows up on at least
-one of the cells that the diagram is attached to.  For example, a
-diagram for computing factorials::
+Propagator abstractions defined by ``define-propagator`` are expanded
+immediately when applied to cells.  Therefore, magic is needed to
+build recursive networks, because otherwise the structure would be
+expanded infinitely far.  As in Scheme, this magic is in ``if``.  The
+Scheme-Propagators construct ``p:if`` (which is implemented as a
+Scheme macro) delays the construction of the diagrams in its branches
+until information is available about the predicate.  Specifically, the
+consequent is constucted only when there is good information to the
+effect that the predicate might be true, and the alternate is
+constructed only when there is good information to the effect that the
+predicate might be false.  Note that, unlike in Scheme, these can both
+occur to the same ``p:if``.
 
-  (define-delayed-propagator (p:factorial n n!)
-    (let-cells* ((done? (e:= 0 n))
-		 (n-again (e:switch (e:not done?) n))
-		 (n!-again (e:* n-again (e:factorial (e:- n-again 1)))))
-      (conditional done? 1 n!-again n!)))
+In Scheme-Propagators, the one-armed conditional construction
+construct ``p:when`` is more fundamental than the two-armed construct
+``p:if``.  This is because, where Scheme's ``if`` is about selecting
+values, and so has to have two options to select from, ``p:when`` and
+``p:if`` are about building machinery, and there is no particular
+reason why choosing among two pieces of machinery to construct is any
+more basic than choosing whether or not to construct one particular
+piece.
 
-contains a call to itself; but attaching this to some cells will not
-cause an immediate infinite regress because the internal ``factorial``
-will only expand dynamically during the execution of the network, and
-only if it has information to process (preventing spurious recursions
-is what the ``switch`` and ``n-again`` is for).
+For example, here is the familiar recursive ``factorial``, rendered in
+propagators with ``p:if``::
 
-TODO Where does this note go?
-Much the same effect can be achieved procedurally using the Scheme
-procedure ``delayed-propagator-constructor``.
+  (define-propagator (p:factorial n n!)
+    (p:if (n n!) (e:= 0 n)
+      (p:== 1 n!)
+      (p:== (e:* n (e:factorial (e:- n 1))) n!)))
 
-TODO To what extent is this still true?
-In principle, there is no propagator abstraction that you can express
-with ``define-propagator`` that you cannot express better with
-``define-delayed-propagator``.  However, I still advise
-``define-propagator`` where possible, because
-``define-delayed-propagator`` is more complex, and less stable.
+The only syntactic difference between this and what one would write in
+Scheme for this same job is that this is written in diagram style,
+with an explicit name for the cell that holds the answer, and that
+``p:if`` needs to be told the names of the non-global variables that
+are free in its branches, just like the ``import`` clause of a
+propagator definition (and for the same kludgerous reason).
+``p:when`` is the one-armed version.  ``p:unless`` is also provided;
+it reverses the sense of the predicate.
+
+Like everything else whose name begins with ``p:``, ``p:if`` and co
+have expression-style variants.  The difference is that the tail
+positions of the branches are expected to return cells, which are
+wired together and returned to the caller of the ``e:if``.  Here is
+``factorial`` again, in expression style::
+
+  (define-e:propagator (e:factorial n)
+    (e:if (n) (e:= 0 n)
+      1
+      (e:* n (e:factorial (e:- n 1)))))
+
+Looks familiar, doesn't it?
+
 
 Macrology
 ----------------------------------------------------------------------
