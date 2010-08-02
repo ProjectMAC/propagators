@@ -157,11 +157,13 @@
       (handling-implicit-cells arg-cells
 	(lambda (boundary)
 	  (do-apply-prop prop boundary)))
-      (handling-implicit-cells arg-cells
-	(lambda (boundary)
-	  (handling-explicit-output boundary
-            (lambda (inputs)
-	      (do-apply-prop prop inputs)))))))
+      (if (any implicit-cell? arg-cells)
+	  (handling-implicit-cells arg-cells
+	    (lambda (boundary)
+	      (handling-explicit-output boundary
+		(lambda (inputs)
+		  (do-apply-prop prop inputs)))))
+	  (do-apply-prop prop arg-cells))))
 
 (define (directly-applicable? thing)
   (or (closure? thing)
