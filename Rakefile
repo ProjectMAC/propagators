@@ -18,7 +18,6 @@ def files
    "application",
    "sugar",
    "generic-definitions",
-   "expression-language",
    "compound-data",
    "physical-closures",
    "standard-propagators",
