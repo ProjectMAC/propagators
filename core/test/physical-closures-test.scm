@@ -358,4 +358,31 @@
 		    (map name (neighbors the-op))))
      ))
 
+  (define-test (returning-p:-vs-e:)
+    (interaction
+     (initialize-scheduler)
+     (define-e:propagator (addn n)
+       (define-e:propagator (the-adder x)
+	 (import n)
+	 (e:+ n x))
+       e:the-adder)
+     (define-cell answer ((e:addn 3) 2))
+     (run)
+     (content answer)
+     (produces 5)))
+
+  (define-test (returning-p:-vs-e:)
+    (interaction
+     (initialize-scheduler)
+     (define-e:propagator (addn n)
+       (define-e:propagator (the-adder x)
+	 (import n)
+	 (e:+ n x))
+       p:the-adder)
+     (define-cell answer)
+     ((e:addn 3) 2 answer)
+     (run)
+     (content answer)
+     (produces 5)))
+
   )
