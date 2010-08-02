@@ -21,12 +21,6 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;; The naming convention is:
-;;;   p:foo  for the propagator version of foo
-;;;   e:foo  for the expression-oriented propagator version of foo
-;;;   c:foo  for the constraint-propagator version of foo
-;;;   ce:foo for the expression-oriented constraint-propagator version of foo
-
 ;;;; Propagatify macro
 
 ;;; The PROPAGATIFY macro automates the process of defining extensible
@@ -114,36 +108,3 @@
 	 (make-generic-operator 2 name default-operation))
 	(else default-operation)))
 
-(define (propagator-naming-convention name)
-  (let* ((name-string (symbol->string name))
-	 (long-named? (and (>= (string-length name-string) 3)
-			   (equal? "ce:" (substring name-string 0 3))))
-	 (propagator-named? (and (>= (string-length name-string) 2)
-				 (or (equal? "p:" (substring name-string 0 2))
-				     (equal? "e:" (substring name-string 0 2)))))
-	 (constraint-named? (and (>= (string-length name-string) 2)
-				 (or (equal? "c:" (substring name-string 0 2))
-				     long-named?)))
-	 (prefix-length (cond (long-named? 3)
-			      ((or constraint-named? propagator-named?) 2)
-			      (else 0)))
-	 (base-name (string-tail name-string prefix-length)))
-    (if constraint-named?
-	(list (symbol 'c: base-name)
-	      (symbol 'ce: base-name))
-	(list (symbol 'p: base-name)
-	      (symbol 'e: base-name)))))
-
-(define-syntax define-by-diagram-variant
-  (syntax-rules ()
-    ((define-by-diagram-variant (diagram-name expression-name) form)
-     (begin
-       (define-cell diagram-name form)
-       (define-cell expression-name (expression-style-variant diagram-name))))))
-
-(define-syntax define-by-expression-variant
-  (syntax-rules ()
-    ((define-by-diagram-variant (diagram-name expression-name) form)
-     (begin
-       (define-cell expression-name form)
-       (define-cell diagram-name (diagram-style-variant expression-name))))))
