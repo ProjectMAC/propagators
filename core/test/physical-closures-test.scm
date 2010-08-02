@@ -237,7 +237,7 @@
     (define-cell repeat
       (let-cell (repeat)
 	((constant
-	  (lambda-propagator (f n out)
+	  (lambda-d:propagator (f n out)
 	    (import e:compose repeat)
 	    (let-cell (repeat? (e:> n 1))
 	      (let-cell (done? (e:not repeat?))
@@ -269,7 +269,7 @@
     
     (define-propagator (addn n out)
       ((p:constant
-	(lambda-propagator (x out)
+	(lambda-d:propagator (x out)
 	  (import n)
 	  (p:+ n x out)))
        out))

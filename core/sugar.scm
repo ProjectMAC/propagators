@@ -244,22 +244,22 @@
        body ...)
      (define-by-diagram-variant names
        (name!
-	(lambda-propagator (arg ...)
+	(lambda-d:propagator (arg ...)
 	  body ...)
 	(car 'names))))))
 
-(define-syntax lambda-propagator
+(define-syntax lambda-d:propagator
   (syntax-rules (import)
-    ((lambda-propagator (arg ...)
+    ((lambda-d:propagator (arg ...)
        (import cell ...)
        body ...)
      (make-closure
       (naming-lambda (arg ...)
 	body ...)
       (list cell ...)))
-    ((lambda-propagator (arg ...)
+    ((lambda-d:propagator (arg ...)
        body ...)
-     (lambda-propagator (arg ...)
+     (lambda-d:propagator (arg ...)
        (import)
        body ...))))
 
