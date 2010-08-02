@@ -65,6 +65,24 @@
     (produces 4)
     ))
 
+ (define-test (double-again)
+   (interaction
+    (initialize-scheduler)
+    (define-e:propagator (ce:double x)
+      (ce:* x 2))
+
+    (define-cell answer (ce:double %% 2))
+    (run)
+    (content answer)
+    (produces 1)
+
+    ;; Stable under kicks:
+    (alert-all-propagators!)
+    (run)
+    (content answer)
+    (produces 1)
+    ))
+
  (define-test (addn)
    (interaction
     (initialize-scheduler)
