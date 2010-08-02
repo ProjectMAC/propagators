@@ -273,7 +273,7 @@
 	 (not (eq-get thing 'expression-style)))
 	(else (error "Propagator style question not applicable" thing))))
 
-;;; Style preferences
+;;; Preferred application styles
 
 (define (prefers-diagram-style? thing)
   (let ((preference-tag (eq-get thing 'preferred-style)))
