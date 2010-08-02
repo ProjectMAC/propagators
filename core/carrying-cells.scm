@@ -46,19 +46,18 @@
 (define carry-pair? pair?)
 (propagatify carry-pair? unary-mapping)
 
-;;; Propagator-style accessors are remarkably easy:
+;;; Accessors are remarkably easy:
 
 (define-propagator (p:carry-car pair-cell output)
   (p:carry-cons output nothing pair-cell))
 (define-propagator (p:carry-cdr pair-cell output)
   (p:carry-cons nothing output pair-cell))
 
-;;; Expression-style accessors are also just as easy in principle, but
-;;; there is an opportunity for a performance hack: if the cell
-;;; holding the accessed item is already present in the compound when
-;;; the accessor propagator is constructed (and no partialness of
-;;; information intervenes), then it's ok to just grab that cell and
-;;; return it.  The version for CAR looks like this:
+;;; Expression-style accessors offer an opportunity for a performance
+;;; hack: if the cell holding the accessed item is already present in
+;;; the compound when the accessor propagator is constructed (and no
+;;; partialness of information intervenes), then it's ok to just grab
+;;; that cell and return it.  The version for CAR looks like this:
 #|
  (define (e:carry-car pair-cell)
    (if (and (cell? pair-cell)
