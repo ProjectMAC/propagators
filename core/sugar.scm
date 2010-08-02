@@ -204,17 +204,17 @@
 ;;; body to be recursive by delaying its expansion until there is some
 ;;; information in at least one of the neighbor cells.  This has the
 ;;; effect of requiring the neighbors to indeed be cells.
-(define-syntax define-recursive-propagator
+(define-syntax define-delayed-propagator
   (syntax-rules ()
-    ((define-recursive-propagator (name arg-form ...) body-form ...)
+    ((define-delayed-propagator (name arg-form ...) body-form ...)
      (define name
-       (named-recursive-propagator (name arg-form ...)
+       (named-delayed-propagator (name arg-form ...)
 	 body-form ...)))))
 
-;;; This is the "lambda" to define-recursive-propagator's "define".
-(define-syntax named-recursive-propagator
+;;; This is the "lambda" to define-delayed-propagator's "define".
+(define-syntax named-delayed-propagator
   (syntax-rules ()
-    ((named-recursive-propagator stuff ...)
+    ((named-delayed-propagator stuff ...)
      (delayed-propagator-constructor (named-propagator-syntax stuff ...)))))
 
 ;;; This is a convenience for defining closures (with make-closure)
