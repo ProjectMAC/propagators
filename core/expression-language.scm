@@ -139,8 +139,8 @@
 ;;; extensibility mechanisms:
 ;;;   (propagatify +)
 ;;; would be equivalent to
-;;;   (define p:+ (function->propagator-constructor +))
-;;;   (define e:+ (functionalize p:+)
+;;;   (define-cell p:+ (function->propagator-constructor +))
+;;;   (define-cell e:+ (expression-style-variant p:+)
 
 ;;; If supplied, the second argument is a wrapper to use to add
 ;;; generic functionality.  Since this indicates that generic
@@ -150,9 +150,9 @@
 ;;;   (propagatify + binary-mapping)
 ;;; is equivalent to
 ;;;   (define generic-+ (make-generic-operator 2 '+ +))
-;;;   (define p:+
+;;;   (define-cell p:+
 ;;;     (function->propagator-constructor (binary-mapping generic-+)))
-;;;   (define e:+ (functionalize p:+))
+;;;   (define-cell e:+ (expression-style-variant p:+))
 
 ;;; Finally, the third argument can either be an explicit arity for
 ;;; circumstances when the arity of the generic would be guessed
@@ -160,8 +160,8 @@
 ;;; operation should be defined.  For example,
 ;;;   (propagatify + binary-mapping 'no-generic)
 ;;; would be equivalent to
-;;;   (define p:+ (function->propagator-constructor (binary-mapping +)))
-;;;   (define e:+ (functionalize p:+))
+;;;   (define-cell p:+ (function->propagator-constructor (binary-mapping +)))
+;;;   (define-cell e:+ (expression-style-variant p:+))
 ;;; Compare (propagatify +).
 
 (define-syntax propagatify
