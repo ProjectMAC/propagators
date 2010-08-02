@@ -149,7 +149,7 @@
     (define-cell n1 (make-interval 3 5))
     (define-cell n2 (make-interval 4 7))
     (define-cell add5 (e:addn n1))
-    (p:application e:addn n2 add5)
+    (p:addn n2 add5)
     
     (define-cell output (e:application add5 3))
     

@@ -104,6 +104,9 @@
 	 (warn "Ignoring" thing)
 	 thing)))
 
+(define (diagram-style-variant thing)
+  (ensure-cell ((tag-preferred-style 'diagram) thing)))
+
 (define (expression-style-variant thing)
   (ensure-cell ((tag-preferred-style 'expression) thing)))
 
@@ -228,3 +231,10 @@
      (begin
        (define-cell diagram-name form)
        (define-cell expression-name (expression-style-variant diagram-name))))))
+
+(define-syntax define-by-expression-variant
+  (syntax-rules ()
+    ((define-by-diagram-variant (diagram-name expression-name) form)
+     (begin
+       (define-cell expression-name form)
+       (define-cell diagram-name (diagram-style-variant expression-name))))))

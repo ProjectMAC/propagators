@@ -125,15 +125,23 @@
        (import)
        body ...))))
 
-(define-syntax define-e:propagator
+(define-syntax define-%e:propagator
   (syntax-rules ()
-    ((define-e:propagator (name arg ...)
+    ((define-%e:propagator names (arg ...)
        body ...)
-     (define-cell name
+     (define-by-expression-variant names
        (name!
 	(lambda-e:propagator (arg ...)
 	  body ...)
-	'name)))))
+	(car 'names))))))
+
+(define-syntax define-e:propagator
+  (rsc-macro-transformer
+   (lambda (form defn-env)
+     (let ((name (caadr form))
+	   (formals (cdadr form))
+	   (body (cddr form)))
+       `(define-%e:propagator ,(propagator-naming-convention name) ,formals ,@body)))))
 
 (define-propagator (conditional control if-true if-false output)
   (switch control if-true output)
