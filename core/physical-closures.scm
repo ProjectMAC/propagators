@@ -191,9 +191,10 @@
 ;;; APPLICATION comes in both flavors.
 
 (define (do-apply-prop prop real-args)
-  (with-network-group (network-group-named (name prop))
-    (lambda ()
-      (apply (prop-body prop) real-args))))
+  (let ((real-args (map ensure-cell real-args)))
+    (with-network-group (network-group-named (name prop))
+      (lambda ()
+	(apply (prop-body prop) real-args)))))
 
 (define (general-propagator-apply prop-cell arg-cells)
   (define done-props '())
@@ -202,7 +203,7 @@
   (define (arg-copier pass?)
     (lambda (arg)
       (let-cell arg-copy
-	(conditional-wire pass? arg arg-copy)
+	(conditional-wire pass? (ensure-cell arg) arg-copy)
 	arg-copy)))
   ;; This assumes that closures are "carrying cells" compound
   ;; structures rather than "copying data".
@@ -274,22 +275,20 @@
 	  (general-apply (ensure-cell object)))))
 
 (define (p:application object . arg-cells)
-  (let ((arg-cells (map ensure-cell arg-cells)))
-    (try-eager-application object
-     (lambda (object)
-       (eager-diagram-apply object arg-cells))
-     (lambda (cell)
-       (general-propagator-apply cell arg-cells)))))
+  (try-eager-application object
+   (lambda (object)
+     (eager-diagram-apply object arg-cells))
+   (lambda (cell)
+     (general-propagator-apply cell arg-cells))))
 
 (define (application object . arg-cells)
-  (let ((arg-cells (map ensure-cell arg-cells)))
-    (try-eager-application object
-     (lambda (object)
-       (if (prefers-diagram-style? object)
-	   (eager-diagram-apply object arg-cells)
-	   (eager-expression-apply object arg-cells)))
-     (lambda (cell)
-       (general-propagator-apply cell arg-cells)))))
+  (try-eager-application object
+   (lambda (object)
+     (if (prefers-diagram-style? object)
+	 (eager-diagram-apply object arg-cells)
+	 (eager-expression-apply object arg-cells)))
+   (lambda (cell)
+     (general-propagator-apply cell arg-cells))))
 
 (define e:application (really-functionalize p:application))
 (define d@ p:application)
