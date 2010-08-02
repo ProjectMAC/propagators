@@ -148,10 +148,6 @@
 	(lambda (inputs)
 	  (do-apply-prop prop inputs)))))
 
-(define (handle-explicit-output boundary proc)
-  (c:== (car (last-pair boundary))
-	(proc (except-last-pair boundary))))
-
 (define (eager-expression-apply prop arg-cells)
   (if (diagram-style? prop)
       (handle-implicit-cells arg-cells
@@ -178,12 +174,27 @@
 	  (direct-apply object)
 	  (general-apply (ensure-cell object)))))
 
-;;; Dealing with implicit cells
+;;; Massaging boundary shapes
 
-;;; The HANDLE-IMPLICIT-CELLS procedure mechanically derives an
-;;; expression-style variant of a diagram-style procedure that
-;;; operates on cells.  The FUNCTIONALIZE procedure augments it by
-;;; handling the metadata of propagator constructors.
+;;; Propagators can be defined either in diagram style (with explicit
+;;; cells for their entire boundary) or in expression style (where the
+;;; body of the propagator is expected to return one additional cell,
+;;; which is in the boundary implicitly).  Propagators can also be
+;;; applied in diagram style or in expression style.  So a mismatch
+;;; can occur if a propagator is defined one way and applied the other
+;;; way.  The procedure HANDLE-EXPLICIT-OUTPUT applies a diagram-style
+;;; application to a procedure that expects to be applied in
+;;; expression style, and the procedure HANDLE-IMPLICIT-CELLS applies
+;;; an expression-style application to a procedure that expects to be
+;;; applied in diagram style.  HANDLE-IMPLICIT-CELLS is hairy because
+;;; expression-style applications support the %% syntax for selecting
+;;; the position of the implicit cell in the supplied argument list,
+;;; and because I felt like having it support expression-style
+;;; applications that want to return multiple implicit cells.
+
+(define (handle-explicit-output boundary proc)
+  (c:== (car (last-pair boundary))
+	(proc (except-last-pair boundary))))
 
 (define (handle-implicit-cells inputs proc #!optional num-outputs)
   (if (default-object? num-outputs)
@@ -209,17 +220,6 @@
       (car outputs)
       (apply values outputs)))
 
-(define (functionalize propagator #!optional num-outputs)
-  (propagator-constructor!
-   (eq-label!
-    (lambda inputs
-      (handle-implicit-cells inputs
-        (lambda (boundary)
-	  (apply propagator boundary))
-	num-outputs))
-    'expression-style #t
-    'preferred-style 'expression)))
-
 (define %% (list 'the-implicit-cell))
 (define (implicit-cell? thing)
   (eq? thing %%))
@@ -233,6 +233,17 @@
      (eager-diagram-apply object arg-cells))
    (lambda (cell)
      (general-propagator-apply cell arg-cells))))
+
+(define (functionalize propagator #!optional num-outputs)
+  (propagator-constructor!
+   (eq-label!
+    (lambda inputs
+      (handle-implicit-cells inputs
+        (lambda (boundary)
+	  (apply propagator boundary))
+	num-outputs))
+    'expression-style #t
+    'preferred-style 'expression)))
 
 (define e:application (functionalize p:application))
 (define d@ p:application)
