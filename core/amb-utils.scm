@@ -44,6 +44,7 @@
 	  (else
 	   (error "Inadequate choices for one-of"
 		  inputs output)))))
+(propagator-constructor! one-of)
 
 (define p:amb binary-amb)
 (define (e:amb)
