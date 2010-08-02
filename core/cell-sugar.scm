@@ -21,7 +21,11 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;;; Defining cells
+;;;; Carcinogens for the semicolon part 1: Defining cells
+
+;;; Here be macros that provide syntactic sugar for playing with the
+;;; propagator language as embedded in Scheme.  Syntactic regularities
+;;; in patterns of definition of cells are captured.
 
 ;; (define-cell foo form)
 ;; is the same as

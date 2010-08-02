@@ -21,14 +21,11 @@
 
 (declare (usual-integrations make-cell cell?))
 
-;;;; Carcinogens for the semicolon part 2
+;;;; Carcinogens for the semicolon part 2: Defining propagators
 
 ;;; Here be macros that provide syntactic sugar for playing with the
 ;;; propagator language as embedded in Scheme.  Syntactic regularities
-;;; in patterns of definition of cells and propagator constructors are
-;;; captured.
-
-;;;; Defining propagators
+;;; in patterns of definition of propagator constructors are captured.
 
 ;;; This is (meant to be) just like define, except that it wraps the
 ;;; body being defined in a with-network-group, which is a hook for
