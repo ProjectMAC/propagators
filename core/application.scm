@@ -68,11 +68,7 @@
 ;;; either kind; and being a propagator constructor itself,
 ;;; APPLICATION comes in both flavors.
 
-(define (do-apply-prop prop real-args)
-  (let ((real-args (map ensure-cell real-args)))
-    (with-network-group (network-group-named (name prop))
-      (lambda ()
-	(apply (prop-body prop) real-args)))))
+;;; General application
 
 (define (general-propagator-apply prop-cell arg-cells)
   (define done-props '())
@@ -117,6 +113,9 @@
     (eq-label! the-propagator
      'name 'application 'inputs (list prop-cell) 'outputs arg-cells)
     (propagator prop-cell the-propagator)))
+
+;;; Eager application of objects that are fully known at network
+;;; construction time.
 
 (define (eager-diagram-apply prop arg-cells)
   (if (diagram-style? prop)
@@ -137,14 +136,6 @@
   (or (closure? thing)
       (propagator-constructor? thing)))
 
-(define (prefers-diagram-style? thing)
-  (let ((preference-tag (eq-get thing 'preferred-style)))
-    (cond (preference-tag
-	   (not (eq? preference-tag 'expression)))
-	  ((closure? thing)
-	   (closure-diagram-style? thing))
-	  (else #t))))
-
 (define (try-eager-application object direct-apply general-apply)
   (if (cell? object)
       (if (directly-applicable? (content object))
@@ -153,6 +144,8 @@
       (if (directly-applicable? object)
 	  (direct-apply object)
 	  (general-apply (ensure-cell object)))))
+
+;;; User-facing frontend of applying things
 
 (define (p:application object . arg-cells)
   (try-eager-application object
@@ -169,6 +162,14 @@
 	 (eager-expression-apply object arg-cells)))
    (lambda (cell)
      (general-propagator-apply cell arg-cells))))
+
+;;; Guts of applying things
+
+(define (do-apply-prop prop real-args)
+  (let ((real-args (map ensure-cell real-args)))
+    (with-network-group (network-group-named (name prop))
+      (lambda ()
+	(apply (prop-body prop) real-args)))))
 
 (define (prop-body thing)
   (cond ((closure? thing)
@@ -183,4 +184,36 @@
 	((propagator-constructor? thing)
 	 (not (eq-get thing 'expression-style)))
 	(else (error "Propagator style question not applicable" thing))))
+
+;;; Style preferences
 
+(define (prefers-diagram-style? thing)
+  (let ((preference-tag (eq-get thing 'preferred-style)))
+    (cond (preference-tag
+	   (not (eq? preference-tag 'expression)))
+	  ((closure? thing)
+	   (closure-diagram-style? thing))
+	  (else #t))))
+
+(define ((tag-preferred-style style) thing)
+  (cond ((cell? thing)
+	 (let ((answer (make-cell)))
+	   (eq-clone! thing answer)
+	   (add-content answer ((tag-preferred-style style) (content thing)))
+	   answer))
+	((propagator-constructor? thing)
+	 (let ((answer (lambda args (apply thing args))))
+	   (eq-clone! thing answer)
+	   (eq-put! answer 'preferred-style style)
+	   answer))
+	((closure? thing)
+	 (eq-put! (closure-copy thing) 'preferred-style style))
+	(else 
+	 (warn "Ignoring" thing)
+	 thing)))
+
+(define (diagram-style-variant thing)
+  (ensure-cell ((tag-preferred-style 'diagram) thing)))
+
+(define (expression-style-variant thing)
+  (ensure-cell ((tag-preferred-style 'expression) thing)))

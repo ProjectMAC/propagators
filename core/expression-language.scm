@@ -38,17 +38,12 @@
 ;;; the intermediate value:
 ;;;   (e:+ (e:+ x y) z)
 
-;;; The FUNCTIONALIZE procedure mechanically derives an
-;;; expression-style variant of a diagram-style propagator
-;;; constructor.  It is also convenient to provide multidirectional
-;;; constraint versions of standard propagator constructors with a
-;;; uniform naming scheme.
-
-;;; The naming convention is:
-;;;   p:foo  for the propagator version of foo
-;;;   e:foo  for the expression-oriented propagator version of foo
-;;;   cp:foo for the constraint-propagator version of foo
-;;;   ce:foo for the expression-oriented constraint-propagator version of foo
+;;; The HANDLING-IMPLICIT-CELLS procedure mechanically derives an
+;;; expression-style variant of a diagram-style procedure that
+;;; operates on cells.  The FUNCTIONALIZE procedure augments it by
+;;; handling the metadata of propagator constructors.  The
+;;; TAG-PREFERRED-STYLE procedure makes no meaningful change to its
+;;; argument, but attaches a tag to it that indicates that 
 
 (define (handling-implicit-cells proc #!optional num-outputs)
   (if (default-object? num-outputs)
@@ -92,30 +87,18 @@
 (define @d d@)
 (define e@ e:application)
 (define @e e@)
-
-(define ((tag-preferred-style style) thing)
-  (cond ((cell? thing)
-	 (let ((answer (make-cell)))
-	   (eq-clone! thing answer)
-	   (add-content answer ((tag-preferred-style style) (content thing)))
-	   answer))
-	((propagator-constructor? thing)
-	 (let ((answer (lambda args (apply thing args))))
-	   (eq-clone! thing answer)
-	   (eq-put! answer 'preferred-style style)
-	   answer))
-	((closure? thing)
-	 (eq-put! (closure-copy thing) 'preferred-style style))
-	(else 
-	 (warn "Ignoring" thing)
-	 thing)))
-
-(define (diagram-style-variant thing)
-  (ensure-cell ((tag-preferred-style 'diagram) thing)))
-
-(define (expression-style-variant thing)
-  (ensure-cell ((tag-preferred-style 'expression) thing)))
 
+
+;;; It is also convenient to provide
+;;; multidirectional constraint versions of standard propagator
+;;; constructors with a uniform naming scheme.
+
+;;; The naming convention is:
+;;;   p:foo  for the propagator version of foo
+;;;   e:foo  for the expression-oriented propagator version of foo
+;;;   cp:foo for the constraint-propagator version of foo
+;;;   ce:foo for the expression-oriented constraint-propagator version of foo
+
 ;;;; Propagatify macro
 
 ;;; The PROPAGATIFY macro automates the process of defining extensible
