@@ -173,18 +173,22 @@
 (define ce:square (functionalize c:square))
 (define ce:not (functionalize c:not))
 
-(define (p:== . args)
-  (let ((target (car (last-pair args))))
-    (for-each (lambda (arg)
-		(pass-through arg target))
-	      (except-last-pair args))
-    target))
-(define e:== (functionalize p:==))
+(define-cell p:==
+  (propagator-constructor!
+   (lambda args
+     (let ((target (car (last-pair args))))
+       (for-each (lambda (arg)
+		   (pass-through arg target))
+		 (except-last-pair args))
+       target))))
+(define-cell e:== (functionalize p:==))
 
-(define (c:== . args)
-  (let ((lead (car args)))
-    (for-each (lambda (arg)
-		(c:id lead arg))
-	      (cdr args))
-    lead))
-(define ce:== (functionalize c:==))
+(define-cell c:==
+  (propagator-constructor!
+   (lambda args
+     (let ((lead (car args)))
+       (for-each (lambda (arg)
+		   (c:id lead arg))
+		 (cdr args))
+       lead))))
+(define-cell ce:== (functionalize c:==))
