@@ -45,7 +45,7 @@
 (propagatify <= binary-mapping)
 (propagatify >= binary-mapping)
 (propagatify not unary-mapping)
-
+
 ;; Not using propagatify because the name AND names syntax, and I want
 ;; the procedure BOOLEAN/AND
 (define generic-and (make-generic-operator 2 'and boolean/and))
@@ -60,7 +60,7 @@
 (propagatify eq? binary-mapping)
 (propagatify eqv? binary-mapping)
 (propagatify expt unary-mapping)
-
+
 ;; I want a name for the function that does the switch job
 (define (switch-function control input)
   (if control input nothing))

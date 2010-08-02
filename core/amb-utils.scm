@@ -23,9 +23,11 @@
 
 (define-propagator (require cell)
   ((constant #t) cell))
+(define require p:require)
 
 (define-propagator (forbid cell)
   ((constant #f) cell))
+(define forbid p:forbid)
 
 (define-propagator-syntax (require-distinct cells)
   (for-each-distinct-pair
@@ -45,6 +47,7 @@
 	   (error "Inadequate choices for one-of"
 		  inputs output)))))
 (propagator-constructor! one-of)
+(define e:one-of (expression-style-variant one-of))
 
 (define p:amb binary-amb)
 (define (e:amb)
@@ -52,7 +55,3 @@
     (binary-amb answer)
     (eq-put! answer 'subexprs '())
     answer))
-(define require p:require)
-(define forbid p:forbid)
-
-(define e:one-of (expression-style-variant one-of))
