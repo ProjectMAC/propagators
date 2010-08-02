@@ -144,8 +144,16 @@
 (define (eager-diagram-apply prop arg-cells)
   (if (diagram-style? prop)
       (do-apply-prop prop arg-cells)
-      (c:== (car (last-pair arg-cells))
-	    (do-apply-prop prop (except-last-pair arg-cells)))))
+      (apply
+       (handling-explicit-output
+	(lambda cells
+	  (do-apply-prop prop cells)))
+       arg-cells)))
+
+(define (handling-explicit-output proc)
+  (lambda boundary
+    (c:== (car (last-pair boundary))
+	  (apply proc (except-last-pair boundary)))))
 
 (define (eager-expression-apply prop arg-cells)
   (if (diagram-style? prop)
@@ -213,7 +221,6 @@
   (eq? thing %%))
 (name! %% '%%)
 
-
 ;;; User-facing frontend for forcing application style
 
 (define (p:application object . arg-cells)
