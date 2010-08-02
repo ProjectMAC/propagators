@@ -27,13 +27,29 @@
 ;;; propagator language as embedded in Scheme.  Syntactic regularities
 ;;; in patterns of definition of propagator constructors are captured.
 
-;;;; Propagator naming convention
+;;;; Paired propagator definitions
 
-;;; Defined propagators come in variants that perfer to be applied
-;;; diagram-style and expression-style.  The styles are distinguised
-;;; by naming convention.  It is also convenient to provide
-;;; multidirectional constraint versions of standard propagator
-;;; constructors within the same naming scheme.
+;;; Propagator objects are usually defined in pairs, one preferring to
+;;; be applied diagram-style, and one preferring to be applied
+;;; expression-style.  These two macros define such pairs of
+;;; propagator objects, with the given names.  Said names are
+;;; presumably computed by PROPAGATOR-NAMING-CONVENTION, below
+
+(define-syntax define-by-diagram-variant
+  (syntax-rules ()
+    ((define-by-diagram-variant (diagram-name expression-name) form)
+     (begin
+       (define-cell diagram-name form)
+       (define-cell expression-name (expression-style-variant diagram-name))))))
+
+(define-syntax define-by-expression-variant
+  (syntax-rules ()
+    ((define-by-diagram-variant (diagram-name expression-name) form)
+     (begin
+       (define-cell expression-name form)
+       (define-cell diagram-name (diagram-style-variant expression-name))))))
+
+;;;; Propagator naming convention
 
 ;;; The naming convention is:
 ;;;   p:foo   the propagator version of foo
@@ -41,10 +57,13 @@
 ;;;   c:foo   the constraint-propagator version of foo
 ;;;   ce:foo  the expression-style variant of c:foo
 
-;;; The procedure PROPAGATOR-NAMING-CONVENTION is a macro-helper; it
-;;; constructs a pair of names derived from the given name, one to
-;;; name the diagram-style variant and one to name the
-;;; expression-style variant.
+;;; For convenience, this convention includes constraint-propagator
+;;; versions of the various propagators.  The procedure
+;;; PROPAGATOR-NAMING-CONVENTION is a macro-helper; it constructs a
+;;; pair of names derived from the given name, one to name the
+;;; diagram-style variant and one to name the expression-style
+;;; variant.  This is calibrated for use with
+;;; DEFINE-BY-DIAGRAM-VARIANT and DEFINE-BY-EXPRESSION-VARIANT, above.
 
 (define (propagator-naming-convention name)
   (let* ((name-string (symbol->string name))
@@ -65,25 +84,6 @@
 	      (symbol 'ce: base-name))
 	(list (symbol 'p: base-name)
 	      (symbol 'e: base-name)))))
-
-;;; These two macros define pairs of propagator objects, one
-;;; diagram-style and one expression-style, with the given names.
-;;; Said names are presumably computed by
-;;; PROPAGATOR-NAMING-CONVENTION.
-
-(define-syntax define-by-diagram-variant
-  (syntax-rules ()
-    ((define-by-diagram-variant (diagram-name expression-name) form)
-     (begin
-       (define-cell diagram-name form)
-       (define-cell expression-name (expression-style-variant diagram-name))))))
-
-(define-syntax define-by-expression-variant
-  (syntax-rules ()
-    ((define-by-diagram-variant (diagram-name expression-name) form)
-     (begin
-       (define-cell expression-name form)
-       (define-cell diagram-name (diagram-style-variant expression-name))))))
 
 ;;; This is (meant to be) just like define, except that it wraps the
 ;;; body being defined in a with-network-group, which is a hook for
