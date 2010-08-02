@@ -64,9 +64,9 @@
  ;Value: 1.4142135623746899
 |#
 
-(define-syntax shielded-when
+(define-syntax p:when
   (syntax-rules ()
-    ((shielded-when conditional (shieldee ...) body ...)
+    ((p:when (shieldee ...) conditional body ...)
      (let-cells ((shieldee (e:conditional-wire conditional shieldee)) ...)
        ((delayed-propagator-constructor
 	 (lambda (shieldee ...)
@@ -74,27 +74,23 @@
 	shieldee ...)))))
 
 (define-propagator (p:factorial-1 n n!)
-  (shielded-when
-   (e:not (e:= 0 n))
-   (n n!)
+  (p:when (n n!) (e:not (e:= 0 n))
    (p:== (e:* n (e:factorial-1 (e:- n 1))) n!))
   (switch (e:= 0 n) 1 n!))
 
-(define-syntax shielded-unless
+(define-syntax p:unless
   (syntax-rules ()
-    ((shielded-unless conditional stuff ...)
-     (shielded-when (e:not conditional) stuff ...))))
+    ((p:unless shieldees conditional stuff ...)
+     (p:when shieldees (e:not conditional) stuff ...))))
 
-(define-syntax shielded-if
+(define-syntax p:if
   (syntax-rules ()
-    ((shielded-if conditional shieldees consequent alternate)
+    ((p:if shieldees conditional consequent alternate)
      (let-cell (conditional-value conditional)
-       (shielded-when conditional-value shieldees consequent)
-       (shielded-unless conditional-value shieldees alternate)))))
+       (p:when shieldees conditional-value consequent)
+       (p:unless shieldees conditional-value alternate)))))
 
 (define-propagator (p:factorial-2 n n!)
-  (shielded-if
-   (e:= 0 n)
-   (n n!)
+  (p:if (n n!) (e:= 0 n)
    (p:== 1 n!)
    (p:== (e:* n (e:factorial-2 (e:- n 1))) n!)))
