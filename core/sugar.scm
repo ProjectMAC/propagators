@@ -174,14 +174,22 @@
 	 (make-generic-operator 2 name default-operation))
 	(else default-operation)))
 
-;;; This is (meant to be) just like define, except that it wraps the
-;;; body being defined in a with-network-group, which is a hook for
-;;; tagging all cells and propagators created inside the call with a
-;;; common identity, which can then be passed on to the graph drawing
-;;; tools used to inspect the network.  It also assigns the formal
-;;; parameter names as names to the incoming arguments.  The latter
-;;; is most useful in the regime where all the passed arguments are
-;;; actually cells (as opposed to, say, Scheme-lists of cells).
+;;;; Defining "propagator macros"
+
+;;; Scheme is the macro language of this embedded propagator system.
+;;; Therefore defining "propagator macros" is just a matter of
+;;; defining Scheme procedures.  Some patterns are common, however, so
+;;; merit a little macro support.
+
+;;; DEFINE-PROPAGATOR-SYNTAX is (meant to be) just like define, except
+;;; that it wraps the body being defined in a WITH-NETWORK-GROUP,
+;;; which is a hook for tagging all cells and propagators created
+;;; inside the call with a common identity, which can then be passed
+;;; on to the graph drawing tools used to inspect the network.
+;;; DEFINE-PROPAGATOR-SYNTAX also assigns the formal parameter names
+;;; as names to the incoming arguments.  The latter is most useful in
+;;; the regime where all the passed arguments are actually cells (as
+;;; opposed to, say, Scheme-lists of cells).
 
 (define-syntax define-propagator-syntax
   (syntax-rules ()
@@ -206,6 +214,8 @@
 	 (lambda ()
 	   (name-locally! arg-form 'arg-form) ...
 	   body-form ...)))))))
+
+;;;; Defining compound propagators
 
 (define-syntax lambda-delayed-propagator
   (syntax-rules (import)
