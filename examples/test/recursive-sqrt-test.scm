@@ -29,7 +29,7 @@
     (define-cell guess)
     (define-cell better-guess)
 
-    (heron-step x guess better-guess)
+    (p:heron-step x guess better-guess)
 
     (add-content x 2)
     (add-content guess 1.4)
@@ -44,7 +44,7 @@
     (define-cell x)
     (define-cell answer)
 
-    (sqrt-network x answer)
+    (p:sqrt-network x answer)
 
     (add-content x 2)
     (run)
