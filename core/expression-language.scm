@@ -87,6 +87,12 @@
   (eq? thing %%))
 (name! %% '%%)
 
+(define e:application (functionalize p:application))
+(define d@ p:application)
+(define @d d@)
+(define e@ e:application)
+(define @e e@)
+
 (define ((tag-preferred-style style) thing)
   (cond ((cell? thing)
 	 (let ((answer (make-cell)))
