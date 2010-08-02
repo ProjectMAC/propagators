@@ -70,7 +70,7 @@
 (define-cell e:switch (functionalize p:switch))
 
 (name! identity 'identity)
-(define pass-through (function->propagator-constructor identity))
+(define-cell pass-through (function->propagator-constructor identity))
 
 ;; TODO Do I still want to provide these old names for these things?
 (define constant p:constant) (define switch p:switch)
