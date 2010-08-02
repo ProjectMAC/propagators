@@ -292,7 +292,7 @@
    (lambda (cell)
      (general-propagator-apply cell arg-cells))))
 
-(define e:application (really-functionalize p:application))
+(define e:application (functionalize p:application))
 (define d@ p:application)
 (define @d d@)
 (define e@ e:application)

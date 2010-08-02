@@ -109,14 +109,6 @@
 
 (define (expression-style-variant thing)
   (ensure-cell ((tag-preferred-style 'expression) thing)))
-
-(define *functionalize-only-tags* #t)
-
-(define really-functionalize functionalize)
-(define functionalize
-  (if *functionalize-only-tags*
-      expression-style-variant
-      really-functionalize))
 
 ;;;; Propagatify macro
 
