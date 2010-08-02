@@ -27,8 +27,8 @@
 
 ;;; Just as putting a Scheme variable into operator position produces
 ;;; a call to APPLY, putting a cell into operator position produces a
-;;; call the APPLICATION.  APPLICATION is a distinguished propagator
-;;; constructor which collects a propagator constructor from a cell
+;;; call to APPLICATION.  APPLICATION is a distinguished propagator
+;;; constructor that collects a propagator constructor from a cell
 ;;; and invokes it on argument cells.
 
 ;;; The propagator constructors found in cells may either be
@@ -38,17 +38,16 @@
 ;;; is the same as the distinction between primitive and compound
 ;;; Scheme procedures.
 
-;;; The important thing for APPLICATION to deal with, that's new to
-;;; the propagator world and is not found in Scheme, is, of course,
-;;; the fact that the available information about the propagator
-;;; constructor being applied may be partial; and that the propagator
-;;; created by APPLICATION needs to be properly idempotent, because it
-;;; may be called multiple times as that partial information is
-;;; refined.  This is done by making the transfer of information
-;;; across the call boundary conditional on the propagator constructor
-;;; being applied, with the effect that both the arguments and the
-;;; return values inherit any partialness of that particular
-;;; propagator constructor indeed being the one applied.
+;;; The important thing for APPLICATION to deal with, which is new to
+;;; the propagator world and is not found in Scheme, is the fact that
+;;; the available information about the propagator constructor being
+;;; applied may be partial; and that the propagator created by
+;;; APPLICATION needs to be properly idempotent, because it may be
+;;; called multiple times as that partial information is refined.
+;;; This is done by making the transfer of information across the call
+;;; boundary conditional on the propagator constructor being applied,
+;;; with the effect that both the arguments and the return values
+;;; inherit any partialness of that particular propagator constructor.
 
 ;;; APPLICATION is the locus of a nontrivial optimization: if the cell
 ;;; containing the object to be applied is fully determined at network
