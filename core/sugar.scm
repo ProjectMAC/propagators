@@ -236,6 +236,8 @@
        `(define-%propagator ,(propagator-naming-convention name)
 	  ,formals ,@body)))))
 
+(define-syntax define-d:propagator define-propagator)
+
 (define-syntax define-%propagator
   (syntax-rules ()
     ((define-%propagator names (arg ...)
