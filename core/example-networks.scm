@@ -91,7 +91,7 @@
 	       (n!-again (e:* n-again (e:factorial (e:- n-again 1)))))
     (conditional done? 1 n!-again n!)))
 
-(define e:factorial (functionalize p:factorial))
+(define-cell e:factorial (functionalize p:factorial))
 
 ;;; Measuring the height of a building using a barometer
 

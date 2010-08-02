@@ -49,13 +49,13 @@
 ;; Not using propagatify because the name AND names syntax, and I want
 ;; the procedure BOOLEAN/AND
 (define generic-and (make-generic-operator 2 'and boolean/and))
-(define p:and
+(define-cell p:and
   (function->propagator-constructor (binary-mapping generic-and)))
-(define e:and (functionalize p:and))
+(define-cell e:and (functionalize p:and))
 (define generic-or  (make-generic-operator 2 'or  boolean/or))
-(define p:or
+(define-cell p:or
   (function->propagator-constructor (binary-mapping generic-or)))
-(define e:or (functionalize p:or))
+(define-cell e:or (functionalize p:or))
 
 (propagatify eq? binary-mapping)
 (propagatify eqv? binary-mapping)
@@ -65,9 +65,9 @@
 (define (switch-function control input)
   (if control input nothing))
 (name! switch-function 'switch)
-(define p:switch
+(define-cell p:switch
   (function->propagator-constructor (nary-unpacking switch-function)))
-(define e:switch (functionalize p:switch))
+(define-cell e:switch (functionalize p:switch))
 
 (name! identity 'identity)
 (define pass-through (function->propagator-constructor identity))
