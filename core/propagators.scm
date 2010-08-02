@@ -101,7 +101,7 @@
 ;;; boundary cells has a non-nothing content and then perform the
 ;;; indicated construction once.
 (define (delayed-propagator-constructor prop-ctor)
-  (propagator-constructor!
+  (eq-clone! prop-ctor
    (lambda args
      ;; TODO Can I autodetect "inputs" that should not trigger
      ;; construction?
