@@ -720,9 +720,8 @@ provided by ``define-propagator``.  This is what
 Using Partial Information
 ======================================================================
 
-Partial, accumulatable information is the other side of the coin of
-multidirectional, nonsequential programming, so Scheme-Propagators is
-all about partial information.  What do I mean by that?  Each "memory
+Partial, accumulatable information is essential to
+multidirectional, nonsequential programming.  Each "memory
 location" of Scheme-Propagators, that is each cell, maintains not "a
 value", but "all the information it has about a value".  Such
 information may be as little as "I know absolutely nothing about my
@@ -741,7 +740,7 @@ know everything there is to know, and the answer is ``5``."  There are
 also several Scheme types provided with the system that denote
 specific other states of knowledge, and you can make your own.  For
 example, objects of type ``interval?`` contain an upper bound and a
-lower bound, and represent information of the form "I know by value is
+lower bound, and represent information of the form "I know my value is
 between this real number and that one."
 
 The way to get partial knowledge into the network is to put it into
@@ -750,7 +749,7 @@ cells with ``add-content`` or constant propagators.  For example::
   (define-cell x (make-interval 3 5))
 
 produces a cell named ``x`` that now holds the partial information
-``(make-interval 3 5)``, which means that its notional value is
+``(make-interval 3 5)``, which means that its value is
 between ``3`` and ``5``.
 
 Partial information structures are generally built to be contagious,
@@ -774,7 +773,7 @@ the interval between ``5`` and ``7``::
   (run)
   (content y)  ==>  #(interval 5 7)
 
-The key thing about partial information is, of course, that it's
+The key thing about partial information is that it's
 cumulative.  So if you also added some other knowledge to the ``y``
 cell, it would need to merge with the interval that's there to
 represent the complete knowledge available as a result::
@@ -785,7 +784,7 @@ represent the complete knowledge available as a result::
 If incoming knowledge hopelessly contradicts the knowledge a cell
 already has, it will complain::
 
-  (add-content y 15)  ==>  Error
+  (add-content y 15)  ==>  An error
 
 stop the network mid-stride, and give you a chance to examine the
 situation so you can debug the program that led to it, using the
@@ -795,26 +794,26 @@ TODO Documentation of provided partial information types
 
 - nothing
 - just a value
+- cons cells
+- closures
 - intervals
 - supported values
 - truth maintenance systems
-- cons cells (in flux)
 
 
 Making New Kinds of Partial Information
 ======================================================================
 
-There are three components to making your own types of partial
-information.  The zeroth is to define the appropriate data structure,
-of course.
+There are four components to making your own types of partial
+information.  The zeroth is to define the appropriate data structure.
 
 Define your Merge Handlers
 ----------------------------------------------------------------------
 
-The first is to teach cells how to merge your partial information
-structure.  This you do by adding methods to the generic procedure
-``merge``.  Method addition is done with the ``defhandler``
-procedure::
+The first is to teach cells how to merge new contributions into the
+partial information structure.  This you do by adding methods to the
+generic procedure ``merge``.  Method addition is done with the
+``defhandler`` procedure::
 
   (defhandler operation handler arg-predicate ...)
 
@@ -826,23 +825,15 @@ can be defined as::
 
   (defhandler merge intersect-intervals interval? interval?)
 
-Two important things not to forget: First, if the incoming information
-(second argument to the ``merge`` generic procedure) is redundant, you
-must return identically the first argument, because cells check with
-``eq?`` whether their information changed.  Presumably the
-``intersect-intervals`` procedure above arranges this internally.
-(The Scheme procedure ``eq?-standardizing`` is provided as a useful
-combinator for this purpose -- type ``(pp eq?-standardizing)`` at a prompt
-after loading the Scheme-Propagators system).  If you get this wrong,
-your networks will tend to enter infinite loops.  Second, it is your
+An important thing not to forget: It is your
 responsibility to make sure that your partial information structure
 merges well with all other partial information structures that it can
 encounter in a cell.  Intervals, for example, should handle raw
 numbers, because knowing that something is exactly ``2`` is compatible
 with knowing that it is between ``1`` and ``3``.  In the case of
-intervals, I defined the procedure ``ensure-inside`` to either
-return the number if it is in the interval, or return a contradiction
-object if it is not, and attached it as a handler with
+intervals, the procedure ``ensure-inside`` either
+returns the number if it is in the interval, or returns a contradiction
+object if it is not.  It is attached as a merge handler with
 
 ::
 
@@ -859,8 +850,13 @@ called ``the-contradiction`` to indicate a complete contradiction
 
 TODO Document the extant partial information structures and the
 default mechanisms they use for interacting with others (namely the
-``nothing? any?`` handlers, the ``flat?`` predicate, the general
+``nothing? any?`` handlers, the ``v&s-able?`` predicate, the general
 bevaior of TMSes, maybe also the cons story).
+
+Define equivalent? Handlers
+----------------------------------------------------------------------
+
+TODO
 
 Define your Contradiction Test
 ----------------------------------------------------------------------
@@ -869,15 +865,20 @@ There is a generic procedure called ``contradictory?`` to which you
 can also attach handlers for your partial information structures.  The
 ``contradictory?`` procedure is called by cells on new merge results
 every time they are created, and if it ever returns true, the cell
-signals an error immediately.  For example, a strictly empty interval
-implies an impossible state of knowledge::
+signals an error immediately.  The Scheme object ``the-contradiction``
+is ``contradictory?``, and further contradictory states can be defined
+by adding handlers to the ``contradictory?`` generic procedure.  For
+example, a strictly empty interval implies an impossible state of
+knowledge::
 
   (defhandler contradictory? empty-interval? interval?)
-  ;; N.B. empty-interval? is the handler; interval? is the only predicate
+  ;; N.B. empty-interval? is the handler; interval? is the predicate
 
-which means that every interval will be checked by the
+This definition ensures that every interval will be checked by the
 ``empty-interval?`` procedure to test whether it represents a
 contradiction.
+
+
 
 Augment the Propagators
 ----------------------------------------------------------------------
@@ -902,47 +903,13 @@ produce a state of knowledge about the results of the computation
 implying no new information produced by the propagator).
 
 Also, most (TODO document which) primitive propagators are wrapped
-with the ``nary-unpacking`` wrapper function around their underlying
-generic operation.  This wrapper function is a poor man's
-implementation of monads, so if your partial information structure is
-essentially monadic, you can use this to teach all propagators how to
-handle it.
+with the ``nary-mapping`` wrapper function around their underlying
+generic operation.  This wrapper function is an implementation of the
+idea of applicative functors (TODO cite McBride and Paterson), so if
+your partial information structure is an applicative functor, you can
+use this to teach all propagators how to handle it.
 
-Unfortunately, I understand neither partial information nor monads as
-well as I would like, so this mechanism is a bit nasty.  To use it,
-you must define methods for the generic procedures ``generic-unpack``
-and ``generic-flatten``, which are a not-necessarily-good
-decomposition of the usual monadic ``bind`` operation.  The ``bind``
-is an ``unpack`` followed by a ``flatten``.  ``generic-unpack`` takes
-your partial information structure and a function that wants the
-goodie inside, is expected to call that function with whatever values
-it wants, and to produce the result of the function, partial in the
-way appropriate to your partial information.  Subsequently,
-``generic-flatten`` is called on the result, to allow you to sanitize
-it; for example, to turn a truth maintenance system that now
-(directly) contains a truth maintenance system into just one single
-truth maintenance system.
-
-If this helps, the type signatures of ``generic-unpack`` and
-``generic-flatten`` would be::
-
-  generic-unpack: M a --> (a --> b) --> M b
-  generic-flatten: M M a --> M a
-
-except for two things: I tried to allow the underlying system to be a
-bit sloppy with its types, and to rely on coercions to correct the
-sloppiness; so the result is that a function being unpacked into is
-free to return whatever it wants, and you are expected to take care of
-it in ``generic-flatten``; and I tried to make the partial information
-types compose, so the thing that's really going on is that there is
-one big monad that you are adding to.  I don't know whether this is a
-reimplementation of the monad transformers story, because no one has
-ever explained that story to me in such a way that I got it.
-
-In any case, this mechanism is something of a mess.  See
-``core/supported-values.scm`` and ``core/truth-maintenance.scm`` for
-examples of how it can be used; and maybe talk to me when you set out
-to make a partial information structure.
+TODO describe the generic ``binary-map``.
 
 
 Debugging
@@ -966,13 +933,14 @@ track is:
 
 - Whether the connections are input, output, or both.
 
-- The grouping structure of the propagator network, as defined
-  by the call structure of the Scheme procedures that constructed it.
+- The grouping structure of the propagator network, as approximately
+  defined by the call structure of the Scheme procedures that
+  constructed it.
 
 To make sure that your network tracks this metadata well, you should
 use the high level interfaces to making cells, propagators, and
 propagator constructors when possible (``define-cell``, ``let-cells``,
-``define-macro-propagator``, ``propagatify``, etc).  Any gaps not
+``define-propagator``, ``propagatify``, etc).  Any gaps not
 filled by use of these interfaces must either be accepted as gaps or
 be filled by hand.
 
@@ -1012,7 +980,8 @@ neighbors
   the readers of a cell (a list of propagators)
 
 cell-non-readers
-  other propagators somehow associated with a cell (presumably ones that write to it)
+  other propagators somehow associated with a cell (presumably ones
+  that write to it)
 
 cell-connections
   all propagators around a cell (the append of the neighbors
@@ -1034,7 +1003,7 @@ yourself.  All the metadata collection procedures are defined in
 ``core/metadata.scm``; they generally use the ``eq-properties``
 mechanism in ``support/eq-properties.scm`` to track the metadata, so
 you can use it to add more.  In particular, see the definition of, say,
-``function->propagator-constructor`` or ``define-macro-propagator``
+``function->propagator-constructor`` or ``define-propagator``
 for examples of how this is done.
 
 
@@ -1051,11 +1020,13 @@ makes a propagator that does the job implemented by that Scheme
 function.  The propagator constructor in question takes one more
 argument than the original function, the extra argument being the cell
 into which to write the output.  So the result of
-``function->propagator-constructor`` is a ``p:``-style procedure
+``function->propagator-constructor`` is a diagram-style procedure
 (complete with (most of) the debugging information, and the constant
-conversion).  For example, you might define::
+conversion).  The return value of ``function->propagator-constructor``
+can be put into a cell, just same way that a Scheme procedure
+can be the value of a Scheme variable.  For example, you might define::
 
-  (define p:my-primitive (function->propagator-constructor do-it))
+  (define-cell p:my-primitive (function->propagator-constructor do-it))
 
 where ``do-it`` is the appropriate Scheme function.
 
@@ -1065,27 +1036,25 @@ to the function itself to handle any interesting partial information
 type that might come out of its argument cells.  Notably, ``nothing``
 might show up in the arguments of that function when it is called.
 Therefore, it may be appropriate the make the function itself generic,
-and/or wrap it in ``nary-unpacking``.  For examples, check out how the
-provided primitive propagators are implemented, in
-``core/standard-propagators.scm`` (which refers to definitions made in
-``core/generic-definitions.scm``).
+and/or wrap it in ``nary-mapping``.  For example, check out how the
+provided primitive ``p:and`` and ``p:or`` propagators are implemented,
+in ``core/standard-propagators.scm``.
 
 The second thing is metadata.  ``function->propagator-constructor``
 can supply all the metadata that the debugger uses except the name for
 your function.  That you need to add yourself, with ``(name!
-your-function 'some-name)`` (see ``core/generic-definitions.scm``).
+your-function 'some-name)``.
 
 
 Propagator Constructor Combinators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Once you've made a ``p:``-style propagator constructor, you can turn
-it into an ``:e``-style one automatically with ``functionalize``.  For
-example, ``e:+`` is actually defined as::
+Once you've made a diagram-style propagator constructor, you can make
+a variant that likes to be applied in expression style with
+``expression-style-variant``.  For example, ``e:and`` is actually
+defined as::
 
-  (define e:+ (functionalize p:+))
-
-See ``core/expression-language.scm`` for more of that.
+  (define e:and (expression-style-variant p:and))
 
 You can also delay the actual construction of your primitives
 if you want with ``delayed-propagator-constructor``, though that's
@@ -1095,28 +1064,26 @@ really more useful with recursive compound propagators.
 DWIM Propagator Construction
 ----------------------------------------------------------------------
 
-All that wrapping in ``nary-unpacking``, and naming your propagator
-functions with ``name!``, and calling ``functionalize`` to convert
-them to ``e:``-style versions can get tedious.  This whole shebang
-is automated by the ``propagatify`` macro::
+All that wrapping in ``nary-mapping``, and naming your propagator
+functions with ``name!``, and calling ``expression-style-variant`` to
+convert them to expression-style versions can get tedious.  This whole
+shebang is automated by the ``propagatify`` macro::
 
-  (propagatify eq?)
+  (propagatify + nary-mapping)
 
 turns into
 
 ::
 
-  (define p:eq?
-   (function->propagator-constructor
-    (nary-unpacking (name! eq? 'eq?))))
-  (define e:eq? (functionalize p:eq?))
+  (define generic-+ (make-generic-operator 2 '+ +))
+  (define-cell p:+
+   (function->propagator-constructor (nary-mapping generic-+)))
+  (define-cell e:+ (expression-style-variant p:eq?))
 
-Use this with some caution; you may not always want ``nary-unpacking``,
-and you may not always want to ``propagatify`` the raw Scheme function
-instead of making a corresponding generic operator.
-The macro is defined in ``core/expression-language.scm``, so that's
-an example for you if you want to write variants (let me know if you
-come across a good one).
+Use this with some caution; you may not always want ``nary-mapping``,
+and you may sometimes want to ``propagatify`` the raw Scheme function
+instead of making a corresponding generic operator.  The macro is
+defined in ``core/sugar.scm``; comments there describe it more fully.
 
 
 Fully-manual Low-level Propagator Construction
@@ -1143,7 +1110,7 @@ no access to any useful sources of metadata, so you will need to
 provide yourself any metadata you want to be able to access later.
 For an example of how this facility is used, see the implementations
 of ``function->propagator-constructor`` and
-``delayed-propagator-constructor`` in ``core/core.scm``.
+``delayed-propagator-constructor`` in ``core/propagators.scm``.
 
 
 Miscellany
@@ -1155,12 +1122,12 @@ Implicit Cell Syntax
 A quirky little feature, called
 ``%%``.  This is a Scheme object, therefore Scheme-Propagators syntax,
 for controlling the argument position of the implicit cell that an
-``e:`` or ``ce:`` procedure will make and return.  Perhaps examples
+expression-style application will make and return.  Perhaps examples
 are best::
 
-  (e: foo bar)     <==>  (e: foo bar %%)
+  (e: foo bar)     ==  (e: foo bar %%)
 
-  (e: foo %% bar)  <==>  (let-cell new (p: foo new bar) new)
+  (e: foo %% bar)  ==  (let-cell new (p: foo new bar) new)
 
 I borrowed this idea from Guy Steele's PhD thesis on constraint
 languages, and it was a year between when I implemented it and
@@ -1234,7 +1201,7 @@ If you are going to edit any parenthesized source code in Emacs,
 In addition to the above, I find it very useful to have my editor
 highlight and indent some of the Scheme-Propagators macros I have
 defined the same way as their Scheme analogues; notably
-``define-macro-propagator`` and co, and ``let-cells``.  Sadly the
+``define-propagator`` and ``let-cells``.  Sadly the
 Emacs Scheme mode does not do this by default, so you need to tweak
 the Emacs config to do that.  The file ``support/scm-propagators.el``
 contains a dump of the relevant portion of my Emacs configuration.
@@ -1242,7 +1209,7 @@ contains a dump of the relevant portion of my Emacs configuration.
 Hacking
 ----------------------------------------------------------------------
 
-Scheme-Propagators is obviously a work in progress.  Be aware that I
+Scheme-Propagators is a work in progress.  Be aware that I
 will continue to hack it to my heart's content.  Likewise, feel free
 to hack it to yours --- let me know if you invent or implement
 something interesting.
@@ -1254,10 +1221,10 @@ adapt them.
 TODO
 ----------------------------------------------------------------------
 
-- How do I want to section up the p:, e:, c:, and ce: ideas?
 - Advertise the examples/ directory
 
 Revision History of this Guide
 ----------------------------------------------------------------------
 
 First written May 5, 2010 by Alexey Radul
+Rewritten August 2, 2010 by Alexey Radul and Gerald Jay Sussman
