@@ -682,45 +682,39 @@ Macrology
 ----------------------------------------------------------------------
 
 Sometimes you will need to make something that looks like a macro to
-Scheme-Propagators.  For extreme cases there's always Scheme's
-``define``; but sometimes you want the debugging data provided by
-``define-propagator`` but not the closure object or the constant
-conversion.  A common use case is variable-arity network diagrams.
-You need a list of cells rather than a single cell, and you want to
-use Scheme's ``map`` or ``for-each`` to do something to them, but you
-still want the debugging aids that ``define-propagator``
-provides and ``define`` does not.  This is what
-``define-propagator-syntax`` is for.  The classic example is
-``require-distinct``::
-
-  (define-propagator-syntax (require-distinct cells)
-    (for-each-distinct-pair
-     (lambda (c1 c2)
-       (define-cell p)
-       (=? c1 c2 p)
-       (forbid p))
-     cells))
-
-
+Scheme-Propagators.  The macro language of Scheme-Propagators is
+Scheme.  For example::
 
   (define (my-diagram x y z)
     (p:+ x y z)
     (p:- z y x)
     (p:- z x y))
 
+``my-diagram`` is a Scheme-Propagators macro that, when given three
+cells, wires up three arithmetic propagators to them.  This simple
+example of course gains nothing from being a macro rather
+than a normal compound propagator, but using Scheme as a macro
+language lets you do more interesting things::
 
-The example diagram called ``my-diagram`` above should probably have
-been named ``p:my-diagram``, because its expects to get all of its
-boundary cells when called, and the Scheme procedure does not return
-anything useful.  
-You can mechanically convert ``p:``-type procedures that
-you define into ``e:``-type versions with the Scheme procedure
-``functionalize``::
+  (define (require-distinct cells)
+    (for-each-distinct-pair
+     (lambda (c1 c2)
+       (forbid (e:= c1 c2)))
+     cells))
 
-  (define e:my-diagram (functionalize p:my-diagram))
-  (define-cell z (e:my-diagram x y))
+This ``require-distinct`` uses a Scheme iterator to perform a
+repetitive task over a bunch of Scheme-Propagators cells.
 
-will do what you expect.
+This is quite convenient, but sometimes one wants the debugging data
+provided by ``define-propagator``.  This is what
+``define-propagator-syntax`` is for.  Just change ``define`` to
+``define-propagator-syntax``::
+
+  (define-propagator-syntax (require-distinct cells)
+    (for-each-distinct-pair
+     (lambda (c1 c2)
+       (forbid (e:= c1 c2)))
+     cells))
 
 
 Using Partial Information
