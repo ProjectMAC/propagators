@@ -151,12 +151,4 @@
    (= 1 (let-cell ((answer (ce:+ 2 %% 3)))
 	  (run)
 	  (content answer))))
-
- (define-test (factorial)
-   (interaction
-    (initialize-scheduler)
-    (define-cell n! (e:factorial 5))
-    (run)
-    (content n!)
-    (produces 120)))
  )

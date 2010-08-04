@@ -82,14 +82,6 @@
  (content k)
  ;Value: 298.15
 |#
-
-;;; Factorial
-
-(define-delayed-propagator (p:factorial n n!)
-  (let-cells* ((done? (e:= 0 n))
-	       (n-again (e:switch (e:not done?) n))
-	       (n!-again (e:* n-again (e:factorial (e:- n-again 1)))))
-    (conditional done? 1 n!-again n!)))
 
 ;;; Measuring the height of a building using a barometer
 
