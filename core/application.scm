@@ -254,16 +254,13 @@
 
 (define (do-apply-prop prop real-args)
   (let ((real-args (map ensure-cell real-args)))
-    (with-network-group (network-group-named (name prop))
-      (lambda ()
-	(apply (prop-body prop) real-args)))))
-
-(define (prop-body thing)
-  (cond ((closure? thing)
-	 (closure-code thing))
-	((propagator-constructor? thing)
-	 thing)
-	(else (error "No prop body" thing))))
+    (cond ((closure? prop)
+	   (with-network-group (network-group-named (name prop))
+	     (lambda ()
+	       (apply (closure-code prop) real-args))))
+	  ((propagator-constructor? prop)
+	   (apply prop real-args))
+	  (else (error "Not an applicable propagator" thing)))))
 
 (define (diagram-style? thing)
   (cond ((closure? thing)
