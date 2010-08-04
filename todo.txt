@@ -26,7 +26,6 @@ For the revised report:
   (currently) actually attaches any propagators to those toplevel
   cells.  But if anyone did, those user propagators would need to be
   brushed off on initialize-scheduler.
-- dike out define-delayed-propagator
 - Record arbitrary choices:
   - diagram style was picked as the defauult when the desired
     style cannot be deduced; both for application and for definition

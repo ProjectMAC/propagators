@@ -309,46 +309,6 @@
      (lambda-e:propagator (arg ...)
        (import)
        body ...))))
-
-;;; DEFINE-DELAYED-PROPAGATOR is one mechanism for achieving
-;;; recursion.  It is just like DEFINE-PROPAGATOR, except that the
-;;; closure it produces delays expansion until some content appears on
-;;; its boundary.
-
-(define-syntax define-delayed-propagator
-  (rsc-macro-transformer
-   (lambda (form defn-env)
-     (let ((name (caadr form))
-	   (formals (cdadr form))
-	   (body (cddr form)))
-       `(define-%delayed-propagator
-	  ,(propagator-naming-convention name) ,formals ,@body)))))
-
-(define-syntax define-%delayed-propagator
-  (syntax-rules ()
-    ((define-%delayed-propagator names (arg ...)
-       body ...)
-     (define-by-diagram-variant names
-       (name!
-	(lambda-delayed-propagator (arg ...)
-	  body ...)
-	(car 'names))))))
-
-(define-syntax lambda-delayed-propagator
-  (syntax-rules (import)
-    ((lambda-delayed-propagator (arg ...)
-       (import cell ...)
-       body ...)
-     (make-closure
-      (delayed-propagator-constructor
-       (naming-lambda (arg ...)
-	 body ...))
-      (list cell ...)))
-    ((lambda-delayed-propagator (arg ...)
-       body ...)
-     (lambda-delayed-propagator (arg ...)
-       (import)
-       body ...))))
 
 ;;;     TODO I need variable arity propagator constructors; this can
 ;;; be taken from the story for compound data.
