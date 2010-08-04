@@ -94,7 +94,7 @@
      (pass-through foo bar)
      (initialize-scheduler))
    (check (< (memory-loss-from (repeated 100 one-small-network)) 2)))
-#;
+
  (define-test (grouped-drawing)
    (interaction
     (force-hash-number 214)
@@ -119,7 +119,7 @@
   \"prop-217\" -> \"cell-219\" [label=\"\" ];
 }
 " (out)))))
-#;
+
  (define-test (grouped-drawing-2)
    (interaction
     (force-hash-number 239)
@@ -159,7 +159,6 @@
      (check (not (eq-get baz 'name)))
      ))
 
- #;
  (define-test (more-macrology-smoke-2)
    (initialize-scheduler)
    (define-propagator (frobnicate frob)
@@ -172,8 +171,6 @@
    (check (eq? 'foo (local-name foo)))
    (p:frobnicate foo))
 
- ;; TODO Reenable expression-substructure-test
- #;
  (define-test (expression-substructure-test)
    (initialize-scheduler)
    (define-propagator (frobnicate frob)
@@ -210,7 +207,7 @@
 	     (check (= 2 (length (filter cell? the-subgroup-structure))))
 	     (check (= 0 (length (filter network-group? the-subgroup-structure))))
 	     )))))
-   (frobnicate (e:constant 2))
+   (p:frobnicate (e:constant 2))
    )
 
  ;; TODO Add a test of drawing networks with expanded and unexpanded
