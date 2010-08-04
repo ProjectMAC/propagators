@@ -159,6 +159,10 @@
      (check (not (eq-get baz 'name)))
      ))
 
+;;; TODO more-macrology-smoke-2 and expression-substructure-test fail
+;;; to syntax in at least some versions of mechanics because of a
+;;; macro-expander bug.
+#;
  (define-test (more-macrology-smoke-2)
    (initialize-scheduler)
    (define-propagator (frobnicate frob)
@@ -170,7 +174,7 @@
    (check (eq? 'foo (name foo)))
    (check (eq? 'foo (local-name foo)))
    (p:frobnicate foo))
-
+#;
  (define-test (expression-substructure-test)
    (initialize-scheduler)
    (define-propagator (frobnicate frob)
