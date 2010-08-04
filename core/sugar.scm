@@ -323,7 +323,7 @@
 ;;; constructing and applying closures that correspond to the bodies
 ;;; of the branches.  Then the introduction of switches becomes
 ;;; automatic, and the possible zero-inputs bug is avoided.
-
+#;
 (define-syntax p:when
   (syntax-rules ()
     ((p:when (shieldee ...) conditional body ...)
@@ -332,6 +332,18 @@
 	 (lambda (shieldee ...)
 	   body ...))
 	shieldee ...)))))
+
+(define-syntax p:when
+  (syntax-rules ()
+    ((p:when (shieldee ...) conditional body ...)
+     (application
+      (e:conditional-wire conditional
+       (make-closure
+	(delayed-propagator-constructor
+	 (lambda (shieldee ...)
+	   body ...))
+	(list)))
+      shieldee ...))))
 
 (define-syntax p:unless
   (syntax-rules ()
@@ -344,7 +356,7 @@
      (let-cell (conditional-value conditional)
        (p:when shieldees conditional-value consequent)
        (p:unless shieldees conditional-value alternate)))))
-
+#;
 (define-syntax e:when
   (syntax-rules ()
     ((e:when (shieldee ...) conditional body ...)
@@ -360,6 +372,23 @@
 		 args)))))
 	  shieldee ... output)
 	 (e:conditional-wire conditional output))))))
+
+(define-syntax e:when
+  (syntax-rules ()
+    ((e:when (shieldee ...) conditional body ...)
+     (e:application
+      (e:conditional-wire conditional
+       (make-closure
+	(delayed-propagator-constructor
+	 (lambda boundary
+	   (handle-explicit-output boundary
+	    (lambda (args)
+	      (apply
+	       (lambda (shieldee ...)
+		 body ...)
+	       args)))))
+	(list)))
+      shieldee ...))))
 
 (define-syntax e:unless
   (syntax-rules ()
