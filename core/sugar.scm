@@ -358,3 +358,57 @@
 ;;; generate them.  It may also be fun to standardize on a mechanism
 ;;; like E:INSPECTABLE-OBJECT and THE from the circuits exploration
 ;;; for reaching in and grabbing such cells from the outside.
+
+;;; TODO Consider rewriting p:when and company in terms of
+;;; constructing and applying closures that correspond to the bodies
+;;; of the branches.  Then the introduction of switches becomes
+;;; automatic, and the possible zero-inputs bug is avoided.
+
+(define-syntax p:when
+  (syntax-rules ()
+    ((p:when (shieldee ...) conditional body ...)
+     (let-cells ((shieldee (e:conditional-wire conditional shieldee)) ...)
+       ((delayed-propagator-constructor
+	 (lambda (shieldee ...)
+	   body ...))
+	shieldee ...)))))
+
+(define-syntax p:unless
+  (syntax-rules ()
+    ((p:unless shieldees conditional stuff ...)
+     (p:when shieldees (e:not conditional) stuff ...))))
+
+(define-syntax p:if
+  (syntax-rules ()
+    ((p:if shieldees conditional consequent alternate)
+     (let-cell (conditional-value conditional)
+       (p:when shieldees conditional-value consequent)
+       (p:unless shieldees conditional-value alternate)))))
+
+(define-syntax e:when
+  (syntax-rules ()
+    ((e:when (shieldee ...) conditional body ...)
+     (let-cells ((shieldee (e:conditional-wire conditional shieldee)) ...)
+       (let-cell output
+	 ((delayed-propagator-constructor
+	   (lambda boundary
+	     (handle-explicit-output boundary
+	      (lambda (args)
+		(apply 
+		 (lambda (shieldee ...)
+		   body ...)
+		 args)))))
+	  shieldee ... output)
+	 (e:conditional-wire conditional output))))))
+
+(define-syntax e:unless
+  (syntax-rules ()
+    ((e:unless shieldees conditional stuff ...)
+     (e:when shieldees (e:not conditional) stuff ...))))
+
+(define-syntax e:if
+  (syntax-rules ()
+    ((e:if shieldees conditional consequent alternate)
+     (let-cell (conditional-value conditional)
+       (ce:== (e:when shieldees conditional-value consequent)
+	      (e:unless shieldees conditional-value alternate))))))

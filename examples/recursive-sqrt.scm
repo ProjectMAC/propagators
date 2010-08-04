@@ -21,42 +21,25 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-delayed-propagator (p:heron-step x g h)
-  (let-cells (x/g g+x/g two)
-    (p:/ x g x/g)
-    (p:+ g x/g g+x/g)
-    ((constant 2) two)
-    (p:/ g+x/g two h)))
+(define-e:propagator (e:heron-step x g)
+  (e:/ (e:+ g (e:/ x g)) 2))
 
-(define-delayed-propagator (p:sqrt-iter x g answer)
-  (let-cells (done x-if-done x-if-not-done g-if-done g-if-not-done
-		   new-g recursive-answer)
-    (p:good-enuf? x g done)
-    (conditional-router done x x-if-done x-if-not-done)
-    (conditional-router done g g-if-done g-if-not-done)
-    (p:heron-step x-if-not-done g-if-not-done new-g)
-    (p:sqrt-iter x-if-not-done new-g recursive-answer)
-    (conditional done g-if-done recursive-answer answer)))
+(define-e:propagator (e:sqrt-iter x g)
+  (e:if (x g) (e:good-enuf? x g)
+	g
+	(e:sqrt-iter x (e:heron-step x g))))
 
-(define-delayed-propagator (p:sqrt-network x answer)
-  (let-cell one
-    ((constant 1.0) one)
-    (p:sqrt-iter x one answer)))
+(define-e:propagator (e:sqrt-network x)
+  (e:sqrt-iter x 1.0))
 
-(define-delayed-propagator (p:good-enuf? x g done)
-  (let-cells (g^2 eps x-g^2 ax-g^2)
-    ((constant .00000001) eps)
-    (p:* g g g^2)
-    (p:- x g^2 x-g^2)
-    (p:abs x-g^2 ax-g^2)
-    (p:< ax-g^2 eps done)))
+(define-e:propagator (e:good-enuf? x g)
+  (let-cell (eps .00000001)
+    (e:< (e:abs (e:- x (e:* g g))) eps)))
 
 #|
  (initialize-scheduler)
  (define-cell x)
- (define-cell answer)
-
- (sqrt-network x answer)
+ (define-cell answer (e:sqrt-network x))
 
  (add-content x 2)
  (run)
@@ -64,74 +47,20 @@
  ;Value: 1.4142135623746899
 |#
 
-;;; TODO Consider rewriting p:when and company in terms of
-;;; constructing and applying closures that correspond to the bodies
-;;; of the branches.  Then the introduction of switches becomes
-;;; automatic, and the possible zero-inputs bug is avoided.
-
-(define-syntax p:when
-  (syntax-rules ()
-    ((p:when (shieldee ...) conditional body ...)
-     (let-cells ((shieldee (e:conditional-wire conditional shieldee)) ...)
-       ((delayed-propagator-constructor
-	 (lambda (shieldee ...)
-	   body ...))
-	shieldee ...)))))
-
 (define-propagator (p:factorial-1 n n!)
   (p:when (n n!) (e:not (e:= 0 n))
    (p:== (e:* n (e:factorial-1 (e:- n 1))) n!))
   (switch (e:= 0 n) 1 n!))
-
-(define-syntax p:unless
-  (syntax-rules ()
-    ((p:unless shieldees conditional stuff ...)
-     (p:when shieldees (e:not conditional) stuff ...))))
-
-(define-syntax p:if
-  (syntax-rules ()
-    ((p:if shieldees conditional consequent alternate)
-     (let-cell (conditional-value conditional)
-       (p:when shieldees conditional-value consequent)
-       (p:unless shieldees conditional-value alternate)))))
 
 (define-propagator (p:factorial-2 n n!)
   (p:if (n n!) (e:= 0 n)
    (p:== 1 n!)
    (p:== (e:* n (e:factorial-2 (e:- n 1))) n!)))
 
-(define-syntax e:when
-  (syntax-rules ()
-    ((e:when (shieldee ...) conditional body ...)
-     (let-cells ((shieldee (e:conditional-wire conditional shieldee)) ...)
-       (let-cell output
-	 ((delayed-propagator-constructor
-	   (lambda boundary
-	     (handle-explicit-output boundary
-	      (lambda (args)
-		(apply 
-		 (lambda (shieldee ...)
-		   body ...)
-		 args)))))
-	  shieldee ... output)
-	 (e:conditional-wire conditional output))))))
-
 (define-e:propagator (e:factorial-3 n)
   (ce:== (e:when (n) (e:not (e:= 0 n))
 	   (e:* n (e:factorial-3 (e:- n 1))))
 	 (e:switch (e:= 0 n) 1)))
-
-(define-syntax e:unless
-  (syntax-rules ()
-    ((e:unless shieldees conditional stuff ...)
-     (e:when shieldees (e:not conditional) stuff ...))))
-
-(define-syntax e:if
-  (syntax-rules ()
-    ((e:if shieldees conditional consequent alternate)
-     (let-cell (conditional-value conditional)
-       (ce:== (e:when shieldees conditional-value consequent)
-	      (e:unless shieldees conditional-value alternate))))))
 
 (define-e:propagator (e:factorial-4 n)
   (e:if (n) (e:= 0 n)
