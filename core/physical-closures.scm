@@ -58,35 +58,14 @@
 ;;; Scheme closures with different code are like data structures of
 ;;; different types and so are not mergeable.
 
-;;; TODO Capture this pattern in a version of define-structure that
-;;; creates applicable records?
 (define-structure
-  (%closure (safe-accessors #t))
+  (closure (constructor %make-closure) (safe-accessors #t))
   code
   environment
   diagram-style?)
 
-(define (%make-closure code environment diagram-style?)
-  (make-entity
-   (lambda (self . args)
-     (apply application self args))
-   (make-%closure code environment diagram-style?)))
-
-(define (closure? thing)
-  (and (entity? thing)
-       (%closure? (entity-extra thing))))
-
 (define (closure-code-tag thing)
-  (procedure-lambda (%closure-code (entity-extra thing))))
-
-(define (closure-code thing)
-  (%closure-code (entity-extra thing)))
-
-(define (closure-environment thing)
-  (%closure-environment (entity-extra thing)))
-
-(define (closure-diagram-style? thing)
-  (%closure-diagram-style? (entity-extra thing)))
+  (procedure-lambda (closure-code thing)))
 
 (define (closure-copy closure)
   (eq-clone! closure
