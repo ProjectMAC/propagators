@@ -64,9 +64,10 @@
 (define (ignore-first x y) y)
 
 (define (default-equal? x y)
-  (if (and (number? x) (number? y))
+  (if (and (number? x) (number? y)
+	   (or (inexact? x) (inexact? y)))
       (close-enuf? x y 1e-10)
-      (equal? x y)))
+      (eqv? x y)))
 
 (define (close-enuf? h1 h2 #!optional tolerance scale)
   (if (default-object? tolerance)
