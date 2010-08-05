@@ -1,0 +1,30 @@
+The locking needed to ensure the integrity of the propagator network
+is completely deadlock-free.  Why?  Because only a few operations need
+to be atomic; they are very local operations; and every transaction
+only contains one of them.  Nobody ever needs to hold more than one
+lock at a time, so deadlock is impossible because either you have the
+lock and can make progress, or you don't have the lock but you're not
+impeding anybody.
+
+Operations that require locking:
+
+Updating the contents of a cell with newly merged data.
+- This requires a compare-and-swap loop against the existing contents;
+  but nothing worse than that, because it really doesn't matter
+  whether your update comes in before or after the other guy's
+  (As long as the other guy's gets done).
+- If a propagator has multiple outputs, it can put them into
+  their cells one by one.  
+
+Attaching propagators to cells
+- This can be done one cell at a time
+
+Uniquifying the cell-merge bridges
+- Not completely clear that this is necessary for correctness
+- To do it right, the only thing you really need is unique
+  names for cells, that can atomically be turned into a unique
+  name for the pair (which serves as the name of the cell
+  controlling their bridge).
+
+(Updating the global worldview with a new nogood set or a new
+bring-in! or kick-out!)
