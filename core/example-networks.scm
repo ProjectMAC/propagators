@@ -82,6 +82,9 @@
  (content k)
  ;Value: 298.15
 |#
+(define-propagator (c:fahrenheit-celsius f c)
+  ; (c:* c 9 (ce:* 5 (ce:+ 32 %% f)))
+  (c:== (ce:+ (ce:* c 9/5) 32) f))
 
 ;;; Measuring the height of a building using a barometer
 
