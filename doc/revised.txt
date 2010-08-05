@@ -169,22 +169,6 @@ building stuff there are primitive parts, the means by which they can
 be combined, and means by which combinations can be abstracted so that
 they can be named and treated as if they are primitive.  
 
-			   Primitive Parts
-
-Propagators
-
-Cells
-
-   Merging 
-
-   Merge methods
-
-
-			 Means of Combination
-
-			 Means of Abstraction
-
-		   Making Your Own Primitive Parts
 
        -------------------------------------------------------
 
@@ -726,7 +710,7 @@ location" of Scheme-Propagators, that is each cell, maintains not "a
 value", but "all the information it has about a value".  Such
 information may be as little as "I know absolutely nothing about my
 value", as much as "I know everything there is to know about my value,
-and it is ``x``", and many possible variations in between; and also
+and it is ``42``", and many possible variations in between; and also
 one not-in-between variation, which is "Stop the presses!  I know
 there is a contradiction!"
 
@@ -790,15 +774,140 @@ stop the network mid-stride, and give you a chance to examine the
 situation so you can debug the program that led to it, using the
 standard MIT Scheme debugging facilities.
 
-TODO Documentation of provided partial information types
+
+Built-in Partial Information Structures
+======================================================================
 
 - nothing
 - just a value
-- cons cells
-- closures
 - intervals
+- cons cells
+- propagator cells
+- closures
 - supported values
 - truth maintenance systems
+- contradiction
+
+Nothing
+----------------------------------------------------------------------
+
+A Raw Scheme Object
+----------------------------------------------------------------------
+
+This state of information indicates that the content of the cell is
+completely known, and is exactly (by ``eqv?``) that object.  Note:
+floating point numbers are compared by approximate numerical equality;
+this is guaranteed to screw you eventually, but we don't know how to
+do better.
+
+Numerical Intervals
+----------------------------------------------------------------------
+
+An object of type ``interval?`` has fields for a lower bound and an
+upper bound.  Such an object represents the information "This value is
+between these bounds."  Cells merge intervals by intersecting them.
+
+(make-interval low high)
+  Creates an interval with the given lower and upper bounds
+
+(interval-low interval)
+  Extracts the lower bound of an interval
+
+(interval-high interval)
+  Extracts the upper bound of an interval
+
+(interval? thing)
+  Tests whether the given object is an interval
+
+As an interval arithmetic facility, this one is very primitive.  In
+particular it assumes that all the numbers involved are positive.  The
+main purpose of including it is to have a partial information
+structure with an intuitive meaning, and that requires nontrivial
+operations on the information it is over.
+
+Compound Data
+----------------------------------------------------------------------
+
+Scheme pairs are not assumed to denote exactly themselves.  A
+propagator cell will merge Scheme pairs by recursively merging the
+``car`` and ``cdr`` fields.  The fields should contain further
+propagator cells; given the behavior of propagator cells as mergeable
+data, the effect will be unification.  A Scheme pair merged with a
+Scheme object of a different type will produce a contradiction.
+
+cons, car, cdr, pair?, null?
+  These are Scheme procedures with their usual Scheme meanings.
+
+p:cons, e:cons, p:car, e:cdr, p:pair?, e:pair?, p:null?, e:null?
+  Propagators for dealing with compound data.  For example::
+
+    (p:cons x y z)
+
+  puts a pair holding the cells ``x`` and ``y`` into cell ``z``.
+  
+::
+    (p:car z w)
+
+  ensures that the cell in the car of the pair in cell ``z`` is
+  equivalent to cell ``w``.
+
+slotful-information-type
+  Declares that additional Scheme data structures should be merged
+  the way pairs are.  For example::
+
+    (slotful-information-type pair? cons car cdr)
+
+  is the declaration that causes the system to treat Scheme pairs the
+  way it does.
+
+Propagator Cells as Partial Information
+----------------------------------------------------------------------
+
+Propagator cells merge with each other by attaching bidirectional
+identity propagators that keep the contents of the cells in sync.
+These identity propagators will cause the contents of the cells to
+merge, both now and in the future.
+
+Closures
+----------------------------------------------------------------------
+
+Propagator closures as mergeable data behave like a compound data
+structure.  A closure is a code pointer together with an environment.
+The code pointer is a Scheme procedure; the environment is a map from
+names to cells, and as such is a compound structure containing cells.
+Code pointers merge by testing that they point to the same code
+(merging closures with different code produces a contradiction), and
+environments merge by merging all the cells they contain in
+corresponding places.
+
+make-closure, make-e:closure
+  Scheme procedures for directly constructing closure objects.  The
+  closures are defined in diagram or expression style, respectively.
+
+lambda-d:propagator, lambda-e:propagator
+  Scheme-Propagators syntax for anonymous compound propagator
+  constructors (which are implemented as closures).
+
+define-propagator
+  Internally produces lambda-d:propagator or lambda-e:propagator
+  and puts the results into appropriately named cells.
+
+Truth Maintenance Systems
+----------------------------------------------------------------------
+
+TODO
+
+Contradiction
+----------------------------------------------------------------------
+
+The Scheme object ``the-contradiction`` represents a completely
+contradictory state of information.  If a cell ever finds itself in
+such a completely contradictory state, it will signal an error.  The
+explicit ``the-contradiction`` object is useful, however, for
+representing contradictory information in recursive contexts.  For
+example, a truth maintenance system may discover that some collection
+of premises leads to a contradiction --- this is represented by a
+supported ``the-contradiction`` object.
 
 
 Making New Kinds of Partial Information
