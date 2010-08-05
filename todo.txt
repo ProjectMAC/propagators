@@ -38,6 +38,7 @@ For the revised report:
   cells captured in a closure's environment and the cells actually
   given to each particular application of that closure (at least
   in the general case).
+- Go through the example-networks and make them look nice.
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice
