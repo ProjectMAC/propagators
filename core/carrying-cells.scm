@@ -45,6 +45,8 @@
 
 (define carry-pair? pair?)
 (propagatify carry-pair? unary-mapping)
+(define carry-null? null?)
+(propagatify carry-null? unary-mapping)
 
 ;;; Accessors are remarkably easy:
 
@@ -95,3 +97,5 @@
 (define e:car   e:carry-car)
 (define p:cdr   p:carry-cdr)
 (define e:cdr   e:carry-cdr)
+(define p:null? p:carry-null?)
+(define e:null? e:carry-null?)
