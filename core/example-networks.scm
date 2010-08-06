@@ -46,6 +46,8 @@
  (content c)
  ;Value: 25
 |#
+(define-e:propagator (e:fahrenheit->celsius f)
+  (e:* (e:- f 32) 5/9))
 
 ;;; Multidirectional Fahrenheit to Celsius to Kelvin conversion
 
@@ -85,6 +87,8 @@
 (define-propagator (c:fahrenheit-celsius f c)
   ; (c:* c 9 (ce:* 5 (ce:+ 32 %% f)))
   (c:== (ce:+ (ce:* c 9/5) 32) f))
+(define-propagator (c:celsius-kelvin c k)
+  (c:+ c 273.15 k))
 
 ;;; Measuring the height of a building using a barometer
 
@@ -107,14 +111,18 @@
  (content building-height)
  ;Value: #(interval 41.163 47.243)
 |#
-
+(define-e:propagator (ce:fall-duration t)
+  (let-cell (g (make-interval 9.789 9.832))
+    (c:* 1/2 (c:* g (c:square t)))))
 ;;; In more ways than one
 
 (define (similar-triangles s-ba h-ba s h)
   (let-cell ratio
     (c:* s-ba ratio h-ba)
     (c:* s ratio h)))
-
+(define-propagator (c:similar-triangles s-ba h-ba s h)
+  (c:== (c:* s-ba %% h-ba)
+	(c:* s %% h)))
 #|
  (initialize-scheduler)
  (define-cell barometer-height)
