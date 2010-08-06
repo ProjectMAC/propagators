@@ -293,7 +293,7 @@
        (name!
 	(lambda-e:propagator (arg ...)
 	  body ...)
-	(car 'names))))))
+	(cadr 'names))))))
 
 (define-syntax lambda-e:propagator
   (syntax-rules (import)

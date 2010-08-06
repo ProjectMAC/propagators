@@ -2,7 +2,7 @@ For the revised report:
 - Where is Scheme-Propagators distributed?
 - How are the MMP-specifics dealt with?
 - Explicit access to propagators that merge, check equivalence,
-  check contrasictions?
+  check contradictions?
 - The letrec scoping rule is useful.  The fact that "unassigned" is a
   non-problem just makes letrec easier to implement and more useful.
   (letrec ((z (e:+ x y))
