@@ -32,6 +32,7 @@ For the revised report:
   - p:if delays its branches, but abstractions do not delay their
     bodies.  This has the nice feature that nullary abstractions
     are possible.
+  - carrying cells seems like the right answer for compounds
 - define-propagator should inspect the name being defined
   and select diagram vs expression definition style accordingly.
 - application should probably gate the connections between the
