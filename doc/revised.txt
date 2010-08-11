@@ -1023,7 +1023,7 @@ TODO Fix the appearance of documented propagators.
 
 ``require-distinct``
   Requires all of the objects in its input cells to be distinct
-  (in the sense of ``=``)  TODO Make this eqv?
+  (in the sense of ``eqv?``)
 
 
 Making New Kinds of Partial Information

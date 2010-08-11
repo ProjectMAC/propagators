@@ -32,7 +32,7 @@
 (define-propagator-syntax (require-distinct cells)
   (for-each-distinct-pair
    (lambda (c1 c2)
-     (forbid (e:= c1 c2)))
+     (forbid (e:eqv? c1 c2)))
    cells))
 
 (define-propagator-syntax (one-of . cells)
