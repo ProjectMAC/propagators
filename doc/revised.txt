@@ -993,37 +993,35 @@ the system is free to manipulate automatically.  If a nogood set
 contains at least one hypothetical, some hypothetical from that nogood
 set will be retracted, and the computation will proceed.
 
-TODO Fix the appearance of documented propagators.
-
-``binary-amb``, ``amb``
+``(p:amb cell)``, ``(e:amb)``
   A propagator that emits a TMS consisting of a pair of contingencies.
   One contains the information ``#t`` contingent on one fresh
   hypothetical premise, and the other contains the information ``#f``
-  contingent on anther.  ``binary-amb`` also tries to maintain the
-  invariant that exactly one of those premises is believed.  If the
-  current worldview is such that bringing either premise in will cause
-  a known nogood set to be believed, then, by performing a cut,
-  the ``binary-amb`` discovers and signals a new nogood set that
-  does not include either of them.  Together with the reaction of
-  the system to nogood sets, this induces an emergent satisfiability
-  solver by the resolution principle.
+  contingent on anther.  ``amb`` also tries to maintain the invariant
+  that exactly one of those premises is believed.  If the current
+  worldview is such that bringing either premise in will cause a known
+  nogood set to be believed, then, by performing a cut, the ``amb``
+  discovers and signals a new nogood set that does not include either
+  of them.  Together with the reaction of the system to nogood sets,
+  this induces an emergent satisfiability solver by the resolution
+  principle.
 
-``require``
-  A propagator that requires its input cell to be true (to wit,
+``(p:require cell)``, ``(e:require)``
+  A propagator that requires its given cell to be true (to wit,
   signals contradictions if it is not).
 
-``forbid``
-  A propagator that forbids its input cell from being true (to wit,
+``(p:forbid cell)``, ``(e:forbid)``
+  A propagator that forbids its given cell from being true (to wit,
   signals contradictions if it is).
 
-``one-of``
-  An n-ary version of ``binary-amb``.  Picks one of the objects in the
-  given input cells using an appropriate collection of ``binary-amb``s
-  and puts it into its output cell.
+``(p:one-of input ... output)``, ``(e:one-of input ...)``
+  An n-ary version of ``amb``.  Picks one of the objects in the given
+  input cells using an appropriate collection of ``amb``s and puts it
+  into its output cell.
 
-``require-distinct``
-  Requires all of the objects in its input cells to be distinct
-  (in the sense of ``eqv?``)
+``(require-distinct cells)``
+  Requires all of the objects in its list of input cells to be
+  distinct (in the sense of ``eqv?``)
 
 
 Making New Kinds of Partial Information
