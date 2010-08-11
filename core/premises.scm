@@ -77,6 +77,9 @@
 	  (kick-out! premise))
       answer)))
 
+;; (disbelieving premise body)
+;;   Syntax that executes the given body in a dynamic environment
+;;   where the given premise is not believed.
 (define-syntax disbelieving
   (syntax-rules ()
     ((_ premise body ...)
