@@ -267,7 +267,7 @@ will have some intermediate values that are produced by only one
 propagator, and consumed by only one propagator.  In this case it is a
 drag to have to define and name a cell for that value, if one would
 just name it "the output of foo".  Scheme-Propagators provides a
-syntactic sugar for writing cases like in an expression style, like a
+syntactic sugar for writing cases like this in an expression style, like a
 traditional programming language.
 
 The Scheme procedure ``e@`` attaches propagators in expression style.
@@ -321,9 +321,8 @@ and get a multidirectional constraint::
 To save typing when the propagator being attached is known at network
 construction time, the ``p:foo`` objects are also themselves
 applicable in Scheme, defaulting to applying themselves in the ``d@``
-style.  Each (except p:conditional-router, which has two "outputs")
-also has an ``e:foo`` variant that defaults to the ``e@`` style.  So
-the following also works::
+style.  Each also has an ``e:foo`` variant that defaults to the ``e@``
+style.  So the following also works::
 
   (define-cell x)
   (define-cell y)
@@ -331,11 +330,33 @@ the following also works::
   (p:/ z x y)
   (p:/ z y x)
 
-TODO Discuss explicitly applying cells whose content propagator
-constructors are not yet known.
+TODO This discussion of explicitly applying cells whose content
+propagator constructors are not yet known probably goes later in the
+document:
 
-TODO Discuss the default behavior of applying cells that do not know
-what propagator constructors they are going to carry?
+The preceding discusses attaching propagators to cells when the
+propagators being attached are known at network construction time.
+Since Scheme-Propagators is a higer-order language, that will not
+always be the case.  (TODO Example?)  More important, like all other
+possible data, the propagator being applied may be known only
+partially.  What is ``d@`` to do then?
+
+If the cell which is the first argument to ``d@`` does not have a
+propagator in it, or has only a partially known propagator in it,
+``d@`` constructs a propagator that will dynamically apply propagators
+that show up in that cell when they do.  Moreover, ``d@`` ensures that
+any uncertainty associated with the question of which propagator is
+being applied is forwarded to the output (and also to the interior of
+the application).  (TODO Example)
+
+``d@`` always applies in diagram style.  ``e@`` always applies in
+expression style.  If you put into operator position a cell that
+contains a fully-known propagator at network construction time, it
+will be applied either in diagram style or expression style, as
+dependent on that propagator's default preference.  If you put into
+operator position a cell that does not have a fully-known propagator
+at network construction time, it will be applied in diagram style by
+default (TODO or should it signal an error?)
 
 
 Propagator Constraints: c:foo and ce:foo
@@ -1055,8 +1076,8 @@ encounter in a cell.  Intervals, for example, should handle raw
 numbers, because knowing that something is exactly ``2`` is compatible
 with knowing that it is between ``1`` and ``3``.  In the case of
 intervals, the procedure ``ensure-inside`` either
-returns the number if it is in the interval, or returns a contradiction
-object if it is not.  It is attached as a merge handler with
+returns the number if it is in the interval, or returns ``the-contradiction``
+if it is not.  It is attached as a merge handler with
 
 ::
 
@@ -1066,10 +1087,6 @@ object if it is not.  It is attached as a merge handler with
    (lambda (content increment)
      (ensure-inside increment content))
    number? interval?)
-
-Speaking of which, ``merge`` is allowed to return a special object
-called ``the-contradiction`` to indicate a complete contradiction
-(that should result in an immediate error).
 
 TODO Document the extant partial information structures and the
 default mechanisms they use for interacting with others (namely the
@@ -1100,7 +1117,6 @@ knowledge::
 This definition ensures that every interval will be checked by the
 ``empty-interval?`` procedure to test whether it represents a
 contradiction.
-
 
 
 Augment the Propagators
