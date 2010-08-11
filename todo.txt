@@ -40,6 +40,7 @@ For the revised report:
   given to each particular application of that closure (at least
   in the general case).
 - Go through the example-networks and make them look nice.
+- Rename v&s-foo to use the contingent-foo naming scheme
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice

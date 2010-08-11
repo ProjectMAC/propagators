@@ -88,6 +88,7 @@
 
 (define (v&s-believed? v&s)
   (all-premises-in? (v&s-support v&s)))
+(define contingency-object-believed? v&s-believed?)
 
 (define (all-premises-in? premise-list)
    (every premise-in? premise-list))

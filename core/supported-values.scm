@@ -27,6 +27,10 @@
       (safe-accessors #t))
  value support)
 
+(define contingent supported)
+(define contingent-info v&s-value)
+(define contingent-premises v&s-support)
+
 (declare-coercion-target v&s (lambda (thing) (supported thing '())))
 
 (declare-coercion <symbol> ->v&s)
