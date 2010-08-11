@@ -895,7 +895,70 @@ define-propagator
 Truth Maintenance Systems
 ----------------------------------------------------------------------
 
-TODO
+A Truth Maintenance System (TMS) is a kind of partial information
+structure that may appear in a cell.  A TMS is a set of contingent
+values.  A contingent value is any partial information object that
+describes the "value" in the cell, together with a set of premises.
+The premises are Scheme objects that have no interesting properties
+except identity (by ``eq?``).  A worldview defines which premises are
+believed.
+
+The meaning of a TMS as information is the logical ``and`` of the
+meanings of all of its contingent values.  The meaning of each
+contingent value is an implication: The conjunction of the premises
+implies the contingent information.  Therefore, given a worldview,
+some of the contingent information is believed and some is not.  If
+the TMS is queried, it produces the best summary it can of the
+believed information, together with the full set of premises that
+information is contingent upon.
+
+In this system, there is a single current global worldview, which
+starts out believing all premises.  The worldview may be changed to
+exclude (or re-include) individual premises, allowing the user to
+examine the consequences of different consistent subsets of premises.
+
+(kick-out! premise)
+  Remove the given premise from the current worldview.
+
+(bring-in! premise)
+  Return the given premise to the current worldview.
+
+(premise-in? premise)
+  Is the given premise believed in the current worldview?
+
+(contingent info premises)
+  Constructs a contingency object representing the information
+  that the given info is contingent on the given list of premises.
+
+(contingent-info contingency-object)
+  The information that is contingent.
+
+(contingent-premises contingency-object)
+  The list of premises on which that information is contingent.
+
+(contingency-object-believed? contingency-object)
+  Whether the given contingency object is believed.
+
+(make-tms contingency-object-list)
+  Constructs a TMS with the given contingency objects as its initial
+  set.
+
+(tms-query tms)
+  Returns a contingency object representing the strongest deduction
+  the given TMS can make in the current worldview.  tms-query gives
+  the contingency with the strongest contingent information that is
+  believed in the current worldview.  Given that desideratum,
+  tms-query tries to minimize the premises that information is
+  contingent upon.
+
+Calling ``initialize-scheduler`` resets the worldview to believing all
+premises.
+
+TMSes merge by appending their lists of known contingencies (and
+sweeping out redundant ones).  Usually, propagators react to TMSes by
+querying them to obtain ingredients for computation.  The result of a
+computation is contingent on the premises of the ingredients that
+contribute to that result.
 
 Contradiction
 ----------------------------------------------------------------------
@@ -907,7 +970,60 @@ explicit ``the-contradiction`` object is useful, however, for
 representing contradictory information in recursive contexts.  For
 example, a truth maintenance system may discover that some collection
 of premises leads to a contradiction --- this is represented by a
-supported ``the-contradiction`` object.
+``the-contradiction`` object contingent on those premises.
+
+Implicit Dependency-Directed Search
+----------------------------------------------------------------------
+
+If a cell discovers that it contains a TMS that harbors a contingent
+contradiction, the cell will signal that the premises of that
+contradiction form a nogood set, and that nogood set will be recorded.
+For the worldview to be consistent, at least one of those premises
+must be removed.  The system maintains the invariant that the current
+worldview never has a subset which is a known nogood.
+
+If a nogood set consists entirely of user-introduced premises, the
+computation will be suspended, a description of the nogood set will be
+printed, and the user will have the opportunity to remove an offending
+premise (with ``kick-out!``) and, if desired, resume the computation
+(with ``run``).
+
+There is also a facility for introducing hypothetical premises that
+the system is free to manipulate automatically.  If a nogood set
+contains at least one hypothetical, some hypothetical from that nogood
+set will be retracted, and the computation will proceed.
+
+TODO Fix the appearance of documented propagators.
+
+``binary-amb``, ``amb``
+  A propagator that emits a TMS consisting of a pair of contingencies.
+  One contains the information ``#t`` contingent on one fresh
+  hypothetical premise, and the other contains the information ``#f``
+  contingent on anther.  ``binary-amb`` also tries to maintain the
+  invariant that exactly one of those premises is believed.  If the
+  current worldview is such that bringing either premise in will cause
+  a known nogood set to be believed, then, by performing a cut,
+  the ``binary-amb`` discovers and signals a new nogood set that
+  does not include either of them.  Together with the reaction of
+  the system to nogood sets, this induces an emergent satisfiability
+  solver by the resolution principle.
+
+``require``
+  A propagator that requires its input cell to be true (to wit,
+  signals contradictions if it is not).
+
+``forbid``
+  A propagator that forbids its input cell from being true (to wit,
+  signals contradictions if it is).
+
+``one-of``
+  An n-ary version of ``binary-amb``.  Picks one of the objects in the
+  given input cells using an appropriate collection of ``binary-amb``s
+  and puts it into its output cell.
+
+``require-distinct``
+  Requires all of the objects in its input cells to be distinct
+  (in the sense of ``=``)  TODO Make this eqv?
 
 
 Making New Kinds of Partial Information
