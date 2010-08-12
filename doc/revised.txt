@@ -1048,8 +1048,96 @@ set will be retracted, and the computation will proceed.
 Making New Kinds of Partial Information
 ======================================================================
 
-There are four components to making your own types of partial
-information.  The zeroth is to define the appropriate data structure.
+The partial information types are defined by a suite of generic
+operations.  The critical ones for defining the actual partial
+information types are ``equivalent?``, ``merge``, and
+``contradictory?``, which test whether two information structures
+represent the same information, merge given information structures,
+and test whether a given information structure represents an
+impossible state, respectively.  In addition, the primitive
+propagators are equipped with generic operations for giving them
+custom behaviors on the various information structures, and the
+generic operation ``binary-map`` is very useful for the circumstance
+when a whole class of propagators should handle a particular
+information type uniformly.
+
+To create your own partial information structure, you should create an
+appropriate Scheme data structure to represent it, and then add
+handlers to the operations ``equivalent?``, ``merge``, and
+``contradictory?`` to define that data structure's interpretation as
+information.  In order to do anything useful with your new information
+structure, you will also need to make sure that the propagators you
+intend to use with it can deal with it appropriately.  To that end,
+further standard generic operations are provided for extending the
+existing primitive propagators.
+
+Method addition in the generic operation system used in
+Scheme-Propagators is done with the ``defhandler`` procedure::
+
+  (defhandler operation handler arg-predicate ...)
+
+The generic operations system is a predicate dispatch system.  Every
+handler is keyed by a bunch of predicates that must accept the
+arguments to the generic procedure in turn; if they do, that handler
+is invoked.  For example, merging two intervals with each other
+can be defined as::
+
+  (defhandler merge intersect-intervals interval? interval?)
+
+You can also define your own generic operations, but that is not
+relevant here.
+
+An Example: Adding Interval Arithmetic
+----------------------------------------------------------------------
+
+The first step is to define a data structure to represent an interval.
+Intervals have upper and lower bounds, so a Scheme record structure
+with constructor ``make-interval``, accessors ``interval-low`` and
+``interval-high``, and predicate ``interval?`` will do.
+
+The second step is to define handlers for the generic operations that
+every partial information structure must implement.  Assuming
+appropriate procedures for intersecting intervals and for testing them
+for equality and emptiness, those handlers would be::
+
+  (defhandler equivalent? interval-equal? interval? interval?)
+  (defhandler merge intersect-intervals interval? interval?)
+  (defhandler contradictory? empty-interval? interval?)
+
+To make intervals interoperate with numbers in the same network,
+we can add a few more handlers::
+
+  (define (number=interval? number interval)
+    (= number (interval-low interval) (interval-high interval)))
+  (defhandler equivalent? number=interval? number? interval?)
+  (defhandler equivalent? (flip number=interval?) interval? number?)
+
+  (define (number-in-interval number interval)
+    (if (<= (interval-low interval) number (interval-high interval))
+	number
+	the-contradiction))
+  (defhandler merge number-in-interval number? interval?)
+  (defhandler merge (flip number-in-interval) interval? number?)
+
+The third step is to teach the arithmetic propagators to handle
+intervals.  Interval arithmetic does not fit into the ``binary-map``
+worldview (which see below), so the only way to do intervals is to
+individually add the appropriate handlers to the generic procedures
+underlying the primitive propagators::
+
+  (defhandler generic-+ add-interval interval? interval?)
+  (defhandler generic-- sub-interval interval? interval?)
+  (defhandler generic-* mul-interval interval? interval?)
+  (defhandler generic-/ div-interval interval? interval?)
+  (defhandler generic-sqrt sqrt-interval interval?)
+  ;; ...
+
+In order for the binary propagators to handle the situation where that
+propagator has an interval on one input and a number on the other,
+further handlers need to be added that tell it what to do in those
+circumstances.
+
+TODO Describe defhandler-coercing?  Describe declare-type-tester?
 
 Define your Merge Handlers
 ----------------------------------------------------------------------
