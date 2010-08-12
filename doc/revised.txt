@@ -1139,8 +1139,50 @@ circumstances.
 
 TODO Describe defhandler-coercing?  Describe declare-type-tester?
 
-Define your Merge Handlers
+The Partial Information Generics
 ----------------------------------------------------------------------
+
+``(equivalent? info1 info2)  ==>  #t or #f``
+
+The ``equivalent?`` procedure is used by cells to determine whether
+their content has actually changed after an update.  Its job is to
+ascertain, for any two partial information structures, whether they
+represent the same information.  As a fast path, any two ``eqv?``
+objects are assumed to represent equivalent information structures.
+The default operation on ``equivalent?`` returns false for any two
+non-``eqv?`` objects.
+
+A user handler for ``equivalent?`` is expected to accept two partial
+information structures and return ``#t`` if they represent
+semantically the same information, and ``#f`` if they do not.
+
+``(merge info1 info2)  ==>  new-info``
+
+The ``merge`` procedure is the key to the propagation idea.  Its job
+is to take any two partial information structures, and produce a new
+one that represents all the information in present in both of the
+input structures.  This happens every time a propagator gives a cell
+some new information.  As a fast path, any two ``eqv?`` objects are
+assumed to represent equivalent information structures, and therefore
+merge to identically the first of them.  The default operation for
+``merge`` on a pair of non-``eqv?`` structures that the handlers for
+``merge`` do not recognize is to assume that they cannot be usefully
+merged, and return ``the-contradiction``.
+
+A user handler for ``merge`` is exptected to accept two partial
+information structures and return another partial information
+structure that semantically includes all the information present in
+both input structures.  The user handler may return
+``the-contradiction`` to indicate that the two given partial
+information structures are completely mutually exclusive.
+
+``merge`` and ``equivalent?`` should agree
+
+
+TODO Merge effects
+TODO Adding methods to boring-effect? and generic-attach-support
+
+
 
 The first is to teach cells how to merge new contributions into the
 partial information structure.  This you do by adding methods to the
@@ -1180,11 +1222,6 @@ TODO Document the extant partial information structures and the
 default mechanisms they use for interacting with others (namely the
 ``nothing? any?`` handlers, the ``v&s-able?`` predicate, the general
 bevaior of TMSes, maybe also the cons story).
-
-Define equivalent? Handlers
-----------------------------------------------------------------------
-
-TODO
 
 Define your Contradiction Test
 ----------------------------------------------------------------------
