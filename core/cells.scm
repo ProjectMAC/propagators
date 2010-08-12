@@ -142,7 +142,7 @@
 ;;;; Cellular Generics
 
 (define (merge info1 info2)
-  (if (eq? info1 info2)
+  (if (eqv? info1 info2)
       info1
       (let ((answer (generic-merge info1 info2)))
 	(cond ((effectful? answer) answer)
