@@ -172,4 +172,12 @@
 	  (c:id z 7)
 	  (run)
 	  (content y))))
+
+ (define-test (serpent)
+   (initialize-scheduler)
+   (letrec-cell (ones (e:cons 1 ones))
+     (run)
+     (check (= 1 (content (e:car ones))))
+     (check (= 1 (content (e:car (e:cdr ones)))))
+     (check (= 1 (content (e:car (e:cdr (e:cdr ones))))))))
  )
