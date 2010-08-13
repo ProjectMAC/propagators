@@ -99,39 +99,47 @@
   (syntax-rules ()
     ((let-cells (cell-binding ...)
        form ...)
-     (let-cells "process-clauses"
+     (normalize-let-clauses let-cells
        (cell-binding ...)
        ()
        form ...))
-    ((let-cells "process-clauses"
-       ()
+    ((let-cells "done"
        ((cell-name cell-form) ...)
        form ...)
      (let ((cell-name (name-locally! (ensure-cell cell-form) 'cell-name)) ...)
-       form ...))
-    ((let-cells "process-clauses"
+       form ...))))
+
+(define-syntax normalize-let-clauses
+  (syntax-rules ()
+    ((normalize-let-clauses let-form
        ((cell-name cell-form) clause ...)
        (done-clause ...)
        form ...)
-     (let-cells "process-clauses"
+     (normalize-let-clauses let-form
        (clause ...)
        ((cell-name cell-form) done-clause ...)
        form ...))
-    ((let-cells "process-clauses"
+    ((normalize-let-clauses let-form
        ((cell-name) clause ...)
        (done-clause ...)
        form ...)
-     (let-cells "process-clauses"
+     (normalize-let-clauses let-form
        (cell-name clause ...)
        (done-clause ...)
        form ...))
-    ((let-cells "process-clauses"
+    ((normalize-let-clauses let-form
        (cell-name clause ...)
        (done-clause ...)
        form ...)
-     (let-cells "process-clauses"
+     (normalize-let-clauses let-form
        (clause ...)
        ((cell-name (make-named-cell 'cell-name)) done-clause ...)
+       form ...))
+    ((normalize-let-clauses let-form
+       ()
+       done-clauses
+       form ...)
+     (let-form "done" done-clauses
        form ...))))
 
 ;; This version is a grammatical convenience if there is only one
@@ -160,4 +168,20 @@
      (let-cells ()
        form ...))))
 
-;; TODO Do I need let-cells-rec?  What would that do for me?
+;; And here is the moral equivalent of letrec, with the same hairy
+;; clause processing as let.
+
+(define-syntax letrec-cells
+  (syntax-rules ()
+    ((letrec-cells (cell-binding ...)
+       form ...)
+     (normalize-let-clauses letrec-cells
+       (cell-binding ...)
+       ()
+       form ...))
+    ((letrec-cells "done"
+       ((cell-name cell-form) ...)
+       form ...)
+     (let-cells (cell-name ...)
+       (c:id cell-name cell-form) ...
+       form ...))))

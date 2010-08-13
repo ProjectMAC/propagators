@@ -3,13 +3,7 @@ For the revised report:
 - How are the MMP-specifics dealt with?
 - Explicit access to propagators that merge, check equivalence,
   check contradictions?
-- The letrec scoping rule is useful.  The fact that "unassigned" is a
-  non-problem just makes letrec easier to implement and more useful.
-  (letrec ((z (e:+ x y))
-           (x (e:- z y))
-           (y (e:- z x)))
-    ...)
-  is a perfectly sensible propagator program.
+- Document letrec-cells (and teach Emacs about it)
 - What is the right analogue of named let?
 - (define-cell z (e:+ x y))
   (define-cell x (e:- z y))
