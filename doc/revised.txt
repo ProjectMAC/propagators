@@ -1356,6 +1356,10 @@ and you may sometimes want to ``propagatify`` the raw Scheme function
 instead of making a corresponding generic operator.  The macro is
 defined in ``core/sugar.scm``; comments there describe it more fully.
 
+Note that ``propagatify`` follows the naming convention that the
+Scheme procedure ``foo`` becomes a generic procedure named
+``generic-foo`` and then turns into propagators ``p:foo`` and
+``e:foo``.
 
 Compound Cell Carrier Construction
 ----------------------------------------------------------------------
