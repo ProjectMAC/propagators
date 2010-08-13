@@ -1,10 +1,12 @@
-		Revised Report on the Propagator Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Revised Report on the Propagator Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		by Alexey Radul and Gerald Jay Sussman
 
 Abstract: 
 
-	     In the past year we have made serious progress
+	  In the past year we have made serious progress
 	  on elaborating the propagator programming model
 	  (see 1,2).  Things have gotten serious enough to
 	  build a system that can be used for real
@@ -46,7 +48,8 @@ propagators; if an approach to a problem doesn't turn out to work
 well, it can be ignored, dynamically and without disruption.
 
 
-			  Propagator System
+Propagator System
+======================================================================
 
 Although most of this document introduces you to the Scheme-Propagator
 system that we have developed in MIT Scheme, the Propagator Model is
@@ -61,8 +64,7 @@ right here:
 Cells must support three operations:
 - add some content
 - collect the content currently accumulated
-- register a propagator to be notified when the accumulated content
-  changes
+- register a propagator to be notified when the accumulated content changes
 
 When new content is added to a cell, the cell must merge the addition
 with the content already present.  When a propagator asks for the
@@ -170,15 +172,7 @@ be combined, and means by which combinations can be abstracted so that
 they can be named and treated as if they are primitive.  
 
 
-       -------------------------------------------------------
-
-		  Specifying and Tracking Provenance
-
-			 Partial Information
-
-       -------------------------------------------------------
-
-		      How this supports the goal
+TODO Section:      How this supports the goal
 
 
 
@@ -1037,8 +1031,8 @@ set will be retracted, and the computation will proceed.
 
 ``(p:one-of input ... output)``, ``(e:one-of input ...)``
   An n-ary version of ``amb``.  Picks one of the objects in the given
-  input cells using an appropriate collection of ``amb``s and puts it
-  into its output cell.
+  input cells using an appropriate collection of ``amb`` propagators
+  and puts it into its output cell.
 
 ``(require-distinct cells)``
   Requires all of the objects in its list of input cells to be

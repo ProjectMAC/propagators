@@ -5,4 +5,9 @@ def rstify filename
   task :doc => "#{filename}.html"
 end
 
+file "revised.rst" => "revised.txt" do
+  sh "cp revised.txt revised.rst"
+end
+
 rstify "programmer-guide"
+rstify "revised"
