@@ -47,6 +47,7 @@ ways to make contributions can be added just by adding new
 propagators; if an approach to a problem doesn't turn out to work
 well, it can be ignored, dynamically and without disruption.
 
+.. contents::
 
 Propagator System
 ======================================================================
