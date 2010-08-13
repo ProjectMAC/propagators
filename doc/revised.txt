@@ -1406,7 +1406,7 @@ for debugging propagator networks.  The specific data it tries to
 track is:
 
 - The names (non-unique but semantic) of all the cells and
-  propagators.  This is in contast with the unique but non-semantic
+  propagators.  This is in contrast with the unique but non-semantic
   object hashes of all the cells and propagators that MIT Scheme
   tracks anyway.
 
