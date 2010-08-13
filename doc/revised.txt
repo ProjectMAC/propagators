@@ -1284,7 +1284,7 @@ Making New Primitive Propagators
 Direct Construction from Functions
 ----------------------------------------------------------------------
 
-The fundamental, stable way to make your own primitive propagators is
+The fundamental way to make your own primitive propagators is
 the procedure ``function->propagator-constructor``.  It takes a Scheme
 function, and makes a propagator construction procedure out of it that
 makes a propagator that does the job implemented by that Scheme
@@ -1325,7 +1325,7 @@ a variant that likes to be applied in expression style with
 ``expression-style-variant``.  For example, ``e:and`` is actually
 defined as::
 
-  (define e:and (expression-style-variant p:and))
+  (define-cell e:and (expression-style-variant p:and))
 
 You can also delay the actual construction of your primitives
 if you want with ``delayed-propagator-constructor``, though that's
@@ -1356,6 +1356,11 @@ and you may sometimes want to ``propagatify`` the raw Scheme function
 instead of making a corresponding generic operator.  The macro is
 defined in ``core/sugar.scm``; comments there describe it more fully.
 
+
+Compound Cell Carrier Construction
+----------------------------------------------------------------------
+
+TODO
 
 Fully-manual Low-level Propagator Construction
 ----------------------------------------------------------------------
