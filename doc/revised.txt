@@ -533,6 +533,28 @@ like the implicit memory locations that Scheme creates under the hood
 for holding the return values of expressions before they get used by
 the next expression or assigned to variables.
 
+Conditional Network Construction
+----------------------------------------------------------------------
+
+The ``switch`` propagator does conditional propagation --- it only
+forwards its input to its output if its control is ``#t``.  As such,
+it is adequate to control the flow of data through an existing
+propagator network.  However, it is also appropriate to control the
+construction of more network, for example to design recursive networks
+that expand themselves no further than needed.  The basic idea there
+is to delay the construction of some compound chunk of network until
+some information appears on its boundary, and control whether
+information appears by judicious use of ``switch`` propagators.  The
+low-level tools for accomplishing this effect are
+``delayed-propagator-constructor`` and ``switch``.  Scheme macros that
+do the right thing at a higher level are also provided:
+
+``(p:when internal-cells condition-cell body ...)``
+  Delays the construction of the body until reason to believe the
+  condition may be true appears in the condition-cell.
+
+
+
 Making New Compound Propagators
 ======================================================================
 
