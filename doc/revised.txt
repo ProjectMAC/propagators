@@ -1202,11 +1202,6 @@ impossible situation (such as an empty interval) or ``#f`` if it does
 not.
 
 
-TODO Document the extant partial information structures and the
-default mechanisms they use for interacting with others (namely the
-``nothing? any?`` handlers, the ``v&s-able?`` predicate, the general
-bevaior of TMSes, maybe also the cons story).
-
 TODO Make sure that all the behavior of all built-in partial
 information structures under all the given generics is duly
 documented.
@@ -1276,6 +1271,20 @@ structure, encoding all the appropriate uncertainty from both inputs.
 TODO How can I explain this binary-map idea better?
 
 TODO Table of all primitive propagators that are affected by binary-map.
+
+Interoperation with Existing Partial Information Types
+----------------------------------------------------------------------
+
+A new partial information structure needs to interoperate with
+existing ones in three places:
+- arguments to merge
+- arguments to binary propagators
+- containment (of and by)
+
+TODO Document the extant partial information structures and the
+default mechanisms they use for interacting with others (namely the
+``nothing? any?`` handlers, the ``v&s-able?`` predicate, the general
+bevaior of TMSes, maybe also the cons story).
 
 
 Making New Primitive Propagators
