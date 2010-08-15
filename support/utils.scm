@@ -63,6 +63,10 @@
 
 (define (ignore-first x y) y)
 
+(define (binary-flip f)
+  (lambda (x y)
+    (f y x)))
+
 (define (default-equal? x y)
   (if (and (number? x) (number? y)
 	   (or (inexact? x) (inexact? y)))
