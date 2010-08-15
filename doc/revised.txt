@@ -1106,7 +1106,10 @@ can be defined as::
   (defhandler merge intersect-intervals interval? interval?)
 
 You can also define your own generic operations, but that is not
-relevant here.
+relevant here.  TODO Add a pointer to documentation of the generic
+operations system, including defining generics, precedence of
+handlers, and tagging procedures as type testers for performance.
+Also the coersion subsystem?
 
 An Example: Adding Interval Arithmetic
 ----------------------------------------------------------------------
@@ -1131,14 +1134,14 @@ we can add a few more handlers::
   (define (number=interval? number interval)
     (= number (interval-low interval) (interval-high interval)))
   (defhandler equivalent? number=interval? number? interval?)
-  (defhandler equivalent? (flip number=interval?) interval? number?)
+  (defhandler equivalent? (binary-flip number=interval?) interval? number?)
 
   (define (number-in-interval number interval)
     (if (<= (interval-low interval) number (interval-high interval))
 	number
 	the-contradiction))
   (defhandler merge number-in-interval number? interval?)
-  (defhandler merge (flip number-in-interval) interval? number?)
+  (defhandler merge (binary-flip number-in-interval) interval? number?)
 
 The third step is to teach the arithmetic propagators to handle
 intervals.  Interval arithmetic does not fit into the ``binary-map``
@@ -1156,7 +1159,7 @@ underlying the primitive propagators::
 In order for the binary propagators to handle the situation where that
 propagator has an interval on one input and a number on the other,
 further handlers need to be added that tell it what to do in those
-circumstances.
+circumstances.  For the full story, see ``core/intervals.scm``.
 
 TODO Describe defhandler-coercing?  Describe declare-type-tester?
 
@@ -1173,40 +1176,49 @@ objects are assumed to represent equivalent information structures.
 The default operation on ``equivalent?`` returns false for any two
 non-``eqv?`` objects.
 
-A user handler for ``equivalent?`` is expected to accept two partial
+A handler for ``equivalent?`` is expected to accept two partial
 information structures and return ``#t`` if they represent
 semantically the same information, and ``#f`` if they do not.
 
-``equivalent?`` is expected to determine an equivalence relation.
+The built-in ``equivalent?`` determines an equivalence relation.
+Extensions to it must maintain this invariant.
 
 ``(merge info1 info2)  ==>  new-info``
 
 The ``merge`` procedure is the key to the propagation idea.  Its job
 is to take any two partial information structures, and produce a new
-one that represents all the information in present in both of the
+one that represents all the information present in both of the
 input structures.  This happens every time a propagator gives a cell
-some new information.  As a fast path, any two ``eqv?`` objects are
-assumed to represent equivalent information structures, and therefore
+some new information.  Any two ``equivalent?`` information structures
 merge to identically the first of them.  The default operation for
-``merge`` on a pair of non-``eqv?`` structures that the handlers for
+``merge`` on a pair of non-``equivalent?`` structures that the handlers for
 ``merge`` do not recognize is to assume that they cannot be usefully
 merged, and return ``the-contradiction``.
 
-TODO Fast-path merge with equivalent? instead of eqv?  ?
-
-A user handler for ``merge`` is exptected to accept two partial
+A handler for ``merge`` is exptected to accept two partial
 information structures and return another partial information
 structure that semantically includes all the information present in
-both input structures.  The user handler may return
+both input structures.  The handler may return
 ``the-contradiction`` to indicate that the two given partial
 information structures are completely mutually exclusive.
 
 ``merge`` is expected to determine a (semi-)lattice (up to equivalence
-by ``equivalent?``).  That is::
+by ``equivalent?``).  That is
 
-  (equivalent? (merge X (merge Y Z)) (merge (merge X Y) Z)) ==> #t  (associativity)
-  (equivalent? (merge X Y) (merge Y X)) ==> #t (commutativity)
-  (or (not (equivalent? X Y)) (equivalent? X (merge X Y)) ==> #t (idempotence)
+- associativity::
+
+  (merge X (merge Y Z))  ~  (merge (merge X Y) Z)
+  (equivalent? (merge X (merge Y Z)) (merge (merge X Y) Z)) ==> #t
+
+- commutativity::
+
+  (merge X Y)  ~  (merge Y X)
+  (equivalent? (merge X Y) (merge Y X)) ==> #t
+
+- idempotence::
+
+  (X ~ Y) implies (X ~ (merge X Y))
+  (or (not (equivalent? X Y)) (equivalent? X (merge X Y))) ==> #t
 
 TODO Merge effects
 TODO Adding methods to boring-effect? and generic-attach-support
@@ -1218,7 +1230,7 @@ structure represents an impossible situation.  If a cell discovers
 that it contains a ``contradictory?`` state of information, it will
 signal an error and stop the computation.
 
-A user handler for ``contradictory?`` is expected to accept a partial
+A handler for ``contradictory?`` is expected to accept a partial
 information structure, and to return ``#t`` if it represents an
 impossible situation (such as an empty interval) or ``#f`` if it does
 not.
