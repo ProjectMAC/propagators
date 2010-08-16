@@ -61,7 +61,7 @@
 	(process-nogood! (nogood-effect-nogood nogood-effect))))
   nogood-effect?)
 
-(defhandler generic-contingentify
+(defhandler generic-attach-premises
   (lambda (effect)
     (lambda (support)
       (make-nogood-effect
