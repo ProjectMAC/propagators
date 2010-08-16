@@ -75,7 +75,7 @@
   metadata)
 (declare-type-tester symbolic? rtd:symbolic)
 
-(declare-coercion rtd:symbolic ->v&s)
+(declare-coercion rtd:symbolic ->contingent)
 
 (declare-coercion-target symbolic
   (lambda (thing) (make-symbolic thing (empty-metadata))))

@@ -88,10 +88,10 @@
 	(else (make-layered '() thing))))
 
 (define (layer-coercable? thing)
-  (or (v&s-able? thing)
+  (or (contingent-able? thing)
       (and (tms? thing)
 	   (or (null? (tms-values thing))
-	       (v&s-able? (v&s-value (car (tms-values thing))))))))
+	       (contingent-able? (v&s-value (car (tms-values thing))))))))
 
 (tag-coercion-metadata layered? ->layered layer-coercable?)
 

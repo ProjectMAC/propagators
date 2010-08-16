@@ -159,9 +159,9 @@
 (slotful-information-type knight? make-knight
   knight-name knight-shield knight-horse)
 
-(declare-coercion rtd:knight ->v&s)
-(declare-coercion rtd:shield ->v&s)
-(declare-coercion rtd:horse ->v&s)
+(declare-coercion rtd:knight ->contingent)
+(declare-coercion rtd:shield ->contingent)
+(declare-coercion rtd:horse ->contingent)
 
 (define (get thing map)
   (let ((cell (assq thing map)))

@@ -30,16 +30,17 @@
 (define contingent supported)
 (define contingent-info v&s-value)
 (define contingent-premises v&s-support)
+(define contingent? v&s?)
 
-(declare-coercion-target v&s (lambda (thing) (supported thing '())))
+(declare-coercion-target contingent (lambda (thing) (contingent thing '())))
 
-(declare-coercion <symbol> ->v&s)
-(declare-coercion <number> ->v&s)
-(declare-coercion <boolean> ->v&s)
-(declare-coercion rtd:%interval ->v&s)
-(declare-coercion propagator-constructor? ->v&s)
-(declare-coercion closure? ->v&s)
-(declare-coercion pair? ->v&s)
+(declare-coercion <symbol> ->contingent)
+(declare-coercion <number> ->contingent)
+(declare-coercion <boolean> ->contingent)
+(declare-coercion rtd:%interval ->contingent)
+(declare-coercion propagator-constructor? ->contingent)
+(declare-coercion closure? ->contingent)
+(declare-coercion pair? ->contingent)
 
 (define (more-informative-support? v&s1 v&s2)
   (and (not (lset= eq? (v&s-support v&s1) (v&s-support v&s2)))
@@ -92,7 +93,7 @@
 	  support))))))
   cell-join-effect?)
 
-(defhandler-coercing merge v&s-merge ->v&s)
+(defhandler-coercing merge v&s-merge ->contingent)
 
 (defhandler contradictory?
  (lambda (v&s) (contradictory? (v&s-value v&s)))
@@ -104,7 +105,7 @@
      (f (v&s-value v&s1) (v&s-value v&s2))
      (merge-supports v&s1 v&s2))))
 
-(defhandler-coercing binary-map v&s-binary-map ->v&s)
+(defhandler-coercing binary-map v&s-binary-map ->contingent)
 
 (defhandler generic-unpack
   (lambda (v&s function)

@@ -150,10 +150,12 @@
        (supported (tms-query (v&s-value v&s)) (v&s-support v&s))))))
   (lambda (thing) (and (v&s? thing) (tms? (v&s-value thing)))))
 
-(declare-coercion-target tms (lambda (thing) (make-tms (list (->v&s thing)))))
+(declare-coercion-target tms
+  (lambda (thing)
+    (make-tms (list (->contingent thing)))))
 
 (declare-coercion v&s? ->tms)
-(declare-coercion v&s-able? ->tms)
+(declare-coercion contingent-able? ->tms)
 (defhandler ->tms (lambda (nothing) (make-tms '())) nothing?)
 
 (define (the-tms-handler thing1 thing2)

@@ -51,7 +51,7 @@
 (propagatify make-deck-from-treasure unary-mapping)
 (propagatify make-deck-from-supply unary-mapping)
 
-(declare-coercion rtd:deck ->v&s)
+(declare-coercion rtd:deck ->contingent)
 
 (slotful-information-type deck? make-deck
   deck-name deck-commander deck-treasure deck-supply)

@@ -37,7 +37,7 @@
   global)
 (declare-type-tester symb-ineq? rtd:symb-ineq)
 
-(declare-coercion rtd:symb-ineq ->v&s) ;; Really?
+(declare-coercion rtd:symb-ineq ->contingent) ;; Really?
 
 (declare-coercion-target symb-ineq
   (lambda (thing) (make-symb-ineq (->symbolic thing) '() '())))
