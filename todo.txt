@@ -35,6 +35,9 @@ For the revised report:
   in the general case).
 - Go through the example-networks and make them look nice.
 - Rename v&s-foo to use the contingent-foo naming scheme
+- Reimplement contradiction handling using effects instead of
+  a generic contradictory? operation?
+- Make merge always produce a list of effects?
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice
