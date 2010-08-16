@@ -63,7 +63,9 @@
      #(effectful
        #(tms
 	 (#(supported
-	    (#(tms (#(supported 4 (fred)) #(supported 3 (bill))))
+	    (#(tms (#(supported #(*the-contradiction*) (bill fred))
+		    #(supported 4 (fred))
+		    #(supported 3 (bill))))
 	     .
 	     #(*the-nothing*))
 	    (george joe))
@@ -86,7 +88,9 @@
      #(effectful
        #(tms
 	 (#(supported
-	    #(kons #(tms (#(supported 4 (fred)) #(supported 3 (bill))))
+	    #(kons #(tms (#(supported #(*the-contradiction*) (bill fred))
+			  #(supported 4 (fred))
+			  #(supported 3 (bill))))
 		   #(*the-nothing*))
 	    (george joe))
 	  #(supported

@@ -28,7 +28,7 @@
 	(if (not (contradictory? consequence))  ; **
 	    (tms-assimilate candidate consequence)
 	    (make-effectful
-	     candidate
+	     (tms-assimilate candidate consequence)
 	     (list (make-nogood-effect
 		    (v&s-support consequence)))))))))
 
