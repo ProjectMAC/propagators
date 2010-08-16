@@ -1112,7 +1112,8 @@ can be defined as::
 You can also define your own generic operations, but that is not
 relevant here.  TODO Add a pointer to documentation of the generic
 operations system, including defining generics, precedence of
-handlers, and tagging procedures as type testers for performance.
+handlers, and tagging procedures as type testers for performance;
+also use of SOS specializers as predicates directly.
 Also the coersion subsystem?
 
 An Example: Adding Interval Arithmetic
@@ -1163,9 +1164,75 @@ underlying the primitive propagators::
 In order for the binary propagators to handle the situation where that
 propagator has an interval on one input and a number on the other,
 further handlers need to be added that tell it what to do in those
-circumstances.  For the full story, see ``core/intervals.scm``.
+circumstances.  The generic procedure system has been extended
+with support for automatic coercions for this purpose.
 
-TODO Describe defhandler-coercing?  Describe declare-type-tester?
+Generic Coercions
+----------------------------------------------------------------------
+
+Every number can be seen as an interval (whose lower and upper bounds
+are equal).  The definition of arithmetic on mixed intervals and
+numbers can be deduced from the definitions of arithmetic on just
+intervals, arithmetic on just numbers, and this procedure for viewing
+numbers as intervals.  The generic operations system provided with
+Scheme-Propagators has explicit support for this idea.
+
+``(declare-coercion-target type [ default-coercion ])``
+  This is a Scheme macro that expands into the definitions needed to
+  declare ``type`` as something that other objects may be coerced
+  into.  If supplied, it also registers a default coercion from
+  anything declared coercible to ``type``.
+
+  ``declare-coercion-target`` defines the procedure ``type-able?``,
+  which tests whether a given object has been declared to be coercible
+  to ``type``, and the procedure ``->type``, which does that coercion.
+  These rely on the type-tester for ``type`` already being defined and
+  named ``type?``.  For example::
+
+    (declare-coercion-target interval)
+
+  relies on the procedure ``interval?`` and defines the procedures
+  ``->interval`` and ``interval-able?``.  This call does not declare a
+  default means of coercing arbitrary objects into intervals.
+
+``(declare-coercion from-type to-coercer [ mechanism ])``
+  Declares that the given ``from-type`` is coercible by the given
+  coercer operation, either by the given ``mechanism`` if supplied or
+  by the default mechanism declared in the definition of the given
+  coercer.  For example::
+
+    (declare-coercion number? ->interval (lambda (x) (make-interval x x)))
+
+  declares that Scheme number objects may be coerced to intervals
+  whose lower and upper bounds are equal to that number.  After this
+  declaration, ``interval-able?`` will return true on numbers, and
+  ``->interval`` will make intervals out of numbers.
+
+``(defhandler-coercing operation handler coercer)``
+  The given generic operation must be binary.  Defines handlers for
+  the given generic operation that have two effects: ``handler`` is
+  invoked if that operation is given two arguments of the type
+  corresponding to ``coercer``; and if one argument is of that type
+  and the other has been declared coercable to that type it will be so
+  coerced, and then handler will be invoked.  For example::
+
+    (defhandler-coercing generic-+ add-interval ->interval)
+
+  declares that intervals should be added by ``add-interval``, and
+  that anything ``interval-able?`` can be added to an interval by
+  first coercing it into an interval with ``->interval`` and then
+  doing ``add-interval``.  This subsumes
+
+  ::
+    (defhandler generic-+ add-interval interval? interval?)
+
+  ``defhandler-coercing`` may only be called after a call to
+  ``declare-coercion-target`` defining the appropriate coercer and
+  coercability tester procedures (but the various specific coercions
+  may be declared later).
+
+
+TODO Describe declare-type-tester?
 
 The Partial Information Generics
 ----------------------------------------------------------------------
@@ -1507,6 +1574,8 @@ If you make a new partial information structure, it should be able to
 exist within a TMS.  Also, if your new partial information structure
 has parts, it should consider allowing those parts to be partial
 themselves.
+
+  (declared-coercion interval? ->v&s)  TODO rename ->v&s to ->contingent
 
 TODO Document the extant partial information structures and the
 default mechanisms they use for interacting with others (namely the
