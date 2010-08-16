@@ -75,11 +75,11 @@
 	     value-effects))))))
 
 (define ((attach-support-to-effect support) effect)
-  ((generic-attach-support effect) support))
+  ((generic-contingentify effect) support))
 
-(define generic-attach-support (make-generic-operator 1 'attach-support))
+(define generic-contingentify (make-generic-operator 1 'attach-support))
 
-(defhandler generic-attach-support
+(defhandler generic-contingentify
   (lambda (effect)
     (lambda (support)
       (make-cell-join-effect
