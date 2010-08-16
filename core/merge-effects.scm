@@ -56,7 +56,7 @@
     (let ((subinfo (effectful-info subeffectful))
 	  (subeffects (effectful-effects subeffectful))
 	  (effects (effectful-effects effectful)))
-      (make-effectful subinfo (append subeffects effects)))))
+      (make-effectful subinfo (append effects subeffects)))))
 
 (define (effectful-merge e1 e2)
   (let ((e1 (->effectful e1))
