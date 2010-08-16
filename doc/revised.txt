@@ -1220,15 +1220,16 @@ by ``equivalent?``).  That is
   (X ~ Y) implies (X ~ (merge X Y))
   (or (not (equivalent? X Y)) (equivalent? X (merge X Y))) ==> #t
 
-TODO Merge effects
-TODO Adding methods to boring-effect? and generic-attach-support
-
 ``(contradictory? info)  ==>  #t or #f``
 
 The ``contradictory?`` procedure tests whether a given information
-structure represents an impossible situation.  If a cell discovers
-that it contains a ``contradictory?`` state of information, it will
-signal an error and stop the computation.
+structure represents an impossible situation.  ``contradictory?``
+states of information may arise in the computation without causing
+errors.  For example, a TMS (which see) may contain a contradiction in
+a contingent context, without itself being ``contradictory?``.  But if
+a ``contradictory?`` object gets to the top level, that is if a cell
+discovers that it directly contains a ``contradictory?`` state of
+information, it will signal an error and stop the computation.
 
 A handler for ``contradictory?`` is expected to accept a partial
 information structure, and to return ``#t`` if it represents an
@@ -1236,9 +1237,70 @@ impossible situation (such as an empty interval) or ``#f`` if it does
 not.
 
 
+
 TODO Make sure that all the behavior of all built-in partial
 information structures under all the given generics is duly
 documented.
+
+
+The Full Story on Merge
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The description of ``merge`` as always returning a new partial
+information structure is an approximation.  Sometimes, ``merge`` may
+return a new partial information structure together with instructions
+for an additional effect that needs to be carried out.  For example,
+when merging two propagator cells (see Cells as Partial Information),
+the new information is just one of those cells, but the two cells also
+need to be connected with propagators that will synchronize their
+contents.  For another example, in Scheme-Propagators, if a merge
+produces a TMS (which see) that contains a contingent contradiction,
+the premises that contradiction depends upon must be signalled as a
+nogood set (that this requires signalling and is not just another
+partial information structure is a consequence of an implementation
+decision of TMSes in Scheme-Propagators).
+
+The fully nuanced question that ``merge`` answers is
+
+  "What do I need to do to the network in order to make it reflect
+  the discovery that these two information structures are about the
+  same object?"
+
+In the common case, the answer to this question is going to be
+"Record: that object is best described by this information structure".
+This answer is represented by returning the relevant information
+structure directly.  Another possible answer is "These two information
+structures cannot describe the same object."  This answer is
+represented by returning ``the-contradiction``.  Other answers, such
+as "Record this information structure and connect these two cells with
+synchronizing propagators", are represented by the ``effectful`` data
+structure, which has one field for a new partial information structure
+to record, and one field for a list of other effects to carry out.
+These instructions are represented as explicit objects returned from
+``merge`` rather than being carried out directly because this allows
+recursive calls to ``merge`` to modify the effects to account for the
+context in which that ``merge`` occurs.  For example, if a merge of
+two cells occurs in a contingent context inside the merge of two
+TMSes, then the instructions to connect those two cells must be
+adjusted to make the connection also contingent on the appropriate
+premises.
+
+TODO Document the ``effectful`` data structure
+
+There are two reasons why this matters to a user of the system.
+First, callers of ``merge`` (for example recursive ones in contexts
+where a new partial information structure is defined that may contain
+arbitrary other ones) must be aware that ``merge`` may return an
+``effectful`` object.  TODO Describe what to do in this case.
+
+Second, a new partial information structure may want to have some
+side-effect when merged.  This must be accomplished through returning
+an appropriate ``effectful`` object containing appropriate
+instructions.  New types of effects can be defined for that purpose.
+For example, the built-in TMSes are added to the system through this
+mechanism.
+
+TODO Describe execute-effect, boring-effect?, and generic-attach-support
 
 
 Individual Propagator Generics
