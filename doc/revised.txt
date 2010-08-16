@@ -1092,6 +1092,10 @@ information types.  Compound propagators are a non-issue because they
 will just pass the relevant structures around to the appropriate
 primitives.
 
+It is also important to make sure that your new partial information
+structure intermixes and interoperates properly with the existing
+ones (see Built-in Partial Information Structures).
+
 Method addition in the generic operation system used in
 Scheme-Propagators is done with the ``defhandler`` procedure::
 
@@ -1419,8 +1423,8 @@ operation ``generic-attach-premises``.
 Individual Propagator Generics
 ----------------------------------------------------------------------
 
-Most primitive propagators are actually generic Scheme functions
-underneath.  Those propagators can therefore be extended to new
+Most primitive propagators are actually built from generic Scheme functions.
+Those propagators can therefore be extended to new
 partial information types just by adding appropriate methods to their
 generic operations.  This is what we did in the interval example.
 Don't forget to teach the propagators what to do if they encounter
@@ -1441,9 +1445,9 @@ with the ``nary-mapping`` wrapper function around their underlying
 generic operation.  This wrapper function is an implementation of the
 idea of applicative functors (TODO cite McBride and Paterson), so if
 your partial information structure is an applicative functor, you can
-use this to teach all propagators how to handle it.
+use this to teach most propagators how to handle it.
 
-``((binary-map info1 info2) f)``
+``((binary-map info1 info2) f)  ==>  new-info``
 The generic procedure ``binary-map`` encodes how to apply a strict
 function to partial information arguments.  ``binary-map`` itself is
 generic over the two information arguments, and is expected to return
@@ -1457,7 +1461,7 @@ contingent upon the set-union of the premises from both inputs::
 
   (define (contingency-binary-map c1 c2)
     (lambda (f)
-      (supported
+      (contingent
        (f (contingent-info c1) (contingent-info c2))
        (set-union (contingent-premises c1) (contingent-premises c2)))))
 
@@ -1466,18 +1470,26 @@ contingent upon the set-union of the premises from both inputs::
 Note that the information inside a contingency object may itself be
 partial, and so perhaps necessitate a recursive call to
 ``binary-map``.  This recursion is handled by the given function
-``f``, and need not the invoked explicitly in user handlers for
+``f``, and need not the invoked explicitly in handlers for
 ``binary-map``.
 
-A user handler to ``binary-map`` is expected to accept two partial
+A handler for ``binary-map`` is expected to accept two partial
 information structures and return a procedure of one argument that
 will accept a binary function.  It is free to apply that function as
-many or as few times as necessary, and to produce the appropriate
-result of "mapping" that function over the information in the input
-partial information structures to produce a new partial information
-structure, encoding all the appropriate uncertainty from both inputs.
+many or as few times as necessary, and is expected to produce the
+appropriate result of "mapping" that function over the information in
+the input partial information structures to produce a new partial
+information structure, encoding all the appropriate uncertainty from
+both inputs.
 
-TODO How can I explain this binary-map idea better?
+The ``nary-mapping`` wrapper works by repeated use of ``binary-map``
+on arguments of arity greater than two.  For unary arguments,
+``nary-mapping`` invokes ``binary-map`` with a bogus second argument.
+Therefore, be sure to supply handlers to ``binary-map`` that handle
+applications thereof that have your new partial information structure
+as one argument, and a raw Scheme object as the other (this is a good
+idea anyway, and saves the trouble of writing handlers for an explicit
+``unary-map`` operation).
 
 TODO Table of all primitive propagators that are affected by binary-map.
 
@@ -1486,9 +1498,15 @@ Interoperation with Existing Partial Information Types
 
 A new partial information structure needs to interoperate with
 existing ones in three places:
+
 - arguments to merge
 - arguments to binary propagators
 - containment (of and by)
+
+If you make a new partial information structure, it should be able to
+exist within a TMS.  Also, if your new partial information structure
+has parts, it should consider allowing those parts to be partial
+themselves.
 
 TODO Document the extant partial information structures and the
 default mechanisms they use for interacting with others (namely the
