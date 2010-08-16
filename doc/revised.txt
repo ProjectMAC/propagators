@@ -1280,18 +1280,78 @@ These instructions are represented as explicit objects returned from
 ``merge`` rather than being carried out directly because this allows
 recursive calls to ``merge`` to modify the effects to account for the
 context in which that ``merge`` occurs.  For example, if a merge of
-two cells occurs in a contingent context inside the merge of two
+two cells occurs in a contingent context inside a merge of two
 TMSes, then the instructions to connect those two cells must be
 adjusted to make the connection also contingent on the appropriate
 premises.
 
-TODO Document the ``effectful`` data structure
+``(make-effectful info effects)``
+  Constructs a new effectful result of merge, with the given new
+  partial information structure and the given list of effects to carry
+  out.  If the resulting effectful object reaches the top level in a
+  cell, those effects will be executed in the order they appear in the
+  list.
+
+``(effectful-info effectful)``
+  Returns the new information content carried in the given
+  effectful object.
+
+``(effectful-effects effectful)``
+  Returns the list of effects that this effectful object carries.
+
+``(effectful? thing)``
+  Tells whether the given object is an effectful object.
+
+``(->effectful thing)``
+  Coerces a possibly-effectless information structure into an
+  effectful object.  If the ``thing`` was already effectful,
+  returns it, otherwise wraps it into an effectful object
+  with an empty list of effects.
+
+``(effectful-> effectful)``
+  Attempts to coerce an effectful object into an explicitly effectless
+  one.  If the given effectful object was not carrying any effects
+  that would have any effect when executed, returns just the
+  information structure it was carrying.  Otherwise, returns
+  the given effectful object.
+
+``(effectful-bind effectful func)``
+  Runs the given ``func`` on the information content in the given
+  ``effectful`` object, and reattaches any effects.  The effectful
+  object may actually be a partial information structure without
+  explicit effects.  The func may return a new partial information
+  structure or a new effectful object.  The overall result of
+  ``effectful-bind`` is the information returned by the call to
+  ``func``, together with all the effects in the original effectful
+  object, and any effects in the return value of the ``func``.  The
+  latter effects are listed first.
+
+``(effectful-list-bind effectfuls func)``
+  Like ``effectful-bind``, but accepts a list of effectful objects,
+  and calls the ``func`` on the list of their information contents.
 
 There are two reasons why this matters to a user of the system.
 First, callers of ``merge`` (for example recursive ones in contexts
 where a new partial information structure is defined that may contain
 arbitrary other ones) must be aware that ``merge`` may return an
-``effectful`` object.  TODO Describe what to do in this case.
+``effectful`` object.  In this case, it is the resposibility of the
+caller to ``merge`` to shepherd the effects appropriately, adjusting
+them if necessary.  For example, the ``merge`` handler for two pairs
+recursively merges the cars and cdrs of the pairs.  If either of those
+recursive merges produces effects, the pair merge forwards all of
+them.  Here is the code that does that::
+
+  (define (pair-merge pair1 pair2)
+    (effectful-bind (merge (car pair1) (car pair2))
+      (lambda (car-answer)
+        (effectful-bind (merge (cdr pair1) (cdr pair2))
+ 	  (lambda (cdr-answer)
+ 	    (cons car-answer cdr-answer))))))
+ 
+  (defhandler merge pair-merge pair? pair?)
+
+
+
 
 Second, a new partial information structure may want to have some
 side-effect when merged.  This must be accomplished through returning
@@ -1300,7 +1360,27 @@ instructions.  New types of effects can be defined for that purpose.
 For example, the built-in TMSes are added to the system through this
 mechanism.
 
-TODO Describe execute-effect, boring-effect?, and generic-attach-support
+The handling of effects is extensible through two generic procedures.
+
+``(execute-effect effect)``
+  The ``execute-effect`` procedure is used by cells to actually
+  execute any effects that reach the top level.  A handler for
+  ``execute-effect`` should execute the effect specified by the given
+  effect object.  The return value of ``execute-effect`` is not used.
+
+``(redundant-effect? effect)  ==>  #t or #f``
+  The ``redundant-effect?`` procedure is used to determine which
+  effects will predictably have no effect if executed, and remove
+  them.  Detecting redundant effects is important for testing network
+  quiescence.  The default operation of ``redundant-effect?`` is to
+  return ``#f`` for all effects, which is conservative but could lead
+  to excess computation in the network.  A handler for
+  ``redundant-effect?`` is expected to return ``#t`` if the effect
+  will certainly have no consequence, or ``#f`` if the effect may have
+  consequences.
+
+
+TODO Describe TMS interoperation with generic-attach-support
 
 
 Individual Propagator Generics
