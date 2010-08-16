@@ -261,4 +261,4 @@
 	       (implies? (content candidate)
 			 control-info))))))
 
-(defhandler boring-effect? boring-cell-join? cell-join-effect?)
+(defhandler redundant-effect? boring-cell-join? cell-join-effect?)

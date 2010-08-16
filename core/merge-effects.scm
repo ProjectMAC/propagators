@@ -36,20 +36,20 @@
       (effectful-return thing)))
 
 (define (effectful-> effectful)
-  (let ((effectful (remove-boring-effects effectful)))
+  (let ((effectful (remove-redundant-effects effectful)))
     (if (null? (effectful-effects effectful))
 	(effectful-info effectful)
 	effectful)))
 
-(define (remove-boring-effects effectful)
+(define (remove-redundant-effects effectful)
   (make-effectful
    (effectful-info effectful)
    (filter (lambda (effect)
-	     (not (boring-effect? effect)))
+	     (not (redundant-effect? effect)))
 	   (effectful-effects effectful))))
 
-(define boring-effect?
-  (make-generic-operator 1 'boring-effect? (lambda (thing) #f)))
+(define redundant-effect?
+  (make-generic-operator 1 'redundant-effect? (lambda (thing) #f)))
 
 (define (effectful-flatten effectful)
   (let ((subeffectful (->effectful (effectful-info effectful))))
