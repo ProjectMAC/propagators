@@ -1742,7 +1742,24 @@ Scheme procedure ``foo`` becomes a generic procedure named
 Compound Cell Carrier Construction
 ----------------------------------------------------------------------
 
-TODO
+``p:cons`` is an interesting propagator, because while it performs the
+job of a Scheme procedure (to wit, ``cons``), it operates directly on
+the cells that are its arguments, rather than on their contents.
+This patterns is also abstracted:
+
+``(function->cell-carrier-constructor f)``
+  Is like ``function->propagator-constructor``, except it makes
+  propagators that operate on the cells that are their arguments
+  rather than on the partial information structures those cells
+  contain.  ``p:cons`` could have been defined as::
+
+    (define-cell p:cons (function->cell-carrier-constructor cons))
+
+The rest of this machinery is in ``core/carrying-cells.scm``.
+
+Defining ``p:cons`` to operate on its argument cells constitutes a
+decision to follow the "carrying cells" rather than the "copying data"
+strategy from the propagator thesis.
 
 Fully-manual Low-level Propagator Construction
 ----------------------------------------------------------------------
