@@ -580,7 +580,7 @@ compound::
 
 ``define-e:propagator`` defines a compound propagator in expression
 style, that is, expecting the body of the propagator to return one
-additional cell to add to the boundary at the end.
+additional cell to add to the boundary at the end::
 
   (define-e:propagator (double x)
     (e:+ x x))
