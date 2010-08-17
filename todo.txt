@@ -1,3 +1,10 @@
+Major Tasks on the Revised Report:
+- Organization
+- Format
+- Reference materials
+- Document the underlying pieces out of which things are built?
+- Go over the examples and make them look nice
+
 For the revised report:
 - Where is Scheme-Propagators distributed?
 - How are the MMP-specifics dealt with?
@@ -20,13 +27,6 @@ For the revised report:
   (currently) actually attaches any propagators to those toplevel
   cells.  But if anyone did, those user propagators would need to be
   brushed off on initialize-scheduler.
-- Record arbitrary choices:
-  - diagram style was picked as the defauult when the desired
-    style cannot be deduced; both for application and for definition
-  - p:if delays its branches, but abstractions do not delay their
-    bodies.  This has the nice feature that nullary abstractions
-    are possible.
-  - carrying cells seems like the right answer for compounds
 - define-propagator should inspect the name being defined
   and select diagram vs expression definition style accordingly.
 - application should probably gate the connections between the

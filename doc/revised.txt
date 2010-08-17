@@ -1991,6 +1991,165 @@ Examples
 There are some basic examples in ``core/example-networks.scm``; more
 elaborate examples are available in ``examples/``.
 
+Arbitrary Choices
+----------------------------------------------------------------------
+
+Several language design choices affecting the structure of
+Scheme-Propagators appeared arbitrary at the time they were made.
+First, diagram style application was picked as the default over
+expression style when applying cells whose contents are not yet known,
+and for defining compound propagators when the style is not specified
+more clearly.  The main rationale for this decision was that choosing
+expression style as the default would have made Scheme-Propagators too
+much like every other programming language; the unusual expressive
+power of fanin that the propagator model offers can be taken advantage
+of only if at least some of one's code actually has fanin, and writing
+code with fanin requires diagram style.  So we chose to make diagram
+style the default, to emphasize that potential.
+
+Second, there was a choice about where to put the delaying of pieces
+of propagator network that should be constructed only conditionally.
+Every recursion traverses an abstraction boundary and a conditional
+statement every time it goes around.  Every recursion must encounter
+at least one delay barrier every time it goes around, or the
+construction of the network may generate spurious infinite regresses.
+But where should that barrier go?  There were three plausible
+alterntives: the first idea was to put the barrier around the
+application of recursive compound propagators; the second was to
+generalize this to put it around the application of all compound
+propagators; and the third was to capture the bodies of conditional
+expressions like ``p:if`` and delay only their construction.  During
+most of the development of Scheme-Propagators, we were using option 1,
+on the grounds that it sufficed and was easy to implement.  Doing this
+had the effect that in order to actually make a proper recursive
+propagator, one had to manually "guard", using a hand-crafted pile of
+``switch`` propagators, all the i/o of a recursive call to prevent it
+from being expanded prematurely.  For example, a recursive factorial
+network written in that style would have looked something like::
+
+  (define-propagator (p:factorial n n!)
+    (let-cells ((done? (e:= n 0)) n-again n!-again)
+      (p:conditional-wire (e:not done?) n n-again)
+      (p:conditional-wire (e:not done?) n! n!-again)
+      (p:* (e:factorial (e:- n-again 1)) n-again n!-again)
+      (p:conditional-wire done? 1 n!)))
+
+with the added caveat that it would need to be marked as being
+recursive, so the expansion of the internal factorial would be delayed
+until it got some information on its boundary (which would be
+prevented from happening in the base case by the ``conditional-wire``
+propagators).  Very late in the game we finally decided to write a
+series of macros (``p:when``, ``p:unless``, ``p:if``, and their
+expression-style variants) that automated the process of constructing
+those ``conditional-wire`` propagators.  On making these macros work,
+we realized that adjusting ``p:when`` and company to delay their
+interior would be just as easy as delaying the opening of
+abstractions.  At that point we decided to switch to doing it that
+way, on the grounds that ``if`` is special in all other computer
+languages, so it might as well be special here too, and we will leave
+the operation of abstractions relatively simple.  (Partial information
+makes abstractions complicated enough as it is!)  This has the further
+nice feature that it sidesteps a possible bug with delayed
+abstractions: that being that if one wanted to create a nullary
+abstraction, automatic delay of its expansion would presumably not be
+what one wanted.
+
+Third, the decision to go with the carrying cells strategy for
+compound data felt, while not really arbitrary, at least enough not
+forced by the rest of the design to be worth some mention.  The topic
+is discussed at length elsewhere, and the available options detailed;
+so here we will just note why we ended up choosing carrying cells.
+For a long time, copying data seemed like the right choice, because it
+avoided spooky "action at a distance"; and merges did not require
+changing the structure of the network.  The downside of copying data,
+namely the cost of the copying, seemed small enough to ignore.  Then
+we tried to write a program for thinking about electrical circuits.
+
+The specific killer part of the electrical circuits program was that
+we tried to equip it with observers that built a data structure for
+every circuit element containing its various parameters and state
+variables, and for every subcircuit a data structure containing its
+circuit elements, all the way up.  When this program turned out to be
+horribly slow, we realized that copying data actually produces a
+quadratic amount of work: every time any circuit variable is updated,
+the whole chain of communication all the way from resistor to complete
+breadboard is activated, and they repeat merges of all the compounds
+that they had accumulated, just to push that one little piece of
+information all the way to the toplevel observer.  In addition, these
+summary structures turned out to be less useful for debugging than we
+had hoped, because the updates of the summary structures would be
+propagator operations just like the main computation, so when the
+latter would stop for some strange reason, we always had to wonder
+whether the summaries were up to date.
+
+Carrying cells seemed an appealing solution to both problems.  If the
+summaries carried cells instead of copying data, then updates to those
+cells would not have to trouble the whole pipe by which the cells were
+carried, but would just be transmitted through those cells.  Also, if
+we played our cards right, we should have been able to arrange for
+exactly the cells where the computation was actually happening to be
+the ones carried all the way to where we could get them from those
+summary structures, so that the summaries would always be up to date
+with the underlying computation.  But what about the pesky fact that
+merging structures that carry cells requires side effects on the
+network?  What if that merge is contingent on some premises because
+the cell-carriers are in some TMS?
+
+That was when merge effects were invented.  We realized that merging
+really should have legitimate side effects on the network, but should
+package those effects up in manipulable objects that it returns,
+instead of trying to just execute them.  So the question that merge
+answers was changed from
+
+  What is the least-commitment information structure that captures
+  all the knowledge in these two information structures?
+
+to 
+
+  What needs to be done to the network in order to make it reflect the
+  discovery that these two information structures are about the same
+  object?
+
+The latter nicely subsumes the former: a normal merge is just the
+answer "record in the appropriate cell that the object of interest is
+described by this information structure".  So everything fell into
+place.  The strange ``set!`` in the most basic definition of the cell
+is, indeed, an effect that needs to be performed on the network to
+acknowledge the discovery that two particular information structures
+are about the same object.  The even stranger error signalled on
+contradiction is an effect too: the thing that needs to be done to the
+network to reflect the discovery that two completely incompatible
+information structures describe the same object is to crash.  And now
+both merging cells carried by compound structures and signalling
+nogoods by TMSes become perfectly reasonable, respectable citizens of
+the propagator world; and they can interoperate with being contingent
+by the enclosing TMS modifying the effects to reflect the context in
+which they were generated before passing them on up out of its own
+call to merge.
+
+With that change of perspective on merging, a whole chunk of problems
+suddenly collapsed.  Cells could be merged with a simple "link these
+two with (conditional) identity propagators".  Therefore compound data
+could be merged by recursively merging their fields, regardless of
+whether they were carrying cells or other partial information
+structures.  Closures fell into place --- they were just a particular
+kind of compound data, and merged the way compound data merges.
+Closures had been a conceptual problem for the copying data view of
+the world, because closures really felt like they wanted to able to
+attach their interior propagators to cells closed over from the
+enclosing lexical environment; but for that, it seemed that the
+lexical environment would need to be a cell-carrying data structure.
+But now that carrying cells works, there is no problem.  It was on
+that wave of euphoria that the carrying cells strategy rode into its
+current place as the standard way to make compound structures in the
+propagator world.  Carrying cells certainly still feels cleaner and
+nicer than copying data; but it may be that copying data really could
+still be made to work in all the scenarios where carrying cells is
+currently winning.  We just decided not to pursue that path.
+
+And on the note of copying data being preferable because it preserves
+locality, maybe ``cons`` really should be the locality-breaking object.
+
 Revision History of this Guide
 ----------------------------------------------------------------------
 
