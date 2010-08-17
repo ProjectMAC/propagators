@@ -538,22 +538,52 @@ Conditional Network Construction
 
 The ``switch`` propagator does conditional propagation --- it only
 forwards its input to its output if its control is ``#t``.  As such,
-it is adequate to control the flow of data through an existing
+it serves the purpose of controlling the flow of data through an existing
 propagator network.  However, it is also appropriate to control the
 construction of more network, for example to design recursive networks
-that expand themselves no further than needed.  The basic idea there
-is to delay the construction of some compound chunk of network until
+that expand themselves no further than needed.  The basic idea here
+is to delay the construction of some chunk of network until
 some information appears on its boundary, and control whether
-information appears by judicious use of ``switch`` propagators.  The
+said information appears by judicious use of ``switch`` propagators.  The
 low-level tools for accomplishing this effect are
 ``delayed-propagator-constructor`` and ``switch``.  Scheme macros that
 do the right thing at a higher level are also provided:
 
 ``(p:when internal-cells condition-cell body ...)``
   Delays the construction of the body until reason to believe the
-  condition may be true appears in the condition-cell.
+  condition may be true appears in the condition-cell.  The
+  ``condition-cell`` argument is an expression to evaluate to produce
+  the cell controlling whether construction of the ``body`` takes
+  place.  The ``body`` is an arbitrary collection of code, defining
+  some amount of propagator network that will not be built until the
+  controlling cell indicates that it should.  The ``internal-cells``
+  argument is a list of the free variables in ``body``.  This is the
+  same kind of kludge as the ``import`` clause in
+  ``propagator-lambda`` (which see).
 
+``(e:when internal-cells condition-cell body ...)``
+  Expression-style variant of ``p:when``.  Augments its boundary with
+  a fresh cell, which is then synchronized with the cell returned from
+  the last expression in ``body`` when ``body`` is constructed.
 
+``(p:unless internal-cells condition-cell body ...)``
+
+``(e:unless internal-cells condition-cell body ...)``
+  Same as ``p:when`` and ``e:when``, but reversing the sense of the
+  control cell.
+
+``(p:if internal-cells condition-cell consequent alternate)``
+  Two-armed conditional construction.  Just like two instances of
+  ``p:when``: constructs the network indicated by the consequent form
+  when the condition-cell becomes possibly true, and constructs the
+  network indicated by the alternate form when the condition-cell
+  becomes possibly false.  Note that both can occur for the same
+  ``p:if`` over the life of a single computation, for example if the
+  condition-cell comes to have a TMS that includes a ``#t`` contingent
+  on some premises and later a ``#f`` contingent on others.
+
+``(e:if internal-cells condition-cell consequent alternate)``
+  Expression-style variant of ``p:if``.
 
 Making New Compound Propagators
 ======================================================================
