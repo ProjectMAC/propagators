@@ -170,24 +170,24 @@
 
 ;; And here is the moral equivalent of letrec, with the same hairy
 ;; clause processing as let.
-(define-syntax letrec-cells
+(define-syntax let-cells-rec
   (syntax-rules ()
-    ((letrec-cells (cell-binding ...)
+    ((let-cells-rec (cell-binding ...)
        form ...)
-     (normalize-let-clauses letrec-cells
+     (normalize-let-clauses let-cells-rec
        (cell-binding ...)
        ()
        form ...))
-    ((letrec-cells "done"
+    ((let-cells-rec "done"
        ((cell-name cell-form) ...)
        form ...)
      (let-cells (cell-name ...)
        (c:id cell-name cell-form) ...
        form ...))))
 
-(define-syntax letrec-cell
+(define-syntax let-cell-rec
   (syntax-rules ()
-    ((letrec-cell cell-binding
+    ((let-cell-rec cell-binding
        form ...)
-     (letrec-cells (cell-binding)
+     (let-cells-rec (cell-binding)
        form ...))))
