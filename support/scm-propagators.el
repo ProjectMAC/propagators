@@ -29,7 +29,9 @@
 
 (put 'let-cells 'scheme-indent-function 1)
 (put 'let-cells* 'scheme-indent-function 1)
+(put 'let-cells-rec 'scheme-indent-function 1)
 (put 'let-cell 'scheme-indent-function 1)
+(put 'let-cell-rec 'scheme-indent-function 1)
 
 ;;; Colorizing is more involved but also more general:
 
