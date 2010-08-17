@@ -1563,24 +1563,67 @@ TODO Table of all primitive propagators that are affected by binary-map.
 Interoperation with Existing Partial Information Types
 ----------------------------------------------------------------------
 
-A new partial information structure needs to interoperate with
-existing ones in three places:
+A new partial information structure may interact with an existing one
+in two ways:
 
-- arguments to merge
-- arguments to binary propagators
-- containment (of and by)
+- as arguments to merge or to binary propagators
+- by containment (of and by)
 
-If you make a new partial information structure, it should be able to
-exist within a TMS.  Also, if your new partial information structure
-has parts, it should consider allowing those parts to be partial
-themselves.
+The first is in general handled by making sure that ``merge``,
+``binary-map``, and all approriate individual propagator generic
+operations have methods that can handle any combinations that may
+arise.  Often, the way to deal with two information structures of
+different but compatible types is to realize that one of them can be
+seen as an instance of the other type.  The coercion machinery (which
+see) allows one to declare when this situation obtains so that
+``defhandler-coercing`` does the right thing.  The specific touch
+points for this are the type testers and coercers of the existing
+partial information types::
 
-  (declared-coercion interval? ->v&s)  TODO rename ->v&s to ->contingent
+  | Type                | Predicate      | Coercer      |
+  |---------------------+----------------+--------------|
+  | Nothing             | nothing?       | --           |
+  | Raw Scheme object   | various        | --           |
+  | Numerical interval  | interval?      | ->interval   |
+  | Scheme pairs        | pair?          | --           |
+  | Propagator cells    | cell?          | --           |
+  | Propagator closures | closure?       | --           |
+  | Contingency object  | contingent?    | ->contingent |
+  | TMS                 | tms?           | ->tms        |
+  | Contradiction       | contradictory? | --           |
 
-TODO Document the extant partial information structures and the
-default mechanisms they use for interacting with others (namely the
-``nothing? any?`` handlers, the ``v&s-able?`` predicate, the general
-bevaior of TMSes, maybe also the cons story).
+Notes:
+
+- The ``nothing`` information structure defines methods on ``merge``
+  and the propagators that do the right thing for any other object, so
+  does not require any additional effort.
+
+- TMSes automatically coerce to TMS any object that is declared
+  coercible to a raw contingency object.
+
+For example::
+
+  (declare-coercion interval? ->contingent)
+
+allows raw intervals to be seen as TMSes.  This has the effect that if
+a binary operation (either ``merge`` or a primitive propagator subject
+to ``nary-mapping``) encounter a TMS on one input and an interval on
+the other, it will coerce the interval to a TMS containing exactly
+that interval contingent on the empty set of premises, and then
+operate on those two structures as on TMSes.
+
+
+The second kind of interoperation is handled by correctly dealing with
+merge effects (which see).  If you make a new partial information
+structure that contains others, you must make sure to handle any merge
+effects that may arise when recursively merging the partial
+information your structure contains.  If you make a new partial
+information structure that may need to have effects performed on
+merge, you should return those as appropriate merge effects in an
+``effectful`` structure, and, if you need to create new kinds of
+effects in addition to the built-in ones, you should extend the
+generic operations ``execute-effect``, ``redundant-effect?``, and
+``generic-attach-premises``.
 
 
 Making New Primitive Propagators
