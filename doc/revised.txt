@@ -164,17 +164,14 @@ which means that cell has no information about the value it is meant
 to have.
 
 
-			     The Details
+The Details
+======================================================================
 
 Now that you know how to play around with our propagators we have to
 tell you what we actually provide.  In every coherent system for
 building stuff there are primitive parts, the means by which they can
 be combined, and means by which combinations can be abstracted so that
 they can be named and treated as if they are primitive.  
-
-
-TODO Section:      How this supports the goal
-
 
 
 Making Propagator Networks
@@ -1988,13 +1985,19 @@ TODO Describe where in the source various constructs are defined?  So that
 it is possible to mimic them (e.g. more primitive propagators) and/or
 adapt them.
 
-TODO
+Examples
 ----------------------------------------------------------------------
 
-- Advertise the examples/ directory
+There are some basic examples in ``core/example-networks.scm``; more
+elaborate examples are available in ``examples/``.
 
 Revision History of this Guide
 ----------------------------------------------------------------------
 
 First written May 5, 2010 by Alexey Radul
-Rewritten August 2, 2010 by Alexey Radul and Gerald Jay Sussman
+Rewritten August 17, 2010 by Alexey Radul and Gerald Jay Sussman
+
+How this supports the goal
+======================================================================
+
+TODO
