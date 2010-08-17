@@ -10,7 +10,6 @@ For the revised report:
 - How are the MMP-specifics dealt with?
 - Explicit access to propagators that merge, check equivalence,
   check contradictions?
-- Document letrec-cells (and teach Emacs about it)
 - What is the right analogue of named let?
 - (define-cell z (e:+ x y))
   (define-cell x (e:- z y))

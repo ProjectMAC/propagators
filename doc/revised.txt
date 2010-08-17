@@ -505,22 +505,49 @@ to ``let``::
 will make a cell named ``x`` and a cell named ``y`` with an adder both
 of whose inputs are ``x`` and whose output is ``y``.
 
-Now, ``let-cells`` and ``let-cells*`` are, like ``define-cell``,
-basically a convenience over doing the same thing in Scheme with
-``let``, ``let*`` and ``make-cell``.  Also like ``define-cell``,
-``let-cells`` and ``let-cells*`` do constant conversion (so in
-``(let-cells ((x 3)) ...)``, ``x`` becomes a cell, not a Scheme
-object), and attach debugging information to the cells they bind.
+Corresponding to Scheme's ``letrec``, Scheme-Propagators has
+``let-cells-rec``.  ``let-cells-rec`` has the same scoping rules as
+Scheme's ``letrec``, namely that all the names it defines are
+available to all the defining forms.  Moreover, since an
+"uninitialized" propagator cell can still start life in a perfectly
+sensible state, namely the state of containing ``nothing``,
+``let-cells-rec`` removes a restriction that Scheme's ``letrec``
+enforced; namely, you may use the names defined by a given
+``let-cells-rec`` directly in the defining forms, without any explicit
+intermediate delay in evaluation.  For example::
+
+  (let-cells-rec ((z (e:+ x y))
+		  (x (e:- z y))
+		  (y (e:- z x)))
+    ...)
+
+is a perfectly reasonable bit of Scheme-Propagators code, and binds
+the names ``x``, ``y`` and ``z`` to cells that are effectively
+interconnected with the three propagators indicated.  Asterisk on
+"effectively": rather than a true direct interconnection,
+``let-cells-rec`` creates extra cells that are then identified with
+the specified ones by mutual identity propagators.
+
+Now, ``let-cells``, ``let-cells*``, and ``let-cells-rec`` are, like
+``define-cell``, basically a convenience over doing the same thing in
+Scheme with ``let``, ``let*``, ``letrec`` and ``make-cell``.  Also
+like ``define-cell``, ``let-cells``, ``let-cells*``, and
+``let-cells-rec`` do constant conversion (so in ``(let-cells ((x 3)) ...)``,
+``x`` becomes a cell, not a Scheme object), and attach
+debugging information to the cells they bind.
 
 Since ``let-cells`` is plural (where ``let`` was number-neutral),
-Scheme-Propagators also define ``let-cell`` for the case when you just
-want to make one cell::
+Scheme-Propagators also define ``let-cell`` and ``let-cell-rec``
+(``let-cell*`` being useless) for the case when you just want to make
+one cell::
 
-  (let-cell x ...)              ==>  (let-cells (x) ...)
-  (let-cell (x (e:+ y z)) ...)  ==>  (let-cells ((x (e:+ y z))) ...)
+  (let-cell x ...)              ==  (let-cells (x) ...)
+  (let-cell (x (e:+ y z)) ...)  ==  (let-cells ((x (e:+ y z))) ...)
+  (let-cell-rec (ones (e:cons 1 ones)) ...)  ==
+  (let-cells-rec ((ones (e:cons 1 ones))) ...)
 
-Scheme-Propagators currently has no analogues of Scheme's ``letrec``
-or named ``let`` syntax.
+Scheme-Propagators currently has no analogue of Scheme's named ``let``
+syntax.
 
 Finally, there is one more, somewhat sneaky way to make cells.
 The ``e@`` 

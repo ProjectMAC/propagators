@@ -141,13 +141,10 @@
        form ...)
      (let-form "done" done-clauses
        form ...))))
-
-;; This version is a grammatical convenience if there is only one
-;; cell.  (let-cell (foo foo-form) stuff) and (let-cell foo stuff) are
-;; both ok and equivalent to (let-cells ((foo foo-form)) stuff) and
-;; (let-cells (foo) stuff), respectively, which are more awkward to
-;; read.
-
+;; let-cell is a grammatical convenience if there is only one cell.
+;; (let-cell (foo foo-form) stuff) and (let-cell foo stuff) are both
+;; ok and equivalent to (let-cells ((foo foo-form)) stuff) and
+;; (let-cells (foo) stuff), respectively, but less awkward to read.
 (define-syntax let-cell
   (syntax-rules ()
     ((let-cell cell-binding
@@ -168,8 +165,14 @@
      (let-cells ()
        form ...))))
 
-;; And here is the moral equivalent of letrec, with the same hairy
-;; clause processing as let.
+;; Here is the moral equivalent of letrec, with the same hairy clause
+;; processing as let.  This is actually nicer than Scheme letrec,
+;; because "uninitialized" cells have a perfectly good initial state:
+;; they contain nothing.  So names introduced by let-cells-rec can be
+;; used in defining forms for those same names directly, without
+;; having to insist on an intervening delaying form the way Scheme's
+;; letrec does.  In a sense, the cells themselves are the needed
+;; delaying form.
 (define-syntax let-cells-rec
   (syntax-rules ()
     ((let-cells-rec (cell-binding ...)

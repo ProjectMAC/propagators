@@ -138,14 +138,14 @@
  (run)
  (content building-height)
  ;Value: #(interval 44.514 48.978)
-
+
  (define-cell fall-time)
  (fall-duration fall-time building-height)
 
  (add-content fall-time (make-interval 2.9 3.1))
  (run)
  (content building-height)
- ;Value: #(interval 44.514 47.243)
+ ;Value: #(interval 44.514 47.243)
 
  (content barometer-height)
  ;Value: #(interval .3 .31839)
