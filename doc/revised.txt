@@ -1703,23 +1703,39 @@ can be the value of a Scheme variable.  For example, you might define::
 
 where ``do-it`` is the appropriate Scheme function.
 
-Two things to pay attention to: ``function->propagator-constructor``
+Something important to pay attention to: ``function->propagator-constructor``
 wraps the given function up into a propagator directly, and it is up
 to the function itself to handle any interesting partial information
 type that might come out of its argument cells.  Notably, ``nothing``
 might show up in the arguments of that function when it is called.
 Therefore, it may be appropriate the make the function itself generic,
-and/or wrap it in ``nary-mapping``.  For example, check out how the
-provided primitive ``p:and`` and ``p:or`` propagators are implemented,
-in ``core/standard-propagators.scm``.
+and/or wrap it in ``nary-mapping``.
 
-The second thing is metadata.  ``function->propagator-constructor``
-can supply all the metadata that the debugger uses except the name for
-your function.  That you need to add yourself, with ``(name!
-your-function 'some-name)``.
+For example, let us walk through the implementation of the provided
+primitive ``p:and`` in ``core/standard-propagators.scm``.  First, we
+make a generic version of the Scheme procedure ``boolean/and`` to
+serve as a point of future extension::
+
+  (define generic-and (make-generic-operator 2 'and boolean/and))
+
+Then we wrap that generic procedure with ``nary-mapping`` to make it
+process all partial information types that have declared applicative
+functor behavior, and then we give the result to
+``function->propagator-constructor`` to make a propagator
+constructor::
+
+  (define-cell p:and
+    (function->propagator-constructor (nary-mapping generic-and)))
+
+Another detail to think about is metadata.
+``function->propagator-constructor`` can supply all the metadata that
+the debugger uses except the name of your function.  If your function
+is generic, the generic machinery already expects a name; otherwise,
+you need to supply the name yourself, with ``(name!  your-function
+'some-name)``.
 
 
-Propagator Constructor Combinators
+Expression Style Variants
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Once you've made a diagram-style propagator constructor, you can make
@@ -1728,10 +1744,6 @@ a variant that likes to be applied in expression style with
 defined as::
 
   (define-cell e:and (expression-style-variant p:and))
-
-You can also delay the actual construction of your primitives
-if you want with ``delayed-propagator-constructor``, though that's
-really more useful with recursive compound propagators.
 
 
 DWIM Propagator Construction
