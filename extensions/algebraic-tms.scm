@@ -189,10 +189,14 @@
 (propagatify copy-cons)
 
 (define copy-car car)
-(propagatify copy-car handling-algebraic-partial-information 'no-generic)
+(define-by-diagram-variant (p:copy-car e:copy-car)
+  (function->propagator-constructor
+   (handling-algebraic-partial-information copy-car)))
 
 (define copy-cdr cdr)
-(propagatify copy-cdr handling-algebraic-partial-information 'no-generic)
+(define-by-diagram-variant (p:copy-cdr e:copy-cdr)
+  (function->propagator-constructor
+   (handling-algebraic-partial-information copy-cdr)))
 
 (define-propagator (c:copy-pair? pair answer)
   (p:copy-pair? pair answer)
