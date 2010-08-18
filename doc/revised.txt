@@ -1754,7 +1754,7 @@ functions with ``name!``, and calling ``expression-style-variant`` to
 convert them to expression-style versions can get tedious.  This whole
 shebang is automated by the ``propagatify`` macro::
 
-  (propagatify + nary-mapping)
+  (propagatify +)
 
 turns into
 
@@ -1763,12 +1763,36 @@ turns into
   (define generic-+ (make-generic-operator 2 '+ +))
   (define-cell p:+
    (function->propagator-constructor (nary-mapping generic-+)))
-  (define-cell e:+ (expression-style-variant p:eq?))
+  (define-cell e:+ (expression-style-variant p:+))
 
-Use this with some caution; you may not always want ``nary-mapping``,
-and you may sometimes want to ``propagatify`` the raw Scheme function
-instead of making a corresponding generic operator.  The macro is
-defined in ``core/sugar.scm``; comments there describe it more fully.
+The easy syntax covers the common case.  You can also specify an
+explicit arity for the generic operation to construct (because
+sometimes ``propagatify`` will guess wrong).  The above is also
+equivalent to ``(propagatify + 2)``.  Sometimes you may want to avoid
+constructing the generic operation.  That can be done also::
+
+  (propagatify + 'no-generic)
+
+becomes
+
+::
+
+  (define-cell p:+
+   (function->propagator-constructor (nary-mapping +)))
+  (define-cell e:+ (expression-style-variant p:+))
+
+
+Finally, in the case where you want completely custom handling of
+partial information, even the ``nary-mapping`` can be avoided with
+
+  (propagatify-raw +)
+
+which becomes
+
+::
+
+  (define-cell p:+ (function->propagator-constructor +))
+  (define-cell e:+ (expression-style-variant p:+))
 
 Note that ``propagatify`` follows the naming convention that the
 Scheme procedure ``foo`` becomes a generic procedure named
