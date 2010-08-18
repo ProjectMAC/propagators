@@ -41,10 +41,10 @@
   (supply nothing))
 (declare-type-tester deck? rtd:deck)
 
-(propagatify deck-name nary-unpacking)
-(propagatify deck-commander nary-unpacking)
-(propagatify deck-treasure nary-unpacking)
-(propagatify deck-supply nary-unpacking)
+(propagatify-monadic deck-name)
+(propagatify-monadic deck-commander)
+(propagatify-monadic deck-treasure)
+(propagatify-monadic deck-supply)
 
 (propagatify make-deck-from-name unary-mapping)
 (propagatify make-deck-from-commander unary-mapping)

@@ -41,12 +41,12 @@
   (method nothing read-only #t))
 (declare-type-tester trip-segment? rtd:trip-segment)
 
-(propagatify trip-segment-start nary-unpacking)
-(propagatify trip-segment-end nary-unpacking)
-(propagatify trip-segment-time nary-unpacking)
-(propagatify trip-segment-cost nary-unpacking)
-(propagatify trip-segment-pain nary-unpacking)
-(propagatify trip-segment-method nary-unpacking)
+(propagatify-monadic trip-segment-start)
+(propagatify-monadic trip-segment-end)
+(propagatify-monadic trip-segment-time)
+(propagatify-monadic trip-segment-cost)
+(propagatify-monadic trip-segment-pain)
+(propagatify-monadic trip-segment-method)
 
 (propagatify make-trip-segment-by-start unary-mapping)
 (propagatify make-trip-segment-by-end unary-mapping)
@@ -173,7 +173,7 @@
 	 nothing)
 	(else
 	 (make-estimate (/ (distance-est trip-segment) speed)))))
-(propagatify time-est nary-unpacking)
+(propagatify-monadic time-est)
 
 (define (same-city? trip-segment)
   ;; Really same-subway-network?
@@ -182,7 +182,7 @@
       (eq? (pick-airport (trip-segment-start trip-segment))
 	   (pick-airport (trip-segment-end trip-segment)))
       nothing))
-(propagatify same-city? nary-unpacking)
+(propagatify-monadic same-city?)
 
 (define (pick-airport place)
   (force-assoc place '((home . logan)
@@ -196,7 +196,7 @@
 		       (laguardia-airport . laguardia)
 		       (57th-street . laguardia)
 		       (met . laguardia))))
-(propagatify pick-airport nary-unpacking)
+(propagatify-monadic pick-airport)
 
 (define (airport-lookup segment)
   (force-assoc

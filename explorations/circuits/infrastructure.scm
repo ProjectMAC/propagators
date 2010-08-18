@@ -38,8 +38,8 @@
 (slotful-information-type
  terminal? make-terminal terminal-potential terminal-current)
 
-(propagatify terminal-potential nary-unpacking)
-(propagatify terminal-current nary-unpacking)
+(propagatify-monadic terminal-potential)
+(propagatify-monadic terminal-current)
 
 (propagatify make-terminal)
 (propagatify make-terminal-from-potential)

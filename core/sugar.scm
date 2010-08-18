@@ -157,6 +157,21 @@
 		(function->propagator-constructor
 		 (,(caddr form) ,generic-name)))))))))
 
+(define-syntax propagatify-monadic
+  (sc-macro-transformer
+   (lambda (form use-env)
+     (let* ((propagatee-name (cadr form))
+	    (generic-name (symbol 'generic- propagatee-name))
+	    (propagatee (close-syntax propagatee-name use-env)))
+       `(begin
+	  (define ,generic-name
+	    (make-arity-detecting-operator
+	     ',propagatee-name ,propagatee ,@(cddr form)))
+	  (define-by-diagram-variant
+	    ,(propagator-naming-convention propagatee-name)
+	    (function->propagator-constructor
+	     (nary-unpacking ,generic-name))))))))
+
 (define (make-arity-detecting-operator
 	 name default-operation #!optional arity)
   (if (default-object? arity)

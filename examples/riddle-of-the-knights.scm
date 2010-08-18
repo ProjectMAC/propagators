@@ -148,9 +148,9 @@
   (horse nothing))
 (declare-type-tester knight? rtd:knight)
 
-(propagatify knight-name nary-unpacking)
-(propagatify knight-shield nary-unpacking)
-(propagatify knight-horse nary-unpacking)
+(propagatify-monadic knight-name)
+(propagatify-monadic knight-shield)
+(propagatify-monadic knight-horse)
 
 (propagatify make-knight-from-name unary-mapping)
 (propagatify make-knight-from-shield unary-mapping)
