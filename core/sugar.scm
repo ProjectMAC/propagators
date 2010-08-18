@@ -100,41 +100,37 @@
 ;;; principle, that's good enough; but two things can be done to make
 ;;; the resulting propagator easier to extend to different partial
 ;;; information structures.  First, a generic operation can be defined
-;;; and second, a uniform wrapper from generic-definitions.scm can be
-;;; applied.  Finally, to complete the definition, an expression
-;;; version of the propagator constructor is usually defined.
-
-;;; The first argument to the macro is the operation to propagatify
-;;; (and also the base of the name to give to the result).  Without
-;;; further arguments, PROPAGATIFY will assume that the operation is
-;;; suitable for propagatification directly, and does not require the
-;;; extensibility mechanisms:
+;;; and second, the nary-mapping wrapper from generic-definitions.scm
+;;; can be applied.  Finally, to complete the definition, an
+;;; expression version of the propagator constructor is usually
+;;; defined.  PROPAGATIFY does these things:
 ;;;   (propagatify +)
-;;; would be equivalent to
-;;;   (define-cell p:+ (function->propagator-constructor +))
-;;;   (define-cell e:+ (expression-style-variant p:+)
-
-;;; If supplied, the second argument is a wrapper to use to add
-;;; generic functionality.  Since this indicates that generic
-;;; functionality is desired, PROPAGATIFY will also construct a
-;;; generic operation with a standard name (whose arity is deduced
-;;; from the arity of the operation being propagatified).  So
-;;;   (propagatify + binary-mapping)
 ;;; is equivalent to
 ;;;   (define generic-+ (make-generic-operator 2 '+ +))
 ;;;   (define-cell p:+
-;;;     (function->propagator-constructor (binary-mapping generic-+)))
+;;;     (function->propagator-constructor (nary-mapping generic-+)))
 ;;;   (define-cell e:+ (expression-style-variant p:+))
 
-;;; Finally, the third argument can either be an explicit arity for
-;;; circumstances when the arity of the generic would be guessed
-;;; wrong, or the expression 'no-generic to indicate that no generic
-;;; operation should be defined.  For example,
-;;;   (propagatify + binary-mapping 'no-generic)
+;;; Note that the generic machinery needs to know the arity of the
+;;; generic operation to define.  PROPAGATIFY will make an educated
+;;; guess for what that arity should be, but an explicit second
+;;; argument can be supplied to fix the arity.  In addition, if the
+;;; second argument is present but is not an arity, PROPAGATIFY will
+;;; interpret that as a request not to define the generic procedure at
+;;; all.  So
+;;;   (propagatify + 'no-generic)
 ;;; would be equivalent to
-;;;   (define-cell p:+ (function->propagator-constructor (binary-mapping +)))
+;;;   (define-cell p:+ (function->propagator-constructor (nary-mapping +)))
 ;;;   (define-cell e:+ (expression-style-variant p:+))
-;;; Compare (propagatify +).
+
+;;; Finally, sometimes it is appropriate to propagatify a Scheme
+;;; procedure directly, without any provision for extensibility.  The
+;;; PROPAGATIFY-RAW macro is helpful for this.
+;;;   (propagatify-raw +)
+;;; would be equivalent to
+;;;   (define-cell p:+ (function->propagator-constructor +))
+;;;   (define-cell e:+ (expression-style-variant p:+)
+;;; Compare (propagatify + 'no-generic).
 
 (define-syntax propagatify-raw
   (sc-macro-transformer
@@ -161,21 +157,6 @@
 	    (function->propagator-constructor
 	     (nary-mapping ,generic-name))))))))
 
-(define-syntax propagatify-monadic
-  (sc-macro-transformer
-   (lambda (form use-env)
-     (let* ((propagatee-name (cadr form))
-	    (generic-name (symbol 'generic- propagatee-name))
-	    (propagatee (close-syntax propagatee-name use-env)))
-       `(begin
-	  (define ,generic-name
-	    (make-arity-detecting-operator
-	     ',propagatee-name ,propagatee ,@(cddr form)))
-	  (define-by-diagram-variant
-	    ,(propagator-naming-convention propagatee-name)
-	    (function->propagator-constructor
-	     (nary-unpacking ,generic-name))))))))
-
 (define (make-arity-detecting-operator
 	 name default-operation #!optional arity)
   (if (default-object? arity)
@@ -197,6 +178,25 @@
 	      (eqv? #f (procedure-arity-max arity)))
 	 (make-generic-operator 2 name default-operation))
 	(else default-operation)))
+
+;;; This is throwback to days of yore, when I still thought that
+;;; monads were a good idea.  This is just like PROPAGATIFY, except
+;;; that it wraps the propagatee in NARY-UNPACKING instead of
+;;; NARY-MAPPING.
+(define-syntax propagatify-monadic
+  (sc-macro-transformer
+   (lambda (form use-env)
+     (let* ((propagatee-name (cadr form))
+	    (generic-name (symbol 'generic- propagatee-name))
+	    (propagatee (close-syntax propagatee-name use-env)))
+       `(begin
+	  (define ,generic-name
+	    (make-arity-detecting-operator
+	     ',propagatee-name ,propagatee ,@(cddr form)))
+	  (define-by-diagram-variant
+	    ,(propagator-naming-convention propagatee-name)
+	    (function->propagator-constructor
+	     (nary-unpacking ,generic-name))))))))
 
 ;;;; Defining "propagator macros"
 
