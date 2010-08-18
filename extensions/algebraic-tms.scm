@@ -164,7 +164,7 @@
     (%p:copy-null? tag answer)))
 
 (define copy-null null)
-(propagatify copy-null)
+(propagatify-raw copy-null)
 
 (define-propagator (c:copy-null? thing answer)
   (p:copy-null? thing answer)
@@ -186,7 +186,7 @@
     (%p:copy-pair? tag answer)))
 
 (define copy-cons cons)
-(propagatify copy-cons)
+(propagatify-raw copy-cons)
 
 (define copy-car car)
 (define-by-diagram-variant (p:copy-car e:copy-car)

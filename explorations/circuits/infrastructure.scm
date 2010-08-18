@@ -41,9 +41,9 @@
 (propagatify-monadic terminal-potential)
 (propagatify-monadic terminal-current)
 
-(propagatify make-terminal)
-(propagatify make-terminal-from-potential)
-(propagatify make-terminal-from-current)
+(propagatify-raw make-terminal)
+(propagatify-raw make-terminal-from-potential)
+(propagatify-raw make-terminal-from-current)
 
 (define-propagator (c:potential terminal potential)
   (p:terminal-potential terminal potential)

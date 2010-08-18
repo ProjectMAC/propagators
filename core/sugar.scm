@@ -136,26 +136,30 @@
 ;;;   (define-cell e:+ (expression-style-variant p:+))
 ;;; Compare (propagatify +).
 
+(define-syntax propagatify-raw
+  (sc-macro-transformer
+   (lambda (form use-env)
+     (let* ((propagatee-name (cadr form))
+	    (propagatee (close-syntax propagatee-name use-env)))
+       `(define-by-diagram-variant
+	  ,(propagator-naming-convention propagatee-name)
+	  (function->propagator-constructor
+	   (name! ,propagatee ,propagatee-name)))))))
+
 (define-syntax propagatify
   (sc-macro-transformer
    (lambda (form use-env)
      (let* ((propagatee-name (cadr form))
 	    (generic-name (symbol 'generic- propagatee-name))
-	    (propagatee (close-syntax propagatee-name use-env))
-	    (direct? (null? (cddr form))))
-       (if direct?
-	   `(define-by-diagram-variant
-	      ,(propagator-naming-convention propagatee-name)
-	      (function->propagator-constructor
-	       (name! ,propagatee ,propagatee-name)))
-	   `(begin
-	      (define ,generic-name
-		(make-arity-detecting-operator
-		 ',propagatee-name ,propagatee ,@(cdddr form)))
-	      (define-by-diagram-variant
-		,(propagator-naming-convention propagatee-name)
-		(function->propagator-constructor
-		 (,(caddr form) ,generic-name)))))))))
+	    (propagatee (close-syntax propagatee-name use-env)))
+       `(begin
+	  (define ,generic-name
+	    (make-arity-detecting-operator
+	     ',propagatee-name ,propagatee ,@(cdddr form)))
+	  (define-by-diagram-variant
+	    ,(propagator-naming-convention propagatee-name)
+	    (function->propagator-constructor
+	     (,(caddr form) ,generic-name))))))))
 
 (define-syntax propagatify-monadic
   (sc-macro-transformer

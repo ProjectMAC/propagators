@@ -417,4 +417,4 @@
   (if (eq? 'go-deep go-command)
       go-command
       nothing))
-(propagatify deep-only)
+(propagatify-raw deep-only)

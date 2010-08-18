@@ -56,7 +56,7 @@
 	  ; (pp (map kcl-premise-name premises))
 	  (kick-out! (car premises))
 	  #t))))
-(propagatify override-premise)
+(propagatify-raw override-premise)
 
 (define-propagator (approximate-voltage-divider-slice R1 center R2 bottom)
   (let ((center-terminals (the-terminals center)))
