@@ -124,4 +124,4 @@
 
 (initialize-scheduler)			; propagatify makes cells!
 
-(propagatify equivalent-closures? binary-mapping)
+(propagatify equivalent-closures?)

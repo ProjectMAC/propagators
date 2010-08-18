@@ -32,19 +32,19 @@
     (eq-put! answer 'subexprs '())
     answer))
 
-(propagatify + binary-mapping)
-(propagatify - binary-mapping)
-(propagatify * binary-mapping)
-(propagatify / binary-mapping)
-(propagatify abs unary-mapping)
-(propagatify square unary-mapping)
-(propagatify sqrt unary-mapping)
-(propagatify = binary-mapping)
-(propagatify < binary-mapping)
-(propagatify > binary-mapping)
-(propagatify <= binary-mapping)
-(propagatify >= binary-mapping)
-(propagatify not unary-mapping)
+(propagatify +)
+(propagatify -)
+(propagatify *)
+(propagatify /)
+(propagatify abs)
+(propagatify square)
+(propagatify sqrt)
+(propagatify =)
+(propagatify <)
+(propagatify >)
+(propagatify <=)
+(propagatify >=)
+(propagatify not)
 
 ;; Not using propagatify because the name AND names syntax, and I want
 ;; the procedure BOOLEAN/AND
@@ -57,9 +57,9 @@
   (function->propagator-constructor (binary-mapping generic-or)))
 (define-cell e:or (expression-style-variant p:or))
 
-(propagatify eq? binary-mapping)
-(propagatify eqv? binary-mapping)
-(propagatify expt unary-mapping)
+(propagatify eq?)
+(propagatify eqv?)
+(propagatify expt)
 
 ;; I want a name for the function that does the switch job
 (define (switch-function control input)

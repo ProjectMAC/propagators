@@ -44,9 +44,9 @@
 ;;; Type tester:
 
 (define carry-pair? pair?)
-(propagatify carry-pair? unary-mapping)
+(propagatify carry-pair?)
 (define carry-null? null?)
-(propagatify carry-null? unary-mapping)
+(propagatify carry-null?)
 
 ;;; Accessors are remarkably easy:
 

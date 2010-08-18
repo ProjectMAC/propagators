@@ -155,11 +155,11 @@
        `(begin
 	  (define ,generic-name
 	    (make-arity-detecting-operator
-	     ',propagatee-name ,propagatee ,@(cdddr form)))
+	     ',propagatee-name ,propagatee ,@(cddr form)))
 	  (define-by-diagram-variant
 	    ,(propagator-naming-convention propagatee-name)
 	    (function->propagator-constructor
-	     (,(caddr form) ,generic-name))))))))
+	     (nary-mapping ,generic-name))))))))
 
 (define-syntax propagatify-monadic
   (sc-macro-transformer

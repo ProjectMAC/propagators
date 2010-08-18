@@ -48,12 +48,12 @@
 (propagatify-monadic trip-segment-pain)
 (propagatify-monadic trip-segment-method)
 
-(propagatify make-trip-segment-by-start unary-mapping)
-(propagatify make-trip-segment-by-end unary-mapping)
-(propagatify make-trip-segment-by-time unary-mapping)
-(propagatify make-trip-segment-by-cost unary-mapping)
-(propagatify make-trip-segment-by-pain unary-mapping)
-(propagatify make-trip-segment-by-method unary-mapping)
+(propagatify make-trip-segment-by-start)
+(propagatify make-trip-segment-by-end)
+(propagatify make-trip-segment-by-time)
+(propagatify make-trip-segment-by-cost)
+(propagatify make-trip-segment-by-pain)
+(propagatify make-trip-segment-by-method)
 
 (slotful-information-type trip-segment? make-trip-segment
   trip-segment-start trip-segment-end trip-segment-time
@@ -206,7 +206,7 @@
       ,(make-trip-segment 'logan 'laguardia
 	(& 4 hour) (& 432 dollar) (& 215 crap) 'fly))
      )))
-(propagatify airport-lookup unary-mapping)
+(propagatify airport-lookup)
 
 (define (pick-station place)
   (force-assoc place '((home . south-station)
@@ -220,7 +220,7 @@
 		       (laguardia-airport . penn-station)
 		       (57th-street . penn-station)
 		       (met . penn-station))))
-(propagatify pick-station unary-mapping)
+(propagatify pick-station)
 
 (define (station-lookup segment)
   (force-assoc
@@ -230,7 +230,7 @@
       ,(make-trip-segment 'south-station 'penn-station
 	(& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train))
      )))
-(propagatify station-lookup unary-mapping)
+(propagatify station-lookup)
 
 (define (pick-stop place)
   (force-assoc place '((home . beaconsfield)
@@ -246,7 +246,7 @@
 		       ;; Cheating; there are many, of course
 		       (met . 57th-street)
 		       (57th-street . 57th-street))))
-(propagatify pick-stop unary-mapping)
+(propagatify pick-stop)
 
 (define (stop-lookup segment)
   (force-assoc
@@ -291,7 +291,7 @@
       ,(make-trip-segment '34th-street '34th-street
 	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
      )))
-(propagatify stop-lookup unary-mapping)
+(propagatify stop-lookup)
 
 ;;; Hack for numerical estimates.  I should really do this with
 ;;; premises and proper truth maintenance
@@ -362,7 +362,7 @@
 				trip-segment-pain
 				trip-segment-method)))))
 	(else thing)))
-(propagatify tag-not-estimate unary-mapping)
+(propagatify tag-not-estimate)
 
 ;; TODO What a hack!  My critic uses the estimate structure with a
 ;; number inside to have a overridable "method to elaborate" cell.

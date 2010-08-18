@@ -81,7 +81,7 @@
   (make-element-descriptor
    (append (element-descriptor-alist ed1)
 	   (element-descriptor-alist ed2))))
-(propagatify append-element-descriptor binary-mapping)
+(propagatify append-element-descriptor)
 
 (define (filter-element-descriptor names)
   (name!

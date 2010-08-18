@@ -46,10 +46,10 @@
 (propagatify-monadic deck-treasure)
 (propagatify-monadic deck-supply)
 
-(propagatify make-deck-from-name unary-mapping)
-(propagatify make-deck-from-commander unary-mapping)
-(propagatify make-deck-from-treasure unary-mapping)
-(propagatify make-deck-from-supply unary-mapping)
+(propagatify make-deck-from-name)
+(propagatify make-deck-from-commander)
+(propagatify make-deck-from-treasure)
+(propagatify make-deck-from-supply)
 
 (declare-coercion rtd:deck ->contingent)
 
