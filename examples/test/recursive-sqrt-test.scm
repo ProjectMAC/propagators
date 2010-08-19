@@ -84,4 +84,9 @@
     (content n!)
     (produces 120)))
  
+ (define-test (factorial-5)
+   (let-cell-rec (fact (e:kernel fact))
+     (let-cell (answer (e@ fact 4))
+       (run)
+       (check (= 4 (content answer))))))
  )

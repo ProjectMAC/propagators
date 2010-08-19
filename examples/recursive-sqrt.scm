@@ -66,3 +66,11 @@
   (e:if (n) (e:= 0 n)
 	1
 	(e:* n (e:factorial-4 (e:- n 1)))))
+
+(define-e:propagator (e:kernel fact)
+  (lambda-e:propagator (n)
+    (import fact)
+    (e:if (n) (e:= n 0)
+	  1
+	  (e:* n (e@ fact (e:- n 1))))))
+
