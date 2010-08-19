@@ -1805,7 +1805,7 @@ Compound Cell Carrier Construction
 ``p:cons`` is an interesting propagator, because while it performs the
 job of a Scheme procedure (to wit, ``cons``), it operates directly on
 the cells that are its arguments, rather than on their contents.
-This patterns is also abstracted:
+This pattern is also abstracted:
 
 ``(function->cell-carrier-constructor f)``
   Is like ``function->propagator-constructor``, except it makes
@@ -1869,10 +1869,6 @@ track is:
 
 - Whether the connections are input, output, or both.
 
-- The grouping structure of the propagator network, as approximately
-  defined by the call structure of the Scheme procedures that
-  constructed it.
-
 To make sure that your network tracks this metadata well, you should
 use the high level interfaces to making cells, propagators, and
 propagator constructors when possible (``define-cell``, ``let-cells``,
@@ -1880,28 +1876,17 @@ propagator constructors when possible (``define-cell``, ``let-cells``,
 filled by use of these interfaces must either be accepted as gaps or
 be filled by hand.
 
-Perhaps the most spectacular use of the metadata facility is to
-draw pictures of your propagator network.  Just type::
-
-  (draw:show-graph)
-
-at the REPL and watch what happens!  If the picture does not look like
-the graph you thought you made, make sure the connection metadata is
-collected appropriately, but then check your code to see whether you
-miswired something.  If the picture contains useless gibberish in the
-labels, make sure the names of things are correctly assigned and
-tracked.  If ``dot`` crashes, maybe your network is too big for it.
-For more on various pictures you can draw, look in the source comments
-in ``extensions/draw.scm``.
-
-Of course, in order to use the metadata for debugging, you must be
-able to read it.  Inspection procedures using the metadata are provided:
+In order to use the metadata for debugging, you must be able to read
+it.  Inspection procedures using the metadata are provided:
 
 name
-  the name of an object, should it have one
+  the name of an object, or the object itself if it is not named
 
 cell?
   whether something is a cell or not
+
+content
+  the information content of a cell
 
 propagator?
   whether something is a propagator or not
@@ -1923,15 +1908,10 @@ cell-connections
   all propagators around a cell (the append of the neighbors
   and the non-readers)
 
-network-group-of
-  a metadata object representing the context in which
-  the object being examined was created (see ``core/metadata.scm``
-  to learn what you can do with them)
-
 You can use these at least somewhat to wander around a network you are
-debugging.  Be advised that both cells and propagators are represented
-directly as Scheme procedures, and therefore do not print very nicely
-at the REPL.
+debugging.  Be advised that cells are represented as Scheme entities
+and propagators are represented as Scheme procedures, so neither print
+very nicely at the REPL.
 
 If you find yourself doing something strange that circumvents the
 usual metadata tracking mechanisms, you can add the desired metadata

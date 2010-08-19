@@ -4,6 +4,10 @@ Major Tasks on the Revised Report:
 - Reference materials
 - Document the underlying pieces out of which things are built?
 - Go over the examples and make them look nice
+- Define vector and vector-ref (or even the fully generic ref)
+  - unification on vectors in addition to on conses
+    - there is no "occurs check"
+    - Can we replicate the Y combinator inside merge?
 
 For the revised report:
 - Where is Scheme-Propagators distributed?
@@ -15,9 +19,13 @@ For the revised report:
   (define-cell x (e:- z y))
   (define-cell y (e:- z x))
 - (define-e:propagator ((addn n) x) ...)
-- ensure-cell had a strange, unexpected effect on the pictures
-  (namely the identification of expression-orinented code, and
-  the consequent boxing and naming thereof).  Redo?
+- Resurrect the usefulness of the network-group data?  
+- Resurrect the pictures?
+  - ensure-cell had a strange, unexpected effect, namely on the
+    identification of expression-orinented code, and the consequent
+    boxing and naming thereof.
+  - application causes trouble too
+  - check the if macro
 - initialize-scheduler really should properly clean up the neighbor
   lists of toplevel cells defined by e.g. define-propagator during
   system loading.  At the moment this is a non-problem, because
