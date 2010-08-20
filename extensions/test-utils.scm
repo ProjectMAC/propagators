@@ -66,3 +66,30 @@
   (generic-match
    pattern (vector 'frp (frpremise-identity object)
 		   (frpremise-timestamp object))))
+
+#|
+;;; Trying to abstract the above.
+
+ (define (record-type-summarizer record-type-descriptor)
+   (lambda (object)
+     (list->vector
+      (cons (symbol (record-type-name record-type-descriptor))
+	    (map (lambda (field-name)
+		   ((record-accessor record-type-descriptor field-name)
+		    object))
+		 (record-type-field-names record-type-descriptor))))))
+
+ (define (declare-match-vector-patterns record-type-descriptor)
+   (add-method generic-match
+     (make-method (list <vector> record-type-descriptor)
+       (lambda (pattern object)
+	 (generic-match
+	  pattern
+	  ((record-type-summarizer record-type-descriptor)
+	   object))))))
+
+ (declare-match-vector-patterns rtd:symbolic-metadata)
+ (declare-match-vector-patterns rtd:symbolic)
+ (declare-match-vector-patterns rtd:symb-ineq)
+ (declare-match-vector-patterns rtd:frpremise)
+|#
