@@ -10,6 +10,7 @@ Major Tasks on the Revised Report:
     - Can we replicate the Y combinator inside merge?
 
 For the revised report:
+- Update the README file
 - Where is Scheme-Propagators distributed?
 - How are the MMP-specifics dealt with?
 - Explicit access to propagators that merge, check equivalence,

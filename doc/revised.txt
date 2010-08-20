@@ -163,6 +163,13 @@ do its job.  If you had forgotten to type ``(run)`` before typing
 which means that cell has no information about the value it is meant
 to have.
 
+Examples
+----------------------------------------------------------------------
+
+There are some basic examples of Scheme-Propagators programs in
+``core/example-networks.scm``; more elaborate examples are available
+in ``examples/``.
+
 
 The Details
 ======================================================================
@@ -1926,37 +1933,6 @@ for examples of how this is done.
 Miscellany
 ======================================================================
 
-Implicit Cell Syntax
-----------------------------------------------------------------------
-
-A quirky little feature, called
-``%%``.  This is a Scheme object, therefore Scheme-Propagators syntax,
-for controlling the argument position of the implicit cell that an
-expression-style application will make and return.  Perhaps examples
-are best::
-
-  (e: foo bar)     ==  (e: foo bar %%)
-
-  (e: foo %% bar)  ==  (let-cell new (p: foo new bar) new)
-
-I borrowed this idea from Guy Steele's PhD thesis on constraint
-languages, and it was a year between when I implemented it and
-when I first used it.  The use case I do have is when I
-want to make a new cell participate in an input position
-in a constraint with some existing cells::
-
-  (define-cell x)
-  (define-cell z)
-  (define-cell y (ce:+ x %% z))
-  (add-content x 5)
-  (add-content y 3)
-  (run)
-  (content z) ==> 8
-
-Perhaps this use case could also be served by adding more
-expression-style constraint procedures (namely ``ce:-``, which I do
-not currently have), but then again maybe it's elegant.
-
 Reboots
 ----------------------------------------------------------------------
 
@@ -1968,12 +1944,16 @@ propagator network and lets you start afresh::
   (initialize-scheduler)
   (run) --- nothing happens; no propagators to run!
 
+This is the lightest-weight way to restart your Scheme-Propagators
+session.  You can of course also restart the underlying Scheme or just
+reload Scheme-Propagators if you need to blow away your state.
+
 Compiling
 ----------------------------------------------------------------------
 
 It turns out that ``make-cell`` and ``cell?`` are also MIT Scheme
 primitives, so if you want to compile your Scheme-Propagators
-code, be sure to put
+code with the MIT-Scheme compiler, be sure to put
 
 ::
 
@@ -1988,76 +1968,77 @@ the syntaxer when it processes your file.  See
 Scmutils
 ----------------------------------------------------------------------
 
-The Scmutils_ system built by Gerald Jay Sussman for thinking about
-physics can be very useful for many purposes.  Among other things,
-it knows about units and dimensions, about symbolic algebra,
-about solving systems of equations, etc.  Scheme-Propagators runs
-in Scmutils just as well as in MIT Scheme; and some of the unit
-tests in the self-test suite rely on Scmutils.
+The Scmutils_ system built by Gerald Jay Sussman and friends for
+thinking about physics can be very useful for many purposes.  Among
+other things, it knows about units and dimensions, about symbolic
+algebra, about solving systems of equations, etc.  Scheme-Propagators
+runs in Scmutils just as well as in MIT Scheme.  Some
+Scheme-Propagators examples that depend upon the ability to manipulate
+symbolic expressions and solve symbolic systems of equations are
+included.
 
 .. _Scmutils: http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm
 
 Editing
 ----------------------------------------------------------------------
 
-I edit code in Emacs.  Emacs of course has a Scheme mode; nothing more
-need be said about that here.
+We edit code in Emacs.  You should edit code in Emacs too.  Emacs of
+course has a Scheme mode; nothing more need be said about that here.
 
 If you are going to edit any parenthesized source code in Emacs,
-`Paredit mode`_ is a godsend.
+`Paredit mode`_ is an option you should not overlook.
 
 .. _`Paredit mode`: http://www.emacswiki.org/emacs/ParEdit
 
-In addition to the above, I find it very useful to have my editor
-highlight and indent some of the Scheme-Propagators macros I have
+In addition to the above, we find it very useful to have Emacs
+highlight and indent some of the Scheme-Propagators macros we have
 defined the same way as their Scheme analogues; notably
 ``define-propagator`` and ``let-cells``.  Sadly the
 Emacs Scheme mode does not do this by default, so you need to tweak
 the Emacs config to do that.  The file ``support/scm-propagators.el``
 contains a dump of the relevant portion of my Emacs configuration.
 
+There is at present no Emacs mode for Scheme-Propagators as distinct
+from Scheme.
+
 Hacking
 ----------------------------------------------------------------------
 
-Scheme-Propagators is a work in progress.  Be aware that I
-will continue to hack it to my heart's content.  Likewise, feel free
-to hack it to yours --- let me know if you invent or implement
-something interesting.
-
-TODO Describe where in the source various constructs are defined?  So that
-it is possible to mimic them (e.g. more primitive propagators) and/or
-adapt them.
-
-Examples
-----------------------------------------------------------------------
-
-There are some basic examples in ``core/example-networks.scm``; more
-elaborate examples are available in ``examples/``.
+Scheme-Propagators is a work in progress.  Be aware that we will
+continue to hack it.  Likewise, feel free to hack it as well --- let
+us know if you invent or implement something interesting.  May the
+Source be with you.
 
 Arbitrary Choices
 ----------------------------------------------------------------------
 
 Several language design choices affecting the structure of
 Scheme-Propagators appeared arbitrary at the time they were made.
-First, diagram style application was picked as the default over
+
+Default Application and Definition Style
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Diagram style application was picked as the default over
 expression style when applying cells whose contents are not yet known,
 and for defining compound propagators when the style is not specified
-more clearly.  The main rationale for this decision was that choosing
-expression style as the default would have made Scheme-Propagators too
-much like every other programming language; the unusual expressive
-power of fanin that the propagator model offers can be taken advantage
-of only if at least some of one's code actually has fanin, and writing
-code with fanin requires diagram style.  So we chose to make diagram
-style the default, to emphasize that potential.
+more clearly.  The main rationale for this decision was an attempt to
+emphasize the interesting property of Scheme-Propagators and the
+propagator programming model.  The unusual expressive power of fanin
+that the propagator model offers can be taken advantage of only if at
+least some of one's code actually has fanin, and writing code with
+fanin requires diagram style.
 
-Second, there was a choice about where to put the delaying of pieces
+Locus of Delayed Construction
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There was a choice about where to put the delaying of pieces
 of propagator network that should be constructed only conditionally.
 Every recursion traverses an abstraction boundary and a conditional
 statement every time it goes around.  Every recursion must encounter
 at least one delay barrier every time it goes around, or the
 construction of the network may generate spurious infinite regresses.
 But where should that barrier go?  There were three plausible
-alterntives: the first idea was to put the barrier around the
+alternatives: the first idea was to put the barrier around the
 application of recursive compound propagators; the second was to
 generalize this to put it around the application of all compound
 propagators; and the third was to capture the bodies of conditional
@@ -2081,23 +2062,26 @@ with the added caveat that it would need to be marked as being
 recursive, so the expansion of the internal factorial would be delayed
 until it got some information on its boundary (which would be
 prevented from happening in the base case by the ``conditional-wire``
-propagators).  Very late in the game we finally decided to write a
+propagators).  As the system matured, we decided to write a
 series of macros (``p:when``, ``p:unless``, ``p:if``, and their
 expression-style variants) that automated the process of constructing
 those ``conditional-wire`` propagators.  On making these macros work,
 we realized that adjusting ``p:when`` and company to delay their
 interior would be just as easy as delaying the opening of
 abstractions.  At that point we decided to switch to doing it that
-way, on the grounds that ``if`` is special in all other computer
+way, on the grounds that, since ``if`` is special in all other computer
 languages, so it might as well be special here too, and we will leave
 the operation of abstractions relatively simple.  (Partial information
 makes abstractions complicated enough as it is!)  This has the further
 nice feature that it sidesteps a possible bug with delayed
-abstractions: that being that if one wanted to create a nullary
+abstractions: if one wanted to create a nullary
 abstraction, automatic delay of its expansion would presumably not be
 what one wanted.
 
-Third, the decision to go with the carrying cells strategy for
+Strategy for Compound Data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The decision to go with the carrying cells strategy for
 compound data felt, while not really arbitrary, at least enough not
 forced by the rest of the design to be worth some mention.  The topic
 is discussed at length elsewhere, and the available options detailed;
@@ -2203,3 +2187,39 @@ How this supports the goal
 ======================================================================
 
 TODO
+
+
+Undocumented Frobni
+======================================================================
+
+Implicit Cell Syntax
+----------------------------------------------------------------------
+
+A quirky little feature, called
+``%%``.  This is a Scheme object, therefore Scheme-Propagators syntax,
+for controlling the argument position of the implicit cell that an
+expression-style application will make and return.  Perhaps examples
+are best::
+
+  (e: foo bar)     ==  (e: foo bar %%)
+
+  (e: foo %% bar)  ==  (let-cell new (p: foo new bar) new)
+
+I borrowed this idea from Guy Steele's PhD thesis on constraint
+languages, and it was a year between when I implemented it and
+when I first used it.  The use case I do have is when I
+want to make a new cell participate in an input position
+in a constraint with some existing cells::
+
+  (define-cell x)
+  (define-cell z)
+  (define-cell y (ce:+ x %% z))
+  (add-content x 5)
+  (add-content y 3)
+  (run)
+  (content z) ==> 8
+
+Perhaps this use case could also be served by adding more
+expression-style constraint procedures (namely ``ce:-``, which I do
+not currently have), but then again maybe it's elegant.
+
