@@ -88,5 +88,5 @@
    (let-cell-rec (fact (e:kernel fact))
      (let-cell (answer (e@ fact 4))
        (run)
-       (check (= 4 (content answer))))))
+       (check (= 24 (content answer))))))
  )
