@@ -2189,14 +2189,17 @@ How this supports the goal
 TODO
 
 Fanin
+
 - allows multiple methods to contribute to an answer
 - each contribution therefore doesn't have to be the whole answer
 
 Expression abstraction is broken
+
 - change of emphasis; expect to grab places and do things to them
   (fanout and fanin)
 
 Not composition of functions, but construction of diagrams
+
 - circuit language, not system language
 - corresponds to physics; independent machines doing their thing
 
