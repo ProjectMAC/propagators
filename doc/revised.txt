@@ -2186,6 +2186,56 @@ Rewritten August 17, 2010 by Alexey Radul and Gerald Jay Sussman
 How this supports the goal
 ======================================================================
 
+We started with the goal of making it easier for people to build
+systems that are additive.  A system should not become so
+interdependent that it is difficult to extend its behavior to
+accomodate new requirements.  Small changes to the behavior should
+entail only small changes to the implementation.  These are tough
+goals to achieve.
+
+Systems built on the Propagator Model of computation can approach some
+of these goals.  The key idea is to allow fan in: a result may be
+computed in multiple ways, by redundant processes.  Indeed, there may
+be multiple ways to partially contribute to a result, and these
+contributions may be merged to make better approximations to the
+desired result.  So we should allow methods that give only part of an
+answer, depending on other methods to fill in missing details.  In the
+Propagator Model of computation the cells accumulate information about
+a value, rather than store the completed value.  There may be many
+propagators that contribute to that value, and it is easy to add new
+propagators, that implement additional ways to compute any part of
+the information about a value in a cell.  Partially redundant parallel
+computations contribute to integrity and resiliency: computations can
+proceed along multiple variant paths and invariants across them can be
+checked to assure integrity.
+
+The intellectual viewpoint of the Propagator Model of computation is
+not the composition of functions, as in traditional models, but is
+rather the construction of diagrams.  A propagator program is
+analogous to an electrical circuit diagram, whereas a program written
+for a more traditional model is more like a system diagram.  The
+difference is profound: 
+
+   1: circuit models are multidirectional; system diagrams compute
+      from inputs to outputs.
+
+   2. circuit models are abstractions of physics; system diagrams
+      are abstractions of process.
+
+The Propagator Model is intrinsically parallel.  Each component may
+be thought of as continually polling its neighbor cells and doing what
+it can to improve the state of knowledge.
+
+But the circuit diagram viewpoint gives us other powerful ways to
+think.  We can modify a circuit diagram by clipping out a part, or by
+installing a different version.  We can temporarily carry information
+from one place to another using a clip lead.  And we have lots of
+places to connect various kinds of meters for debugging.
+
+
+
+
+
 TODO
 
 Fanin
