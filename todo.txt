@@ -1,13 +1,19 @@
 Major Tasks on the Revised Report:
 - Organization
 - Format
+  - Insert correct cross references.
 - Reference materials
-- Document the underlying pieces out of which things are built?
 - Go over the examples and make them look nice
+  - Remove calls to constant
 - Define vector and vector-ref (or even the fully generic ref)
   - unification on vectors in addition to on conses
     - there is no "occurs check"
     - Can we replicate the Y combinator inside merge?
+- Define p:sin, p:cos, etc.  Also p:negate, p:invert
+- The discussion of "new partial information structures" should
+  answer the question: "How do I decide what effect my partial
+  information structure has as the control of a p:switch? as the
+  control of a p:if?"
 
 For the revised report:
 - Update the README file
@@ -45,6 +51,20 @@ For the revised report:
 - Reimplement contradiction handling using effects instead of
   a generic contradictory? operation?
 - Make merge always produce a list of effects?
+
+Materials for the reference manual:
+- delayed-propagator-constructor
+- p:constant, e:constant
+- the underlying pieces out of which things are built
+  - copying cons?
+- detail about let-cells-rec:
+  Asterisk on "effectively": rather than a true direct
+  interconnection, ``let-cells-rec`` creates extra cells that are then
+  identified with the specified ones by mutual identity propagators.
+
+
+For the paper:
+- carrying cons is made out of copying cons and deposit/examine
 
 Post-monadic progress:
 - Squeeze out uses of nary-unpacking where binary-mapping will suffice
