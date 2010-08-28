@@ -79,13 +79,8 @@
 	 (accessor (content structure-cell))
 	 (fallback structure-cell)))))
 
-(define-cell e:carry-car
-  (let ((%e:carry-car e:carry-car))
-    (early-access-hack pair? car %e:carry-car)))
-
-(define-cell e:carry-cdr
-  (let ((%e:carry-cdr e:carry-cdr))
-    (early-access-hack pair? cdr %e:carry-cdr)))
+(define-cell e:carry-car (early-access-hack pair? car e:carry-car))
+(define-cell e:carry-cdr (early-access-hack pair? cdr e:carry-cdr))
 
 ;;; Carrying data is standard
 
