@@ -71,6 +71,7 @@
 
 (name! identity 'identity)
 (define-cell p:id (function->propagator-constructor identity))
+(define-cell e:id (expression-style-variant p:id))
 
 ;; TODO Do I still want to provide these old names for these things?
 (define constant p:constant) (define switch p:switch)
@@ -98,11 +99,20 @@
 
 (define-propagator (c:+ a1 a2 sum)
   (p:+ a1 a2 sum)      (p:- sum a1 a2)      (p:- sum a2 a1))
+;; This generates a useful ce:-
+(define-propagator (c:- sum a1 a2)
+  (c:+ a1 a2 sum))
 
 (define-propagator (c:* m1 m2 product)
   (p:* m1 m2 product)  (p:/ product m1 m2)  (p:/ product m2 m1))
+;; This generates a useful ce:/
+(define-propagator (c:/ product m1 m2)
+  (c:* m1 m2 product))
 
 (define-propagator (c:square x x^2)
+  (p:square x x^2)     (p:sqrt x^2 x))
+;; This generates a useful ce:sqrt
+(define-propagator (c:sqrt x^2 x)
   (p:square x x^2)     (p:sqrt x^2 x))
 
 (define-propagator (c:not p1 p2)
