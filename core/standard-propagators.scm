@@ -70,10 +70,11 @@
 (define-cell e:switch (expression-style-variant p:switch))
 
 (name! identity 'identity)
-(define-cell pass-through (function->propagator-constructor identity))
+(define-cell p:id (function->propagator-constructor identity))
 
 ;; TODO Do I still want to provide these old names for these things?
 (define constant p:constant) (define switch p:switch)
+(define pass-through p:id)
 
 ;;;; Standard compound propagators
 
