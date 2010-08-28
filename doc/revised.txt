@@ -63,6 +63,7 @@ subsystems.  These rules are very simple and we can enumerate them
 right here:
 
 Cells must support three operations:
+
 - add some content
 - collect the content currently accumulated
 - register a propagator to be notified when the accumulated content changes
@@ -110,8 +111,7 @@ five::
 
 Each of the parenthesized phrases above are things to type into the
 REPL, and the ``==> 5`` at the end is the result that Scheme will
-print.  I omitted the results of all the other expressions because
-they are not interesting.
+print.  The results of all the other expressions are not interesting.
 
 Let's have a closer look at what's going on in this example, to serve
 as a guide for more in-depth discussion later.  ``define-cell`` is a
@@ -135,9 +135,9 @@ puts a ``3`` into the cell named ``a``, and::
 
   (add-content b 2)
 
-puts a ``2`` into the cell named ``b``.  Now ``e:+`` (I'll explain
-that naming convention later) is a Scheme procedure that creates a
-propagator that adds, attaches it to the given cells as inputs, and
+puts a ``2`` into the cell named ``b``.  Now ``e:+`` (the naming
+convention will be explained later) is a Scheme procedure that creates
+a propagator that adds, attaches it to the given cells as inputs, and
 makes a cell to hold the adder's output and returns it.  So::
 
   (define-cell answer (e:+ a b))
@@ -199,7 +199,7 @@ make cells in the form of ``define-cell``; we will talk about more
 later, but let's talk about propagators first.
 
 
-Attaching Basic Propagators: d@ and p:foo
+Attaching Basic Propagators: d@
 ----------------------------------------------------------------------
 
 The Scheme procedure ``d@`` attaches propagators to cells.  The
@@ -215,42 +215,17 @@ gets any new interesting information, the adding propagator will
 eventually compute the appropriate sum and give it to ``baz`` as an
 update.
 
-Many propagator primitives directly expose procedures from the
-underlying Scheme, with the naming convention that ``p:foo`` does the
-job ``foo`` to the contents of an appropriate pile of input cells and
-gives the result to an output cell (``p`` stands for "propagator"):
+``(d@ propagator boundary-cell ...)``
+  Attaches a propagator to the given boundary cells.  By convention,
+  cells used as outputs go last.  As a Scheme procedure, ``d@`` does
+  not return a useful value.
 
-p:+
-p:-
-p:*
-p:/
-p:abs
-p:square
-p:sqrt
-p:=
-p:<
-p:>
-p:<=
-p:>=
-p:not
-p:and
-p:or
-p:eq?
-p:eqv?
-p:expt
-
-Others do not correspond to Scheme procedures exactly:
-(p:constant value)
-p:swtich
-p:conditional
-p:conditional-router
-p:==
-p:cons
-p:pair?
-p:car
-p:cdr
-
-By convention, cells used as outputs go last.
+As in Scheme, ``p:+`` is actually the name of a cell that contains a
+propagator constructor for attaching propagators that do addition.
+The first argument to ``d@`` can be any cell that contains any desired
+partial information (which see) about a propagator constructor.
+Actual attachment of propagators will occur as the propagator
+constructor becomes sufficiently well constrained.
 
 Propagator Expressions: e@
 ----------------------------------------------------------------------
@@ -273,8 +248,16 @@ The Scheme procedure ``e@`` attaches propagators in expression style.
 The name ``e@`` is mnemonic for "expression apply".  The ``e@``
 procedure is just like ``d@``, except it synthesizes an extra cell to
 serve as the last argument to ``d@``, and returns it from the ``e@``
-expression (whereas the return value of ``d@`` is unspecified).  For
-example, here are two ways to do the same thing::
+expression (whereas the return value of ``d@`` is unspecified).
+
+``(e@ propagator boundary-cell ...)``
+  Attaches the given propagator to a boundary consisting of the given
+  boundary cells augmented with an additional, synthesized cell.  The
+  synthesized cell goes last, because that is the conventional
+  position for an output cell.  Returns the synthesized cell as the
+  Scheme return value of ``e@``.
+
+For example, here are two ways to do the same thing::
 
   (define-cell x)
   (define-cell y)
@@ -329,6 +312,63 @@ style.  So the following also works::
   (p:/ z x y)
   (p:/ z y x)
 
+
+Provided Primitives: p:foo and e:foo
+----------------------------------------------------------------------
+
+Many propagator primitives directly expose procedures from the
+underlying Scheme, with the naming conventions that ``p:foo``, and
+``e:foo`` does the job ``foo`` to the contents of an appropriate pile
+of input cells and gives the result to an output cell (which is passed
+in as the last argument to ``p:foo`` and synthesized and returned by
+``e:foo``).  ``p:`` is mnemonic for "propagator" and ``e:`` is
+mnemonic for "expression".
+
+``(p:foo input ... output)``
+  Attaches a propagator that does the ``foo`` job to the given input
+  and output cells.  ``p:abs``, ``p:square``, ``p:sqrt``,
+  ``p:not``, ``p:pair?``, and ``p:null?`` accept one input cell and one
+  output cell.  ``p:+``, ``p:-``, ``p:*``, ``p:/``, ``p:=``, ``p:<``,
+  ``p:>``, ``p:<=``, ``p:>=``, ``p:and``, ``p:or``, ``p:eq?``,
+  ``p:eqv?``, and ``p:expt``, accept two input cells and one output
+  cell.
+  
+``(e:foo input ...)``
+  The ``e:foo`` equivalents of all the ``p:foo`` propagator
+  constructors are all available and accept the same number of input
+  cells (and make their own output cell).
+
+``(p:id input output)``, ``(e:id input)``
+  Attaches an identity propagator to the given cells.  The identity
+  propagator will continuously copy the contents of the ``input`` cell
+  to the ``output`` cell.
+
+``(p:== input ... output)``, ``(e:== input ...)``
+  These are variadic versions of ``p:id``.  The result is a
+  star topology, with every input feeding into the one output.
+
+``(p:swtich control input output)``, ``(e:switch control input)``
+  Conditional propagation.  The propagator made by ``switch`` copies
+  its ``input`` to its ``output`` if and only if its ``control`` is
+  "true".  The presence of partial information, which see, makes this
+  interesting.  For example, a ``#t`` contingent on some premise will
+  cause ``switch`` to propagate, but the result written to the
+  ``output`` will be contingent on that premise (in addition to any
+  other premises the ``input`` may already be contingent on).
+
+``(p:conditional control consequent alternate output)``, ``(e:conditional control consequent alternate)``
+  Two-armed conditional propagation.  May be defined by use of two
+  ``switch`` propagators and a ``not`` propagator.
+
+``(p:conditional-router control input consequent alternate)``, ``(p:conditional-router control input consequent)``
+  Two-output-armed conditional propagation.  This is symmetric with
+  ``conditional``; the ``consequent`` and ``alternate`` are possible
+  output destinations.
+
+
+Late Binding
+----------------------------------------------------------------------
+
 TODO This discussion of explicitly applying cells whose content
 propagator constructors are not yet known probably goes later in the
 document:
@@ -358,6 +398,99 @@ at network construction time, it will be applied in diagram style by
 default (TODO or should it signal an error?)
 
 
+Cells are Data Too
+----------------------------------------------------------------------
+
+Cells, and structures thereof, are perfectly good partial information
+(which see), and are therefore perfectly legitimate contents of other
+cells.  The event that two different cells A and B find themselves
+held in the same third cell C means that A and B are now known to
+contain information about the same thing.  The two cells are therefore
+merged by attaching ``c:id`` propagators to them so as to keep their
+contents in sync in the future.
+
+``(p:deposit cell place-cell)``, ``(e:deposit cell)``
+  Grabs the given ``cell`` and deposits it into ``place-cell``.  The
+  rule for merging cells has the effect that the given ``cell`` will
+  be identified with any other cells that ``place-cell`` may come to
+  hold.
+
+``(p:examine place-cell cell)``, ``(e:examine place-cell)``
+  Grabs the given ``cell`` and deposits it into ``place-cell``.  The
+  rule for merging cells has the effect that the given ``cell`` will
+  be identified with any other cells that ``place-cell`` may come to
+  hold.
+
+  In fact, ``p:deposit`` and ``p:examine`` are the same operation,
+  except with the arguments reversed.
+
+  The ``e:examine`` variant includes an optimization: if the
+  ``place-cell`` already contains a cell, ``e:examine`` will just
+  Scheme-return that cell instead of synthesizing a new one and
+  identifying it with the cell present.
+
+
+Compound Data
+----------------------------------------------------------------------
+
+Propagator compound data structures are made out of Scheme compound
+data structures that carry around cells collected as with ``deposit``.
+The corresponding accessors take those cells out as with ``examine``.
+
+``(p:cons car-cell cdr-cell output)``, ``(e:cons car-cell cdr-cell)``
+  Constructs a propagator that collects the ``car-cell`` and the
+  ``cdr-cell``, makes a pair of them, and writes that pair into the
+  ``output`` cell.  This is like a binary ``p:deposit``.
+
+``(p:pair? input output)``, ``(e:pair? input)``
+  Attaches a propaagtor that tests whether input cell contains a
+  pair.
+
+``(p:null? input output)``, ``(e:null? input)``
+  Attaches a propaagtor that tests whether input cell contains
+  the empty list.
+
+``(p:car input output)``, ``(e:car input)``
+  Makes a propagator that identifies the given ``output`` with the
+  cell in the ``car`` of the pair in the given ``input``.  This is
+  like a ``p:examine`` of that field.  Note that using ``p:car`` on an
+  ``input`` implies the expectation that said ``input`` contains a
+  pair.  That wish is treated as a command, and a pair appears.
+  If fact, ``(p:car input output)`` is equivalent to
+  ``(p:cons output nothing input)``.
+
+  The ``e:`` variant includes the same optimization that ``e:examine``
+  does: if the ``input`` already contains a pair with a cell in the
+  ``car``, ``e:car`` will just Scheme-return that cell instead of
+  synthesizing a new one and identifying it with the cell present.
+
+``(p:cdr input output)``, (e:cdr input)``
+  Same as ``p:car`` and ``e:car``, except the other field of the
+  pair.
+
+Note that the identification of cells that merge is bidirectional, so
+information written into the ``output`` of a ``p:car`` will flow into
+the cell in the ``car`` of the pair in the ``input`` (and therefore
+into any other cells identified with it by other uses of ``p:car`` on
+the same pair).  For example, in a program like::
+
+  (let-cell frob
+    (let-cell (quux (e:car frob))
+      ... quux ...)
+    (let-cell (quux2 (e:car frob))
+      ... quux2 ...))
+
+the two cells named ``quux`` and ``quux2`` will end up identified, and
+the cell named ``frob`` will end up containing a pair whose car field
+will contain one of them.
+
+Scheme pairs created by ``p:cons`` and company are partial information
+structures, and they merge by recursively merging their corresponding
+fields.  Together with the rule for merging cells, the emergent
+behavior is unification (with a merge delay instead of the occurs
+check).
+
+
 Propagator Constraints: c:foo and ce:foo
 ----------------------------------------------------------------------
 
@@ -367,7 +500,7 @@ thing named ``c:foo`` is the constraining analogue of ``p:foo``, in
 that in addition to attaching a propagator that does ``foo`` to its
 cells, it also attaches ``foo-inverse`` propagators that deduce
 "inputs" from "outputs".  For example, the product constraint that we
-built in the previous section is available as ``c:*``::
+built in a previous section is available as ``c:*``::
 
   (define-cell x)
   (define-cell y)
@@ -393,12 +526,26 @@ apply themselves in expression style::
 Of course, not every operation has a useful inverse, so there are
 fewer ``c:`` procedures defined than ``p:``:
 
-c:+       ce:+
-c:*       ce:*
-c:square  ce:square
-c:not     ce:not
-c:id
-c:==      ce:==
+``(c:foo constrainee ...)`` 
+  Attaches propagators to the given boundary cells that collectively
+  constrain them to be in the ``foo`` relationship with each other.
+  ``c:+`` and ``c:*`` accept three cells to constrain.  ``c:square``,
+  ``c:not``, and ``c:id`` accept two cells to constrain.  ``c:==``
+  accepts any number of cells.
+
+``(ce:foo constrainee ...)``
+  Synthesizes one additional constrainee cell and attaches propagators
+  that constrain the given cells to be in the ``foo`` relationship
+  with the new one.  Since the position of the synthesized cell in
+  the argument list is fixed, some diagram style constraints have
+  multiple expression style variants::
+
+    c:+       ce:+       ce:-
+    c:*       ce:*       ce:/
+    c:square  ce:square  ce:sqrt
+    c:not     ce:not
+    c:id      ce:id
+    c:==      ce:==
 
 
 Constants and Literal Values
@@ -426,6 +573,7 @@ There is also an expression-oriented version, called, naturally,
   (run)
   (content thing) ==> 5
 
+
 Constant Conversion
 ----------------------------------------------------------------------
 
@@ -439,6 +587,7 @@ Some examples::
   (e:+ x 2)          ==   (e:+ x (e:constant 2))
   (define-cell x 4)  ==   (define-cell x (e:constant 4))
   (c:+ x y 0)        ==   (c:+ x y (e:constant 0))
+
 
 Making Cells
 ----------------------------------------------------------------------
@@ -529,11 +678,8 @@ intermediate delay in evaluation.  For example::
     ...)
 
 is a perfectly reasonable bit of Scheme-Propagators code, and binds
-the names ``x``, ``y`` and ``z`` to cells that are effectively
-interconnected with the three propagators indicated.  Asterisk on
-"effectively": rather than a true direct interconnection,
-``let-cells-rec`` creates extra cells that are then identified with
-the specified ones by mutual identity propagators.
+the names ``x``, ``y`` and ``z`` to cells that are
+interconnected with the three propagators indicated.
 
 Now, ``let-cells``, ``let-cells*``, and ``let-cells-rec`` are, like
 ``define-cell``, basically a convenience over doing the same thing in
@@ -564,11 +710,12 @@ like the implicit memory locations that Scheme creates under the hood
 for holding the return values of expressions before they get used by
 the next expression or assigned to variables.
 
+
 Conditional Network Construction
 ----------------------------------------------------------------------
 
 The ``switch`` propagator does conditional propagation --- it only
-forwards its input to its output if its control is ``#t``.  As such,
+forwards its input to its output if its control is "true".  As such,
 it serves the purpose of controlling the flow of data through an existing
 propagator network.  However, it is also appropriate to control the
 construction of more network, for example to design recursive networks
@@ -577,12 +724,12 @@ is to delay the construction of some chunk of network until
 some information appears on its boundary, and control whether
 said information appears by judicious use of ``switch`` propagators.  The
 low-level tools for accomplishing this effect are
-``delayed-propagator-constructor`` and ``switch``.  Scheme macros that
-do the right thing at a higher level are also provided:
+``delayed-propagator-constructor`` and ``switch``.  The supported
+user interface is:
 
 ``(p:when internal-cells condition-cell body ...)``
   Delays the construction of the body until reason to believe the
-  condition may be true appears in the condition-cell.  The
+  condition may be true appears in the ``condition-cell``.  The
   ``condition-cell`` argument is an expression to evaluate to produce
   the cell controlling whether construction of the ``body`` takes
   place.  The ``body`` is an arbitrary collection of code, defining
@@ -604,8 +751,8 @@ do the right thing at a higher level are also provided:
   control cell.
 
 ``(p:if internal-cells condition-cell consequent alternate)``
-  Two-armed conditional construction.  Just like two instances of
-  ``p:when``: constructs the network indicated by the consequent form
+  Two-armed conditional construction.  Just like a ``p:when`` and a
+  ``p:unless``: constructs the network indicated by the consequent form
   when the condition-cell becomes possibly true, and constructs the
   network indicated by the alternate form when the condition-cell
   becomes possibly false.  Note that both can occur for the same
@@ -615,6 +762,7 @@ do the right thing at a higher level are also provided:
 
 ``(e:if internal-cells condition-cell consequent alternate)``
   Expression-style variant of ``p:if``.
+
 
 Making New Compound Propagators
 ======================================================================
