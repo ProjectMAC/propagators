@@ -9,5 +9,21 @@ file "revised.rst" => "revised.txt" do
   sh "cp revised.txt revised.rst"
 end
 
+file "revised.tex" => "revised.rst" do
+  sh "rst2latex revised.rst > revised.tex"
+end
+
+file "revised.dvi" => "revised.tex" do
+  sh "latex revised.tex"
+end
+
+file "revised.ps" => "revised.dvi" do
+  sh "dvips -o revised.ps -t letter revised"
+end
+
+file "revised.pdf" => "revised.ps" do
+  sh "ps2pdf revised.ps"
+end
+
 rstify "programmer-guide"
 rstify "revised"
