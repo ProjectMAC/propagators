@@ -53,4 +53,28 @@
     (check (eq? source-car (e:carry-car the-pair)))
     (check (eq? source-cdr (e:carry-cdr the-pair)))
     ))
+
+ (define-test (deposit)
+   (interaction
+    (initialize-scheduler)
+    (define-cell two-cell (e:deposit 2))
+    (run)
+    (check (cell? two-cell))
+    (check (cell? (content two-cell)))
+    (content (content two-cell))
+    (produces 2)
+    (define-cell examined (e:examine two-cell))
+    (content examined)
+    (produces 2)))
+
+ (define-test (examine)
+   (interaction
+    (initialize-scheduler)
+    (define-cell examinee)
+    (define-cell exam (e:examine examinee))
+    (add-content exam 2)
+    (run)
+    (check (cell? (content examinee)))
+    (content (content examinee))
+    (produces 2)))
  )

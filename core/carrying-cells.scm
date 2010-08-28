@@ -94,3 +94,10 @@
 (define e:cdr   e:carry-cdr)
 (define p:null? p:carry-null?)
 (define e:null? e:carry-null?)
+
+(define-cell p:deposit (function->cell-carrier-constructor identity))
+(define-cell e:deposit (expression-style-variant p:deposit))
+(define-propagator (p:examine place cell)
+  (p:deposit cell place))
+(define-cell e:examine
+  (early-access-hack cell? identity e:examine))
