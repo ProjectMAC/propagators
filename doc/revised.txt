@@ -728,16 +728,16 @@ low-level tools for accomplishing this effect are
 user interface is:
 
 ``(p:when internal-cells condition-cell body ...)``
-  Delays the construction of the body until reason to believe the
-  condition may be true appears in the ``condition-cell``.  The
-  ``condition-cell`` argument is an expression to evaluate to produce
-  the cell controlling whether construction of the ``body`` takes
-  place.  The ``body`` is an arbitrary collection of code, defining
-  some amount of propagator network that will not be built until the
-  controlling cell indicates that it should.  The ``internal-cells``
-  argument is a list of the free variables in ``body``.  This is the
-  same kind of kludge as the ``import`` clause in
-  ``propagator-lambda`` (which see).
+  Delays the construction of the body until sufficiently "true" (in
+  the sense of ``switch``) partial information appears in the
+  ``condition-cell``.  The ``condition-cell`` argument is an
+  expression to evaluate to produce the cell controlling whether
+  construction of the ``body`` takes place.  The ``body`` is an
+  arbitrary collection of code, defining some amount of propagator
+  network that will not be built until the controlling cell indicates
+  that it should.  The ``internal-cells`` argument is a list of the
+  free variables in ``body``.  This is the same kind of kludge as the
+  ``import`` clause in ``propagator-lambda`` (which see).
 
 ``(e:when internal-cells condition-cell body ...)``
   Expression-style variant of ``p:when``.  Augments its boundary with
@@ -752,13 +752,14 @@ user interface is:
 
 ``(p:if internal-cells condition-cell consequent alternate)``
   Two-armed conditional construction.  Just like a ``p:when`` and a
-  ``p:unless``: constructs the network indicated by the consequent form
-  when the condition-cell becomes possibly true, and constructs the
-  network indicated by the alternate form when the condition-cell
-  becomes possibly false.  Note that both can occur for the same
-  ``p:if`` over the life of a single computation, for example if the
-  condition-cell comes to have a TMS that includes a ``#t`` contingent
-  on some premises and later a ``#f`` contingent on others.
+  ``p:unless``: constructs the network indicated by the ``consequent``
+  form when the ``condition-cell`` becomes sufficiently "true", and
+  constructs the network indicated by the ``alternate`` form when the
+  ``condition-cell`` becomes sufficiently "false".  Note that both can
+  occur for the same ``p:if`` over the life of a single computation,
+  for example if the ``condition-cell`` comes to have a TMS that includes
+  a ``#t`` contingent on some premises and later a ``#f`` contingent
+  on others.
 
 ``(e:if internal-cells condition-cell consequent alternate)``
   Expression-style variant of ``p:if``.
@@ -797,7 +798,7 @@ additional cell to add to the boundary at the end::
 Both defining forms will make variants with names beginning in ``p:``
 and ``e:``, that default to being applied in diagram and expression
 style, respectively.  Note that this definition does not bind
-``double``.
+the Scheme variable ``double``.
 
 With these definitions we can use those pieces to build more complex
 structures::
@@ -813,7 +814,7 @@ as if they were primitive::
 ``define-propagator`` is an alias for ``define-d:propagator`` because
 that's the most common use case.
 
-Just like in Scheme, the definition syntaxes have a corresponding
+Just as in Scheme, the definition syntaxes have a corresponding
 syntax for anonymous compound propagators, ``lambda-d:propagator`` and
 ``lambda-e:propagator``.
 
@@ -847,7 +848,7 @@ their lexical environment::
 
 ``import`` is a kludge, which is a consequence of the embedding of
 Scheme-Propagators into Scheme.  Without enough access to the Scheme
-interpreter, or enough Bawden-compliant wizardry, we cannot detect the
+interpreter, or enough macrological wizardry, we cannot detect the
 free variables in an expression, so they must be listed explicitly by
 the user.  Globally bound objects like ``e:+`` (and ``p:addn`` and
 ``e:addn`` if the above were evaluated at the top level) need not be
@@ -862,12 +863,11 @@ build recursive networks, because otherwise the structure would be
 expanded infinitely far.  As in Scheme, this magic is in ``if``.  The
 Scheme-Propagators construct ``p:if`` (which is implemented as a
 Scheme macro) delays the construction of the diagrams in its branches
-until information is available about the predicate.  Specifically, the
-consequent is constucted only when there is good information to the
-effect that the predicate might be true, and the alternate is
-constructed only when there is good information to the effect that the
-predicate might be false.  Note that, unlike in Scheme, these can both
-occur to the same ``p:if``.
+until sufficient information is available about the predicate.
+Specifically, the consequent is constucted only when the predicate is
+sufficiently "true", and the alternate is constructed only when the
+predicate is sufficiently "false".  Note that, unlike in Scheme, these
+can both occur to the same ``p:if``.
 
 In Scheme-Propagators, the one-armed conditional construction
 construct ``p:when`` is more fundamental than the two-armed construct
@@ -907,45 +907,6 @@ wired together and returned to the caller of the ``e:if``.  Here is
       (e:* n (e:factorial (e:- n 1)))))
 
 Looks familiar, doesn't it?
-
-
-Macrology
-----------------------------------------------------------------------
-
-Sometimes you will need to make something that looks like a macro to
-Scheme-Propagators.  The macro language of Scheme-Propagators is
-Scheme.  For example::
-
-  (define (my-diagram x y z)
-    (p:+ x y z)
-    (p:- z y x)
-    (p:- z x y))
-
-``my-diagram`` is a Scheme-Propagators macro that, when given three
-cells, wires up three arithmetic propagators to them.  This simple
-example of course gains nothing from being a macro rather
-than a normal compound propagator, but using Scheme as a macro
-language lets you do more interesting things::
-
-  (define (require-distinct cells)
-    (for-each-distinct-pair
-     (lambda (c1 c2)
-       (forbid (e:= c1 c2)))
-     cells))
-
-This ``require-distinct`` uses a Scheme iterator to perform a
-repetitive task over a bunch of Scheme-Propagators cells.
-
-This is quite convenient, but sometimes one wants the debugging data
-provided by ``define-propagator``.  This is what
-``define-propagator-syntax`` is for.  Just change ``define`` to
-``define-propagator-syntax``::
-
-  (define-propagator-syntax (require-distinct cells)
-    (for-each-distinct-pair
-     (lambda (c1 c2)
-       (forbid (e:= c1 c2)))
-     cells))
 
 
 Using Partial Information
@@ -2080,6 +2041,44 @@ for examples of how this is done.
 
 Miscellany
 ======================================================================
+
+Macrology
+----------------------------------------------------------------------
+
+Sometimes you will need to make something that looks like a macro to
+Scheme-Propagators.  The macro language of Scheme-Propagators is
+Scheme.  For example::
+
+  (define (my-diagram x y z)
+    (p:+ x y z)
+    (p:- z y x)
+    (p:- z x y))
+
+``my-diagram`` is a Scheme-Propagators macro that, when given three
+cells, wires up three arithmetic propagators to them.  This simple
+example of course gains nothing from being a macro rather
+than a normal compound propagator, but using Scheme as a macro
+language lets you do more interesting things::
+
+  (define (require-distinct cells)
+    (for-each-distinct-pair
+     (lambda (c1 c2)
+       (forbid (e:= c1 c2)))
+     cells))
+
+This ``require-distinct`` uses a Scheme iterator to perform a
+repetitive task over a bunch of Scheme-Propagators cells.
+
+This is quite convenient, but sometimes one wants the debugging data
+provided by ``define-propagator``.  This is what
+``define-propagator-syntax`` is for.  Just change ``define`` to
+``define-propagator-syntax``::
+
+  (define-propagator-syntax (require-distinct cells)
+    (for-each-distinct-pair
+     (lambda (c1 c2)
+       (forbid (e:= c1 c2)))
+     cells))
 
 Reboots
 ----------------------------------------------------------------------
