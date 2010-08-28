@@ -110,20 +110,22 @@
 (define-propagator (c:id c1 c2)
   (pass-through c1 c2) (pass-through c2 c1))
 
-(define-cell (p:== . args)
-  (let ((target (car (last-pair args))))
-    (for-each (lambda (arg)
-		(pass-through arg target))
-	      (except-last-pair args))
-    target))
-(propagator-constructor! p:==)
+(define-cell p:==
+  (propagator-constructor!
+   (lambda args
+     (let ((target (car (last-pair args))))
+       (for-each (lambda (arg)
+		   (pass-through arg target))
+		 (except-last-pair args))
+       target))))
 (define-cell e:== (expression-style-variant p:==))
 
-(define-cell (c:== . args)
-  (let ((lead (car args)))
-    (for-each (lambda (arg)
-		(c:id lead arg))
-	      (cdr args))
-    lead))
-(propagator-constructor! c:==)
+(define-cell c:==
+  (propagator-constructor!
+   (lambda args
+     (let ((lead (car args)))
+      (for-each (lambda (arg)
+		  (c:id lead arg))
+		(cdr args))
+      lead))))
 (define-cell ce:== (expression-style-variant c:==))
