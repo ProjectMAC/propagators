@@ -118,6 +118,12 @@
 	(name name-property)
 	thing)))
 
+(define (name-stack thing)
+  (let ((name-property (eq-get thing 'name)))
+    (if name-property
+	(cons thing (name-stack name-property))
+	(list thing))))
+
 (define (name! thing name)
   (eq-put! thing 'name name))
 
