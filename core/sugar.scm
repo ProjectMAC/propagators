@@ -140,7 +140,7 @@
        `(define-by-diagram-variant
 	  ,(propagator-naming-convention propagatee-name)
 	  (function->propagator-constructor
-	   (name! ,propagatee ,propagatee-name)))))))
+	   (name! ,propagatee ',propagatee-name)))))))
 
 (define-syntax propagatify
   (sc-macro-transformer
