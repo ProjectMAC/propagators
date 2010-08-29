@@ -335,6 +335,10 @@ computation will proceed::
   (run)
   (content answer)  ==>  12
 
+In fact, in this case, ``d@`` (or ``e@``) will build an *apply propagator*
+that will wait until an operation appears in the
+``operation`` cell, and then apply it.
+
 What would have happened if we had left off the ``d@`` and just
 written ``(operation 3 4 answer)``?  If you put into operator position
 a cell that does not have a fully-known propagator at network
@@ -494,13 +498,17 @@ check).
 Propagator Constraints: c:foo and ce:foo
 ----------------------------------------------------------------------
 
-Constraints are so useful that many are predefined, and they have
-their own naming convention.  ``c:`` stands for "constraining".  A
-thing named ``c:foo`` is the constraining analogue of ``p:foo``, in
-that in addition to attaching a propagator that does ``foo`` to its
-cells, it also attaches ``foo-inverse`` propagators that deduce
-"inputs" from "outputs".  For example, the product constraint that we
-built in a previous section is available as ``c:*``::
+Although the primitive propagators are like functions in that they
+compute only from inputs to outputs, we can also define constraints,
+which may also derive information about the arguments of a function
+from information about the value.  Constraints are so useful that many
+are predefined, and they have their own naming convention.  ``c:``
+stands for "constraining".  A thing named ``c:foo`` is the
+constraining analogue of ``p:foo``, in that in addition to attaching a
+propagator that does ``foo`` to its cells, it also attaches
+``foo-inverse`` propagators that deduce "inputs" from "outputs".  For
+example, the product constraint that we built in a previous section is
+available as ``c:*``::
 
   (define-cell x)
   (define-cell y)
@@ -912,7 +920,7 @@ Looks familiar, doesn't it?
 Using Partial Information
 ======================================================================
 
-Partial, accumulatable information is essential to
+Partial, cumulative information is essential to
 multidirectional, nonsequential programming.  Each "memory
 location" of Scheme-Propagators, that is each cell, maintains not "a
 value", but "all the information it has about a value".  Such
@@ -922,8 +930,8 @@ and it is ``42``", and many possible variations in between; and also
 one not-in-between variation, which is "Stop the presses!  I know
 there is a contradiction!"
 
-All these various possible states of information are represented (per
-force) as Scheme objects.  The Scheme object ``nothing`` represents
+All these various possible states of information are represented 
+(perforce) as Scheme objects.  The Scheme object ``nothing`` represents
 the information "I don't know anything".  This only takes a single
 Scheme object, because not knowing anything is a single state of
 knowledge.  Most Scheme objects represent "perfect, consistent"
@@ -986,6 +994,8 @@ standard MIT Scheme debugging facilities.
 Built-in Partial Information Structures
 ======================================================================
 
+The following partial information structures are provided with Scheme-Propagators:
+
 - nothing
 - just a value
 - intervals
@@ -999,33 +1009,100 @@ Built-in Partial Information Structures
 Nothing
 ----------------------------------------------------------------------
 
-A Raw Scheme Object
+``nothing``
+  A single Scheme object that represents the complete absence of
+  information.
+
+``(nothing? thing)``
+  A predicate that tests whether a given Scheme object is the ``nothing``
+  object.
+
+``nothing`` is ``equivalent?`` only to itself.
+
+``nothing`` never contributes anything to a merge --- the merge of
+anything with ``nothing`` is the anything.
+
+``nothing`` is not ``contradictory?``.
+
+Strict propagators, such as ones made by ``p:+``, output ``nothing``
+if any of their inputs are ``nothing``.
+
+A ``switch`` whose control cell contains ``nothing`` will emit
+``nothing``.
+
+An apply propagator whose operator cell contains ``nothing`` will not
+do anything.
+
+
+Just a Value
 ----------------------------------------------------------------------
 
-This state of information indicates that the content of the cell is
+A Scheme object that is not otherwise defined as a partial information
+structure indicates that the content of the cell is
 completely known, and is exactly (by ``eqv?``) that object.  Note:
 floating point numbers are compared by approximate numerical equality;
 this is guaranteed to screw you eventually, but we don't know how to
 do better.
+
+Raw Scheme objects are ``equivalent?`` if they are ``eqv?`` (or are
+approximately equal floating point numbers).
+
+Non-``equivalent?`` raw Scheme objects merge into the contradiction object.
+
+A raw Scheme object is never ``contradictory?``.
+
+A ``switch`` interprets any non-``#f`` raw Scheme object in its
+control cell as true and forwards its input cell to its output cell
+unmodified.  A ``switch`` whose control cell is ``#f`` emits
+``nothing`` to its output cell.
+
+An apply propagator whose operator cell contains a raw Scheme
+procedure will apply it to the boundary cells.  It is an error for a
+raw Scheme object which is not a Scheme procedure to flow into the
+operator cell of an apply propagator.
+
 
 Numerical Intervals
 ----------------------------------------------------------------------
 
 An object of type ``interval?`` has fields for a lower bound and an
 upper bound.  Such an object represents the information "This value is
-between these bounds."  Cells merge intervals by intersecting them.
+between these bounds."
 
-(make-interval low high)
+``(make-interval low high)``
   Creates an interval with the given lower and upper bounds
 
-(interval-low interval)
+``(interval-low interval)``
   Extracts the lower bound of an interval
 
-(interval-high interval)
+``(interval-high interval)``
   Extracts the upper bound of an interval
 
-(interval? thing)
+``(interval? thing)``
   Tests whether the given object is an interval
+
+Two interval objects are ``equivalent?`` if they are the same
+interval.  An interval is ``equivalent?`` to a number if both the
+upper and lower bounds are that number.
+
+Interval objects merge with each other by intersection.  Interval
+object merge with numbers by treating the number as a degenerate
+interval and performing intersection (whose result will either be that
+number or an empty interval).  Interval objects merge with other
+raw Scheme objects into the contradiction object.
+
+An interval object is ``contradictory?`` if and only if it represents
+a strictly empty interval (that is, if the upper bound is strictly
+less than the lower bound).
+
+The arithmetic propagators react to interval objects by performing
+interval arithmetic.
+
+A ``switch`` propagator treats any interval object in its control as a
+non-``#f`` object and forwards its input to its output.
+
+It is an error for an interval object to appear in the operator
+position of an apply propagator.
 
 As an interval arithmetic facility, this one is very primitive.  In
 particular it assumes that all the numbers involved are positive.  The
@@ -1033,48 +1110,72 @@ main purpose of including it is to have a partial information
 structure with an intuitive meaning, and that requires nontrivial
 operations on the information it is over.
 
-Compound Data
-----------------------------------------------------------------------
-
-Scheme pairs are not assumed to denote exactly themselves.  A
-propagator cell will merge Scheme pairs by recursively merging the
-``car`` and ``cdr`` fields.  The fields should contain further
-propagator cells; given the behavior of propagator cells as mergeable
-data, the effect will be unification.  A Scheme pair merged with a
-Scheme object of a different type will produce a contradiction.
-
-cons, car, cdr, pair?, null?
-  These are Scheme procedures with their usual Scheme meanings.
-
-p:cons, e:cons, p:car, e:cdr, p:pair?, e:pair?, p:null?, e:null?
-  Propagators for dealing with compound data.  For example::
-
-    (p:cons x y z)
-
-  puts a pair holding the cells ``x`` and ``y`` into cell ``z``.
-  
-::
-    (p:car z w)
-
-  ensures that the cell in the car of the pair in cell ``z`` is
-  equivalent to cell ``w``.
-
-slotful-information-type
-  Declares that additional Scheme data structures should be merged
-  the way pairs are.  For example::
-
-    (slotful-information-type pair? cons car cdr)
-
-  is the declaration that causes the system to treat Scheme pairs the
-  way it does.
 
 Propagator Cells as Partial Information
 ----------------------------------------------------------------------
+
+A propagator cell interpreted as partial information is an
+indirection: it means "I contain the structure that describes this
+value".  Cells can appear as the contents of cells or other structures
+via the ``deposit`` and ``examine`` propagators (which see).
+
+Propagator cells are ``equivalent?`` if they are known to contain
+information about the same subject.  This occurs only if they are
+identically the same cell, or if they have previously been
+unconditionally identified (by merging).
 
 Propagator cells merge with each other by attaching bidirectional
 identity propagators that keep the contents of the cells in sync.
 These identity propagators will cause the contents of the cells to
 merge, both now and in the future.
+
+A propagator cell is never ``contradictory?``.
+
+
+Compound Data
+----------------------------------------------------------------------
+
+A Scheme pair is partial information that means "This object is a
+pair.  My car and cdr contain cells that describe the car and cdr of
+this object."  A Scheme empty list means "This object is the empty
+list".
+
+The propagators p:cons, e:cons, p:car, e:cdr, p:pair?, e:pair?,
+p:null?, e:null? (which see) introduce and examine pairs and empty
+lists.
+
+Two pairs are ``equivalent?`` if their cars and cdrs are both
+``equivalent?``.  A pair is not ``equivalent?`` to any non-pair.  The
+empty list is only ```equivalent?`` to itself.
+
+Pairs merge by recursively merging the ``car`` and ``cdr`` fields.
+Given the behavior of propagator cells as mergeable data, the effect
+will be unification (with a delay instead of the occurs check).  A
+pair merged with a Scheme object of a different type will produce a
+contradiction.  An empty list merged with anything that is not the
+empty list will produce a contradiction.
+
+Neither a pair nor the empty list is ever ``contradictory?``.
+
+A ``switch`` propagator treats any pair or empty list in its control
+as a non-``#f`` object and forwards its input to its output.
+
+It is an error for a pair or the empty list to appear in the operator
+position of an apply propagator.
+
+Other compound data structures can be made partial information that
+behaves like pairs using ``slotful-information-type``.
+
+``(slotful-information-type type constructor accessor ...)``
+  Declares that additional Scheme data structures are partial
+  information like pairs.  Specifically affects ``equivalent?``,
+  ``merge``, and ``contradictory?``.  For example::
+
+    (slotful-information-type pair? cons car cdr)
+
+  is the declaration that causes Scheme pairs to ``merge``, be
+  ``equivalent?``, and be ``contradictory?`` the way they are.
+
 
 Closures
 ----------------------------------------------------------------------
