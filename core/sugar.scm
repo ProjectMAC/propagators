@@ -133,14 +133,13 @@
 ;;; Compare (propagatify + 'no-generic).
 
 (define-syntax propagatify-raw
-  (sc-macro-transformer
-   (lambda (form use-env)
-     (let* ((propagatee-name (cadr form))
-	    (propagatee (close-syntax propagatee-name use-env)))
+  (rsc-macro-transformer
+   (lambda (form defn-env)
+     (let* ((propagatee-name (cadr form)))
        `(define-by-diagram-variant
 	  ,(propagator-naming-convention propagatee-name)
 	  (function->propagator-constructor
-	   (name! ,propagatee ',propagatee-name)))))))
+	   (name! ,propagatee-name ',propagatee-name)))))))
 
 (define-syntax propagatify
   (sc-macro-transformer
