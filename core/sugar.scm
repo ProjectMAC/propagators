@@ -142,15 +142,14 @@
 	   (name! ,propagatee-name ',propagatee-name)))))))
 
 (define-syntax propagatify
-  (sc-macro-transformer
-   (lambda (form use-env)
+  (rsc-macro-transformer
+   (lambda (form defn-env)
      (let* ((propagatee-name (cadr form))
-	    (generic-name (symbol 'generic- propagatee-name))
-	    (propagatee (close-syntax propagatee-name use-env)))
+	    (generic-name (symbol 'generic- propagatee-name)))
        `(begin
 	  (define ,generic-name
 	    (make-arity-detecting-operator
-	     ',propagatee-name ,propagatee ,@(cddr form)))
+	     ',propagatee-name ,propagatee-name ,@(cddr form)))
 	  (define-by-diagram-variant
 	    ,(propagator-naming-convention propagatee-name)
 	    (function->propagator-constructor
