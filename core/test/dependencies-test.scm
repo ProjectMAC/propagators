@@ -22,6 +22,15 @@
 (in-test-group
  dependencies
 
+ (define-test (smoke)
+   (interaction
+    (initialize-scheduler)
+    (define-cell frob (make-tms (contingent 4 '(bill))))
+    (define-cell maybe-frob (e:switch (make-tms (contingent #t '(fred))) frob))
+    (run)
+    (tms-query (content maybe-frob))
+    (produces #(supported 4 (bill fred)))))
+
  (define-test (supported-barometer)
    (interaction
     (initialize-scheduler)
