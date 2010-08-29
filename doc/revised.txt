@@ -990,11 +990,23 @@ stop the network mid-stride, and give you a chance to examine the
 situation so you can debug the program that led to it, using the
 standard MIT Scheme debugging facilities.
 
+The partial information types are defined by a suite of Scheme
+procedures.  The ones defining the actual partial information types
+are ``equivalent?``, ``merge``, and ``contradictory?``, which test
+whether two information structures represent the same information,
+merge given information structures, and test whether a given
+information structure represents an impossible state, respectively.
+Each partial information structure also defines the way various
+propagators treat it.  The behavior in the control position of a
+``switch`` propagator and in the operator position of an apply
+propagator are particularly important.
+
 
 Built-in Partial Information Structures
 ======================================================================
 
-The following partial information structures are provided with Scheme-Propagators:
+The following partial information structures are provided with
+Scheme-Propagators:
 
 - nothing
 - just a value
@@ -1393,17 +1405,17 @@ set will be retracted, and the computation will proceed.
 Making New Kinds of Partial Information
 ======================================================================
 
-The partial information types are defined by a suite of generic
-operations.  The critical ones for defining the actual partial
-information types are ``equivalent?``, ``merge``, and
+The procedures defining the behavior of partial information are
+generic, and therefore extensible.  The ones that define the
+actual partial information types are ``equivalent?``, ``merge``, and
 ``contradictory?``, which test whether two information structures
 represent the same information, merge given information structures,
 and test whether a given information structure represents an
 impossible state, respectively.  In addition, the primitive
 propagators are equipped with generic operations for giving them
-custom behaviors on the various information structures, and the
+custom behaviors on the various information structures.  The
 generic operation ``binary-map`` is very useful for the circumstance
-when a whole class of propagators should handle a particular
+when all the strict propagators should handle a particular
 information type uniformly.
 
 To create your own partial information structure, you should create an
@@ -1438,11 +1450,8 @@ can be defined as::
   (defhandler merge intersect-intervals interval? interval?)
 
 You can also define your own generic operations, but that is not
-relevant here.  TODO Add a pointer to documentation of the generic
-operations system, including defining generics, precedence of
-handlers, and tagging procedures as type testers for performance;
-also use of SOS specializers as predicates directly.
-Also the coersion subsystem?
+relevant here.
+
 
 An Example: Adding Interval Arithmetic
 ----------------------------------------------------------------------
@@ -1494,6 +1503,7 @@ propagator has an interval on one input and a number on the other,
 further handlers need to be added that tell it what to do in those
 circumstances.  The generic procedure system has been extended
 with support for automatic coercions for this purpose.
+
 
 Generic Coercions
 ----------------------------------------------------------------------
@@ -1559,8 +1569,6 @@ Scheme-Propagators has explicit support for this idea.
   coercability tester procedures (but the various specific coercions
   may be declared later).
 
-
-TODO Describe declare-type-tester?
 
 The Partial Information Generics
 ----------------------------------------------------------------------
@@ -1634,12 +1642,6 @@ A handler for ``contradictory?`` is expected to accept a partial
 information structure, and to return ``#t`` if it represents an
 impossible situation (such as an empty interval) or ``#f`` if it does
 not.
-
-
-
-TODO Make sure that all the behavior of all built-in partial
-information structures under all the given generics is duly
-documented.
 
 
 The Full Story on Merge
