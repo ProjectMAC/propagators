@@ -14,6 +14,13 @@ Major Tasks on the Revised Report:
   answer the question: "How do I decide what effect my partial
   information structure has as the control of a p:switch? as the
   control of a p:if?"
+- For each partial information type:
+  - what it means
+  - how it merges
+  - when is it contradictory
+  - what effect it has on binary-map
+  - what effect it has on switch and d@
+  - anything else
 
 For the revised report:
 - Update the README file
@@ -51,6 +58,7 @@ For the revised report:
 - Reimplement contradiction handling using effects instead of
   a generic contradictory? operation?
 - Make merge always produce a list of effects?
+- Fix supported values so they print as #(contingent mumble)
 
 Materials for the reference manual:
 - delayed-propagator-constructor
