@@ -158,6 +158,10 @@
 (declare-coercion contingent-able? ->tms)
 (defhandler ->tms (lambda (nothing) (make-tms '())) nothing?)
 
+(define (tms-equivalent? tms1 tms2)
+  (lset= v&s-equivalent? (tms-values tms1) (tms-values tms2)))
+(defhandler equivalent? tms-equivalent? tms? tms?)
+
 (define (the-tms-handler thing1 thing2)
   (tms-merge thing1 thing2))
 

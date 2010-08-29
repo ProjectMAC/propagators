@@ -95,6 +95,12 @@
 
 (defhandler-coercing merge v&s-merge ->contingent)
 
+(define (v&s-equivalent? v&s1 v&s2)
+  (and (lset= eq? (v&s-support v&s1) (v&s-support v&s2))
+       (equivalent? (v&s-value v&s1) (v&s-value v&s2))))
+
+(defhandler equivalent? v&s-equivalent? v&s? v&s?)
+
 (defhandler contradictory?
  (lambda (v&s) (contradictory? (v&s-value v&s)))
  v&s?)
