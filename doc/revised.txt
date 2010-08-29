@@ -313,6 +313,38 @@ style.  So the following also works::
   (p:/ z y x)
 
 
+Late Binding of Application
+----------------------------------------------------------------------
+
+The preceding discusses attaching propagators to cells when the
+propagators being attached are known at network construction time.
+That will not always be the case.  For example::
+
+  (define-cell operation)
+  (define-cell answer)
+  (d@ operation 3 4 answer)
+  (run)
+  (content answer)  ==>  nothing
+
+We didn't say what operation to perform.  This is not an error, but
+since nothing is known about what to do with the 3 and the 4, nothing
+is known about the answer.  Now if we supply an operation, the
+computation will proceed::
+
+  (p:id p:* operation)
+  (run)
+  (content answer)  ==>  12
+
+What would have happened if we had left off the ``d@`` and just
+written ``(operation 3 4 answer)``?  If you put into operator position
+a cell that does not have a fully-known propagator at network
+construction time, it will be applied in diagram style by default.  If
+you put into operator position a cell that contains a fully-known
+propagator at network construction time, it will be applied either in
+diagram style or expression style, as dependent on that propagator's
+default preference.  ``d@`` and ``e@`` override these defaults.
+
+
 Provided Primitives: p:foo and e:foo
 ----------------------------------------------------------------------
 
@@ -364,40 +396,6 @@ mnemonic for "expression".
   Two-output-armed conditional propagation.  This is symmetric with
   ``conditional``; the ``consequent`` and ``alternate`` are possible
   output destinations.
-
-
-Late Binding
-----------------------------------------------------------------------
-
-TODO This discussion of explicitly applying cells whose content
-propagator constructors are not yet known probably goes later in the
-document:
-
-The preceding discusses attaching propagators to cells when the
-propagators being attached are known at network construction time.
-Since Scheme-Propagators is a higher-order language, that will not
-always be the case.  (TODO Example?)  More important, like all other
-possible data, the propagator being applied may be known only
-partially.  What is ``d@`` to do then?
-
-If the cell which is the first argument to ``d@`` does not have a
-propagator in it, or has only a partially known propagator in it,
-``d@`` constructs a propagator that will dynamically apply propagators
-that show up in that cell when they do.  Moreover, ``d@`` ensures that
-any uncertainty associated with the question of which propagator is
-being applied is forwarded to the output (and also to the interior of
-the application).  (TODO Example)
-
-For example,
-
-``d@`` always applies in diagram style.  ``e@`` always applies in
-expression style.  If you put into operator position a cell that
-contains a fully-known propagator at network construction time, it
-will be applied either in diagram style or expression style, as
-dependent on that propagator's default preference.  If you put into
-operator position a cell that does not have a fully-known propagator
-at network construction time, it will be applied in diagram style by
-default (TODO or should it signal an error?)
 
 
 Cells are Data Too
