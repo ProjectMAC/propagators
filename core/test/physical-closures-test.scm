@@ -329,6 +329,24 @@
     (run)
     (check (= 4 (content x))))
 
+  (define-test (manual-example-tms-apply)
+    (interaction
+     (initialize-scheduler)
+     (define-cell the-operation)
+     (define-cell the-answer (e@ the-operation 3 4))
+     (p:switch (make-tms (contingent #t '(bill))) e:+ the-operation)
+     (run)
+     (tms-query (content the-answer))
+     (produces #(supported 7 (bill)))
+     (kick-out! 'bill)
+     (tms-query (content the-answer))
+     (produces nothing)
+     (p:switch (make-tms (contingent #t '(fred))) e:* the-operation)
+     (run)
+     (tms-query (content the-answer))
+     (produces #(supported 12 (fred)))
+     ))
+
   (define-test (first-class-primitives-tms)
     (interaction
      (initialize-scheduler)
