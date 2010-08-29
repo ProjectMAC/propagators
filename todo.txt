@@ -2,6 +2,7 @@ Major Tasks on the Revised Report:
 - Organization
 - Format
   - Insert correct cross references.
+  - unindent
 - Reference materials
 - Go over the examples and make them look nice
   - Remove calls to constant
@@ -16,11 +17,45 @@ Major Tasks on the Revised Report:
   control of a p:if?"
 - For each partial information type:
   - what it means
+  - how to introduce it
+  - how to operate with it
+  - what is its equivalent? behavior
   - how it merges
   - when is it contradictory
   - what effect it has on binary-map
   - what effect it has on switch and d@
   - anything else
+
+- List the built-in handlers for binary-map under the nary-mapping
+  wrapper
+
+Put in TMS section:
+
+For an example involving truth maintenance (which see), suppose Bill
+wanted us to add 3 to 4::
+
+  (define-cell operation)
+  (define-cell answer)
+  (p:switch (make-tms (contingent #t '(bill))) p:+ operation)
+  (d@ operation 3 4 answer)
+  (run)
+  (tms-query (content answer))  ==>  #(contingent 7 (bill))
+
+The ``answer`` cell contains a 7 contingent on the Bill premise.  This
+is the right thing, because that answer depends not only on the inputs
+to the operation being performed, but also on the identity of the
+operation itself.
+
+
+A Scheme procedure, such as ``+``, does not know what to do with
+``nothing``.  The primitive propagator constructor ``p:+`` must
+produce a propagator that can handle ``nothing``.  Thus the Scheme
+procedure ``+`` must be wrapped up to produce ``nothing`` if one of
+its arguments is ``nothing`` so it can be made into a propagator.  
+This is the job of ``binary-map``.
+
+
+
 
 For the revised report:
 - Update the README file
