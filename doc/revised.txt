@@ -999,8 +999,8 @@ The following partial information structures are provided with Scheme-Propagator
 - nothing
 - just a value
 - intervals
-- cons cells
 - propagator cells
+- compound data
 - closures
 - supported values
 - truth maintenance systems
@@ -1140,9 +1140,9 @@ pair.  My car and cdr contain cells that describe the car and cdr of
 this object."  A Scheme empty list means "This object is the empty
 list".
 
-The propagators p:cons, e:cons, p:car, e:cdr, p:pair?, e:pair?,
-p:null?, e:null? (which see) introduce and examine pairs and empty
-lists.
+The propagators ``p:cons``, ``e:cons``, ``p:car``, ``e:cdr``,
+``p:pair?``, ``e:pair?``, ``p:null?``, and ``e:null?`` (which see)
+introduce and examine pairs and empty lists.
 
 Two pairs are ``equivalent?`` if their cars and cdrs are both
 ``equivalent?``.  A pair is not ``equivalent?`` to any non-pair.  The
@@ -1164,17 +1164,19 @@ It is an error for a pair or the empty list to appear in the operator
 position of an apply propagator.
 
 Other compound data structures can be made partial information that
-behaves like pairs using ``slotful-information-type``.
+behaves like pairs using ``define-propagator-structure``.
 
-``(slotful-information-type type constructor accessor ...)``
+``(define-propagator-structure type constructor accessor ...)``
   Declares that additional Scheme data structures are partial
-  information like pairs.  Specifically affects ``equivalent?``,
-  ``merge``, and ``contradictory?``.  For example::
+  information like pairs, and defines appropriate propagators
+  that handle them.  For example::
 
-    (slotful-information-type pair? cons car cdr)
+    (define-propagator-structure pair? cons car cdr)
 
   is the declaration that causes Scheme pairs to ``merge``, be
-  ``equivalent?``, and be ``contradictory?`` the way they are.
+  ``equivalent?``, and be ``contradictory?`` the way they are, and
+  defines the propagators ``p:pair?``, ``e:pair?``, ``p:cons``,
+  ``e:cons``, ``p:car``, and ``e:cdr``.
 
 
 Closures
@@ -1189,28 +1191,23 @@ Code pointers merge by testing that they point to the same code
 environments merge by merging all the cells they contain in
 corresponding places.
 
-make-closure, make-e:closure
-  Scheme procedures for directly constructing closure objects.  The
-  closures are defined in diagram or expression style, respectively.
-
-lambda-d:propagator, lambda-e:propagator
+``lambda-d:propagator``, ``lambda-e:propagator``
   Scheme-Propagators syntax for anonymous compound propagator
   constructors (which are implemented as closures).
 
-define-propagator
+``define-propagator``
   Internally produces lambda-d:propagator or lambda-e:propagator
   and puts the results into appropriately named cells.
+
 
 Truth Maintenance Systems
 ----------------------------------------------------------------------
 
-A Truth Maintenance System (TMS) is a kind of partial information
-structure that may appear in a cell.  A TMS is a set of contingent
-values.  A contingent value is any partial information object that
-describes the "value" in the cell, together with a set of premises.
-The premises are Scheme objects that have no interesting properties
-except identity (by ``eq?``).  A worldview defines which premises are
-believed.
+A Truth Maintenance System (TMS) is a set of contingent values.  A
+contingent value is any partial information object that describes the
+"value" in the cell, together with a set of premises.  The premises
+are Scheme objects that have no interesting properties except identity
+(by ``eq?``).  A worldview defines which premises are believed.
 
 The meaning of a TMS as information is the logical ``and`` of the
 meanings of all of its contingent values.  The meaning of each
@@ -1226,33 +1223,33 @@ starts out believing all premises.  The worldview may be changed to
 exclude (or re-include) individual premises, allowing the user to
 examine the consequences of different consistent subsets of premises.
 
-(kick-out! premise)
+``(kick-out! premise)``
   Remove the given premise from the current worldview.
 
-(bring-in! premise)
+``(bring-in! premise)``
   Return the given premise to the current worldview.
 
-(premise-in? premise)
+``(premise-in? premise)``
   Is the given premise believed in the current worldview?
 
-(contingent info premises)
+``(contingent info premises)``
   Constructs a contingency object representing the information
   that the given info is contingent on the given list of premises.
 
-(contingent-info contingency-object)
+``(contingent-info contingency-object)``
   The information that is contingent.
 
-(contingent-premises contingency-object)
+``(contingent-premises contingency-object)``
   The list of premises on which that information is contingent.
 
-(contingency-object-believed? contingency-object)
+``(contingency-object-believed? contingency-object)``
   Whether the given contingency object is believed.
 
-(make-tms contingency-object-list)
+``(make-tms contingency-object-list)``
   Constructs a TMS with the given contingency objects as its initial
   set.
 
-(tms-query tms)
+``(tms-query tms)``
   Returns a contingency object representing the strongest deduction
   the given TMS can make in the current worldview.  tms-query gives
   the contingency with the strongest contingent information that is
@@ -1263,23 +1260,81 @@ examine the consequences of different consistent subsets of premises.
 Calling ``initialize-scheduler`` resets the worldview to believing all
 premises.
 
+TMSes are ``equivalent?`` if they contain equivalent contingent
+objects.  Contingent objects are equivalent if they have equivalent
+info and the same set of premises.
+
 TMSes merge by appending their lists of known contingencies (and
-sweeping out redundant ones).  Usually, propagators react to TMSes by
-querying them to obtain ingredients for computation.  The result of a
-computation is contingent on the premises of the ingredients that
-contribute to that result.
+sweeping out redundant ones).
+
+Strict propagators react to TMSes by querying them to obtain
+ingredients for computation.  The result of a computation is
+contingent on the premises of the ingredients that contribute to that
+result.
+
+If a TMS appears in the control of a ``switch``, the ``switch`` will
+first query the TMS to extract a contingent object.  The ``switch``
+will choose whether to forward its input or not based on the info that
+is contingent, but if it does forward, it will additionally make the
+result contingent upon the premises on which that info was contingent
+(as well as any premises on which the input may have been contingent).
+If the input itself is a TMS, ``switch`` queries it and (possibly)
+forwards the result of the query, rather than forwarding the entire
+TMS.  For example::
+
+  (define-cell frob (make-tms (contingent 4 '(bill))))
+  (define-cell maybe-frob (e:switch (make-tms (contingent #t '(fred))) frob))
+  (run)
+  (tms-query (content maybe-frob))  ==>  #(contingent 4 (bill fred))
+
+If a TMS appears in the operator cell of an apply propagator, the
+apply propagator will query the TMS.  If the result of the query is a
+contingent propagator constructor, the apply propagator will execute
+that constructor in a sandbox that ensures that the premises on which
+the constructor was contingent are both forwarded to the constructed
+propagator's inputs and attached to the constructed propagator's
+outputs.  For example, suppose Bill wanted us to add 3 to 4::
+
+  (define-cell operation)
+  (define-cell answer)
+  (p:switch (make-tms (contingent #t '(bill))) p:+ operation)
+  (d@ operation 3 4 answer)
+  (run)
+  (tms-query (content answer))  ==>  #(contingent 7 (bill))
+
+The ``answer`` cell contains a 7 contingent on the Bill premise.  This
+is the right thing, because that answer depends not only on the inputs
+to the operation being performed, but also on the identity of the
+operation itself.
+
 
 Contradiction
 ----------------------------------------------------------------------
 
 The Scheme object ``the-contradiction`` represents a completely
 contradictory state of information.  If a cell ever finds itself in
-such a completely contradictory state, it will signal an error.  The
+such a contradictory state, it will signal an error.  The
 explicit ``the-contradiction`` object is useful, however, for
 representing contradictory information in recursive contexts.  For
 example, a truth maintenance system may discover that some collection
 of premises leads to a contradiction --- this is represented by a
 ``the-contradiction`` object contingent on those premises.
+
+``the-contradiction``
+  A Scheme object representing a contradictory state of information
+  with no further structure.
+
+``the-contradiction`` is ``equivalent?`` only to itself.
+
+Any information state merges with ``the-contradiction`` to produce
+``the-contradiction``.
+
+``the-contradiction`` is ``contradictory?``.
+
+Propagators cannot operate on ``the-contradiction`` because any cell
+containing it will signal an error before any such propagator might
+run.
+
 
 Implicit Dependency-Directed Search
 ----------------------------------------------------------------------
@@ -1307,7 +1362,9 @@ set will be retracted, and the computation will proceed.
   One contains the information ``#t`` contingent on one fresh
   hypothetical premise, and the other contains the information ``#f``
   contingent on anther.  ``amb`` also tries to maintain the invariant
-  that exactly one of those premises is believed.  If the current
+  that exactly one of those premises is believed.  If doing so
+  does not cause the current worldview to believe a known nogood set,
+  ``amb`` can just ``bring-in!`` one premise or the other.  If the current
   worldview is such that bringing either premise in will cause a known
   nogood set to be believed, then, by performing a cut, the ``amb``
   discovers and signals a new nogood set that does not include either
@@ -1325,8 +1382,8 @@ set will be retracted, and the computation will proceed.
 
 ``(p:one-of input ... output)``, ``(e:one-of input ...)``
   An n-ary version of ``amb``.  Picks one of the objects in the given
-  input cells using an appropriate collection of ``amb`` propagators
-  and puts it into its output cell.
+  input cells using an appropriate collection of ``amb`` and
+  ``switch`` propagators and puts it into its output cell.
 
 ``(require-distinct cells)``
   Requires all of the objects in its list of input cells to be

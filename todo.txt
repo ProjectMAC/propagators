@@ -29,22 +29,6 @@ Major Tasks on the Revised Report:
 - List the built-in handlers for binary-map under the nary-mapping
   wrapper
 
-Put in TMS section:
-
-For an example involving truth maintenance (which see), suppose Bill
-wanted us to add 3 to 4::
-
-  (define-cell operation)
-  (define-cell answer)
-  (p:switch (make-tms (contingent #t '(bill))) p:+ operation)
-  (d@ operation 3 4 answer)
-  (run)
-  (tms-query (content answer))  ==>  #(contingent 7 (bill))
-
-The ``answer`` cell contains a 7 contingent on the Bill premise.  This
-is the right thing, because that answer depends not only on the inputs
-to the operation being performed, but also on the identity of the
-operation itself.
 
 
 A Scheme procedure, such as ``+``, does not know what to do with
@@ -104,6 +88,11 @@ Materials for the reference manual:
   Asterisk on "effectively": rather than a true direct
   interconnection, ``let-cells-rec`` creates extra cells that are then
   identified with the specified ones by mutual identity propagators.
+
+make-closure, make-e:closure
+  Scheme procedures for directly constructing closure objects.  The
+  closures are defined in diagram or expression style, respectively.
+
 
 
 For the paper:
