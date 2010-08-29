@@ -347,7 +347,7 @@ mnemonic for "expression".
   These are variadic versions of ``p:id``.  The result is a
   star topology, with every input feeding into the one output.
 
-``(p:swtich control input output)``, ``(e:switch control input)``
+``(p:switch control input output)``, ``(e:switch control input)``
   Conditional propagation.  The propagator made by ``switch`` copies
   its ``input`` to its ``output`` if and only if its ``control`` is
   "true".  The presence of partial information, which see, makes this
@@ -375,7 +375,7 @@ document:
 
 The preceding discusses attaching propagators to cells when the
 propagators being attached are known at network construction time.
-Since Scheme-Propagators is a higer-order language, that will not
+Since Scheme-Propagators is a higher-order language, that will not
 always be the case.  (TODO Example?)  More important, like all other
 possible data, the propagator being applied may be known only
 partially.  What is ``d@`` to do then?
@@ -387,6 +387,8 @@ that show up in that cell when they do.  Moreover, ``d@`` ensures that
 any uncertainty associated with the question of which propagator is
 being applied is forwarded to the output (and also to the interior of
 the application).  (TODO Example)
+
+For example,
 
 ``d@`` always applies in diagram style.  ``e@`` always applies in
 expression style.  If you put into operator position a cell that
