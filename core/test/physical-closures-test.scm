@@ -329,6 +329,20 @@
     (run)
     (check (= 4 (content x))))
 
+  (define-test (manual-example-unknown-operation)
+    (interaction
+     (initialize-scheduler)
+     (define-cell operation)
+     (define-cell answer)
+     (operation 3 4 answer)
+     (run)
+     (content answer)
+     (produces nothing)
+     (p:id p:* operation)
+     (run)
+     (content answer)
+     (produces 12)))
+
   (define-test (manual-example-tms-apply)
     (interaction
      (initialize-scheduler)
