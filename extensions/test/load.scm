@@ -25,7 +25,6 @@
     "symbolics-test"
     "symbolics-ineq-test"
     "functional-reactive-test"
-    "algebraic-tms-test"
     ,@(maybe "virtual-environments-test" *virtual-copies*)
     ,@(maybe "virtual-closures-test" *virtual-copies*)
     "graph-drawing-test"))

@@ -42,7 +42,6 @@
  `(,@(maybe "virtual-environments" *virtual-copies*)
    ,@(maybe "virtual-closures" *virtual-copies*)
    "info-alist"
-   "algebraic-tms"
    "functional-reactivity"
    "solve"          ; Requires mechanics to work
    "inequalities"   ; Requires mechanics to work
