@@ -68,7 +68,9 @@
 (propagatify switch)
 
 (name! identity 'identity)
+; These two are almost the same, but the difference doesn't matter
 (define-cell p:id (function->propagator-constructor identity))
+; (define-cell p:id (function->propagator-constructor (nary-mapping identity)))
 (define-cell e:id (expression-style-variant p:id))
 
 ;; TODO Do I still want to provide these old names for these things?
