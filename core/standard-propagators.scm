@@ -62,12 +62,10 @@
 (propagatify expt)
 
 ;; I want a name for the function that does the switch job
-(define (switch-function control input)
+(define (switch control input)
   (if control input nothing))
-(name! switch-function 'switch)
-(define-cell p:switch
-  (function->propagator-constructor (nary-unpacking switch-function)))
-(define-cell e:switch (expression-style-variant p:switch))
+(define switch-function switch)
+(propagatify switch)
 
 (name! identity 'identity)
 (define-cell p:id (function->propagator-constructor identity))
