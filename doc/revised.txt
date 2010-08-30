@@ -1834,7 +1834,7 @@ Scheme generic operations.  This is what we did in the interval example.
   ``generic-+``, ``generic--``, ``generic-*``, ``generic-/``,
   ``generic-=``, ``generic-<``, ``generic->``, ``generic-<=``,
   ``generic->=``, ``generic-and``, ``generic-or``, ``generic-eq?``,
-  ``generic-eqv?``, and ``generic-expt`` accept two inputs.
+  ``generic-eqv?``, ``generic-expt``, and ``generic-switch`` accept two inputs.
 
 Don't forget to teach the propagators what to do if they encounter
 a partial information structure on one input and a different one on
@@ -1848,12 +1848,18 @@ produced by the propagator).
 Uniform Applicative Extension of Propagators
 ----------------------------------------------------------------------
 
-Also, most (TODO document which) primitive propagators are wrapped
+Also, almost all primitive propagators are wrapped
 with the ``nary-mapping`` wrapper function around their underlying
 generic operation.  This wrapper function is an implementation of the
 idea of applicative functors (TODO cite McBride and Paterson), so if
 your partial information structure is an applicative functor, you can
 use this to teach most propagators how to handle it.
+
+The propagators wrapped in ``nary-mapping`` are exactly the strict
+propagators.  This includes all the built-in propagators except
+``:deposit``, ``:examine``, ``:cons``, ``:car``, and ``:cdr`` because
+those operate on cells rather than their contents, and ``:amb``
+because it essentially has no inputs.
 
 ``((binary-map info1 info2) f)  ==>  new-info``
 The generic procedure ``binary-map`` encodes how to apply a strict
@@ -1888,18 +1894,19 @@ many or as few times as necessary, and is expected to produce the
 appropriate result of "mapping" that function over the information in
 the input partial information structures to produce a new partial
 information structure, encoding all the appropriate uncertainty from
-both inputs.
+both inputs.  The given function ``f``, for example as a result of
+``(nary-mapping generic-switch)``, may return ``nothing`` even when
+both of its inputs are non-``nothing``.
 
 The ``nary-mapping`` wrapper works by repeated use of ``binary-map``
 on arguments of arity greater than two.  For unary arguments,
 ``nary-mapping`` invokes ``binary-map`` with a bogus second argument.
-Therefore, be sure to supply handlers to ``binary-map`` that handle
+Therefore, handlers for ``binary-map`` must handle
 applications thereof that have your new partial information structure
 as one argument, and a raw Scheme object as the other (this is a good
 idea anyway, and saves the trouble of writing handlers for an explicit
 ``unary-map`` operation).
 
-TODO Table of all primitive propagators that are affected by binary-map.
 
 Interoperation with Existing Partial Information Types
 ----------------------------------------------------------------------
@@ -1926,12 +1933,13 @@ partial information types::
   | Nothing             | nothing?       | --           |
   | Raw Scheme object   | various        | --           |
   | Numerical interval  | interval?      | ->interval   |
-  | Scheme pairs        | pair?          | --           |
   | Propagator cells    | cell?          | --           |
+  | Scheme pairs        | pair?          | --           |
   | Propagator closures | closure?       | --           |
   | Contingency object  | contingent?    | ->contingent |
   | TMS                 | tms?           | ->tms        |
   | Contradiction       | contradictory? | --           |
+  |---------------------+----------------+--------------|
 
 Notes:
 
@@ -1964,11 +1972,17 @@ merge, you should return those as appropriate merge effects in an
 ``effectful`` structure, and, if you need to create new kinds of
 effects in addition to the built-in ones, you should extend the
 generic operations ``execute-effect``, ``redundant-effect?``, and
-``generic-attach-premises``.
+``generic-attach-premises`` (which see).
 
 
 Making New Primitive Propagators
 ======================================================================
+
+Almost all definition of new primitive propagators can be handled
+correctly either by ``propagatify`` or by
+``define-propagator-structure`` (which see).  We discuss the
+lower-level tools first, however.
+
 
 Direct Construction from Functions
 ----------------------------------------------------------------------
@@ -2033,7 +2047,7 @@ defined as::
   (define-cell e:and (expression-style-variant p:and))
 
 
-DWIM Propagator Construction
+Propagatify
 ----------------------------------------------------------------------
 
 All that wrapping in ``nary-mapping``, and naming your propagator
@@ -2086,27 +2100,31 @@ Scheme procedure ``foo`` becomes a generic procedure named
 ``generic-foo`` and then turns into propagators ``p:foo`` and
 ``e:foo``.
 
+
 Compound Cell Carrier Construction
 ----------------------------------------------------------------------
 
 ``p:cons`` is an interesting propagator, because while it performs the
 job of a Scheme procedure (to wit, ``cons``), it operates directly on
 the cells that are its arguments, rather than on their contents.
-This pattern is also abstracted:
+Other compound data structures can be made partial information that
+behaves like pairs using ``define-propagator-structure``.
 
-``(function->cell-carrier-constructor f)``
-  Is like ``function->propagator-constructor``, except it makes
-  propagators that operate on the cells that are their arguments
-  rather than on the partial information structures those cells
-  contain.  ``p:cons`` could have been defined as::
+``(define-propagator-structure type constructor accessor ...)``
+  Declares that additional Scheme data structures are partial
+  information like pairs, and defines appropriate propagators
+  that handle them.  For example::
 
-    (define-cell p:cons (function->cell-carrier-constructor cons))
+    (define-propagator-structure pair? cons car cdr)
 
-The rest of this machinery is in ``core/carrying-cells.scm``.
+  defines the propagators ``p:pair?``, ``e:pair?``, ``p:cons``,
+  ``e:cons``, ``p:car``, and ``e:cdr`` (and also makes pairs
+  a partial information structure).
 
 Defining ``p:cons`` to operate on its argument cells constitutes a
 decision to follow the "carrying cells" rather than the "copying data"
 strategy from the propagator thesis.
+
 
 Fully-manual Low-level Propagator Construction
 ----------------------------------------------------------------------
