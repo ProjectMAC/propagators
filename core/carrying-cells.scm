@@ -140,10 +140,9 @@
 (define e:carry-cdr   e:cdr)
 
 ;;; To make lists out of conses, we need empty lists too.
-(define carry-null? null?)
-(propagatify carry-null?)
-(define p:null? p:carry-null?)
-(define e:null? e:carry-null?)
+(propagatify null?)
+(define p:carry-null? p:null?)
+(define e:carry-null? e:null?)
 
 ;;; These guys are really the primitive container devices, from which
 ;;; everything else can be made.
