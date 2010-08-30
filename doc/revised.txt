@@ -1823,16 +1823,27 @@ Individual Propagator Generics
 Most primitive propagators are actually built from generic Scheme functions.
 Those propagators can therefore be extended to new
 partial information types just by adding appropriate methods to their
-generic operations.  This is what we did in the interval example.
+Scheme generic operations.  This is what we did in the interval example.
+
+``(generic-foo argument ...)  ==>  result``
+  A generic procedure for carrying out the ``foo`` job over any
+  desired partial information inputs, producing an appropriately
+  partial result.  ``generic-abs``, ``generic-square``,
+  ``generic-sqrt``, ``generic-not``, ``generic-pair?``, and
+  ``generic-null?`` accept one input.
+  ``generic-+``, ``generic--``, ``generic-*``, ``generic-/``,
+  ``generic-=``, ``generic-<``, ``generic->``, ``generic-<=``,
+  ``generic->=``, ``generic-and``, ``generic-or``, ``generic-eq?``,
+  ``generic-eqv?``, and ``generic-expt`` accept two inputs.
+
 Don't forget to teach the propagators what to do if they encounter
-your partial information structure on one input and a different one on
+a partial information structure on one input and a different one on
 another --- if both represent states of knowledge about compatible
 ultimate values, it should be possible to produce a state of knowledge
 about the results of the computation (though in extreme cases that
 state of knowledge might be ``nothing``, implying no new information
 produced by the propagator).
 
-TODO Table of primitive propagators and their generic operations.
 
 Uniform Applicative Extension of Propagators
 ----------------------------------------------------------------------
