@@ -11,6 +11,7 @@ Major Tasks on the Revised Report:
     - there is no "occurs check"
     - Can we replicate the Y combinator inside merge?
 - Define p:sin, p:cos, etc.  Also p:negate, p:invert
+- Define c:pair? for carrying-cells
 - The discussion of "new partial information structures" should
   answer the question: "How do I decide what effect my partial
   information structure has as the control of a p:switch? as the
@@ -25,7 +26,8 @@ Major Tasks on the Revised Report:
   - what effect it has on binary-map
   - what effect it has on switch and d@
   - anything else
-
+- Check the lists of propagators carefully.
+  - Autogenerate them?
 - List the built-in handlers for binary-map under the nary-mapping
   wrapper
 
@@ -38,7 +40,10 @@ procedure ``+`` must be wrapped up to produce ``nothing`` if one of
 its arguments is ``nothing`` so it can be made into a propagator.  
 This is the job of ``binary-map``.
 
-
+Document the generic operations system, including defining generics,
+precedence of handlers, and tagging procedures as type testers for
+performance; also use of SOS specializers as predicates directly.
+Also the coersion subsystem?
 
 
 For the revised report:
