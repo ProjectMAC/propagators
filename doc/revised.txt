@@ -2513,11 +2513,6 @@ currently winning.  We just decided not to pursue that path.
 And on the note of copying data being preferable because it preserves
 locality, maybe ``cons`` really should be the locality-breaking object.
 
-Revision History of this Guide
-----------------------------------------------------------------------
-
-First written May 5, 2010 by Alexey Radul
-Rewritten August 17, 2010 by Alexey Radul and Gerald Jay Sussman
 
 How this supports the goal
 ======================================================================
@@ -2530,11 +2525,11 @@ entail only small changes to the implementation.  These are tough
 goals to achieve.
 
 Systems built on the Propagator Model of computation can approach some
-of these goals.  The key idea is to allow fan in: a result may be
+of these goals.  The key idea is to allow fan-in: a result may be
 computed in multiple ways, by redundant processes.  Indeed, there may
 be multiple ways to partially contribute to a result, and these
 contributions may be merged to make better approximations to the
-desired result.  So we should allow methods that give only part of an
+desired result.  So we allow methods that give only part of an
 answer, depending on other methods to fill in missing details.  In the
 Propagator Model of computation the cells accumulate information about
 a value, rather than store the completed value.  There may be many
@@ -2552,75 +2547,22 @@ analogous to an electrical circuit diagram, whereas a program written
 for a more traditional model is more like a system diagram.  The
 difference is profound: 
 
-   1: circuit models are multidirectional; system diagrams compute
+   1. circuit models are multidirectional; system diagrams compute
       from inputs to outputs.
 
    2. circuit models are abstractions of physics; system diagrams
       are abstractions of process.
 
-The Propagator Model is intrinsically parallel.  Each component may
-be thought of as continually polling its neighbor cells and doing what
-it can to improve the state of knowledge.
-
-But the circuit diagram viewpoint gives us other powerful ways to
+The circuit diagram viewpoint gives us new powerful ways to
 think.  We can modify a circuit diagram by clipping out a part, or by
 installing a different version.  We can temporarily carry information
 from one place to another using a clip lead.  And we have lots of
 places to connect various kinds of meters for debugging.
 
+The Propagator Model is intrinsically parallel.  Each component may
+be thought of as continually polling its neighbor cells and doing what
+it can to improve the state of knowledge.
 
+TODO refinement loops
 
-
-
-TODO
-
-Fanin
-
-- allows multiple methods to contribute to an answer
-- each contribution therefore doesn't have to be the whole answer
-
-Expression abstraction is broken
-
-- change of emphasis; expect to grab places and do things to them
-  (fanout and fanin)
-
-Not composition of functions, but construction of diagrams
-
-- circuit language, not system language
-- corresponds to physics; independent machines doing their thing
-
-
-Undocumented Frobni
-======================================================================
-
-Implicit Cell Syntax
-----------------------------------------------------------------------
-
-A quirky little feature, called
-``%%``.  This is a Scheme object, therefore Scheme-Propagators syntax,
-for controlling the argument position of the implicit cell that an
-expression-style application will make and return.  Perhaps examples
-are best::
-
-  (e: foo bar)     ==  (e: foo bar %%)
-
-  (e: foo %% bar)  ==  (let-cell new (p: foo new bar) new)
-
-I borrowed this idea from Guy Steele's PhD thesis on constraint
-languages, and it was a year between when I implemented it and
-when I first used it.  The use case I do have is when I
-want to make a new cell participate in an input position
-in a constraint with some existing cells::
-
-  (define-cell x)
-  (define-cell z)
-  (define-cell y (ce:+ x %% z))
-  (add-content x 5)
-  (add-content y 3)
-  (run)
-  (content z) ==> 8
-
-Perhaps this use case could also be served by adding more
-expression-style constraint procedures (namely ``ce:-``, which I do
-not currently have), but then again maybe it's elegant.
-
+TODO extremely generic
