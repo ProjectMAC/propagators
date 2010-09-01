@@ -13,7 +13,7 @@ Abstract:
 	  experiments.
 
 
-Perhaps the most important problem facing a programmer is the revision
+The most important problem facing a programmer is the revision
 of an existing program to extend it for some new situation.
 Unfortunately, the traditional models of programming provide little
 support for this activity.  The programmer often finds that
@@ -872,7 +872,7 @@ expanded infinitely far.  As in Scheme, this magic is in ``if``.  The
 Scheme-Propagators construct ``p:if`` (which is implemented as a
 Scheme macro) delays the construction of the diagrams in its branches
 until sufficient information is available about the predicate.
-Specifically, the consequent is constucted only when the predicate is
+Specifically, the consequent is constructed only when the predicate is
 sufficiently "true", and the alternate is constructed only when the
 predicate is sufficiently "false".  Note that, unlike in Scheme, these
 can both occur to the same ``p:if``.
@@ -921,7 +921,7 @@ Using Partial Information
 ======================================================================
 
 Partial, cumulative information is essential to
-multidirectional, nonsequential programming.  Each "memory
+multidirectional, non-sequential programming.  Each "memory
 location" of Scheme-Propagators, that is each cell, maintains not "a
 value", but "all the information it has about a value".  Such
 information may be as little as "I know absolutely nothing about my
@@ -1602,7 +1602,7 @@ merge to identically the first of them.  The default operation for
 ``merge`` do not recognize is to assume that they cannot be usefully
 merged, and return ``the-contradiction``.
 
-A handler for ``merge`` is exptected to accept two partial
+A handler for ``merge`` is expected to accept two partial
 information structures and return another partial information
 structure that semantically includes all the information present in
 both input structures.  The handler may return
@@ -1735,7 +1735,7 @@ There are two reasons why this matters to a user of the system.
 First, callers of ``merge`` (for example recursive ones in contexts
 where a new partial information structure is defined that may contain
 arbitrary other ones) must be aware that ``merge`` may return an
-``effectful`` object.  In this case, it is the resposibility of the
+``effectful`` object.  In this case, it is the responsibility of the
 caller to ``merge`` to shepherd the effects appropriately, adjusting
 them if necessary.  For example, the ``merge`` handler for two pairs
 recursively merges the cars and cdrs of the pairs.  If either of those
@@ -1918,7 +1918,7 @@ in two ways:
 - by containment (of and by)
 
 The first is in general handled by making sure that ``merge``,
-``binary-map``, and all approriate individual propagator generic
+``binary-map``, and all appropriate individual propagator generic
 operations have methods that can handle any combinations that may
 arise.  Often, the way to deal with two information structures of
 different but compatible types is to realize that one of them can be
@@ -2359,10 +2359,10 @@ expression style when applying cells whose contents are not yet known,
 and for defining compound propagators when the style is not specified
 more clearly.  The main rationale for this decision was an attempt to
 emphasize the interesting property of Scheme-Propagators and the
-propagator programming model.  The unusual expressive power of fanin
+propagator programming model.  The unusual expressive power of fan-in
 that the propagator model offers can be taken advantage of only if at
-least some of one's code actually has fanin, and writing code with
-fanin requires diagram style.
+least some of one's code actually has fan-in, and writing code with
+fan-in requires diagram style.
 
 Locus of Delayed Construction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2520,7 +2520,7 @@ How this supports the goal
 We started with the goal of making it easier for people to build
 systems that are additive.  A system should not become so
 interdependent that it is difficult to extend its behavior to
-accomodate new requirements.  Small changes to the behavior should
+accommodate new requirements.  Small changes to the behavior should
 entail only small changes to the implementation.  These are tough
 goals to achieve.
 
