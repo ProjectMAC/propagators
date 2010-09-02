@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/fix-xfig-fonts.rb"
+# require File.dirname(__FILE__) + "/fix-xfig-fonts.rb"
 
 desc "Crunch all xfigs to eps"
 task :epspictures
