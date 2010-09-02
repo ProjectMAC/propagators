@@ -512,11 +512,13 @@ cause \texttt{switch} to propagate, but the result written to the
 \texttt{output} will be contingent on that premise (in addition to any
 other premises the \texttt{input} may already be contingent on).
 
-\item[{\texttt{(p:conditional control consequent alternate output)}, \texttt{(e:conditional control consequent alternate)}}] \leavevmode 
+\item[{\texttt{(p:conditional control consequent alternate output)},}]
+\item[{\texttt{(e:conditional control consequent alternate)}}] \leavevmode 
 Two-armed conditional propagation.  May be defined by use of two
 \texttt{switch} propagators and a \texttt{not} propagator.
 
-\item[{\texttt{(p:conditional-router control input consequent alternate)}, \texttt{(p:conditional-router control input consequent)}}] \leavevmode 
+\item[{\texttt{(p:conditional-router control input consequent alternate)},}]
+\item[{\texttt{(p:conditional-router control input consequent)}}] \leavevmode 
 Two-output-armed conditional propagation.  This is symmetric with
 \texttt{conditional}; the \texttt{consequent} and \texttt{alternate} are possible
 output destinations.
@@ -601,7 +603,7 @@ does: if the \texttt{input} already contains a pair with a cell in the
 \texttt{car}, \texttt{e:car} will just Scheme-return that cell instead of
 synthesizing a new one and identifying it with the cell present.
 
-\item[{\texttt{(p:cdr input output)}, (e:cdr input)``}] \leavevmode 
+\item[{\texttt{(p:cdr input output)}, \texttt{(e:cdr input)}}] \leavevmode 
 Same as \texttt{p:car} and \texttt{e:car}, except the other field of the
 pair.
 
@@ -1851,11 +1853,9 @@ declares that intervals should be added by \texttt{add-interval}, and
 that anything \texttt{interval-able?} can be added to an interval by
 first coercing it into an interval with \texttt{->interval} and then
 doing \texttt{add-interval}.  This subsumes
-\begin{description}
-\item[{::}] \leavevmode 
+\begin{quote}{\ttfamily \raggedright \noindent
 (defhandler generic-+ add-interval interval? interval?)
-
-\end{description}
+}\end{quote}
 
 \texttt{defhandler-coercing} may only be called after a call to
 \texttt{declare-coercion-target} defining the appropriate coercer and
