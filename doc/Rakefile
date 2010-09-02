@@ -7,26 +7,6 @@ def rstify filename
   task :doc => "#{filename}.html"
 end
 
-file "revised.rst" => "revised.txt" do
-  sh "cp revised.txt revised.rst"
-end
-
-# file "revised.tex" => "revised.rst" do
-#   sh "rst2latex revised.rst | perl -e 'while (<>) { s/a4paper/letterpaper/; print }' > revised.tex"
-# end
-
-file "revised.dvi" => "revised.tex" do
-  sh "latex revised.tex"
-end
-
-file "revised.ps" => "revised.dvi" do
-  sh "dvips -o revised.ps -t letter revised"
-end
-
-file "revised.pdf" => "revised.ps" do
-  sh "ps2pdf revised.ps"
-end
-
 rstify "programmer-guide"
 rstify "revised"
 
@@ -34,3 +14,14 @@ task :doc => "revised.pdf"
 
 pdflatex "revised"
 autobib "revised"
+
+file "revised-revised.tex" => "revised.tex" do
+  sh "cat revised.tex | grep -v hypertarget | grep -v pdfbookmark > revised-revised.tex"
+end
+
+file "revised-revised/index.html" => "revised-revised.tex" do
+  sh "latex revised-revised.tex"
+  sh "latex2html revised-revised"
+end
+
+task :doc => "revised-revised/index.html"
