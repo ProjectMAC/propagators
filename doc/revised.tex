@@ -323,7 +323,8 @@ not return a useful value.
 As in Scheme, \texttt{p:+} is actually the name of a cell that contains a
 propagator constructor for attaching propagators that do addition.
 The first argument to \texttt{d@} can be any cell that contains any desired
-partial information (which see) about a propagator constructor.
+partial information (see Section~\ref{using-partial-information})
+about a propagator constructor.
 Actual attachment of propagators will occur as the propagator
 constructor becomes sufficiently well constrained.
 
@@ -505,7 +506,7 @@ star topology, with every input feeding into the one output.
 \item[{\texttt{(p:switch control input output)}, \texttt{(e:switch control input)}}] \leavevmode 
 Conditional propagation.  The propagator made by \texttt{switch} copies
 its \texttt{input} to its \texttt{output} if and only if its \texttt{control} is
-``true''.  The presence of partial information, which see, makes this
+``true''.  The presence of partial information (see Section~\ref{using-partial-information}) makes this
 interesting.  For example, a \texttt{{\#}t} contingent on some premise will
 cause \texttt{switch} to propagate, but the result written to the
 \texttt{output} will be contingent on that premise (in addition to any
@@ -531,7 +532,8 @@ output destinations.
 \label{cells-are-data-too}
 
 Cells, and structures thereof, are perfectly good partial information
-(which see), and are therefore perfectly legitimate contents of other
+(see Section~\ref{using-partial-information})
+and are therefore perfectly legitimate contents of other
 cells.  The event that two different cells A and B find themselves
 held in the same third cell C means that A and B are now known to
 contain information about the same thing.  The two cells are therefore
@@ -907,7 +909,7 @@ arbitrary collection of code, defining some amount of propagator
 network that will not be built until the controlling cell indicates
 that it should.  The \texttt{internal-cells} argument is a list of the
 free variables in \texttt{body}.  This is the same kind of kludge as the
-\texttt{import} clause in \texttt{propagator-lambda} (which see).
+\texttt{import} clause in \texttt{define-propagator} (see Section~\ref{lexical-scope}).
 
 \item[{\texttt{(e:when internal-cells condition-cell body ...)}}] \leavevmode 
 Expression-style variant of \texttt{p:when}.  Augments its boundary with
@@ -1365,7 +1367,8 @@ operations on the information it is over.
 A propagator cell interpreted as partial information is an
 indirection: it means ``I contain the structure that describes this
 value''.  Cells can appear as the contents of cells or other structures
-via the \texttt{deposit} and \texttt{examine} propagators (which see).
+via the \texttt{deposit} and \texttt{examine} propagators
+(see Section~\ref{cells-are-data-too}).
 
 Propagator cells are \texttt{equivalent?} if they are known to contain
 information about the same subject.  This occurs only if they are
@@ -1393,7 +1396,8 @@ this object.''  A Scheme empty list means ``This object is the empty
 list''.
 
 The propagators \texttt{p:cons}, \texttt{e:cons}, \texttt{p:car}, \texttt{e:cdr},
-\texttt{p:pair?}, \texttt{e:pair?}, \texttt{p:null?}, and \texttt{e:null?} (which see)
+\texttt{p:pair?}, \texttt{e:pair?}, \texttt{p:null?}, and \texttt{e:null?}
+(see Section~\ref{compound-data})
 introduce and examine pairs and empty lists.
 
 Two pairs are \texttt{equivalent?} if their cars and cdrs are both
@@ -1767,7 +1771,8 @@ we can add a few more handlers:
 
 The third step is to teach the arithmetic propagators to handle
 intervals.  Interval arithmetic does not fit into the \texttt{binary-map}
-worldview (which see below), so the only way to do intervals is to
+worldview (see Section~\ref{uniform-applicative-extension-of-propagators})
+so the only way to do intervals is to
 individually add the appropriate handlers to the generic procedures
 underlying the primitive propagators:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -1930,7 +1935,8 @@ idempotence:
 The \texttt{contradictory?} procedure tests whether a given information
 structure represents an impossible situation.  \texttt{contradictory?}
 states of information may arise in the computation without causing
-errors.  For example, a TMS (which see) may contain a contradiction in
+errors.  For example, a TMS (see Section~\ref{truth-maintenance-systems})
+may contain a contradiction in
 a contingent context, without itself being \texttt{contradictory?}.  But if
 a \texttt{contradictory?} object gets to the top level, that is if a cell
 discovers that it directly contains a \texttt{contradictory?} state of
@@ -1957,7 +1963,8 @@ when merging two propagator cells (see Cells as Partial Information),
 the new information is just one of those cells, but the two cells also
 need to be connected with propagators that will synchronize their
 contents.  For another example, in Scheme-Propagators, if a merge
-produces a TMS (which see) that contains a contingent contradiction,
+produces a TMS (see Section~\ref{truth-maintenance-systems})
+that contains a contingent contradiction,
 the premises that contradiction depends upon must be signalled as a
 nogood set (that this requires signalling and is not just another
 partial information structure is a consequence of an implementation
@@ -2252,8 +2259,9 @@ The first is in general handled by making sure that \texttt{merge},
 operations have methods that can handle any combinations that may
 arise.  Often, the way to deal with two information structures of
 different but compatible types is to realize that one of them can be
-seen as an instance of the other type.  The coercion machinery (which
-see) allows one to declare when this situation obtains so that
+seen as an instance of the other type.  The coercion machinery
+(see Section~\ref{generic-coercions})
+allows one to declare when this situation obtains so that
 \texttt{defhandler-coercing} does the right thing.  The specific touch
 points for this are the type testers and coercers of the existing
 partial information types:
@@ -2297,7 +2305,8 @@ that interval contingent on the empty set of premises, and then
 operate on those two structures as on TMSes.
 
 The second kind of interoperation is handled by correctly dealing with
-merge effects (which see).  If you make a new partial information
+merge effects (see Section~\ref{the-full-story-on-merge}).
+If you make a new partial information
 structure that contains others, you must make sure to handle any merge
 effects that may arise when recursively merging the partial
 information your structure contains.  If you make a new partial
@@ -2306,7 +2315,7 @@ merge, you should return those as appropriate merge effects in an
 \texttt{effectful} structure, and, if you need to create new kinds of
 effects in addition to the built-in ones, you should extend the
 generic operations \texttt{execute-effect}, \texttt{redundant-effect?}, and
-\texttt{generic-attach-premises} (which see).
+\texttt{generic-attach-premises} (Section~\ref{the-full-story-on-merge}).
 
 
 %___________________________________________________________________________
@@ -2318,7 +2327,8 @@ generic operations \texttt{execute-effect}, \texttt{redundant-effect?}, and
 
 Almost all definition of new primitive propagators can be handled
 correctly either by \texttt{propagatify} or by
-\texttt{define-propagator-structure} (which see).  We discuss the
+\texttt{define-propagator-structure} (see Section~\ref{id1}).
+We discuss the
 lower-level tools first, however.
 
 
