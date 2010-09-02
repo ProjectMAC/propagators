@@ -777,7 +777,8 @@ you could write:
 which would also make a Scheme variable named \texttt{x} and bind a cell to
 it.  In fact, that is almost exactly what \texttt{define-cell} does, except
 that \texttt{define-cell} attaches some metadata to the cell it creates to
-make it easier to debug the network (see below) and also does constant
+make it easier to debug the network (see Section~\ref{debugging})
+and also does constant
 conversion (so \texttt{(define-cell x 5)} makes \texttt{x} a cell that will get
 a \texttt{5} put into it, whereas \texttt{(define x 5)} would just bind \texttt{x} to
 \texttt{5}).
@@ -1710,7 +1711,7 @@ primitives.
 
 It is also important to make sure that your new partial information
 structure intermixes and interoperates properly with the existing
-ones (see Built-in Partial Information Structures).
+ones (see Section~\ref{built-in-partial-information-structures}).
 
 Method addition in the generic operation system used in
 Scheme-Propagators is done with the \texttt{defhandler} procedure:
@@ -1959,7 +1960,8 @@ The description of \texttt{merge} as always returning a new partial
 information structure is an approximation.  Sometimes, \texttt{merge} may
 return a new partial information structure together with instructions
 for an additional effect that needs to be carried out.  For example,
-when merging two propagator cells (see Cells as Partial Information),
+when merging two propagator cells
+(see Section~\ref{propagator-cells-as-partial-information}),
 the new information is just one of those cells, but the two cells also
 need to be connected with propagators that will synchronize their
 contents.  For another example, in Scheme-Propagators, if a merge
