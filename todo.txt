@@ -1,6 +1,7 @@
 Major Tasks on the Revised Report:
 - Acknowledgements (MMP, CSAIL, ...)
 - Install released system in MMP archive
+- Make a nice version for DSpace and put it there
 - Format
   - Insert correct cross references.
   - Cite paterson and mcbride
