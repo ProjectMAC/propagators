@@ -25,7 +25,7 @@
  (define-test (multiple-dwelling)
    (interaction
     (initialize-scheduler)
-    (define answers (multiple-dwelling))
+    (define answers (p:multiple-dwelling))
     (run)
     (map v&s-value (map tms-query (map content answers)))
     (produces '(3 2 4 5 1))
