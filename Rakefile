@@ -4,7 +4,7 @@ task :clean do
   end
 end
 
-excludes = %w(*.bin *.com *.bci *.ext *~ *.svn selectors explorations .gitignore todo.txt partial-composition.* reference.*)
+excludes = %w(*.bin *.com *.bci *.ext *~ *.svn selectors explorations .gitignore todo.txt partial-composition.* reference.* revised-html)
 
 task :release => [:workbook, :doc] do
   sh "cd #{File.dirname(__FILE__)}; " + %Q{tar --create --verbose --file ../propagator.tar --directory .. --transform "s/prop/propagator/" --exclude="} + excludes.join("\" --exclude=\"") + "\" prop/"

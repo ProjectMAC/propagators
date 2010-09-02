@@ -8,20 +8,24 @@ def rstify filename
 end
 
 rstify "programmer-guide"
-rstify "revised"
 
 task :doc => "revised.pdf"
 
 pdflatex "revised"
 autobib "revised"
 
-file "revised-revised.tex" => "revised.tex" do
-  sh "cat revised.tex | grep -v hypertarget | grep -v pdfbookmark > revised-revised.tex"
+file "revised-html.tex" => "revised.tex" do
+  sh "cat revised.tex | grep -v hypertarget | grep -v pdfbookmark > revised-html.tex"
 end
 
-file "revised-revised/index.html" => "revised-revised.tex" do
-  sh "latex revised-revised.tex"
-  sh "latex2html revised-revised"
+file "revised-html/revised-html.html" => "revised-html.tex" do
+  sh "latex revised-html.tex"
+  sh "bibtex revised-html"
+  sh "latex2html revised-html"
 end
 
-task :doc => "revised-revised/index.html"
+task :doc => "revised.html"
+
+file "revised.html" => "revised-html/revised-html.html" do
+  sh "cp revised-html/revised-html.html revised-html.html"
+end
