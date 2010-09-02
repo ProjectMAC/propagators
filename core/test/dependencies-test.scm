@@ -38,8 +38,8 @@
     (define-cell barometer-shadow)
     (define-cell building-height)
     (define-cell building-shadow)
-    (similar-triangles barometer-shadow barometer-height
-		       building-shadow building-height)
+    (c:similar-triangles barometer-shadow barometer-height
+			 building-shadow building-height)
 
     (add-content building-shadow
 		 (supported (make-interval 54.9 55.1) '(shadows)))
@@ -52,7 +52,7 @@
     (produces #(supported #(interval 44.514 48.978) (shadows)))
 
     (define-cell fall-time)
-    (fall-duration fall-time building-height)
+    (c:fall-duration fall-time building-height)
 
     (add-content fall-time
 		 (supported (make-interval 2.9 3.3) '(lousy-fall-time)))
@@ -94,8 +94,8 @@
     (define-cell barometer-shadow)
     (define-cell building-height)
     (define-cell building-shadow)
-    (similar-triangles barometer-shadow barometer-height
-		       building-shadow building-height)
+    (c:similar-triangles barometer-shadow barometer-height
+			 building-shadow building-height)
 
     (add-content building-shadow
 		 (make-tms (supported (make-interval 54.9 55.1) '(shadows))))
@@ -108,19 +108,19 @@
     (produces #(tms (#(supported #(interval 44.514 48.978) (shadows)))))
 
     (define-cell fall-time)
-    (fall-duration fall-time building-height)
+    (c:fall-duration fall-time building-height)
 
     (add-content fall-time
 		 (make-tms (supported (make-interval 2.9 3.1) '(fall-time))))
     (run)
     (content building-height)
     (produces #(tms (#(supported #(interval 44.514 47.243)
-				 (shadows fall-time))
+				 (fall-time shadows))
 		     #(supported #(interval 44.514 48.978)
 				 (shadows)))))
 
     (tms-query (content building-height))
-    (produces #(supported #(interval 44.514 47.243) (shadows fall-time)))
+    (produces #(supported #(interval 44.514 47.243) (fall-time shadows)))
 
     (kick-out! 'fall-time)
     (run)
@@ -141,7 +141,7 @@
     (produces #(tms (#(supported #(interval 41.163 47.243)
 				 (fall-time))
 		     #(supported #(interval 44.514 47.243)
-				 (shadows fall-time))
+				 (fall-time shadows))
 		     #(supported #(interval 44.514 48.978)
 				 (shadows)))))
 
@@ -153,7 +153,7 @@
 		     #(supported #(interval 41.163 47.243)
 				 (fall-time))
 		     #(supported #(interval 44.514 47.243)
-				 (shadows fall-time))
+				 (fall-time shadows))
 		     #(supported #(interval 44.514 48.978)
 				 (shadows)))))
 
@@ -205,8 +205,8 @@
     (define-cell barometer-shadow)
     (define-cell building-height)
     (define-cell building-shadow)
-    (similar-triangles barometer-shadow barometer-height
-		       building-shadow building-height)
+    (c:similar-triangles barometer-shadow barometer-height
+			 building-shadow building-height)
 
     (add-content building-shadow
 		 (make-tms (supported (make-interval 54.9 55.1) '(shadows))))
@@ -216,7 +216,7 @@
 		 (make-tms (supported (make-interval 0.36 0.37) '(shadows))))
 
     (define-cell fall-time)
-    (fall-duration fall-time building-height)
+    (c:fall-duration fall-time building-height)
 
     (add-content fall-time
 		 (make-tms (supported (make-interval 2.9 3.1) '(fall-time))))
@@ -261,7 +261,8 @@
     (kick-out! 'superintendent)
     (run)
     (tms-query (content building-height))
-    (produces #(supported #(interval 46. 47.243) (fall-time pressure)))
+    (produces #(supported #(interval 46. 47.243)
+			  (shadows fall-time pressure)))
 
     (tms-query (content barometer-height))
     (produces #(supported #(interval .30054 .31839)

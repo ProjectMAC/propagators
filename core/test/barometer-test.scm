@@ -29,7 +29,7 @@
     (define-cell barometer-shadow)
     (define-cell building-height)
     (define-cell building-shadow)
-    (similar-triangles
+    (c:similar-triangles
      barometer-shadow barometer-height building-shadow building-height)
     (add-content building-shadow (make-interval 54.9 55.1))
     (add-content barometer-height (make-interval 0.3 0.32))
@@ -40,7 +40,7 @@
     (produces #(interval 44.51351351351351 48.977777777777774))
 
     (define-cell fall-time)
-    (fall-duration fall-time building-height)
+    (c:fall-duration fall-time building-height)
     (add-content fall-time (make-interval 2.9 3.1))
     (run)
 

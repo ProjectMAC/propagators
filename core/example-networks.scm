@@ -25,14 +25,8 @@
 
 ;;; Unidirectional Fahrenheit to Celsius conversion
 
-(define (fahrenheit->celsius f c)
-  (let-cells (thirty-two f-32 five c*9 nine)
-    ((constant 32) thirty-two)
-    ((constant 5) five)
-    ((constant 9) nine)
-    (p:- f thirty-two f-32)
-    (p:* f-32 five c*9)
-    (p:/ c*9 nine c)))
+(define-e:propagator (e:fahrenheit->celsius f)
+  (e:* (e:- f 32) 5/9))
 
 #|
  (initialize-scheduler)
@@ -46,24 +40,26 @@
  (content c)
  ;Value: 25
 |#
-(define-e:propagator (e:fahrenheit->celsius f)
-  (e:* (e:- f 32) 5/9))
+
+#|
+ ;;; Here is a much more explicit way to write the same program
+
+ (define-propagator (fahrenheit->celsius f c)
+   (let-cells (thirty-two f-32 five c*9 nine)
+     ((constant 32) thirty-two)
+     ((constant 5) five)
+     ((constant 9) nine)
+     (p:- f thirty-two f-32)
+     (p:* f-32 five c*9)
+     (p:/ c*9 nine c)))
+|#
 
 ;;; Multidirectional Fahrenheit to Celsius to Kelvin conversion
 
-(define (fahrenheit-celsius f c)
-  (let-cells (thirty-two f-32 five c*9 nine)
-    ((constant 32) thirty-two)
-    ((constant 5) five)
-    ((constant 9) nine)
-    (c:+ thirty-two f-32 f)
-    (c:* f-32 five c*9)
-    (c:* c nine c*9)))
-
-(define (celsius-kelvin c k)
-  (let-cell many
-    ((constant 273.15) many)
-    (c:+ c many k)))
+(define-propagator (c:fahrenheit-celsius f c)
+  (c:== (ce:+ (ce:* c 9/5) 32) f))
+(define-propagator (c:celsius-kelvin c k)
+  (c:+ c 273.15 k))
 
 #|
  (initialize-scheduler)
@@ -84,21 +80,22 @@
  (content k)
  ;Value: 298.15
 |#
-(define-propagator (c:fahrenheit-celsius f c)
-  ; (c:* c 9 (ce:* 5 (ce:+ 32 %% f)))
-  (c:== (ce:+ (ce:* c 9/5) 32) f))
-(define-propagator (c:celsius-kelvin c k)
-  (c:+ c 273.15 k))
+
+#|
+ ;;; Same as above, but in diagram style
+
+ (define-propagator (fahrenheit-celsius f c)
+   (let-cells (f-32 c*9)
+     (c:+ 32 f-32 f)
+     (c:* f-32 5 c*9)
+     (c:* c 9 c*9)))
+|#
 
 ;;; Measuring the height of a building using a barometer
 
-(define (fall-duration t h)
-  (let-cells (g one-half t^2 gt^2)
-    ((constant (make-interval 9.789 9.832)) g)
-    ((constant (make-interval 1/2 1/2)) one-half)
-    (c:square t t^2)
-    (c:* g t^2 gt^2)
-    (c:* one-half gt^2 h)))
+(define-e:propagator (ce:fall-duration t)
+  (let-cell (g (make-interval 9.789 9.832))
+    (ce:* 1/2 (ce:* g (ce:square t)))))
 
 #|
  (initialize-scheduler)
@@ -111,18 +108,11 @@
  (content building-height)
  ;Value: #(interval 41.163 47.243)
 |#
-(define-e:propagator (ce:fall-duration t)
-  (let-cell (g (make-interval 9.789 9.832))
-    (c:* 1/2 (c:* g (c:square t)))))
 ;;; In more ways than one
 
-(define (similar-triangles s-ba h-ba s h)
-  (let-cell ratio
-    (c:* s-ba ratio h-ba)
-    (c:* s ratio h)))
 (define-propagator (c:similar-triangles s-ba h-ba s h)
-  (c:== (c:* s-ba %% h-ba)
-	(c:* s %% h)))
+  (c:== (ce:* s-ba %% h-ba)
+	(ce:* s %% h)))
 #|
  (initialize-scheduler)
  (define-cell barometer-height)
