@@ -29,3 +29,5 @@ rstify "programmer-guide"
 rstify "revised"
 
 task :doc => "revised.pdf"
+
+autobib "revised"
