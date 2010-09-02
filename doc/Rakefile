@@ -1,3 +1,5 @@
+require "#{File.dirname(__FILE__)}/rake-latex.rb"
+
 def rstify filename
   file "#{filename}.html" => ["#{filename}.rst", "style.css"] do
     sh "rst2html --stylesheet style.css #{filename}.rst > #{filename}.html"
