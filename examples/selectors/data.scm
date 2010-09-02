@@ -120,12 +120,6 @@
 
 ;;; Stub data for particular jobs
 
-(define (force-assoc item alist)
-  (let ((binding (assoc item alist)))
-    (if binding
-	(cdr binding)
-	(error "Expand the list!" item (map car alist)))))
-
 (define (distance-est trip-segment)
   ;;; Ha!
   (if (eq? (trip-segment-start trip-segment)

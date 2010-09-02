@@ -13,5 +13,5 @@ cd ../examples
 ./run-tests
 ./run-mechanics-tests
 
-cd ../explorations/circuits
-./run-tests
+#cd ../explorations/circuits
+#./run-tests

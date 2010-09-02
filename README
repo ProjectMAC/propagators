@@ -66,12 +66,6 @@ The support/ directory
   - profilers
   - miscellaneous utilities
 
-The explorations/ directory
-  is exploratory --- trying to understand the (propagation) universe
-  by writing code.  It should be considered fully unsupported: it may
-  not work, it may be out of date, it may contain good ideas whose
-  time has not yet come, etc.
-
 The testing/ directory
   is the unit testing framework this project uses, distributed here in
   source form.  As software, testing/ is a separate entity and not

@@ -40,6 +40,12 @@
 	(atan y x))
       atan2))
 
+(define (force-assoc item alist)
+  (let ((binding (assoc item alist)))
+    (if binding
+	(cdr binding)
+	(error "Expand the list!" item (map car alist)))))
+
 (define (for-each-distinct-pair proc lst)
   (if (not (null? lst))
       (let loop ((first (car lst)) (rest (cdr lst)))

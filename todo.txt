@@ -1,8 +1,9 @@
 Major Tasks on the Revised Report:
+- Acknowledgements (MMP, CSAIL, ...)
+- Install released system in MMP archive
 - Format
   - Insert correct cross references.
   - Cite paterson and mcbride
-  - Acknowledgements (MMP, CSAIL, ...)
   - unindent
 - Go over the examples and make them look nice
   - Remove calls to constant

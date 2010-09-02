@@ -41,9 +41,9 @@
    "albatross-conundrum"
    "belief-propagation"
    "electric-parts"
-   "selectors/data"
+;   "selectors/data"
    ))
-
+#;
 (for-each
  load-relative
  '("selectors/selectors"))
