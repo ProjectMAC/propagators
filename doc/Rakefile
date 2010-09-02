@@ -32,4 +32,5 @@ rstify "revised"
 
 task :doc => "revised.pdf"
 
+pdflatex "revised"
 autobib "revised"
