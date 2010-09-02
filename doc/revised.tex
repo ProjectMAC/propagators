@@ -2180,8 +2180,8 @@ produced by the propagator).
 Also, almost all primitive propagators are wrapped
 with the \texttt{nary-mapping} wrapper function around their underlying
 generic operation.  This wrapper function is an implementation of the
-idea of applicative functors (TODO cite McBride and Paterson), so if
-your partial information structure is an applicative functor, you can
+idea of applicative functors \cite{mcbride-paterson-2008-applicative-functors},
+so if your partial information structure is an applicative functor, you can
 use this to teach most propagators how to handle it.
 
 The propagators wrapped in \texttt{nary-mapping} are exactly the strict
