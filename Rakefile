@@ -6,7 +6,7 @@ end
 
 excludes = ["*.svn", "selectors"]
 
-task :release => :clean do
+task :release => [:clean, :workbook, :documentation] do
   sh "cd #{File.dirname(__FILE__)}; " + %Q{tar --create --verbose --file ../propagator.tar --directory .. --transform "s/prop/propagator/" --exclude="} + excludes.join("\" --exclude=\"") + "\" prop/"
 end
 
@@ -40,4 +40,8 @@ end
 
 task :workbook do
   sh "enscript -M letter -fCourier-Bold12 -o workbook.ps --file-align=2 #{files.join(" ")}"
+end
+
+task :doc do
+  sh "cd #{File.dirname(__FILE__)}/doc; rake doc"
 end

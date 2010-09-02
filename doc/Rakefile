@@ -10,7 +10,7 @@ file "revised.rst" => "revised.txt" do
 end
 
 file "revised.tex" => "revised.rst" do
-  sh "rst2latex revised.rst > revised.tex"
+  sh "rst2latex revised.rst | perl -e 'while (<>) { s/a4paper/letterpaper/; print }' > revised.tex"
 end
 
 file "revised.dvi" => "revised.tex" do
@@ -27,3 +27,5 @@ end
 
 rstify "programmer-guide"
 rstify "revised"
+
+task :doc => "revised.pdf"
