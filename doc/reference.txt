@@ -1,3 +1,67 @@
+Materials for the reference manual:
+- delayed-propagator-constructor
+- p:constant, e:constant
+- the underlying pieces out of which things are built
+  - copying cons?
+- detail about let-cells-rec:
+  Asterisk on "effectively": rather than a true direct
+  interconnection, ``let-cells-rec`` creates extra cells that are then
+  identified with the specified ones by mutual identity propagators.
+
+- For each partial information type:
+  - what it means
+  - how to introduce it
+  - how to operate with it
+  - what is its equivalent? behavior
+  - how it merges
+  - when is it contradictory
+  - what effect it has on binary-map
+  - what effect it has on switch and d@
+  - anything else
+
+
+make-closure, make-e:closure
+  Scheme procedures for directly constructing closure objects.  The
+  closures are defined in diagram or expression style, respectively.
+
+Document the generic operations system, including defining generics,
+precedence of handlers, and tagging procedures as type testers for
+performance; also use of SOS specializers as predicates directly.
+Also the coersion subsystem?
+
+Implicit Cell Syntax
+----------------------------------------------------------------------
+
+A quirky little feature, called
+``%%``.  This is a Scheme object, therefore Scheme-Propagators syntax,
+for controlling the argument position of the implicit cell that an
+expression-style application will make and return.  Perhaps examples
+are best::
+
+  (e: foo bar)     ==  (e: foo bar %%)
+
+  (e: foo %% bar)  ==  (let-cell new (p: foo new bar) new)
+
+I borrowed this idea from Guy Steele's PhD thesis on constraint
+languages, and it was a year between when I implemented it and
+when I first used it.  The use case I do have is when I
+want to make a new cell participate in an input position
+in a constraint with some existing cells::
+
+  (define-cell x)
+  (define-cell z)
+  (define-cell y (ce:+ x %% z))
+  (add-content x 5)
+  (add-content y 3)
+  (run)
+  (content z) ==> 8
+
+Perhaps this use case could also be served by adding more
+expression-style constraint procedures (namely ``ce:-``, which I do
+not currently have), but then again maybe it's elegant.
+
+
+
 			   Running Networks
 
 initialize-scheduler

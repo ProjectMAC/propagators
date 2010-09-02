@@ -159,3 +159,11 @@
      (begin
        (define-structure-propagators arg ...)
        (slotful-information-type arg ...)))))
+
+(define-propagator (c:pair? thing truth)
+  (p:pair? thing truth)
+  (p:switch truth (cons nothing nothing) thing))
+
+(define-propagator (c:null? thing truth)
+  (p:null? thing truth)
+  (p:switch truth '() thing))

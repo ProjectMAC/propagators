@@ -1,48 +1,21 @@
 Major Tasks on the Revised Report:
-- Organization
 - Format
   - Insert correct cross references.
+  - Cite paterson and mcbride
+  - Acknowledgements (MMP, CSAIL, ...)
   - unindent
-- Reference materials
 - Go over the examples and make them look nice
   - Remove calls to constant
 - Define vector and vector-ref (or even the fully generic ref)
   - unification on vectors in addition to on conses
     - there is no "occurs check"
     - Can we replicate the Y combinator inside merge?
-- Define p:sin, p:cos, etc.  Also p:negate, p:invert
-- Define c:pair? for carrying-cells
-- The discussion of "new partial information structures" should
-  answer the question: "How do I decide what effect my partial
-  information structure has as the control of a p:switch? as the
-  control of a p:if?"
-- For each partial information type:
-  - what it means
-  - how to introduce it
-  - how to operate with it
-  - what is its equivalent? behavior
-  - how it merges
-  - when is it contradictory
-  - what effect it has on binary-map
-  - what effect it has on switch and d@
-  - anything else
 - Check the lists of propagators carefully.
   - Autogenerate them?
-- List the built-in handlers for binary-map under the nary-mapping
-  wrapper
 
 
 
-A Scheme procedure, such as ``+``, does not know what to do with
-``nothing``.  The primitive propagator constructor ``p:+`` must
-produce a propagator that can handle ``nothing``.  Thus the Scheme
-procedure ``+`` must be wrapped up to produce ``nothing`` if one of
-its arguments is ``nothing`` so it can be made into a propagator.  
-This is the job of ``binary-map``.
-
-
-
-For the revised report:
+Tweaks for the revised report:
 - Update the README file
 - Where is Scheme-Propagators distributed?
 - How are the MMP-specifics dealt with?
@@ -79,57 +52,10 @@ For the revised report:
   a generic contradictory? operation?
 - Make merge always produce a list of effects?
 - Fix supported values so they print as #(contingent mumble)
-
-Materials for the reference manual:
-- delayed-propagator-constructor
-- p:constant, e:constant
-- the underlying pieces out of which things are built
-  - copying cons?
-- detail about let-cells-rec:
-  Asterisk on "effectively": rather than a true direct
-  interconnection, ``let-cells-rec`` creates extra cells that are then
-  identified with the specified ones by mutual identity propagators.
-
-make-closure, make-e:closure
-  Scheme procedures for directly constructing closure objects.  The
-  closures are defined in diagram or expression style, respectively.
-
-Document the generic operations system, including defining generics,
-precedence of handlers, and tagging procedures as type testers for
-performance; also use of SOS specializers as predicates directly.
-Also the coersion subsystem?
-
-Implicit Cell Syntax
-----------------------------------------------------------------------
-
-A quirky little feature, called
-``%%``.  This is a Scheme object, therefore Scheme-Propagators syntax,
-for controlling the argument position of the implicit cell that an
-expression-style application will make and return.  Perhaps examples
-are best::
-
-  (e: foo bar)     ==  (e: foo bar %%)
-
-  (e: foo %% bar)  ==  (let-cell new (p: foo new bar) new)
-
-I borrowed this idea from Guy Steele's PhD thesis on constraint
-languages, and it was a year between when I implemented it and
-when I first used it.  The use case I do have is when I
-want to make a new cell participate in an input position
-in a constraint with some existing cells::
-
-  (define-cell x)
-  (define-cell z)
-  (define-cell y (ce:+ x %% z))
-  (add-content x 5)
-  (add-content y 3)
-  (run)
-  (content z) ==> 8
-
-Perhaps this use case could also be served by adding more
-expression-style constraint procedures (namely ``ce:-``, which I do
-not currently have), but then again maybe it's elegant.
-
+- The discussion of "new partial information structures" should
+  answer the question: "How do I decide what effect my partial
+  information structure has as the control of a p:switch? as the
+  control of a p:if?"
 
 
 For the paper:

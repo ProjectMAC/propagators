@@ -175,3 +175,12 @@
 (define-propagator (c:exp x y)
   (p:exp x y)
   (p:log y x))
+
+(define-propagator (c:eq? a b truth)
+  (p:eq? a b truth)
+  (conditional-wire truth a b))
+
+(define-propagator (c:eqv? a b truth)
+  (p:eqv? a b truth)
+  (conditional-wire truth a b))
+
