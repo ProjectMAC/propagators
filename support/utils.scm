@@ -22,6 +22,24 @@
 (declare (usual-integrations make-cell cell?))
 
 
+(define negate
+  (if (lexical-unbound? (the-environment) 'negate)
+      (lambda (x)
+	(- x))
+      negate))
+
+(define invert
+  (if (lexical-unbound? (the-environment) 'invert)
+      (lambda (x)
+	(/ x))
+      invert))
+
+(define atan2
+  (if (lexical-unbound? (the-environment) 'atan2)
+      (lambda (y x)
+	(atan y x))
+      atan2))
+
 (define (for-each-distinct-pair proc lst)
   (if (not (null? lst))
       (let loop ((first (car lst)) (rest (cdr lst)))

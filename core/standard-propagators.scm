@@ -32,19 +32,30 @@
     (eq-put! answer 'subexprs '())
     answer))
 
+(propagatify abs)
+(propagatify square)
+(propagatify sqrt)
+(propagatify not)
+(propagatify negate)
+(propagatify invert)
+(propagatify sin)
+(propagatify cos)
+(propagatify tan)
+(propagatify asin)
+(propagatify acos)
+(propagatify exp)
+(propagatify log)
+
 (propagatify +)
 (propagatify -)
 (propagatify *)
 (propagatify /)
-(propagatify abs)
-(propagatify square)
-(propagatify sqrt)
 (propagatify =)
 (propagatify <)
 (propagatify >)
 (propagatify <=)
 (propagatify >=)
-(propagatify not)
+(propagatify atan2)
 
 ;; Not using propagatify because the name AND names syntax, and I want
 ;; the procedure BOOLEAN/AND
@@ -140,3 +151,27 @@
 		(cdr args))
       lead))))
 (define-cell ce:== (expression-style-variant c:==))
+
+(define-propagator (c:negate x y)
+  (p:negate x y)
+  (p:negate y x))
+
+(define-propagator (c:invert x y)
+  (p:invert x y)
+  (p:invert y x))
+
+(define-propagator (c:sin x y)
+  (p:sin x y)
+  (p:asin y x))
+
+(define-propagator (c:cos x y)
+  (p:cos x y)
+  (p:acos y x))
+
+(define-propagator (c:tan x y)
+  (p:tan x y)
+  (p:atan2 y 1 x))
+
+(define-propagator (c:exp x y)
+  (p:exp x y)
+  (p:log y x))
