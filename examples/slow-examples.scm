@@ -145,10 +145,8 @@
        #(knight sir-jules     ,s8 ,h8)
        #(knight sir-balthus   ,s9 ,h9))
      (map v&s-value (map tms-query (show-time find-solution)))))
-   (check (= *number-of-calls-to-fail*
-	     (if *false-premise-starts-out*
-		 (if *avoid-false-true-flips* 488 894) 922)))
-   (check (= *worldview-number* 2410))))
+   (check (= *number-of-calls-to-fail* 399))
+   (check (= *worldview-number* 1358))))
 
 (in-test-group
  albatross-conundrum
@@ -169,9 +167,8 @@ Also good:
   #(deck gun      scurvy    casket-of-magenta    ropes)
   #(deck lower    kraken    goldenhall-talisman  spare-sails))
 |#
-   (check (= (if *avoid-false-true-flips* 683 1425)
-	     *number-of-calls-to-fail*))
-   (check (= *worldview-number* 2220))))
+   (check (= *number-of-calls-to-fail* 803))
+   (check (= *worldview-number* 3098))))
 
 ;;; This one is too slow even for the slow-examples!
 #;
