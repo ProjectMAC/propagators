@@ -9,9 +9,9 @@ file "revised.rst" => "revised.txt" do
   sh "cp revised.txt revised.rst"
 end
 
-file "revised.tex" => "revised.rst" do
-  sh "rst2latex revised.rst | perl -e 'while (<>) { s/a4paper/letterpaper/; print }' > revised.tex"
-end
+# file "revised.tex" => "revised.rst" do
+#   sh "rst2latex revised.rst | perl -e 'while (<>) { s/a4paper/letterpaper/; print }' > revised.tex"
+# end
 
 file "revised.dvi" => "revised.tex" do
   sh "latex revised.tex"
