@@ -45,3 +45,8 @@ end
 task :doc do
   sh "cd #{File.dirname(__FILE__)}/doc; rake doc"
 end
+
+
+# gjs@maharal:metacirc$ cp propagator.tar /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/
+# gjs@maharal:metacirc$ cp prop/doc/revised-html.html /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/
+# gjs@maharal:metacirc$ cp prop/doc/revised-html.html /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/index.html
