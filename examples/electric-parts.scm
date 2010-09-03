@@ -59,11 +59,9 @@ and the current is measured as flowing into t1."
      (c:== strength i))))
 
 (define (ground node)
-  ((constant 0) (potential (car node))))
+  (p:== 0 (potential (car node))))
 
-(define (spst-switch ctl in out)
-  (switch ctl in out)
-  (switch ctl out in))
+(define spst-switch p:conditional-wire)
 
 (define (node n)
   (let ((e (make-cell))
@@ -104,18 +102,15 @@ and the current is measured as flowing into t1."
 (define (ideal-diode)
   (2-terminal-device
    (lambda (v i)
-     (let-cells (zero-volts zero-amps if>=0 vreverse
-		 vr<=0 iforward conducting -conducting)
-       ((constant 0) zero-volts)
-       ((constant 0) zero-amps)
+     (let-cells (if>=0 vreverse vr<=0 iforward conducting -conducting)
        ;;#t=>conducting; #f=>not conducting
-       (binary-amb conducting)
+       (p:amb conducting)
        (p:not conducting -conducting)
-       (spst-switch conducting zero-volts v)
+       (spst-switch conducting 0 v)
        (spst-switch -conducting v vreverse)
-       (c:<= vr<=0 vreverse zero-volts)
+       (c:<= vr<=0 vreverse 0)
        (require vr<=0)
-       (spst-switch -conducting zero-amps i)
+       (spst-switch -conducting 0 i)
        (spst-switch conducting i iforward)
-       (c:>= if>=0 iforward zero-amps)
+       (c:>= if>=0 iforward 0)
        (require if>=0)))))

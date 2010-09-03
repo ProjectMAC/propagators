@@ -86,7 +86,6 @@
 
 ;; TODO Do I still want to provide these old names for these things?
 (define constant p:constant) (define switch p:switch)
-(define pass-through p:id)
 
 ;;;; Standard compound propagators
 
@@ -130,14 +129,14 @@
   (p:not p1 p2)        (p:not p2 p1))
 
 (define-propagator (c:id c1 c2)
-  (pass-through c1 c2) (pass-through c2 c1))
+  (p:id c1 c2) (p:id c2 c1))
 
 (define-cell p:==
   (propagator-constructor!
    (lambda args
      (let ((target (car (last-pair args))))
        (for-each (lambda (arg)
-		   (pass-through arg target))
+		   (p:id arg target))
 		 (except-last-pair args))
        target))))
 (define-cell e:== (expression-style-variant p:==))

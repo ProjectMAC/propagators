@@ -23,7 +23,7 @@
 
 (define-propagator (p:guess-link cell1 cell2)
   (let ((control (e:amb)))
-    (conditional-wire control cell1 cell2)
+    (p:conditional-wire control cell1 cell2)
     control))
 
 (define-propagator-syntax (quadratic-guess-bijection cells1 cells2)
@@ -45,8 +45,8 @@
 
 (define-propagator-syntax (quadratic-extend-bijection cell-alist cells1 cells2)
   (for-each (lambda (cell-pair)
-	      (pass-through (car cell-pair) (cdr cell-pair))
-	      (pass-through (cdr cell-pair) (car cell-pair)))
+	      (p:id (car cell-pair) (cdr cell-pair))
+	      (p:id (cdr cell-pair) (car cell-pair)))
 	    cell-alist)
   (quadratic-guess-bijection
    (lset-difference eq? cells1 (map car cell-alist))

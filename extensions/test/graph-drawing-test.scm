@@ -53,7 +53,7 @@
     (initialize-scheduler)
     (define-cell foo)
     (define-cell bar)
-    (pass-through foo bar)
+    (p:id foo bar)
     (draw:write-graph-to-string foo)
     (check (equal?
 "digraph G {
@@ -91,7 +91,7 @@
    (define (one-small-network)
      (define-cell foo)
      (define-cell bar)
-     (pass-through foo bar)
+     (p:id foo bar)
      (initialize-scheduler))
    (check (< (memory-loss-from (repeated 100 one-small-network)) 2)))
 
@@ -103,7 +103,7 @@
     (with-network-group (network-group-named 'subgroup)
       (lambda ()
 	(define-cell bar)
-	(pass-through foo bar)))
+	(p:id foo bar)))
     (draw:write-graph-to-string *current-network-group*)
     (check (equal?
 "digraph G {
