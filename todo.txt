@@ -1,5 +1,4 @@
 Major Tasks on the Revised Report:
-- Give axch write access to /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/
 - Install released system in MMP archive
 
 - Make a nice version for DSpace and put it there
