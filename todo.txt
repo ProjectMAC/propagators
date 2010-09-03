@@ -1,11 +1,7 @@
 Major Tasks on the Revised Report:
-- Acknowledgements (MMP, CSAIL, ...)
 - Install released system in MMP archive
 - Make a nice version for DSpace and put it there
-- Format
-  - Insert correct cross references.
-  - Cite paterson and mcbride
-  - unindent
+- Reformat in Scribble
 - Go over the examples and make them look nice
   - Remove calls to constant
 - Define vector and vector-ref (or even the fully generic ref)
@@ -19,8 +15,6 @@ Major Tasks on the Revised Report:
 
 Tweaks for the revised report:
 - Update the README file
-- Where is Scheme-Propagators distributed?
-- How are the MMP-specifics dealt with?
 - Explicit access to propagators that merge, check equivalence,
   check contradictions?
 - What is the right analogue of named let?
