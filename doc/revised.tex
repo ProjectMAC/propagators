@@ -99,20 +99,21 @@ The Propagator Programming Model is an attempt to mitigate this
 problem.  It is a model that supports the expression and integration
 of multiple viewpoints on a design.  It incorporates explicit
 structure to support the integration of redundant pieces and
-degenerate subsystems.  It will help us integrate the diversity that
-was inherent in the design process into the delivered operational
-product.
+subsystems that solve problems in several different ways.  It will
+help us integrate the diversity that was inherent in the design
+process into the delivered operational product.
 
 The Propagator Programming Model is built on the idea that the basic
 computational elements are autonomous machines interconnected by
 shared cells through which they communicate.  Each machine
 continuously examines the cells it is interested in, and adds
-information to some based on deductions it can make from information
+information to some based on computations it can make from information
 from the others.  Cells accumulate information from the propagators
 that produce that information.  The key idea here is additivity.  New
 ways to make contributions can be added just by adding new
 propagators; if an approach to a problem doesn't turn out to work
-well, it can be ignored, dynamically and without disruption.
+well, it can be identified by its premises and ignored, dynamically
+and without disruption.
 
 
 This work was supported in part by the MIT Mind Machine Project.
@@ -130,7 +131,7 @@ Although most of this document introduces you to the Scheme-Propagator
 system that we have developed in MIT Scheme, the Propagator Model is
 really independent of the language.  You should be able to write
 propagators in any language you choose, and others should be able to
-write subsystems in their favorite language, that cooperate with your
+write subsystems in their favorite language that cooperate with your
 subsystems.  What is necessary is that all users agree on the protocol
 by which propagators communicate with the cells that are shared among
 subsystems.  These rules are very simple and we can enumerate them
@@ -763,7 +764,7 @@ Some examples:
 \label{making-cells}
 
 Cells are the memory locations of the Scheme-Propagators
-language; Scheme variables whose bindings are cells correspond to
+language: Scheme variables whose bindings are cells correspond to
 Scheme-Propagators variables (Scheme variables whose bindings are
 other things look like syntax to Scheme-Propagators).  We've
 already met one way to make cells:
@@ -1130,7 +1131,7 @@ there is a contradiction!''
 
 All these various possible states of information are represented
 (perforce) as Scheme objects.  The Scheme object \texttt{nothing} represents
-the information ``I don't know anything''.  This only takes a single
+the information ``I don't know anything''.  This requires only a single
 Scheme object, because not knowing anything is a single state of
 knowledge.  Most Scheme objects represent ``perfect, consistent''
 information: the Scheme object \texttt{5} represents the information ``I
