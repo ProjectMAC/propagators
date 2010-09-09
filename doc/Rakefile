@@ -58,7 +58,7 @@ end
 file "revised-html/revised-html.html" => "revised-html.tex" do
   sh "pdflatex revised-html.tex"
   sh "bibtex revised-html"
-  sh "latex2html revised-html"
+  sh "latex2html -split 0 revised-html"
 end
 
 task :doc => "revised.html"
