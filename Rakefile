@@ -7,7 +7,7 @@ end
 excludes = %w(*.bin *.com *.bci *.ext *~ *.svn selectors explorations .gitignore todo.txt partial-composition.* reference.* revised-html)
 
 task :release => [:workbook, :doc] do
-  sh "cd #{File.dirname(__FILE__)}; " + %Q{tar --create --verbose --file ../propagator.tar --directory .. --transform "s/prop/propagator/" --exclude="} + excludes.join("\" --exclude=\"") + "\" prop/"
+  sh "cd #{File.dirname(__FILE__)}; " + %Q{tar --create --verbose --file ../propagator.tar --directory .. --transform "s/prop/propagator/" --exclude=} +"\"" + excludes.join("\" --exclude=\"") + "\" prop/"
 end
 
 def files
@@ -46,7 +46,8 @@ task :doc do
   sh "cd #{File.dirname(__FILE__)}/doc; rake doc"
 end
 
-
-# gjs@maharal:metacirc$ cp propagator.tar /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/
-# gjs@maharal:metacirc$ cp prop/doc/revised-html.html /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/
-# gjs@maharal:metacirc$ cp prop/doc/revised-html.html /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/index.html
+task :push do
+  sh "cp ../propagator.tar /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/"
+  sh "cp doc/revised-html.html /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/"
+  sh "cp doc/revised-html.html /afs/csail.mit.edu/group/mac/www/data/users/gjs/propagators/index.html"
+end
