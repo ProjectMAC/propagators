@@ -67,17 +67,10 @@ subsystems.  These rules are very simple and we can enumerate them
 right here:
 
 Cells must support three operations:
-\begin{itemize}
-\item {} 
-add some content
-
-\item {} 
-collect the content currently accumulated
-
-\item {} 
-register a propagator to be notified when the accumulated content changes
-
-\end{itemize}
+@itemlist[
+@item{add some content}
+@item{collect the content currently accumulated}
+@item{register a propagator to be notified when the accumulated content changes}]
 
 When new content is added to a cell, the cell must merge the addition
 with the content already present.  When a propagator asks for the
@@ -1079,35 +1072,16 @@ propagator are particularly important.
 
 The following partial information structures are provided with
 Scheme-Propagators:
-\begin{itemize}
-\item {} 
-nothing
-
-\item {} 
-just a value
-
-\item {} 
-intervals
-
-\item {} 
-propagator cells
-
-\item {} 
-compound data
-
-\item {} 
-closures
-
-\item {} 
-supported values
-
-\item {} 
-truth maintenance systems
-
-\item {} 
-contradiction
-
-\end{itemize}
+@itemlist[
+@item{nothing} 
+@item{just a value} 
+@item{intervals} 
+@item{propagator cells} 
+@item{compound data} 
+@item{closures} 
+@item{supported values} 
+@item{truth maintenance systems} 
+@item{contradiction}]
 
 
 @;___________________________________________________________________________
@@ -1742,26 +1716,25 @@ information structures are completely mutually exclusive.
 
 \texttt{merge} is expected to determine a (semi-)lattice (up to equivalence
 by \texttt{equivalent?}).  That is
-\begin{itemize}
-\item {} 
-associativity:
+@itemlist[
+@item{associativity:
 \begin{quote}{\ttfamily \raggedright \noindent
 (merge~X~(merge~Y~Z))~~{\textasciitilde}~~(merge~(merge~X~Y)~Z)~\\
 (equivalent?~(merge~X~(merge~Y~Z))~(merge~(merge~X~Y)~Z))~==>~{\#}t
-}\end{quote}
-\item {} 
-commutativity:
+}\end{quote}}
+
+@item{commutativity:
 \begin{quote}{\ttfamily \raggedright \noindent
 (merge~X~Y)~~{\textasciitilde}~~(merge~Y~X)~\\
 (equivalent?~(merge~X~Y)~(merge~Y~X))~==>~{\#}t
-}\end{quote}
-\item {} 
-idempotence:
+}\end{quote}}
+
+@item{idempotence:
 \begin{quote}{\ttfamily \raggedright \noindent
 (X~{\textasciitilde}~Y)~implies~(X~{\textasciitilde}~(merge~X~Y))~\\
 (or~(not~(equivalent?~X~Y))~(equivalent?~X~(merge~X~Y)))~==>~{\#}t
-}\end{quote}
-\end{itemize}
+}\end{quote}}
+]
 
 \texttt{(contradictory? info)  ==>  {\#}t or {\#}f}
 
@@ -2067,14 +2040,9 @@ idea anyway, and saves the trouble of writing handlers for an explicit
 
 A new partial information structure may interact with an existing one
 in two ways:
-\begin{itemize}
-\item {} 
-as arguments to merge or to binary propagators
-
-\item {} 
-by containment (of and by)
-
-\end{itemize}
+@itemlist[
+@item{as arguments to merge or to binary propagators}
+@item{by containment (of and by)}]
 
 The first is in general handled by making sure that \texttt{merge},
 \texttt{binary-map}, and all appropriate individual propagator generic
@@ -2103,17 +2071,15 @@ partial information types:
 }\end{quote}
 
 Notes:
-\begin{itemize}
-\item {} 
+@itemlist[
+@item{
 The \texttt{nothing} information structure defines methods on \texttt{merge}
 and the propagators that do the right thing for any other object, so
-does not require any additional effort.
+does not require any additional effort.}
 
-\item {} 
+@item{
 TMSes automatically coerce to TMS any object that is declared
-coercible to a raw contingency object.
-
-\end{itemize}
+coercible to a raw contingency object.}]
 
 For example:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -2340,20 +2306,13 @@ In normal operation, Scheme-Propagators keeps track of some metadata
 about the network that is running.  This metadata can be invaluable
 for debugging propagator networks.  The specific data it tries to
 track is:
-\begin{itemize}
-\item {} 
-The names (non-unique but semantic) of all the cells and
+@itemlist[
+@item{The names (non-unique but semantic) of all the cells and
 propagators.  This is in contrast with the unique but non-semantic
 object hashes of all the cells and propagators that MIT Scheme
-tracks anyway.
-
-\item {} 
-Which propagators are connected to which cells.
-
-\item {} 
-Whether the connections are input, output, or both.
-
-\end{itemize}
+tracks anyway.}
+@item{Which propagators are connected to which cells.} 
+@item{Whether the connections are input, output, or both.}]
 
 To make sure that your network tracks this metadata well, you should
 use the high level interfaces to making cells, propagators, and
