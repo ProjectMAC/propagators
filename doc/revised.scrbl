@@ -1597,7 +1597,7 @@ individually add the appropriate handlers to the generic procedures
 underlying the primitive propagators:
 @example{
 (defhandler generic-+ add-interval interval? interval?)
-(defhandler generic-{}- sub-interval interval? interval?)
+(defhandler generic-- sub-interval interval? interval?)
 (defhandler generic-* mul-interval interval? interval?)
 (defhandler generic-/ div-interval interval? interval?)
 (defhandler generic-sqrt sqrt-interval interval?)
@@ -1958,7 +1958,7 @@ desired partial information inputs, producing an appropriately
 partial result.  @tt{generic-abs}, @tt{generic-square},
 @tt{generic-sqrt}, @tt{generic-not}, @tt{generic-pair?}, and
 @tt{generic-null?} accept one input.
-@tt{generic-+}, @tt{generic-{}-}, @tt{generic-*}, @tt{generic-/},
+@tt{generic-+}, @tt{generic--}, @tt{generic-*}, @tt{generic-/},
 @tt{generic-=}, @tt{generic-<}, @tt{generic->}, @tt{generic-<=},
 @tt{generic->=}, @tt{generic-and}, @tt{generic-or}, @tt{generic-eq?},
 @tt{generic-eqv?}, @tt{generic-expt}, and @tt{generic-switch} accept two inputs.
@@ -2743,23 +2743,13 @@ system diagram: the intellectual viewpoint of the Propagator Model of
 computation is not the composition of functions, as in traditional
 models, but is rather the construction of mechanisms.  The difference
 is profound:
-\begin{quote}
-\newcounter{listcnt0}
-\begin{list}{\arabic{listcnt0}.}
-{
-\usecounter{listcnt0}
-\setlength{\rightmargin}{\leftmargin}
-}
-\item {} 
-circuit models are multidirectional; system diagrams compute
-from inputs to outputs.
-
-\item {} 
-circuit models are abstractions of physics; system diagrams
-are abstractions of process.
-
-\end{list}
-\end{quote}
+@itemlist[
+@item{circuit models are multidirectional; system diagrams compute
+from inputs to outputs.}
+@item{circuit models are abstractions of physics; system diagrams
+are abstractions of process.}
+#:style 'ordered
+]
 
 The circuit diagram viewpoint gives us powerful ways to think.  We can
 modify a circuit diagram by clipping out a part, or by installing a
