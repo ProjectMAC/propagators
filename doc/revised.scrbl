@@ -364,7 +364,7 @@ computation will proceed:
 (content answer)  ==>  12
 }
 
-In fact, in this case, @tt{d@"@"} (or @tt{e@"@"}) will build an \emph{apply propagator}
+In fact, in this case, @tt{d@"@"} (or @tt{e@"@"}) will build an @emph{apply propagator}
 that will wait until an operation appears in the
 @tt{operation} cell, and then apply it.
 
@@ -1711,7 +1711,7 @@ not.
 
 
 
-\subsubsection{The Full Story on Merge}
+@subsubsection{The Full Story on Merge}
 
 The description of @tt{merge} as always returning a new partial
 information structure is an approximation.  Sometimes, @tt{merge} may
@@ -2113,7 +2113,7 @@ you need to supply the name yourself, with @tt{(name!  your-function
 
 
 
-\subsubsection{Expression Style Variants}
+@subsubsection{Expression Style Variants}
 
 Once you've made a diagram-style propagator constructor, you can make
 a variant that likes to be applied in expression style with
@@ -2430,7 +2430,7 @@ Scheme-Propagators appeared arbitrary at the time they were made.
 
 
 
-\subsubsection{Default Application and Definition Style}
+@subsubsection{Default Application and Definition Style}
 
 Diagram style application was picked as the default over
 expression style when applying cells whose contents are not yet known,
@@ -2444,7 +2444,7 @@ fan-in requires diagram style.
 
 
 
-\subsubsection{Locus of Delayed Construction}
+@subsubsection{Locus of Delayed Construction}
 
 There was a choice about where to put the delaying of pieces
 of propagator network that should be constructed only conditionally.
@@ -2495,7 +2495,7 @@ what one wanted.
 
 
 
-\subsubsection{Strategy for Compound Data}
+@subsubsection{Strategy for Compound Data}
 
 The decision to go with the carrying cells strategy for
 compound data felt, while not really arbitrary, at least enough not
