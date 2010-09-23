@@ -2060,20 +2060,18 @@ allows one to declare when this situation obtains so that
 @tt{defhandler-coercing} does the right thing.  The specific touch
 points for this are the type testers and coercers of the existing
 partial information types:
-\begin{quote}{\ttfamily \raggedright \noindent
-| Type                | Predicate      | Coercer      |
-|-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-|
-| Nothing             | nothing?       | -{}-           |
-| Raw Scheme object   | various        | -{}-           |
-| Numerical interval  | interval?      | ->interval   |
-| Propagator cells    | cell?          | -{}-           |
-| Scheme pairs        | pair?          | -{}-           |
-| Propagator closures | closure?       | -{}-           |
-| Contingency object  | contingent?    | ->contingent |
-| TMS                 | tms?           | ->tms        |
-| Contradiction       | contradictory? | -{}-           |
-|-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-|
-}\end{quote}
+@tabular[(list
+(list "Type"                 "Predicate"          "Coercer")
+(list "Nothing"              @tt{nothing?}        @tt{--})           
+(list "Raw Scheme object   " "various"            @tt{--})           
+(list "Numerical interval  " @tt{interval?}       @tt{->interval})
+(list "Propagator cells"     @tt{cell?}           @tt{--})           
+(list "Scheme pairs"         @tt{pair?}           @tt{--})           
+(list "Propagator closures " @tt{closure?}        @tt{--})           
+(list "Contingency object  " @tt{contingent?}     @tt{->contingent})
+(list "TMS"                  @tt{tms?}            @tt{->tms})
+(list "Contradiction"        @tt{contradictory?}  @tt{--})           
+)]
 
 Notes:
 @itemlist[
