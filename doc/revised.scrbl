@@ -1,5 +1,8 @@
 #lang scribble/base
 
+@; TODO convert definitions with commas in them into definitions of
+@; lists of items
+
 @(define (example . args)
   (apply verbatim #:indent 4 (append (list "\n") args (list "\n"))))
 
@@ -240,13 +243,11 @@ Once attached, whenever either the @tt{foo} cell or the @tt{bar} cell
 gets any new interesting information, the adding propagator will
 eventually compute the appropriate sum and give it to @tt{baz} as an
 update.
-\begin{description}
 @definition["(d@ propagator boundary-cell ...)"]{
 Attaches a propagator to the given boundary cells.  By convention,
 cells used as outputs go last.  As a Scheme procedure, @tt{d@"@"} does
 not return a useful value.}
 
-\end{description}
 
 As in Scheme, @tt{p:+} is actually the name of a cell that contains a
 propagator constructor for attaching propagators that do addition.
@@ -280,7 +281,6 @@ The name @tt{e@"@"} is mnemonic for ``expression apply''.  The @tt{e@"@"}
 procedure is just like @tt{d@"@"}, except it synthesizes an extra cell to
 serve as the last argument to @tt{d@"@"}, and returns it from the @tt{e@"@"}
 expression (whereas the return value of @tt{d@"@"} is unspecified).
-\begin{description}
 @definition["(e@ propagator boundary-cell ...)"]{
 Attaches the given propagator to a boundary consisting of the given
 boundary cells augmented with an additional, synthesized cell.  The
@@ -288,7 +288,6 @@ synthesized cell goes last, because that is the conventional
 position for an output cell.  Returns the synthesized cell as the
 Scheme return value of @tt{e@"@"}.}
 
-\end{description}
 
 For example, here are two ways to do the same thing:
 @example{
@@ -398,7 +397,6 @@ of input cells and gives the result to an output cell (which is passed
 in as the last argument to @tt{p:foo} and synthesized and returned by
 @tt{e:foo}).  @tt{p:} is mnemonic for ``propagator'' and @tt{e:} is
 mnemonic for ``expression''.
-\begin{description}
 @definition["(p:foo input ... output)"]{
 Attaches a propagator that does the @tt{foo} job to the given input
 and output cells.  @tt{p:abs}, @tt{p:square}, @tt{p:sqrt},
@@ -437,12 +435,11 @@ Two-armed conditional propagation.  May be defined by use of two
 @tt{switch} propagators and a @tt{not} propagator.}
 
 @definition[(list "(p:conditional-router control input consequent alternate)"
-		  "(p:conditional-router control input consequent)")]{
+		  "(e:conditional-router control input consequent)")]{
 Two-output-armed conditional propagation.  This is symmetric with
 @tt{conditional}; the @tt{consequent} and @tt{alternate} are possible
 output destinations.}
 
-\end{description}
 
 
 @;___________________________________________________________________________
@@ -457,7 +454,6 @@ held in the same third cell C means that A and B are now known to
 contain information about the same thing.  The two cells are therefore
 merged by attaching @tt{c:id} propagators to them so as to keep their
 contents in sync in the future.
-\begin{description}
 @definition["(p:deposit cell place-cell), (e:deposit cell)"]{
 Grabs the given @tt{cell} and deposits it into @tt{place-cell}.  The
 rule for merging cells has the effect that the given @tt{cell} will
@@ -478,7 +474,6 @@ The @tt{e:examine} variant includes an optimization: if the
 Scheme-return that cell instead of synthesizing a new one and
 identifying it with the cell present.
 
-\end{description}
 
 
 @;___________________________________________________________________________
@@ -488,7 +483,6 @@ identifying it with the cell present.
 Propagator compound data structures are made out of Scheme compound
 data structures that carry around cells collected as with @tt{deposit}.
 The corresponding accessors take those cells out as with @tt{examine}.
-\begin{description}
 @definition["(p:cons car-cell cdr-cell output), (e:cons car-cell cdr-cell)"]{
 Constructs a propagator that collects the @tt{car-cell} and the
 @tt{cdr-cell}, makes a pair of them, and writes that pair into the
@@ -520,7 +514,6 @@ synthesizing a new one and identifying it with the cell present.
 Same as @tt{p:car} and @tt{e:car}, except the other field of the
 pair.}
 
-\end{description}
 
 Note that the identification of cells that merge is bidirectional, so
 information written into the @tt{output} of a @tt{p:car} will flow into
@@ -587,7 +580,6 @@ apply themselves in expression style:
 
 Of course, not every operation has a useful inverse, so there are
 fewer @tt{c:} procedures defined than @tt{p:}:
-\begin{description}
 @definition["(c:foo constrainee ...)"]{
 Attaches propagators to the given boundary cells that collectively
 constrain them to be in the @tt{foo} relationship with each other.
@@ -608,8 +600,7 @@ c:square  ce:square  ce:sqrt
 c:not     ce:not
 c:id      ce:id
 c:==      ce:==
-}
-\end{description}}
+}}
 
 
 @;___________________________________________________________________________
@@ -799,7 +790,6 @@ said information appears by judicious use of @tt{switch} propagators.  The
 low-level tools for accomplishing this effect are
 @tt{delayed-propagator-constructor} and @tt{switch}.  The supported
 user interface is:
-\begin{description}
 @definition["(p:when internal-cells condition-cell body ...)"]{
 Delays the construction of the body until sufficiently ``true'' (in
 the sense of @tt{switch}) partial information appears in the
@@ -817,10 +807,8 @@ Expression-style variant of @tt{p:when}.  Augments its boundary with
 a fresh cell, which is then synchronized with the cell returned from
 the last expression in @tt{body} when @tt{body} is constructed.}
 
-\end{description}
 
 @tt{(p:unless internal-cells condition-cell body ...)}
-\begin{description}
 @definition["(e:unless internal-cells condition-cell body ...)"]{
 Same as @tt{p:when} and @tt{e:when}, but reversing the sense of the
 control cell.}
@@ -839,7 +827,6 @@ on others.}
 @definition["(e:if internal-cells condition-cell consequent alternate)"]{
 Expression-style variant of @tt{p:if}.}
 
-\end{description}
 
 
 @;___________________________________________________________________________
@@ -1106,7 +1093,6 @@ Scheme-Propagators:
 @;___________________________________________________________________________
 
 @subsection{Nothing}
-\begin{description}
 @definition["nothing"]{
 A single Scheme object that represents the complete absence of
 information.}
@@ -1115,7 +1101,6 @@ information.}
 A predicate that tests whether a given Scheme object is the @tt{nothing}
 object.}
 
-\end{description}
 
 @tt{nothing} is @tt{equivalent?} only to itself.
 
@@ -1170,7 +1155,6 @@ operator cell of an apply propagator.
 An object of type @tt{interval?} has fields for a lower bound and an
 upper bound.  Such an object represents the information ``This value is
 between these bounds.''
-\begin{description}
 @definition["(make-interval low high)"]{
 Creates an interval with the given lower and upper bounds}
 
@@ -1183,7 +1167,6 @@ Extracts the upper bound of an interval}
 @definition["(interval? thing)"]{
 Tests whether the given object is an interval}
 
-\end{description}
 
 Two interval objects are @tt{equivalent?} if they are the same
 interval.  An interval is @tt{equivalent?} to a number if both the
@@ -1273,7 +1256,6 @@ position of an apply propagator.
 
 Other compound data structures can be made partial information that
 behaves like pairs using @tt{define-propagator-structure}.
-\begin{description}
 @definition["(define-propagator-structure type constructor accessor ...)"]{
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
@@ -1286,7 +1268,6 @@ is the declaration that causes Scheme pairs to @tt{merge}, be
 defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
 @tt{e:cons}, @tt{p:car}, and @tt{e:cdr}.}
 
-\end{description}
 
 
 @;___________________________________________________________________________
@@ -1301,7 +1282,6 @@ Code pointers merge by testing that they point to the same code
 (merging closures with different code produces a contradiction), and
 environments merge by merging all the cells they contain in
 corresponding places.
-\begin{description}
 @definition["lambda-d:propagator, lambda-e:propagator"]{
 Scheme-Propagators syntax for anonymous compound propagator
 constructors (which are implemented as closures).}
@@ -1310,7 +1290,6 @@ constructors (which are implemented as closures).}
 Internally produces lambda-d:propagator or lambda-e:propagator
 and puts the results into appropriately named cells.}
 
-\end{description}
 
 
 @;___________________________________________________________________________
@@ -1336,7 +1315,6 @@ In this system, there is a single current global worldview, which
 starts out believing all premises.  The worldview may be changed to
 exclude (or re-include) individual premises, allowing the user to
 examine the consequences of different consistent subsets of premises.
-\begin{description}
 @definition["(kick-out! premise)"]{
 Remove the given premise from the current worldview.}
 
@@ -1371,7 +1349,6 @@ believed in the current worldview.  Given that desideratum,
 tms-query tries to minimize the premises that information is
 contingent upon.}
 
-\end{description}
 
 Calling @tt{initialize-scheduler} resets the worldview to believing all
 premises.
@@ -1438,12 +1415,10 @@ representing contradictory information in recursive contexts.  For
 example, a truth maintenance system may discover that some collection
 of premises leads to a contradiction --- this is represented by a
 @tt{the-contradiction} object contingent on those premises.
-\begin{description}
 @definition["the-contradiction"]{
 A Scheme object representing a contradictory state of information
 with no further structure.}
 
-\end{description}
 
 @tt{the-contradiction} is @tt{equivalent?} only to itself.
 
@@ -1478,7 +1453,6 @@ There is also a facility for introducing hypothetical premises that
 the system is free to manipulate automatically.  If a nogood set
 contains at least one hypothetical, some hypothetical from that nogood
 set will be retracted, and the computation will proceed.
-\begin{description}
 @definition["(p:amb cell), (e:amb)"]{
 A propagator that emits a TMS consisting of a pair of contingencies.
 One contains the information @tt{#t} contingent on one fresh
@@ -1511,7 +1485,6 @@ input cells using an appropriate collection of @tt{amb} and
 Requires all of the objects in its list of input cells to be
 distinct (in the sense of @tt{eqv?})}
 
-\end{description}
 
 
 @;___________________________________________________________________________
@@ -1635,7 +1608,6 @@ numbers can be deduced from the definitions of arithmetic on just
 intervals, arithmetic on just numbers, and this procedure for viewing
 numbers as intervals.  The generic operations system provided with
 Scheme-Propagators has explicit support for this idea.
-\begin{description}
 @definition["(declare-coercion-target type [ default-coercion ])"]{
 This is a Scheme macro that expands into the definitions needed to
 declare @tt{type} as something that other objects may be coerced
@@ -1690,7 +1662,6 @@ doing @tt{add-interval}.  This subsumes
 coercability tester procedures (but the various specific coercions
 may be declared later).
 
-\end{description}
 
 
 @;___________________________________________________________________________
@@ -1819,7 +1790,6 @@ two cells occurs in a contingent context inside a merge of two
 TMSes, then the instructions to connect those two cells must be
 adjusted to make the connection also contingent on the appropriate
 premises.
-\begin{description}
 @definition["(make-effectful info effects)"]{
 Constructs a new effectful result of merge, with the given new
 partial information structure and the given list of effects to carry
@@ -1865,7 +1835,6 @@ former effects are listed first.}
 Like @tt{effectful-bind}, but accepts a list of effectful objects,
 and calls the @tt{func} on the list of their information contents.}
 
-\end{description}
 
 There are two reasons why this matters to a user of the system.
 First, callers of @tt{merge} (for example recursive ones in contexts
@@ -1911,7 +1880,6 @@ For example, the built-in TMSes are added to the system through this
 mechanism.
 
 The handling of effects is extensible through two generic procedures.
-\begin{description}
 @definition["(execute-effect effect)"]{
 The @tt{execute-effect} procedure is used by cells to actually
 execute any effects that reach the top level.  A handler for
@@ -1933,14 +1901,12 @@ expected to return @tt{#t} if the effect will provably have no
 consequence on any values to be computed in the future, or @tt{#f} if
 the effect may have consequences.
 
-\end{description}
 
 If an effect is generated by a @tt{merge} that occurs in a contingent
 context in a TMS, the TMS will modify the effect to incorporate the
 contingency.  This mechanism is also extensible.  To teach TMSes
 about making new effects contingent, add handlers to the generic
 operation @tt{generic-attach-premises}.
-\begin{description}
 @definition["((generic-attach-premises effect) premises)  ==>  new-effect"]{
 The @tt{generic-attach-premises} procedure is used by the TMS
 machinery to modify effects produced by merges of contingent
@@ -1954,7 +1920,6 @@ instruction to join two cells by synchronizing propagators is made
 contingent on premises by causing those synchronizing propagators to
 synchronize contingently.}
 
-\end{description}
 
 
 @;___________________________________________________________________________
@@ -1965,7 +1930,6 @@ Most primitive propagators are actually built from generic Scheme functions.
 Those propagators can therefore be extended to new
 partial information types just by adding appropriate methods to their
 Scheme generic operations.  This is what we did in the interval example.
-\begin{description}
 @definition["(generic-foo argument ...)  ==>  result"]{
 A generic procedure for carrying out the @tt{foo} job over any
 desired partial information inputs, producing an appropriately
@@ -1977,7 +1941,6 @@ partial result.  @tt{generic-abs}, @tt{generic-square},
 @tt{generic->=}, @tt{generic-and}, @tt{generic-or}, @tt{generic-eq?},
 @tt{generic-eqv?}, @tt{generic-expt}, and @tt{generic-switch} accept two inputs.}
 
-\end{description}
 
 Don't forget to teach the propagators what to do if they encounter
 a partial information structure on one input and a different one on
@@ -2262,7 +2225,6 @@ job of a Scheme procedure (to wit, @tt{cons}), it operates directly on
 the cells that are its arguments, rather than on their contents.
 Other compound data structures can be made partial information that
 behaves like pairs using @tt{define-propagator-structure}.
-\begin{description}
 @definition["(define-propagator-structure type constructor accessor ...)"]{
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
@@ -2274,7 +2236,6 @@ defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
 @tt{e:cons}, @tt{p:car}, and @tt{e:cdr} (and also makes pairs
 a partial information structure).}
 
-\end{description}
 
 Defining @tt{p:cons} to operate on its argument cells constitutes a
 decision to follow the ``carrying cells'' rather than the ``copying data''
@@ -2339,7 +2300,6 @@ be filled by hand.
 
 In order to use the metadata for debugging, you must be able to read
 it.  Inspection procedures using the metadata are provided:
-\begin{description}
 @definition["name"]{
 the name of an object, or the object itself if it is not named}
 
@@ -2369,7 +2329,6 @@ that write to it)}
 all propagators around a cell (the append of the neighbors
 and the non-readers)}
 
-\end{description}
 
 You can use these at least somewhat to wander around a network you are
 debugging.  Be advised that cells are represented as Scheme entities
