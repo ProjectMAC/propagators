@@ -3,11 +3,19 @@
 @(define (example . args)
   (apply verbatim #:indent 4 (append (list "\n") args (list "\n"))))
 
+@(define (listify thing)
+   (if (list? thing)
+       thing
+       (list thing)))
+
 @(define (definition definiend . body)
-  (nested 
-   (nested)
-   @tt{@definiend}
-   (apply nested #:style 'inset body)))
+  (apply
+   nested 
+   `(,(nested)
+     ,@(map (lambda (definiend)
+	      (para @tt{@definiend}))
+	    (listify definiend))
+     ,(apply nested #:style 'inset body))))
 
 @title{Revised Report on the Propagator Model}
 @author{Alexey Radul and Gerald Jay Sussman}
@@ -423,17 +431,13 @@ cause @tt{switch} to propagate, but the result written to the
 @tt{output} will be contingent on that premise (in addition to any
 other premises the @tt{input} may already be contingent on).}
 
-@definition["(p:conditional control consequent alternate output)"]{
-FINDME}
-
-@definition["(e:conditional control consequent alternate)"]{
+@definition[(list "(p:conditional control consequent alternate output)"
+		  "(e:conditional control consequent alternate)")]{
 Two-armed conditional propagation.  May be defined by use of two
 @tt{switch} propagators and a @tt{not} propagator.}
 
-@definition["(p:conditional-router control input consequent alternate)"]{
-FINDME}
-
-@definition["(p:conditional-router control input consequent)"]{
+@definition[(list "(p:conditional-router control input consequent alternate)"
+		  "(p:conditional-router control input consequent)")]{
 Two-output-armed conditional propagation.  This is symmetric with
 @tt{conditional}; the @tt{consequent} and @tt{alternate} are possible
 output destinations.}
