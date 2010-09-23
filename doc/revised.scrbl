@@ -1,5 +1,8 @@
 #lang scribble/base
 
+@(define (example . args)
+  (apply verbatim #:indent 4 (append (list "\n") args (list "\n"))))
+
 @title{Revised Report on the Propagator Model}
 @author{Alexey Radul and Gerald Jay Sussman}
 
@@ -105,15 +108,15 @@ and look at the results.
 
 Here's a little propagator example that adds two and three to get
 five:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell a) \\
-(define-cell b) \\
-(add-content a 3) \\
-(add-content b 2) \\
-(define-cell answer (e:+ a b)) \\
-(run) \\
+@example{
+(define-cell a)
+(define-cell b)
+(add-content a 3)
+(add-content b 2)
+(define-cell answer (e:+ a b))
+(run)
 (content answer) ==> 5
-}\end{quote}
+}
 
 Each of the parenthesized phrases above are things to type into the
 REPL, and the @tt{==> 5} at the end is the result that Scheme will
@@ -122,44 +125,44 @@ print.  The results of all the other expressions are not interesting.
 Let's have a closer look at what's going on in this example, to serve
 as a guide for more in-depth discussion later.  @tt{define-cell} is a
 Scheme macro for making and naming propagator cells:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-cell a)
-}\end{quote}
+}
 creates a new cell and binds it to the Scheme variable @tt{a}.
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-cell b)
-}\end{quote}
+}
 makes another one.  Then @tt{add-content} is the Scheme procedure that
 directly zaps some information into a propagator cell (all the
 propagators use it to talk to the cells, and you can too).  So:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (add-content a 3)
-}\end{quote}
+}
 puts a @tt{3} into the cell named @tt{a}, and:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (add-content b 2)
-}\end{quote}
+}
 puts a @tt{2} into the cell named @tt{b}.  Now @tt{e:+} (the naming
 convention will be explained later) is a Scheme procedure that creates
 a propagator that adds, attaches it to the given cells as inputs, and
 makes a cell to hold the adder's output and returns it.  So:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-cell answer (e:+ a b))
-}\end{quote}
+}
 creates an adding propagator, and also creates a cell, now called
 @tt{answer}, to hold the result of the addition.  Be careful!  No
 computation has happened yet.  You've just made up a network, but it
 hasn't done its work yet.  That's what the Scheme procedure @tt{run} is
 for:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (run)
-}\end{quote}
+}
 actually executes the network, and only when the network is done
 computing does it give you back the REPL to interact with.  Finally
 @tt{content} is a Scheme procedure that gets the content of cells:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (content answer)
-}\end{quote}
+}
 looks at what the cell named @tt{answer} has now, which is @tt{5}
 because the addition propagator created by @tt{e:+} has had a chance to
 do its job.  If you had forgotten to type @tt{(run)} before typing
@@ -214,9 +217,9 @@ later, but let's talk about propagators first.
 The Scheme procedure @tt{d@"@"} attaches propagators to cells.  The
 name @tt{d@"@"} is mnemonic for ``diagram apply''.  For
 example, @tt{p:+} makes adder propagators:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (d@"@" p:+ foo bar baz)
-}\end{quote}
+}
 means attach a propagator that will add the contents of the cells
 named @tt{foo} and @tt{bar} and write the sum into the cell named @tt{baz}.
 Once attached, whenever either the @tt{foo} cell or the @tt{bar} cell
@@ -274,24 +277,24 @@ Scheme return value of @tt{e@"@"}.
 \end{description}
 
 For example, here are two ways to do the same thing:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell x) \\
-(define-cell y) \\
-(define-cell z) \\
+@example{
+(define-cell x)
+(define-cell y)
+(define-cell z)
 (d@"@" p:* x y z)
-}\end{quote}
+}
 and:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell x) \\
-(define-cell y) \\
+@example{
+(define-cell x)
+(define-cell y)
 (define-cell z (e@"@" p:* x y))
-}\end{quote}
+}
 
 Generally the @tt{e@"@"} style is convenient because it chains in
 the familiar way
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (e@"@" p:- w (e@"@" p:* (e@"@" p:+ x y) z))
-}\end{quote}
+}
 
 Because of the convention that output cells are listed last,
 expressions in @tt{e@"@"} style build propagator networks that
@@ -302,33 +305,33 @@ needs to be attached to a full set of cells that are already there.
 For example, if one wanted to be able to go back from @tt{z} and one of
 @tt{x} or @tt{y} to the other, rather than just from @tt{x} and @tt{y} to
 @tt{z}, one could write:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell x) \\
-(define-cell y) \\
-(define-cell z (e@"@" p:* x y)) \\
-(d@"@" p:/ z x y) \\
+@example{
+(define-cell x)
+(define-cell y)
+(define-cell z (e@"@" p:* x y))
+(d@"@" p:/ z x y)
 (d@"@" p:/ z y x)
-}\end{quote}
+}
 and get a multidirectional constraint:
-\begin{quote}{\ttfamily \raggedright \noindent
-(add-content z 6) \\
-(add-content x 3) \\
-(run) \\
+@example{
+(add-content z 6)
+(add-content x 3)
+(run)
 (content y) ==> 2
-}\end{quote}
+}
 
 To save typing when the propagator being attached is known at network
 construction time, the @tt{p:foo} objects are also themselves
 applicable in Scheme, defaulting to applying themselves in the @tt{d@"@"}
 style.  Each also has an @tt{e:foo} variant that defaults to the @tt{e@"@"}
 style.  So the following also works:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell x) \\
-(define-cell y) \\
-(define-cell z (e:* x y)) \\
-(p:/ z x y) \\
+@example{
+(define-cell x)
+(define-cell y)
+(define-cell z (e:* x y))
+(p:/ z x y)
 (p:/ z y x)
-}\end{quote}
+}
 
 
 @;___________________________________________________________________________
@@ -338,23 +341,23 @@ style.  So the following also works:
 The preceding discusses attaching propagators to cells when the
 propagators being attached are known at network construction time.
 That will not always be the case.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell operation) \\
-(define-cell answer) \\
-(d@"@" operation 3 4 answer) \\
-(run) \\
+@example{
+(define-cell operation)
+(define-cell answer)
+(d@"@" operation 3 4 answer)
+(run)
 (content answer)  ==>  nothing
-}\end{quote}
+}
 
 We didn't say what operation to perform.  This is not an error, but
 since nothing is known about what to do with the 3 and the 4, nothing
 is known about the answer.  Now if we supply an operation, the
 computation will proceed:
-\begin{quote}{\ttfamily \raggedright \noindent
-(p:id p:* operation) \\
-(run) \\
+@example{
+(p:id p:* operation)
+(run)
 (content answer)  ==>  12
-}\end{quote}
+}
 
 In fact, in this case, @tt{d@"@"} (or @tt{e@"@"}) will build an \emph{apply propagator}
 that will wait until an operation appears in the
@@ -510,13 +513,13 @@ information written into the @tt{output} of a @tt{p:car} will flow into
 the cell in the @tt{car} of the pair in the @tt{input} (and therefore
 into any other cells identified with it by other uses of @tt{p:car} on
 the same pair).  For example, in a program like:
-\begin{quote}{\ttfamily \raggedright \noindent
-(let-cell frob \\
-  (let-cell (quux (e:car frob)) \\
-    ... quux ...) \\
-  (let-cell (quux2 (e:car frob)) \\
+@example{
+(let-cell frob
+  (let-cell (quux (e:car frob))
+    ... quux ...)
+  (let-cell (quux2 (e:car frob))
     ... quux2 ...))
-}\end{quote}
+}
 the two cells named @tt{quux} and @tt{quux2} will end up identified, and
 the cell named @tt{frob} will end up containing a pair whose car field
 will contain one of them.
@@ -543,30 +546,30 @@ propagator that does @tt{foo} to its cells, it also attaches
 @tt{foo-inverse} propagators that deduce ``inputs'' from ``outputs''.  For
 example, the product constraint that we built in a previous section is
 available as @tt{c:*}:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell x) \\
-(define-cell y) \\
-(define-cell z) \\
-(d@"@" c:* x y z) \\
- \\
-(add-content z 12) \\
-(add-content y 4) \\
-(run) \\
+@example{
+(define-cell x)
+(define-cell y)
+(define-cell z)
+(d@"@" c:* x y z)
+
+(add-content z 12)
+(add-content y 4)
+(run)
 (content x) ==> 3
-}\end{quote}
+}
 
 The @tt{c:foo} objects, like the @tt{p:foo} objects, are also
 self-applicable, and also default to applying themselves
 in diagram style:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (c:* x y z)  ==  (d@"@" c:* x y z)
-}\end{quote}
+}
 
 The @tt{c:foo} objects also have @tt{ce:foo} analogues, that
 apply themselves in expression style:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (ce:* x y)  ==  (e@"@" c:* x y)
-}\end{quote}
+}
 
 Of course, not every operation has a useful inverse, so there are
 fewer @tt{c:} procedures defined than @tt{p:}:
@@ -584,14 +587,14 @@ that constrain the given cells to be in the @tt{foo} relationship
 with the new one.  Since the position of the synthesized cell in
 the argument list is fixed, some diagram style constraints have
 multiple expression style variants:
-\begin{quote}{\ttfamily \raggedright \noindent
-c:+       ce:+       ce:- \\
-c:*       ce:*       ce:/ \\
-c:square  ce:square  ce:sqrt \\
-c:not     ce:not \\
-c:id      ce:id \\
+@verbatim{
+c:+       ce:+       ce:-
+c:*       ce:*       ce:/
+c:square  ce:square  ce:sqrt
+c:not     ce:not
+c:id      ce:id
 c:==      ce:==
-}\end{quote}
+}
 \end{description}
 
 
@@ -607,21 +610,21 @@ straight into a cell.  This is generally encouraged at the REPL, but
 frowned upon in actual programs.  It is much nicer to use @tt{constant}
 or @tt{p:constant} (they're the same) to make a propagator that will
 zap your value into your cell for you:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell thing) \\
-((constant 5) thing) \\
-(content thing) ==> {\#}(*the-nothing*) \\
-(run) \\
+@example{
+(define-cell thing)
+((constant 5) thing)
+(content thing) ==> {\#}(*the-nothing*)
+(run)
 (content thing) ==> 5
-}\end{quote}
+}
 
 There is also an expression-oriented version, called, naturally,
 @tt{e:constant}:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell thing (e:constant 5)) \\
-(run) \\
+@example{
+(define-cell thing (e:constant 5))
+(run)
 (content thing) ==> 5
-}\end{quote}
+}
 
 
 @;___________________________________________________________________________
@@ -634,11 +637,11 @@ constant (i.e. a non-cell Scheme object) into a cell, using
 @tt{e:constant}.
 
 Some examples:
-\begin{quote}{\ttfamily \raggedright \noindent
-(e:+ x 2)          ==   (e:+ x (e:constant 2)) \\
-(define-cell x 4)  ==   (define-cell x (e:constant 4)) \\
+@example{
+(e:+ x 2)          ==   (e:+ x (e:constant 2))
+(define-cell x 4)  ==   (define-cell x (e:constant 4))
 (c:+ x y 0)        ==   (c:+ x y (e:constant 0))
-}\end{quote}
+}
 
 
 @;___________________________________________________________________________
@@ -650,16 +653,16 @@ language: Scheme variables whose bindings are cells correspond to
 Scheme-Propagators variables (Scheme variables whose bindings are
 other things look like syntax to Scheme-Propagators).  We've
 already met one way to make cells:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-cell x)
-}\end{quote}
+}
 creates a Scheme variable named @tt{x} and binds a cell to it.  The
 underlying mechanism underneath this is the procedure @tt{make-cell},
 which creates a cell and lets you do whatever you want with it.  So
 you could write:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define x (make-cell))
-}\end{quote}
+}
 which would also make a Scheme variable named @tt{x} and bind a cell to
 it.  In fact, that is almost exactly what @tt{define-cell} does, except
 that @tt{define-cell} attaches some metadata to the cell it creates to
@@ -672,11 +675,11 @@ a @tt{5} put into it, whereas @tt{(define x 5)} would just bind @tt{x} to
 Just as Scheme has several mechanisms of making variables, so
 Scheme-Propagators has corresponding ones.  Corresponding to Scheme's
 @tt{let}, Scheme-Propagators has @tt{let-cells}:
-\begin{quote}{\ttfamily \raggedright \noindent
-(let-cells ((foo (e:+ x y)) \\
-            (bar (e:* x y))) \\
+@example{
+(let-cells ((foo (e:+ x y))
+            (bar (e:* x y)))
   ...)
-}\end{quote}
+}
 will create the Scheme bindings @tt{foo} and @tt{bar}, and bind them to
 the cells made by @tt{(e:+ x y)} and @tt{(e:* x y)}, respectively (this
 code is only sensible if @tt{x} and @tt{y} are already bound to cells
@@ -692,26 +695,26 @@ contents; where Scheme variables have to start life in a weird
 ``unassigned'' state, @tt{nothing} is a perfectly good partial
 information structure.  This means that it's perfectly reasonable
 for @tt{let-cells} to make cells with no initialization forms:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (let-cells (x y (foo (some thing))) ...)
-}\end{quote}
+}
 creates cells named @tt{x} and @tt{y}, which are empty and have
 no propagators attached to them initially, and also a cell
 named @tt{foo} like above.  @tt{let-cells} also recognizes the
 usage:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (let-cells ((x) (y) (foo (some thing))) ...)
-}\end{quote}
+}
 by analogy with Scheme @tt{let}.
 
 Corresponding to Scheme's @tt{let*}, Scheme-Propagators has
 @tt{let-cells*}.  @tt{let-cells*} is to @tt{let-cells} what @tt{let*} is
 to @tt{let}:
-\begin{quote}{\ttfamily \raggedright \noindent
-(let-cells* ((x) \\
-             (y (e:+ x x))) \\
+@example{
+(let-cells* ((x)
+             (y (e:+ x x)))
   ...)
-}\end{quote}
+}
 will make a cell named @tt{x} and a cell named @tt{y} with an adder both
 of whose inputs are @tt{x} and whose output is @tt{y}.
 
@@ -725,12 +728,12 @@ sensible state, namely the state of containing @tt{nothing},
 enforced; namely, you may use the names defined by a given
 @tt{let-cells-rec} directly in the defining forms, without any explicit
 intermediate delay in evaluation.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
-(let-cells-rec ((z (e:+ x y)) \\
-                (x (e:- z y)) \\
-                (y (e:- z x))) \\
+@example{
+(let-cells-rec ((z (e:+ x y))
+                (x (e:- z y))
+                (y (e:- z x)))
   ...)
-}\end{quote}
+}
 is a perfectly reasonable bit of Scheme-Propagators code, and binds
 the names @tt{x}, @tt{y} and @tt{z} to cells that are
 interconnected with the three propagators indicated.
@@ -747,12 +750,12 @@ Since @tt{let-cells} is plural (where @tt{let} was number-neutral),
 Scheme-Propagators also define @tt{let-cell} and @tt{let-cell-rec}
 (@tt{let-cell*} being useless) for the case when you just want to make
 one cell:
-\begin{quote}{\ttfamily \raggedright \noindent
-(let-cell x ...)              ==  (let-cells (x) ...) \\
-(let-cell (x (e:+ y z)) ...)  ==  (let-cells ((x (e:+ y z))) ...) \\
-(let-cell-rec (ones (e:cons 1 ones)) ...)  == \\
+@example{
+(let-cell x ...)              ==  (let-cells (x) ...)
+(let-cell (x (e:+ y z)) ...)  ==  (let-cells ((x (e:+ y z))) ...)
+(let-cell-rec (ones (e:cons 1 ones)) ...)  ==
 (let-cells-rec ((ones (e:cons 1 ones))) ...)
-}\end{quote}
+}
 
 Scheme-Propagators currently has no analogue of Scheme's named @tt{let}
 syntax.
@@ -843,20 +846,20 @@ The main way to abstract propagator construction is with the
 @tt{define-d:propagator} defines a compound propagator in diagram style,
 that is, with explicit named parameters for the entire boundary of the
 compound:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-d:propagator (my-sum-constraint x y z) \\
-  (p:+ x y z) \\
-  (p:- z y x) \\
+@example{
+(define-d:propagator (my-sum-constraint x y z)
+  (p:+ x y z)
+  (p:- z y x)
   (p:- z x y))
-}\end{quote}
+}
 
 @tt{define-e:propagator} defines a compound propagator in expression
 style, that is, expecting the body of the propagator to return one
 additional cell to add to the boundary at the end:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-e:propagator (double x) \\
+@example{
+(define-e:propagator (double x)
   (e:+ x x))
-}\end{quote}
+}
 
 Both defining forms will make variants with names beginning in @tt{p:}
 and @tt{e:}, that default to being applied in diagram and expression
@@ -865,15 +868,15 @@ the Scheme variable @tt{double}.
 
 With these definitions we can use those pieces to build more complex
 structures:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (p:my-sum-constraint x (e:double x) z)
-}\end{quote}
+}
 which can themselves be abstracted so that they can be used
 as if they were primitive:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-d:propagator (foo x z) \\
+@example{
+(define-d:propagator (foo x z)
   (p:my-sum-constraint x (e:double x) z))
-}\end{quote}
+}
 
 @tt{define-propagator} is an alias for @tt{define-d:propagator} because
 that's the most common use case.
@@ -883,22 +886,22 @@ syntax for anonymous compound propagators, @tt{lambda-d:propagator} and
 @tt{lambda-e:propagator}.
 
 Compound propagator constructors perform constant conversion:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (p:my-sum-constraint x 3 z)  ==  (p:my-sum-constraint x (e:constant 3) z)
-}\end{quote}
+}
 
 @tt{define-propagator} and @tt{define-e:propagator} respect the @tt{c:}
 and @tt{ce:} naming convention, in that if the name supplied for
 definition begins with @tt{c:} or @tt{ce:}, that pair of prefixes will
 be used in the names actually defined instead of @tt{p:} and @tt{e:}.
 So:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-propagator (foo ...) ...)     defines  p:foo and e:foo \\
-(define-propagator (p:foo ...) ...)   defines  p:foo and e:foo \\
-(define-propagator (e:foo ...) ...)   defines  p:foo and e:foo \\
-(define-propagator (c:foo ...) ...)   defines  c:foo and ce:foo \\
+@example{
+(define-propagator (foo ...) ...)     defines  p:foo and e:foo
+(define-propagator (p:foo ...) ...)   defines  p:foo and e:foo
+(define-propagator (e:foo ...) ...)   defines  p:foo and e:foo
+(define-propagator (c:foo ...) ...)   defines  c:foo and ce:foo
 (define-propagator (ce:foo ...) ...)  defines  c:foo and ce:foo
-}\end{quote}
+}
 
 
 @;___________________________________________________________________________
@@ -907,13 +910,13 @@ So:
 
 Compound propagator definitions can be closed over cells available in
 their lexical environment:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-e:propagator (addn n) \\
-  (define-e:propagator (the-adder x) \\
-    (import n) \\
-    (e:+ n x)) \\
+@example{
+(define-e:propagator (addn n)
+  (define-e:propagator (the-adder x)
+    (import n)
+    (e:+ n x))
   e:the-adder)
-}\end{quote}
+}
 
 @tt{import} is a kludge, which is a consequence of the embedding of
 Scheme-Propagators into Scheme.  Without enough access to the Scheme
@@ -951,12 +954,12 @@ piece.
 
 For example, here is the familiar recursive @tt{factorial}, rendered in
 propagators with @tt{p:if}:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-propagator (p:factorial n n!) \\
-  (p:if (n n!) (e:= 0 n) \\
-    (p:== 1 n!) \\
+@example{
+(define-propagator (p:factorial n n!)
+  (p:if (n n!) (e:= 0 n)
+    (p:== 1 n!)
     (p:== (e:* n (e:factorial (e:- n 1))) n!)))
-}\end{quote}
+}
 
 The only syntactic difference between this and what one would write in
 Scheme for this same job is that this is written in diagram style,
@@ -972,12 +975,12 @@ have expression-style variants.  The difference is that the tail
 positions of the branches are expected to return cells, which are
 wired together and returned to the caller of the @tt{e:if}.  Here is
 @tt{factorial} again, in expression style:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-e:propagator (e:factorial n) \\
-  (e:if (n) (e:= 0 n) \\
-    1 \\
+@example{
+(define-e:propagator (e:factorial n)
+  (e:if (n) (e:= 0 n)
+    1
     (e:* n (e:factorial (e:- n 1)))))
-}\end{quote}
+}
 
 Looks familiar, doesn't it?
 
@@ -1011,9 +1014,9 @@ between this real number and that one.''
 
 The way to get partial knowledge into the network is to put it into
 cells with @tt{add-content} or constant propagators.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-cell x (make-interval 3 5))
-}\end{quote}
+}
 produces a cell named @tt{x} that now holds the partial information
 @tt{(make-interval 3 5)}, which means that its value is
 between @tt{3} and @tt{5}.
@@ -1023,9 +1026,9 @@ so that once you've inserted a structure of a certain type into
 the network, the normal propagators will generally produce answers
 in kind, and, if needed, coerce their inputs into the right form
 to co-operate.  For example, if @tt{x} has an interval like above,
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-cell y (e:+ x 2))
-}\end{quote}
+}
 will make an adder that will eventually need to add @tt{2} to the
 interval between @tt{3} and @tt{5}.  This is a perfectly reasonable
 thing to ask, because both @tt{2} and @tt{(make-interval 3 5)} are
@@ -1033,25 +1036,25 @@ states of knowledge about the inputs to that adder, so it ought to
 produce the best possible representation of the knowledge it can
 deduce about the result of the addition.  In this case, that would be
 the interval between @tt{5} and @tt{7}:
-\begin{quote}{\ttfamily \raggedright \noindent
-(run) \\
+@example{
+(run)
 (content y)  ==>  {\#}(interval 5 7)
-}\end{quote}
+}
 
 The key thing about partial information is that it's
 cumulative.  So if you also added some other knowledge to the @tt{y}
 cell, it would need to merge with the interval that's there to
 represent the complete knowledge available as a result:
-\begin{quote}{\ttfamily \raggedright \noindent
-(add-content y (make-interval 4 6)) \\
+@example{
+(add-content y (make-interval 4 6))
 (content y)  ==>  {\#}(interval 5 6)
-}\end{quote}
+}
 
 If incoming knowledge hopelessly contradicts the knowledge a cell
 already has, it will complain:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (add-content y 15)  ==>  An error
-}\end{quote}
+}
 stop the network mid-stride, and give you a chance to examine the
 situation so you can debug the program that led to it, using the
 standard MIT Scheme debugging facilities.
@@ -1261,9 +1264,9 @@ behaves like pairs using @tt{define-propagator-structure}.
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
 that handle them.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-propagator-structure pair? cons car cdr)
-}\end{quote}
+}
 is the declaration that causes Scheme pairs to @tt{merge}, be
 @tt{equivalent?}, and be @tt{contradictory?} the way they are, and
 defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
@@ -1380,12 +1383,12 @@ result contingent upon the premises on which that info was contingent
 If the input itself is a TMS, @tt{switch} queries it and (possibly)
 forwards the result of the query, rather than forwarding the entire
 TMS.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell frob (make-tms (contingent 4 '(bill)))) \\
-(define-cell maybe-frob (e:switch (make-tms (contingent {\#}t '(fred))) frob)) \\
-(run) \\
+@example{
+(define-cell frob (make-tms (contingent 4 '(bill))))
+(define-cell maybe-frob (e:switch (make-tms (contingent {\#}t '(fred))) frob))
+(run)
 (tms-query (content maybe-frob))  ==>  {\#}(contingent 4 (bill fred))
-}\end{quote}
+}
 
 If a TMS appears in the operator cell of an apply propagator, the
 apply propagator will query the TMS.  If the result of the query is a
@@ -1394,14 +1397,14 @@ that constructor in a sandbox that ensures that the premises on which
 the constructor was contingent are both forwarded to the constructed
 propagator's inputs and attached to the constructed propagator's
 outputs.  For example, suppose Bill wanted us to add 3 to 4:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell operation) \\
-(define-cell answer) \\
-(p:switch (make-tms (contingent {\#}t '(bill))) p:+ operation) \\
-(d@"@" operation 3 4 answer) \\
-(run) \\
+@example{
+(define-cell operation)
+(define-cell answer)
+(p:switch (make-tms (contingent {\#}t '(bill))) p:+ operation)
+(d@"@" operation 3 4 answer)
+(run)
 (tms-query (content answer))  ==>  {\#}(contingent 7 (bill))
-}\end{quote}
+}
 
 The @tt{answer} cell contains a 7 contingent on the Bill premise.  This
 is the right thing, because that answer depends not only on the inputs
@@ -1534,18 +1537,18 @@ ones (see Section \ref{built-in-partial-information-structures}).
 
 Method addition in the generic operation system used in
 Scheme-Propagators is done with the @tt{defhandler} procedure:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (defhandler operation handler arg-predicate ...)
-}\end{quote}
+}
 
 The generic operations system is a predicate dispatch system.  Every
 handler is keyed by a bunch of predicates that must accept the
 arguments to the generic procedure in turn; if they do, that handler
 is invoked.  For example, merging two intervals with each other
 can be defined as:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (defhandler merge intersect-intervals interval? interval?)
-}\end{quote}
+}
 
 You can also define your own generic operations, but that is not
 relevant here.
@@ -1564,27 +1567,27 @@ The second step is to define handlers for the generic operations that
 every partial information structure must implement.  Assuming
 appropriate procedures for intersecting intervals and for testing them
 for equality and emptiness, those handlers would be:
-\begin{quote}{\ttfamily \raggedright \noindent
-(defhandler equivalent? interval-equal? interval? interval?) \\
-(defhandler merge intersect-intervals interval? interval?) \\
+@example{
+(defhandler equivalent? interval-equal? interval? interval?)
+(defhandler merge intersect-intervals interval? interval?)
 (defhandler contradictory? empty-interval? interval?)
-}\end{quote}
+}
 
 To make intervals interoperate with numbers in the same network,
 we can add a few more handlers:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define (number=interval? number interval) \\
-  (= number (interval-low interval) (interval-high interval))) \\
-(defhandler equivalent? number=interval? number? interval?) \\
-(defhandler equivalent? (binary-flip number=interval?) interval? number?) \\
- \\
-(define (number-in-interval number interval) \\
-  (if (<= (interval-low interval) number (interval-high interval)) \\
-      number \\
-      the-contradiction)) \\
-(defhandler merge number-in-interval number? interval?) \\
+@example{
+(define (number=interval? number interval)
+  (= number (interval-low interval) (interval-high interval)))
+(defhandler equivalent? number=interval? number? interval?)
+(defhandler equivalent? (binary-flip number=interval?) interval? number?)
+
+(define (number-in-interval number interval)
+  (if (<= (interval-low interval) number (interval-high interval))
+      number
+      the-contradiction))
+(defhandler merge number-in-interval number? interval?)
 (defhandler merge (binary-flip number-in-interval) interval? number?)
-}\end{quote}
+}
 
 The third step is to teach the arithmetic propagators to handle
 intervals.  Interval arithmetic does not fit into the @tt{binary-map}
@@ -1592,14 +1595,14 @@ worldview (see Section \ref{uniform-applicative-extension-of-propagators})
 so the only way to do intervals is to
 individually add the appropriate handlers to the generic procedures
 underlying the primitive propagators:
-\begin{quote}{\ttfamily \raggedright \noindent
-(defhandler generic-+ add-interval interval? interval?) \\
-(defhandler generic-{}- sub-interval interval? interval?) \\
-(defhandler generic-* mul-interval interval? interval?) \\
-(defhandler generic-/ div-interval interval? interval?) \\
-(defhandler generic-sqrt sqrt-interval interval?) \\
+@example{
+(defhandler generic-+ add-interval interval? interval?)
+(defhandler generic-{}- sub-interval interval? interval?)
+(defhandler generic-* mul-interval interval? interval?)
+(defhandler generic-/ div-interval interval? interval?)
+(defhandler generic-sqrt sqrt-interval interval?)
 ;; ...
-}\end{quote}
+}
 
 In order for the binary propagators to handle the situation where that
 propagator has an interval on one input and a number on the other,
@@ -1630,9 +1633,9 @@ which tests whether a given object has been declared to be coercible
 to @tt{type}, and the procedure @tt{->type}, which does that coercion.
 These rely on the type-tester for @tt{type} already being defined and
 named @tt{type?}.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (declare-coercion-target interval)
-}\end{quote}
+}
 relies on the procedure @tt{interval?} and defines the procedures
 @tt{->interval} and @tt{interval-able?}.  This call does not declare a
 default means of coercing arbitrary objects into intervals.
@@ -1642,9 +1645,9 @@ Declares that the given @tt{from-type} is coercible by the given
 coercer operation, either by the given @tt{mechanism} if supplied or
 by the default mechanism declared in the definition of the given
 coercer.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (declare-coercion number? ->interval (lambda (x) (make-interval x x)))
-}\end{quote}
+}
 declares that Scheme number objects may be coerced to intervals
 whose lower and upper bounds are equal to that number.  After this
 declaration, @tt{interval-able?} will return true on numbers, and
@@ -1657,16 +1660,16 @@ invoked if that operation is given two arguments of the type
 corresponding to @tt{coercer}; and if one argument is of that type
 and the other has been declared coercable to that type it will be so
 coerced, and then handler will be invoked.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (defhandler-coercing generic-+ add-interval ->interval)
-}\end{quote}
+}
 declares that intervals should be added by @tt{add-interval}, and
 that anything @tt{interval-able?} can be added to an interval by
 first coercing it into an interval with @tt{->interval} and then
 doing @tt{add-interval}.  This subsumes
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (defhandler generic-+ add-interval interval? interval?)
-}\end{quote}
+}
 
 @tt{defhandler-coercing} may only be called after a call to
 @tt{declare-coercion-target} defining the appropriate coercer and
@@ -1720,22 +1723,22 @@ information structures are completely mutually exclusive.
 by @tt{equivalent?}).  That is
 @itemlist[
 @item{associativity:
-\begin{quote}{\ttfamily \raggedright \noindent
-(merge X (merge Y Z))  {\textasciitilde}  (merge (merge X Y) Z) \\
+@example{
+(merge X (merge Y Z))  {\textasciitilde}  (merge (merge X Y) Z)
 (equivalent? (merge X (merge Y Z)) (merge (merge X Y) Z)) ==> {\#}t
-}\end{quote}}
+}}
 
 @item{commutativity:
-\begin{quote}{\ttfamily \raggedright \noindent
-(merge X Y)  {\textasciitilde}  (merge Y X) \\
+@example{
+(merge X Y)  {\textasciitilde}  (merge Y X)
 (equivalent? (merge X Y) (merge Y X)) ==> {\#}t
-}\end{quote}}
+}}
 
 @item{idempotence:
-\begin{quote}{\ttfamily \raggedright \noindent
-(X {\textasciitilde} Y) implies (X {\textasciitilde} (merge X Y)) \\
+@example{
+(X {\textasciitilde} Y) implies (X {\textasciitilde} (merge X Y))
 (or (not (equivalent? X Y)) (equivalent? X (merge X Y))) ==> {\#}t
-}\end{quote}}
+}}
 ]
 
 @tt{(contradictory? info)  ==>  {\#}t or {\#}f}
@@ -1860,16 +1863,16 @@ them if necessary.  For example, the @tt{merge} handler for two pairs
 recursively merges the cars and cdrs of the pairs.  If either of those
 recursive merges produces effects, the pair merge forwards all of
 them.  Here is the code that does that:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define (pair-merge pair1 pair2) \\
-  (effectful-bind (merge (car pair1) (car pair2)) \\
-    (lambda (car-answer) \\
-      (effectful-bind (merge (cdr pair1) (cdr pair2)) \\
-        (lambda (cdr-answer) \\
-          (cons car-answer cdr-answer)))))) \\
- \\
+@example{
+(define (pair-merge pair1 pair2)
+  (effectful-bind (merge (car pair1) (car pair2))
+    (lambda (car-answer)
+      (effectful-bind (merge (cdr pair1) (cdr pair2))
+        (lambda (cdr-answer)
+          (cons car-answer cdr-answer))))))
+
 (defhandler merge pair-merge pair? pair?)
-}\end{quote}
+}
 
 N.B.: The car merge and the cdr merge may both produce effects.  If
 so, these effects will be executed in FIFO order, that is, car effects
@@ -1999,15 +2002,15 @@ should be applied by collecting the premises that both inputs are
 contingent on, applying the function, and wrapping the result up in a
 new contingency object that contains the result of the function
 contingent upon the set-union of the premises from both inputs:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define (contingency-binary-map c1 c2) \\
-  (lambda (f) \\
-    (contingent \\
-     (f (contingent-info c1) (contingent-info c2)) \\
-     (set-union (contingent-premises c1) (contingent-premises c2))))) \\
- \\
+@example{
+(define (contingency-binary-map c1 c2)
+  (lambda (f)
+    (contingent
+     (f (contingent-info c1) (contingent-info c2))
+     (set-union (contingent-premises c1) (contingent-premises c2)))))
+
 (defhandler binary-map contingency-binary-map contingency? contingency?)
-}\end{quote}
+}
 
 Note that the information inside a contingency object may itself be
 partial, and so perhaps necessitate a recursive call to
@@ -2058,17 +2061,17 @@ allows one to declare when this situation obtains so that
 points for this are the type testers and coercers of the existing
 partial information types:
 \begin{quote}{\ttfamily \raggedright \noindent
-| Type                | Predicate      | Coercer      | \\
-|-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-| \\
-| Nothing             | nothing?       | -{}-           | \\
-| Raw Scheme object   | various        | -{}-           | \\
-| Numerical interval  | interval?      | ->interval   | \\
-| Propagator cells    | cell?          | -{}-           | \\
-| Scheme pairs        | pair?          | -{}-           | \\
-| Propagator closures | closure?       | -{}-           | \\
-| Contingency object  | contingent?    | ->contingent | \\
-| TMS                 | tms?           | ->tms        | \\
-| Contradiction       | contradictory? | -{}-           | \\
+| Type                | Predicate      | Coercer      |
+|-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-|
+| Nothing             | nothing?       | -{}-           |
+| Raw Scheme object   | various        | -{}-           |
+| Numerical interval  | interval?      | ->interval   |
+| Propagator cells    | cell?          | -{}-           |
+| Scheme pairs        | pair?          | -{}-           |
+| Propagator closures | closure?       | -{}-           |
+| Contingency object  | contingent?    | ->contingent |
+| TMS                 | tms?           | ->tms        |
+| Contradiction       | contradictory? | -{}-           |
 |-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-+-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-|
 }\end{quote}
 
@@ -2084,9 +2087,9 @@ TMSes automatically coerce to TMS any object that is declared
 coercible to a raw contingency object.}]
 
 For example:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (declare-coercion interval? ->contingent)
-}\end{quote}
+}
 allows raw intervals to be seen as TMSes.  This has the effect that if
 a binary operation (either @tt{merge} or a primitive propagator subject
 to @tt{nary-mapping}) encounter a TMS on one input and an interval on
@@ -2135,9 +2138,9 @@ into which to write the output.  So the result of
 conversion).  The return value of @tt{function->propagator-constructor}
 can be put into a cell, just same way that a Scheme procedure
 can be the value of a Scheme variable.  For example, you might define:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-cell p:my-primitive (function->propagator-constructor do-it))
-}\end{quote}
+}
 where @tt{do-it} is the appropriate Scheme function.
 
 Something important to pay attention to: @tt{function->propagator-constructor}
@@ -2152,19 +2155,19 @@ For example, let us walk through the implementation of the provided
 primitive @tt{p:and} in @tt{core/standard-propagators.scm}.  First, we
 make a generic version of the Scheme procedure @tt{boolean/and} to
 serve as a point of future extension:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define generic-and (make-generic-operator 2 'and boolean/and))
-}\end{quote}
+}
 
 Then we wrap that generic procedure with @tt{nary-mapping} to make it
 process all partial information types that have declared applicative
 functor behavior, and then we give the result to
 @tt{function->propagator-constructor} to make a propagator
 constructor:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell p:and \\
+@example{
+(define-cell p:and
   (function->propagator-constructor (nary-mapping generic-and)))
-}\end{quote}
+}
 
 Another detail to think about is metadata.
 @tt{function->propagator-constructor} can supply all the metadata that
@@ -2182,9 +2185,9 @@ Once you've made a diagram-style propagator constructor, you can make
 a variant that likes to be applied in expression style with
 @tt{expression-style-variant}.  For example, @tt{e:and} is actually
 defined as:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-cell e:and (expression-style-variant p:and))
-}\end{quote}
+}
 
 
 @;___________________________________________________________________________
@@ -2195,43 +2198,42 @@ All that wrapping in @tt{nary-mapping}, and naming your propagator
 functions with @tt{name!}, and calling @tt{expression-style-variant} to
 convert them to expression-style versions can get tedious.  This whole
 shebang is automated by the @tt{propagatify} macro:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (propagatify +)
-}\end{quote}
+}
 turns into
-\begin{quote}{\ttfamily \raggedright \noindent
-(define generic-+ (make-generic-operator 2 '+ +)) \\
-(define-cell p:+ \\
- (function->propagator-constructor (nary-mapping generic-+))) \\
+@example{
+(define generic-+ (make-generic-operator 2 '+ +))
+(define-cell p:+
+ (function->propagator-constructor (nary-mapping generic-+)))
 (define-cell e:+ (expression-style-variant p:+))
-}\end{quote}
+}
 
 The easy syntax covers the common case.  You can also specify an
 explicit arity for the generic operation to construct (because
 sometimes @tt{propagatify} will guess wrong).  The above is also
 equivalent to @tt{(propagatify + 2)}.  Sometimes you may want to avoid
 constructing the generic operation.  That can be done also:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (propagatify + 'no-generic)
-}\end{quote}
+}
 becomes
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell p:+ \\
- (function->propagator-constructor (nary-mapping +))) \\
+@example{
+(define-cell p:+
+ (function->propagator-constructor (nary-mapping +)))
 (define-cell e:+ (expression-style-variant p:+))
-}\end{quote}
+}
 
 Finally, in the case where you want completely custom handling of
 partial information, even the @tt{nary-mapping} can be avoided with
-\begin{quote}
-
+@example{
 (propagatify-raw +)
-\end{quote}
+}
 which becomes
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-cell p:+ (function->propagator-constructor +)) \\
+@example{
+(define-cell p:+ (function->propagator-constructor +))
 (define-cell e:+ (expression-style-variant p:+))
-}\end{quote}
+}
 
 Note that @tt{propagatify} follows the naming convention that the
 Scheme procedure @tt{foo} becomes a generic procedure named
@@ -2253,9 +2255,9 @@ behaves like pairs using @tt{define-propagator-structure}.
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
 that handle them.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (define-propagator-structure pair? cons car cdr)
-}\end{quote}
+}
 defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
 @tt{e:cons}, @tt{p:car}, and @tt{e:cdr} (and also makes pairs
 a partial information structure).
@@ -2281,12 +2283,12 @@ supposed to do.  The scheduler will execute your thunk from time to
 time -{}-{}- the only promise is that it will run at least once after the
 last time any cell in the supplied neighbor list gains any new
 information.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define (my-hairy-thing cell1 cell2) \\
-  (propagator (list cell1 cell2) \\
-    (lambda () \\
+@example{
+(define (my-hairy-thing cell1 cell2)
+  (propagator (list cell1 cell2)
+    (lambda ()
       do-something-presumably-with-cell1-and-cell2)))
-}\end{quote}
+}
 
 The @tt{propagator} procedure being the lowest possible level, it has
 no access to any useful sources of metadata, so you will need to
@@ -2384,25 +2386,25 @@ for examples of how this is done.
 Sometimes you will need to make something that looks like a macro to
 Scheme-Propagators.  The macro language of Scheme-Propagators is
 Scheme.  For example:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define (my-diagram x y z) \\
-  (p:+ x y z) \\
-  (p:- z y x) \\
+@example{
+(define (my-diagram x y z)
+  (p:+ x y z)
+  (p:- z y x)
   (p:- z x y))
-}\end{quote}
+}
 
 @tt{my-diagram} is a Scheme-Propagators macro that, when given three
 cells, wires up three arithmetic propagators to them.  This simple
 example of course gains nothing from being a macro rather
 than a normal compound propagator, but using Scheme as a macro
 language lets you do more interesting things:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define (require-distinct cells) \\
-  (for-each-distinct-pair \\
-   (lambda (c1 c2) \\
-     (forbid (e:= c1 c2))) \\
+@example{
+(define (require-distinct cells)
+  (for-each-distinct-pair
+   (lambda (c1 c2)
+     (forbid (e:= c1 c2)))
    cells))
-}\end{quote}
+}
 
 This @tt{require-distinct} uses a Scheme iterator to perform a
 repetitive task over a bunch of Scheme-Propagators cells.
@@ -2411,13 +2413,13 @@ This is quite convenient, but sometimes one wants the debugging data
 provided by @tt{define-propagator}.  This is what
 @tt{define-propagator-syntax} is for.  Just change @tt{define} to
 @tt{define-propagator-syntax}:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-propagator-syntax (require-distinct cells) \\
-  (for-each-distinct-pair \\
-   (lambda (c1 c2) \\
-     (forbid (e:= c1 c2))) \\
+@example{
+(define-propagator-syntax (require-distinct cells)
+  (for-each-distinct-pair
+   (lambda (c1 c2)
+     (forbid (e:= c1 c2)))
    cells))
-}\end{quote}
+}
 
 
 @;___________________________________________________________________________
@@ -2426,12 +2428,12 @@ provided by @tt{define-propagator}.  This is what
 
 The procedure @tt{initialize-scheduler} wipes out an existing
 propagator network and lets you start afresh:
-\begin{quote}{\ttfamily \raggedright \noindent
-build lots of network \\
-... \\
-(initialize-scheduler) \\
+@example{
+build lots of network
+...
+(initialize-scheduler)
 (run) -{}-{}- nothing happens; no propagators to run!
-}\end{quote}
+}
 
 This is the lightest-weight way to restart your Scheme-Propagators
 session.  You can of course also restart the underlying Scheme or just
@@ -2445,9 +2447,9 @@ reload Scheme-Propagators if you need to blow away your state.
 It turns out that @tt{make-cell} and @tt{cell?} are also MIT Scheme
 primitives, so if you want to compile your Scheme-Propagators
 code with the MIT-Scheme compiler, be sure to put
-\begin{quote}{\ttfamily \raggedright \noindent
+@example{
 (declare (usual-integrations make-cell cell?))
-}\end{quote}
+}
 at the top of your source files.  Also, of course, you need to be
 suitably careful to make sure that the defined macros are available to
 the syntaxer when it processes your file.  See
@@ -2547,14 +2549,14 @@ propagator, one had to manually ``guard'', using a hand-crafted pile of
 @tt{switch} propagators, all the i/o of a recursive call to prevent it
 from being expanded prematurely.  For example, a recursive factorial
 network written in that style would have looked something like:
-\begin{quote}{\ttfamily \raggedright \noindent
-(define-propagator (p:factorial n n!) \\
-  (let-cells ((done? (e:= n 0)) n-again n!-again) \\
-    (p:conditional-wire (e:not done?) n n-again) \\
-    (p:conditional-wire (e:not done?) n! n!-again) \\
-    (p:* (e:factorial (e:- n-again 1)) n-again n!-again) \\
+@example{
+(define-propagator (p:factorial n n!)
+  (let-cells ((done? (e:= n 0)) n-again n!-again)
+    (p:conditional-wire (e:not done?) n n-again)
+    (p:conditional-wire (e:not done?) n! n!-again)
+    (p:* (e:factorial (e:- n-again 1)) n-again n!-again)
     (p:conditional-wire done? 1 n!)))
-}\end{quote}
+}
 with the added caveat that it would need to be marked as being
 recursive, so the expansion of the internal factorial would be delayed
 until it got some information on its boundary (which would be
