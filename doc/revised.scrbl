@@ -3,6 +3,12 @@
 @(define (example . args)
   (apply verbatim #:indent 4 (append (list "\n") args (list "\n"))))
 
+@(define (definition definiend . body)
+  (nested 
+   (nested)
+   @tt{@definiend}
+   (apply nested #:style 'inset body)))
+
 @title{Revised Report on the Propagator Model}
 @author{Alexey Radul and Gerald Jay Sussman}
 
@@ -227,10 +233,10 @@ gets any new interesting information, the adding propagator will
 eventually compute the appropriate sum and give it to @tt{baz} as an
 update.
 \begin{description}
-\item[{@tt{(d@"@" propagator boundary-cell ...)}}] \leavevmode 
+@definition[@tt{(d@"@" propagator boundary-cell ...)}]{
 Attaches a propagator to the given boundary cells.  By convention,
 cells used as outputs go last.  As a Scheme procedure, @tt{d@"@"} does
-not return a useful value.
+not return a useful value.}
 
 \end{description}
 
@@ -267,12 +273,12 @@ procedure is just like @tt{d@"@"}, except it synthesizes an extra cell to
 serve as the last argument to @tt{d@"@"}, and returns it from the @tt{e@"@"}
 expression (whereas the return value of @tt{d@"@"} is unspecified).
 \begin{description}
-\item[{@tt{(e@"@" propagator boundary-cell ...)}}] \leavevmode 
+@definition[@tt{(e@"@" propagator boundary-cell ...)}]{
 Attaches the given propagator to a boundary consisting of the given
 boundary cells augmented with an additional, synthesized cell.  The
 synthesized cell goes last, because that is the conventional
 position for an output cell.  Returns the synthesized cell as the
-Scheme return value of @tt{e@"@"}.
+Scheme return value of @tt{e@"@"}.}
 
 \end{description}
 
@@ -385,48 +391,52 @@ in as the last argument to @tt{p:foo} and synthesized and returned by
 @tt{e:foo}).  @tt{p:} is mnemonic for ``propagator'' and @tt{e:} is
 mnemonic for ``expression''.
 \begin{description}
-\item[{@tt{(p:foo input ... output)}}] \leavevmode 
+@definition[@tt{(p:foo input ... output)}]{
 Attaches a propagator that does the @tt{foo} job to the given input
 and output cells.  @tt{p:abs}, @tt{p:square}, @tt{p:sqrt},
 @tt{p:not}, @tt{p:pair?}, and @tt{p:null?} accept one input cell and one
 output cell.  @tt{p:+}, @tt{p:-}, @tt{p:*}, @tt{p:/}, @tt{p:=}, @tt{p:<},
 @tt{p:>}, @tt{p:<=}, @tt{p:>=}, @tt{p:and}, @tt{p:or}, @tt{p:eq?},
 @tt{p:eqv?}, and @tt{p:expt}, accept two input cells and one output
-cell.
+cell.}
 
-\item[{@tt{(e:foo input ...)}}] \leavevmode 
+@definition[@tt{(e:foo input ...)}]{
 The @tt{e:foo} equivalents of all the @tt{p:foo} propagator
 constructors are all available and accept the same number of input
-cells (and make their own output cell).
+cells (and make their own output cell).}
 
-\item[{@tt{(p:id input output)}, @tt{(e:id input)}}] \leavevmode 
+@definition["(p:id input output), (e:id input)"]{
 Attaches an identity propagator to the given cells.  The identity
 propagator will continuously copy the contents of the @tt{input} cell
-to the @tt{output} cell.
+to the @tt{output} cell.}
 
-\item[{@tt{(p:== input ... output)}, @tt{(e:== input ...)}}] \leavevmode 
+@definition["(p:== input ... output), (e:== input ...)"]{
 These are variadic versions of @tt{p:id}.  The result is a
-star topology, with every input feeding into the one output.
+star topology, with every input feeding into the one output.}
 
-\item[{@tt{(p:switch control input output)}, @tt{(e:switch control input)}}] \leavevmode 
+@definition["(p:switch control input output), (e:switch control input)"]{
 Conditional propagation.  The propagator made by @tt{switch} copies
 its @tt{input} to its @tt{output} if and only if its @tt{control} is
 ``true''.  The presence of partial information (see Section \ref{using-partial-information}) makes this
 interesting.  For example, a @tt{#t} contingent on some premise will
 cause @tt{switch} to propagate, but the result written to the
 @tt{output} will be contingent on that premise (in addition to any
-other premises the @tt{input} may already be contingent on).
+other premises the @tt{input} may already be contingent on).}
 
-\item[{@tt{(p:conditional control consequent alternate output)},}]
-\item[{@tt{(e:conditional control consequent alternate)}}] \leavevmode 
+@definition[@tt{(p:conditional control consequent alternate output)}]{
+FINDME}
+
+@definition[@tt{(e:conditional control consequent alternate)}]{
 Two-armed conditional propagation.  May be defined by use of two
-@tt{switch} propagators and a @tt{not} propagator.
+@tt{switch} propagators and a @tt{not} propagator.}
 
-\item[{@tt{(p:conditional-router control input consequent alternate)},}]
-\item[{@tt{(p:conditional-router control input consequent)}}] \leavevmode 
+@definition[@tt{(p:conditional-router control input consequent alternate)}]{
+FINDME}
+
+@definition[@tt{(p:conditional-router control input consequent)}]{
 Two-output-armed conditional propagation.  This is symmetric with
 @tt{conditional}; the @tt{consequent} and @tt{alternate} are possible
-output destinations.
+output destinations.}
 
 \end{description}
 
@@ -444,17 +454,17 @@ contain information about the same thing.  The two cells are therefore
 merged by attaching @tt{c:id} propagators to them so as to keep their
 contents in sync in the future.
 \begin{description}
-\item[{@tt{(p:deposit cell place-cell)}, @tt{(e:deposit cell)}}] \leavevmode 
+@definition["(p:deposit cell place-cell), (e:deposit cell)"]{
 Grabs the given @tt{cell} and deposits it into @tt{place-cell}.  The
 rule for merging cells has the effect that the given @tt{cell} will
 be identified with any other cells that @tt{place-cell} may come to
-hold.
+hold.}
 
-\item[{@tt{(p:examine place-cell cell)}, @tt{(e:examine place-cell)}}] \leavevmode 
+@definition["(p:examine place-cell cell), (e:examine place-cell)"]{
 Grabs the given @tt{cell} and deposits it into @tt{place-cell}.  The
 rule for merging cells has the effect that the given @tt{cell} will
 be identified with any other cells that @tt{place-cell} may come to
-hold.
+hold.}
 
 In fact, @tt{p:deposit} and @tt{p:examine} are the same operation,
 except with the arguments reversed.
@@ -475,36 +485,36 @@ Propagator compound data structures are made out of Scheme compound
 data structures that carry around cells collected as with @tt{deposit}.
 The corresponding accessors take those cells out as with @tt{examine}.
 \begin{description}
-\item[{@tt{(p:cons car-cell cdr-cell output)}, @tt{(e:cons car-cell cdr-cell)}}] \leavevmode 
+@definition["(p:cons car-cell cdr-cell output), (e:cons car-cell cdr-cell)"]{
 Constructs a propagator that collects the @tt{car-cell} and the
 @tt{cdr-cell}, makes a pair of them, and writes that pair into the
-@tt{output} cell.  This is like a binary @tt{p:deposit}.
+@tt{output} cell.  This is like a binary @tt{p:deposit}.}
 
-\item[{@tt{(p:pair? input output)}, @tt{(e:pair? input)}}] \leavevmode 
+@definition["(p:pair? input output), (e:pair? input)"]{
 Attaches a propaagtor that tests whether input cell contains a
-pair.
+pair.}
 
-\item[{@tt{(p:null? input output)}, @tt{(e:null? input)}}] \leavevmode 
+@definition["(p:null? input output), (e:null? input)"]{
 Attaches a propaagtor that tests whether input cell contains
-the empty list.
+the empty list.}
 
-\item[{@tt{(p:car input output)}, @tt{(e:car input)}}] \leavevmode 
+@definition["(p:car input output), (e:car input)"]{
 Makes a propagator that identifies the given @tt{output} with the
 cell in the @tt{car} of the pair in the given @tt{input}.  This is
 like a @tt{p:examine} of that field.  Note that using @tt{p:car} on an
 @tt{input} implies the expectation that said @tt{input} contains a
 pair.  That wish is treated as a command, and a pair appears.
 If fact, @tt{(p:car input output)} is equivalent to
-@tt{(p:cons output nothing input)}.
+@tt{(p:cons output nothing input)}.}
 
 The @tt{e:} variant includes the same optimization that @tt{e:examine}
 does: if the @tt{input} already contains a pair with a cell in the
 @tt{car}, @tt{e:car} will just Scheme-return that cell instead of
 synthesizing a new one and identifying it with the cell present.
 
-\item[{@tt{(p:cdr input output)}, @tt{(e:cdr input)}}] \leavevmode 
+@definition["(p:cdr input output), (e:cdr input)"]{
 Same as @tt{p:car} and @tt{e:car}, except the other field of the
-pair.
+pair.}
 
 \end{description}
 
@@ -574,14 +584,14 @@ apply themselves in expression style:
 Of course, not every operation has a useful inverse, so there are
 fewer @tt{c:} procedures defined than @tt{p:}:
 \begin{description}
-\item[{@tt{(c:foo constrainee ...)}}] \leavevmode 
+@definition[@tt{(c:foo constrainee ...)}]{
 Attaches propagators to the given boundary cells that collectively
 constrain them to be in the @tt{foo} relationship with each other.
 @tt{c:+} and @tt{c:*} accept three cells to constrain.  @tt{c:square},
 @tt{c:not}, and @tt{c:id} accept two cells to constrain.  @tt{c:==}
-accepts any number of cells.
+accepts any number of cells.}
 
-\item[{@tt{(ce:foo constrainee ...)}}] \leavevmode 
+@definition[@tt{(ce:foo constrainee ...)}]{
 Synthesizes one additional constrainee cell and attaches propagators
 that constrain the given cells to be in the @tt{foo} relationship
 with the new one.  Since the position of the synthesized cell in
@@ -595,7 +605,7 @@ c:not     ce:not
 c:id      ce:id
 c:==      ce:==
 }
-\end{description}
+\end{description}}
 
 
 @;___________________________________________________________________________
@@ -786,7 +796,7 @@ low-level tools for accomplishing this effect are
 @tt{delayed-propagator-constructor} and @tt{switch}.  The supported
 user interface is:
 \begin{description}
-\item[{@tt{(p:when internal-cells condition-cell body ...)}}] \leavevmode 
+@definition[@tt{(p:when internal-cells condition-cell body ...)}]{
 Delays the construction of the body until sufficiently ``true'' (in
 the sense of @tt{switch}) partial information appears in the
 @tt{condition-cell}.  The @tt{condition-cell} argument is an
@@ -796,22 +806,22 @@ arbitrary collection of code, defining some amount of propagator
 network that will not be built until the controlling cell indicates
 that it should.  The @tt{internal-cells} argument is a list of the
 free variables in @tt{body}.  This is the same kind of kludge as the
-@tt{import} clause in @tt{define-propagator} (see Section \ref{lexical-scope}).
+@tt{import} clause in @tt{define-propagator} (see Section \ref{lexical-scope}).}
 
-\item[{@tt{(e:when internal-cells condition-cell body ...)}}] \leavevmode 
+@definition[@tt{(e:when internal-cells condition-cell body ...)}]{
 Expression-style variant of @tt{p:when}.  Augments its boundary with
 a fresh cell, which is then synchronized with the cell returned from
-the last expression in @tt{body} when @tt{body} is constructed.
+the last expression in @tt{body} when @tt{body} is constructed.}
 
 \end{description}
 
 @tt{(p:unless internal-cells condition-cell body ...)}
 \begin{description}
-\item[{@tt{(e:unless internal-cells condition-cell body ...)}}] \leavevmode 
+@definition[@tt{(e:unless internal-cells condition-cell body ...)}]{
 Same as @tt{p:when} and @tt{e:when}, but reversing the sense of the
-control cell.
+control cell.}
 
-\item[{@tt{(p:if internal-cells condition-cell consequent alternate)}}] \leavevmode 
+@definition[@tt{(p:if internal-cells condition-cell consequent alternate)}]{
 Two-armed conditional construction.  Just like a @tt{p:when} and a
 @tt{p:unless}: constructs the network indicated by the @tt{consequent}
 form when the @tt{condition-cell} becomes sufficiently ``true'', and
@@ -820,10 +830,10 @@ constructs the network indicated by the @tt{alternate} form when the
 occur for the same @tt{p:if} over the life of a single computation,
 for example if the @tt{condition-cell} comes to have a TMS that includes
 a @tt{#t} contingent on some premises and later a @tt{#f} contingent
-on others.
+on others.}
 
-\item[{@tt{(e:if internal-cells condition-cell consequent alternate)}}] \leavevmode 
-Expression-style variant of @tt{p:if}.
+@definition[@tt{(e:if internal-cells condition-cell consequent alternate)}]{
+Expression-style variant of @tt{p:if}.}
 
 \end{description}
 
@@ -1078,14 +1088,14 @@ propagator are particularly important.
 The following partial information structures are provided with
 Scheme-Propagators:
 @itemlist[
-@item{nothing} 
-@item{just a value} 
-@item{intervals} 
-@item{propagator cells} 
-@item{compound data} 
-@item{closures} 
-@item{supported values} 
-@item{truth maintenance systems} 
+@item{nothing}
+@item{just a value}
+@item{intervals}
+@item{propagator cells}
+@item{compound data}
+@item{closures}
+@item{supported values}
+@item{truth maintenance systems}
 @item{contradiction}]
 
 
@@ -1093,13 +1103,13 @@ Scheme-Propagators:
 
 @subsection{Nothing}
 \begin{description}
-\item[{@tt{nothing}}] \leavevmode 
+@definition[@tt{nothing}]{
 A single Scheme object that represents the complete absence of
-information.
+information.}
 
-\item[{@tt{(nothing? thing)}}] \leavevmode 
+@definition[@tt{(nothing? thing)}]{
 A predicate that tests whether a given Scheme object is the @tt{nothing}
-object.
+object.}
 
 \end{description}
 
@@ -1157,17 +1167,17 @@ An object of type @tt{interval?} has fields for a lower bound and an
 upper bound.  Such an object represents the information ``This value is
 between these bounds.''
 \begin{description}
-\item[{@tt{(make-interval low high)}}] \leavevmode 
-Creates an interval with the given lower and upper bounds
+@definition[@tt{(make-interval low high)}]{
+Creates an interval with the given lower and upper bounds}
 
-\item[{@tt{(interval-low interval)}}] \leavevmode 
-Extracts the lower bound of an interval
+@definition[@tt{(interval-low interval)}]{
+Extracts the lower bound of an interval}
 
-\item[{@tt{(interval-high interval)}}] \leavevmode 
-Extracts the upper bound of an interval
+@definition[@tt{(interval-high interval)}]{
+Extracts the upper bound of an interval}
 
-\item[{@tt{(interval? thing)}}] \leavevmode 
-Tests whether the given object is an interval
+@definition[@tt{(interval? thing)}]{
+Tests whether the given object is an interval}
 
 \end{description}
 
@@ -1260,7 +1270,7 @@ position of an apply propagator.
 Other compound data structures can be made partial information that
 behaves like pairs using @tt{define-propagator-structure}.
 \begin{description}
-\item[{@tt{(define-propagator-structure type constructor accessor ...)}}] \leavevmode 
+@definition[@tt{(define-propagator-structure type constructor accessor ...)}]{
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
 that handle them.  For example:
@@ -1270,7 +1280,7 @@ that handle them.  For example:
 is the declaration that causes Scheme pairs to @tt{merge}, be
 @tt{equivalent?}, and be @tt{contradictory?} the way they are, and
 defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
-@tt{e:cons}, @tt{p:car}, and @tt{e:cdr}.
+@tt{e:cons}, @tt{p:car}, and @tt{e:cdr}.}
 
 \end{description}
 
@@ -1288,13 +1298,13 @@ Code pointers merge by testing that they point to the same code
 environments merge by merging all the cells they contain in
 corresponding places.
 \begin{description}
-\item[{@tt{lambda-d:propagator}, @tt{lambda-e:propagator}}] \leavevmode 
+@definition["lambda-d:propagator, lambda-e:propagator"]{
 Scheme-Propagators syntax for anonymous compound propagator
-constructors (which are implemented as closures).
+constructors (which are implemented as closures).}
 
-\item[{@tt{define-propagator}}] \leavevmode 
+@definition[@tt{define-propagator}]{
 Internally produces lambda-d:propagator or lambda-e:propagator
-and puts the results into appropriately named cells.
+and puts the results into appropriately named cells.}
 
 \end{description}
 
@@ -1323,39 +1333,39 @@ starts out believing all premises.  The worldview may be changed to
 exclude (or re-include) individual premises, allowing the user to
 examine the consequences of different consistent subsets of premises.
 \begin{description}
-\item[{@tt{(kick-out! premise)}}] \leavevmode 
-Remove the given premise from the current worldview.
+@definition[@tt{(kick-out! premise)}]{
+Remove the given premise from the current worldview.}
 
-\item[{@tt{(bring-in! premise)}}] \leavevmode 
-Return the given premise to the current worldview.
+@definition[@tt{(bring-in! premise)}]{
+Return the given premise to the current worldview.}
 
-\item[{@tt{(premise-in? premise)}}] \leavevmode 
-Is the given premise believed in the current worldview?
+@definition[@tt{(premise-in? premise)}]{
+Is the given premise believed in the current worldview?}
 
-\item[{@tt{(contingent info premises)}}] \leavevmode 
+@definition[@tt{(contingent info premises)}]{
 Constructs a contingency object representing the information
-that the given info is contingent on the given list of premises.
+that the given info is contingent on the given list of premises.}
 
-\item[{@tt{(contingent-info contingency-object)}}] \leavevmode 
-The information that is contingent.
+@definition[@tt{(contingent-info contingency-object)}]{
+The information that is contingent.}
 
-\item[{@tt{(contingent-premises contingency-object)}}] \leavevmode 
-The list of premises on which that information is contingent.
+@definition[@tt{(contingent-premises contingency-object)}]{
+The list of premises on which that information is contingent.}
 
-\item[{@tt{(contingency-object-believed? contingency-object)}}] \leavevmode 
-Whether the given contingency object is believed.
+@definition[@tt{(contingency-object-believed? contingency-object)}]{
+Whether the given contingency object is believed.}
 
-\item[{@tt{(make-tms contingency-object-list)}}] \leavevmode 
+@definition[@tt{(make-tms contingency-object-list)}]{
 Constructs a TMS with the given contingency objects as its initial
-set.
+set.}
 
-\item[{@tt{(tms-query tms)}}] \leavevmode 
+@definition[@tt{(tms-query tms)}]{
 Returns a contingency object representing the strongest deduction
 the given TMS can make in the current worldview.  tms-query gives
 the contingency with the strongest contingent information that is
 believed in the current worldview.  Given that desideratum,
 tms-query tries to minimize the premises that information is
-contingent upon.
+contingent upon.}
 
 \end{description}
 
@@ -1425,9 +1435,9 @@ example, a truth maintenance system may discover that some collection
 of premises leads to a contradiction --- this is represented by a
 @tt{the-contradiction} object contingent on those premises.
 \begin{description}
-\item[{@tt{the-contradiction}}] \leavevmode 
+@definition[@tt{the-contradiction}]{
 A Scheme object representing a contradictory state of information
-with no further structure.
+with no further structure.}
 
 \end{description}
 
@@ -1465,7 +1475,7 @@ the system is free to manipulate automatically.  If a nogood set
 contains at least one hypothetical, some hypothetical from that nogood
 set will be retracted, and the computation will proceed.
 \begin{description}
-\item[{@tt{(p:amb cell)}, @tt{(e:amb)}}] \leavevmode 
+@definition["(p:amb cell), (e:amb)"]{
 A propagator that emits a TMS consisting of a pair of contingencies.
 One contains the information @tt{#t} contingent on one fresh
 hypothetical premise, and the other contains the information @tt{#f}
@@ -1478,24 +1488,24 @@ nogood set to be believed, then, by performing a cut, the @tt{amb}
 discovers and signals a new nogood set that does not include either
 of them.  Together with the reaction of the system to nogood sets,
 this induces an emergent satisfiability solver by the resolution
-principle.
+principle.}
 
-\item[{@tt{(p:require cell)}, @tt{(e:require)}}] \leavevmode 
+@definition["(p:require cell), (e:require)"]{
 A propagator that requires its given cell to be true (to wit,
-signals contradictions if it is not).
+signals contradictions if it is not).}
 
-\item[{@tt{(p:forbid cell)}, @tt{(e:forbid)}}] \leavevmode 
+@definition["(p:forbid cell), (e:forbid)"]{
 A propagator that forbids its given cell from being true (to wit,
-signals contradictions if it is).
+signals contradictions if it is).}
 
-\item[{@tt{(p:one-of input ... output)}, @tt{(e:one-of input ...)}}] \leavevmode 
+@definition["(p:one-of input ... output), (e:one-of input ...)"]{
 An n-ary version of @tt{amb}.  Picks one of the objects in the given
 input cells using an appropriate collection of @tt{amb} and
-@tt{switch} propagators and puts it into its output cell.
+@tt{switch} propagators and puts it into its output cell.}
 
-\item[{@tt{(require-distinct cells)}}] \leavevmode 
+@definition[@tt{(require-distinct cells)}]{
 Requires all of the objects in its list of input cells to be
-distinct (in the sense of @tt{eqv?})
+distinct (in the sense of @tt{eqv?})}
 
 \end{description}
 
@@ -1622,11 +1632,11 @@ intervals, arithmetic on just numbers, and this procedure for viewing
 numbers as intervals.  The generic operations system provided with
 Scheme-Propagators has explicit support for this idea.
 \begin{description}
-\item[{@tt{(declare-coercion-target type {[} default-coercion {]})}}] \leavevmode 
+@definition[@tt{(declare-coercion-target type {[} default-coercion {]})}]{
 This is a Scheme macro that expands into the definitions needed to
 declare @tt{type} as something that other objects may be coerced
 into.  If supplied, it also registers a default coercion from
-anything declared coercible to @tt{type}.
+anything declared coercible to @tt{type}.}
 
 @tt{declare-coercion-target} defines the procedure @tt{type-able?},
 which tests whether a given object has been declared to be coercible
@@ -1640,7 +1650,7 @@ relies on the procedure @tt{interval?} and defines the procedures
 @tt{->interval} and @tt{interval-able?}.  This call does not declare a
 default means of coercing arbitrary objects into intervals.
 
-\item[{@tt{(declare-coercion from-type to-coercer {[} mechanism {]})}}] \leavevmode 
+@definition[@tt{(declare-coercion from-type to-coercer {[} mechanism {]})}]{
 Declares that the given @tt{from-type} is coercible by the given
 coercer operation, either by the given @tt{mechanism} if supplied or
 by the default mechanism declared in the definition of the given
@@ -1651,9 +1661,9 @@ coercer.  For example:
 declares that Scheme number objects may be coerced to intervals
 whose lower and upper bounds are equal to that number.  After this
 declaration, @tt{interval-able?} will return true on numbers, and
-@tt{->interval} will make intervals out of numbers.
+@tt{->interval} will make intervals out of numbers.}
 
-\item[{@tt{(defhandler-coercing operation handler coercer)}}] \leavevmode 
+@definition[@tt{(defhandler-coercing operation handler coercer)}]{
 The given generic operation must be binary.  Defines handlers for
 the given generic operation that have two effects: @tt{handler} is
 invoked if that operation is given two arguments of the type
@@ -1669,7 +1679,7 @@ first coercing it into an interval with @tt{->interval} and then
 doing @tt{add-interval}.  This subsumes
 @example{
 (defhandler generic-+ add-interval interval? interval?)
-}
+}}
 
 @tt{defhandler-coercing} may only be called after a call to
 @tt{declare-coercion-target} defining the appropriate coercer and
@@ -1806,37 +1816,37 @@ TMSes, then the instructions to connect those two cells must be
 adjusted to make the connection also contingent on the appropriate
 premises.
 \begin{description}
-\item[{@tt{(make-effectful info effects)}}] \leavevmode 
+@definition[@tt{(make-effectful info effects)}]{
 Constructs a new effectful result of merge, with the given new
 partial information structure and the given list of effects to carry
 out.  If the resulting effectful object reaches the top level in a
 cell, those effects will be executed in the order they appear in the
-list.
+list.}
 
-\item[{@tt{(effectful-info effectful)}}] \leavevmode 
+@definition[@tt{(effectful-info effectful)}]{
 Returns the new information content carried in the given
-effectful object.
+effectful object.}
 
-\item[{@tt{(effectful-effects effectful)}}] \leavevmode 
-Returns the list of effects that this effectful object carries.
+@definition[@tt{(effectful-effects effectful)}]{
+Returns the list of effects that this effectful object carries.}
 
-\item[{@tt{(effectful? thing)}}] \leavevmode 
-Tells whether the given object is an effectful object.
+@definition[@tt{(effectful? thing)}]{
+Tells whether the given object is an effectful object.}
 
-\item[{@tt{(->effectful thing)}}] \leavevmode 
+@definition[@tt{(->effectful thing)}]{
 Coerces a possibly-effectless information structure into an
 effectful object.  If the @tt{thing} was already effectful,
 returns it, otherwise wraps it into an effectful object
-with an empty list of effects.
+with an empty list of effects.}
 
-\item[{@tt{(effectful-> effectful)}}] \leavevmode 
+@definition[@tt{(effectful-> effectful)}]{
 Attempts to coerce an effectful object into an explicitly effectless
 one.  If the given effectful object was not carrying any effects
 that would have any effect when executed, returns just the
 information structure it was carrying.  Otherwise, returns
-the given effectful object.
+the given effectful object.}
 
-\item[{@tt{(effectful-bind effectful func)}}] \leavevmode 
+@definition[@tt{(effectful-bind effectful func)}]{
 Runs the given @tt{func} on the information content in the given
 @tt{effectful} object, and reattaches any effects.  The effectful
 object may actually be a partial information structure without
@@ -1845,11 +1855,11 @@ structure or a new effectful object.  The overall result of
 @tt{effectful-bind} is the information returned by the call to
 @tt{func}, together with all the effects in the original effectful
 object, and any effects in the return value of the @tt{func}.  The
-former effects are listed first.
+former effects are listed first.}
 
-\item[{@tt{(effectful-list-bind effectfuls func)}}] \leavevmode 
+@definition[@tt{(effectful-list-bind effectfuls func)}]{
 Like @tt{effectful-bind}, but accepts a list of effectful objects,
-and calls the @tt{func} on the list of their information contents.
+and calls the @tt{func} on the list of their information contents.}
 
 \end{description}
 
@@ -1898,19 +1908,19 @@ mechanism.
 
 The handling of effects is extensible through two generic procedures.
 \begin{description}
-\item[{@tt{(execute-effect effect)}}] \leavevmode 
+@definition[@tt{(execute-effect effect)}]{
 The @tt{execute-effect} procedure is used by cells to actually
 execute any effects that reach the top level.  A handler for
 @tt{execute-effect} should execute the effect specified by the given
-effect object.  The return value of @tt{execute-effect} is not used.
+effect object.  The return value of @tt{execute-effect} is not used.}
 
-\item[{@tt{(redundant-effect? effect)  ==>  #t or #f}}] \leavevmode 
+@definition[@tt{(redundant-effect? effect)  ==>  #t or #f}]{
 The @tt{redundant-effect?} procedure is used to determine which
 effects will predictably have no effect if executed, so they may be
 removed.  For example, synchronizing a cell to itself, or
 synchronizing two cells that are already synchronized, are redundant
 effects.  Detecting redundant effects is important for testing
-network quiescence.
+network quiescence.}
 
 The default operation of @tt{redundant-effect?} is to return @tt{#f}
 for all effects, which is conservative but could lead to excess
@@ -1927,7 +1937,7 @@ contingency.  This mechanism is also extensible.  To teach TMSes
 about making new effects contingent, add handlers to the generic
 operation @tt{generic-attach-premises}.
 \begin{description}
-\item[{@tt{((generic-attach-premises effect) premises)  ==>  new-effect}}] \leavevmode 
+@definition[@tt{((generic-attach-premises effect) premises)  ==>  new-effect}]{
 The @tt{generic-attach-premises} procedure is used by the TMS
 machinery to modify effects produced by merges of contingent
 information.  A handler for @tt{generic-attach-premises} must return
@@ -1938,7 +1948,7 @@ the action must be properly undone or made irrelevant if any
 premises supporting that action are retracted.  For example, the
 instruction to join two cells by synchronizing propagators is made
 contingent on premises by causing those synchronizing propagators to
-synchronize contingently.
+synchronize contingently.}
 
 \end{description}
 
@@ -1952,7 +1962,7 @@ Those propagators can therefore be extended to new
 partial information types just by adding appropriate methods to their
 Scheme generic operations.  This is what we did in the interval example.
 \begin{description}
-\item[{@tt{(generic-foo argument ...)  ==>  result}}] \leavevmode 
+@definition[@tt{(generic-foo argument ...)  ==>  result}]{
 A generic procedure for carrying out the @tt{foo} job over any
 desired partial information inputs, producing an appropriately
 partial result.  @tt{generic-abs}, @tt{generic-square},
@@ -1961,7 +1971,7 @@ partial result.  @tt{generic-abs}, @tt{generic-square},
 @tt{generic-+}, @tt{generic--}, @tt{generic-*}, @tt{generic-/},
 @tt{generic-=}, @tt{generic-<}, @tt{generic->}, @tt{generic-<=},
 @tt{generic->=}, @tt{generic-and}, @tt{generic-or}, @tt{generic-eq?},
-@tt{generic-eqv?}, @tt{generic-expt}, and @tt{generic-switch} accept two inputs.
+@tt{generic-eqv?}, @tt{generic-expt}, and @tt{generic-switch} accept two inputs.}
 
 \end{description}
 
@@ -2062,15 +2072,15 @@ points for this are the type testers and coercers of the existing
 partial information types:
 @tabular[(list
 (list "Type"                 "Predicate"          "Coercer")
-(list "Nothing"              @tt{nothing?}        @tt{--})           
-(list "Raw Scheme object   " "various"            @tt{--})           
+(list "Nothing"              @tt{nothing?}        @tt{--})
+(list "Raw Scheme object   " "various"            @tt{--})
 (list "Numerical interval  " @tt{interval?}       @tt{->interval})
-(list "Propagator cells"     @tt{cell?}           @tt{--})           
-(list "Scheme pairs"         @tt{pair?}           @tt{--})           
-(list "Propagator closures " @tt{closure?}        @tt{--})           
+(list "Propagator cells"     @tt{cell?}           @tt{--})
+(list "Scheme pairs"         @tt{pair?}           @tt{--})
+(list "Propagator closures " @tt{closure?}        @tt{--})
 (list "Contingency object  " @tt{contingent?}     @tt{->contingent})
 (list "TMS"                  @tt{tms?}            @tt{->tms})
-(list "Contradiction"        @tt{contradictory?}  @tt{--})           
+(list "Contradiction"        @tt{contradictory?}  @tt{--})
 )]
 
 Notes:
@@ -2249,7 +2259,7 @@ the cells that are its arguments, rather than on their contents.
 Other compound data structures can be made partial information that
 behaves like pairs using @tt{define-propagator-structure}.
 \begin{description}
-\item[{@tt{(define-propagator-structure type constructor accessor ...)}}] \leavevmode 
+@definition[@tt{(define-propagator-structure type constructor accessor ...)}]{
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
 that handle them.  For example:
@@ -2258,7 +2268,7 @@ that handle them.  For example:
 }
 defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
 @tt{e:cons}, @tt{p:car}, and @tt{e:cdr} (and also makes pairs
-a partial information structure).
+a partial information structure).}
 
 \end{description}
 
@@ -2313,7 +2323,7 @@ track is:
 propagators.  This is in contrast with the unique but non-semantic
 object hashes of all the cells and propagators that MIT Scheme
 tracks anyway.}
-@item{Which propagators are connected to which cells.} 
+@item{Which propagators are connected to which cells.}
 @item{Whether the connections are input, output, or both.}]
 
 To make sure that your network tracks this metadata well, you should
@@ -2326,34 +2336,34 @@ be filled by hand.
 In order to use the metadata for debugging, you must be able to read
 it.  Inspection procedures using the metadata are provided:
 \begin{description}
-\item[{name}] \leavevmode 
-the name of an object, or the object itself if it is not named
+@definition["name"]{
+the name of an object, or the object itself if it is not named}
 
-\item[{cell?}] \leavevmode 
-whether something is a cell or not
+@definition["cell?"]{
+whether something is a cell or not}
 
-\item[{content}] \leavevmode 
-the information content of a cell
+@definition["content"]{
+the information content of a cell}
 
-\item[{propagator?}] \leavevmode 
-whether something is a propagator or not
+@definition["propagator?"]{
+whether something is a propagator or not}
 
-\item[{propagator-inputs}] \leavevmode 
-the inputs of a propagator (a list of cells)
+@definition["propagator-inputs"]{
+the inputs of a propagator (a list of cells)}
 
-\item[{propagator-outputs}] \leavevmode 
-the outputs of a propagator (a list of cells)
+@definition["propagator-outputs"]{
+the outputs of a propagator (a list of cells)}
 
-\item[{neighbors}] \leavevmode 
-the readers of a cell (a list of propagators)
+@definition["neighbors"]{
+the readers of a cell (a list of propagators)}
 
-\item[{cell-non-readers}] \leavevmode 
+@definition["cell-non-readers"]{
 other propagators somehow associated with a cell (presumably ones
-that write to it)
+that write to it)}
 
-\item[{cell-connections}] \leavevmode 
+@definition["cell-connections"]{
 all propagators around a cell (the append of the neighbors
-and the non-readers)
+and the non-readers)}
 
 \end{description}
 
