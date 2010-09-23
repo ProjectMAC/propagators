@@ -54,10 +54,7 @@ This work was supported in part by the MIT Mind Machine Project.
 
 %___________________________________________________________________________
 
-\hypertarget{propagator-system}{}
-\pdfbookmark[0]{Propagator System}{propagator-system}
 @section{Propagator System}
-\label{propagator-system}
 
 Although most of this document introduces you to the Scheme-Propagator
 system that we have developed in MIT Scheme, the Propagator Model is
@@ -94,10 +91,7 @@ respect to the lattice induced by the merge operation.
 
 %___________________________________________________________________________
 
-\hypertarget{getting-started}{}
-\pdfbookmark[0]{Getting Started}{getting-started}
 @section{Getting Started}
-\label{getting-started}
 
 Scheme-Propagators is implemented in \href{http://www.gnu.org/software/mit-scheme/}{MIT/GNU Scheme}, which you will
 need in order to use it.  You will also need Scheme-Propagators
@@ -181,10 +175,7 @@ to have.
 
 %___________________________________________________________________________
 
-\hypertarget{examples}{}
-\pdfbookmark[1]{Examples}{examples}
 @subsection{Examples}
-\label{examples}
 
 There are some basic examples of Scheme-Propagators programs in
 \texttt{core/example-networks.scm}; more elaborate examples are available
@@ -193,10 +184,7 @@ in \texttt{examples/}.
 
 %___________________________________________________________________________
 
-\hypertarget{the-details}{}
-\pdfbookmark[0]{The Details}{the-details}
 @section{The Details}
-\label{the-details}
 
 Now that you know how to play around with our propagators we have to
 tell you what we actually provide.  In every coherent system for
@@ -207,10 +195,7 @@ they can be named and treated as if they are primitive.
 
 %___________________________________________________________________________
 
-\hypertarget{making-propagator-networks}{}
-\pdfbookmark[0]{Making Propagator Networks}{making-propagator-networks}
 @section{Making Propagator Networks}
-\label{making-propagator-networks}
 
 The ingredients of a propagator network are cells and propagators.
 The cells' job is to remember things; the propagators' job is to
@@ -229,10 +214,7 @@ later, but let's talk about propagators first.
 
 %___________________________________________________________________________
 
-\hypertarget{attaching-basic-propagators-d}{}
-\pdfbookmark[1]{Attaching Basic Propagators: d@"@"}{attaching-basic-propagators-d}
 @subsection{Attaching Basic Propagators: d@"@"}
-\label{attaching-basic-propagators-d}
 
 The Scheme procedure \texttt{d@"@"} attaches propagators to cells.  The
 name \texttt{d@"@"} is mnemonic for ``diagram apply''.  For
@@ -265,10 +247,7 @@ constructor becomes sufficiently well constrained.
 
 %___________________________________________________________________________
 
-\hypertarget{propagator-expressions-e}{}
-\pdfbookmark[1]{Propagator Expressions: e@"@"}{propagator-expressions-e}
 @subsection{Propagator Expressions: e@"@"}
-\label{propagator-expressions-e}
 
 The \texttt{d@"@"} style is the right underlying way to think about the
 construction of propagator networks.  However, it has the unfortunate
@@ -359,10 +338,7 @@ style.  So the following also works:
 
 %___________________________________________________________________________
 
-\hypertarget{late-binding-of-application}{}
-\pdfbookmark[1]{Late Binding of Application}{late-binding-of-application}
 @subsection{Late Binding of Application}
-\label{late-binding-of-application}
 
 The preceding discusses attaching propagators to cells when the
 propagators being attached are known at network construction time.
@@ -401,10 +377,7 @@ default preference.  \texttt{d@"@"} and \texttt{e@"@"} override these defaults.
 
 %___________________________________________________________________________
 
-\hypertarget{provided-primitives-p-foo-and-e-foo}{}
-\pdfbookmark[1]{Provided Primitives: p:foo and e:foo}{provided-primitives-p-foo-and-e-foo}
 @subsection{Provided Primitives: p:foo and e:foo}
-\label{provided-primitives-p-foo-and-e-foo}
 
 Many propagator primitives directly expose procedures from the
 underlying Scheme, with the naming conventions that \texttt{p:foo}, and
@@ -462,10 +435,7 @@ output destinations.
 
 %___________________________________________________________________________
 
-\hypertarget{cells-are-data-too}{}
-\pdfbookmark[1]{Cells are Data Too}{cells-are-data-too}
 @subsection{Cells are Data Too}
-\label{cells-are-data-too}
 
 Cells, and structures thereof, are perfectly good partial information
 (see Section~\ref{using-partial-information})
@@ -501,10 +471,7 @@ identifying it with the cell present.
 
 %___________________________________________________________________________
 
-\hypertarget{compound-data}{}
-\pdfbookmark[1]{Compound Data}{compound-data}
 @subsection{Compound Data}
-\label{compound-data}
 
 Propagator compound data structures are made out of Scheme compound
 data structures that carry around cells collected as with \texttt{deposit}.
@@ -568,10 +535,7 @@ check).
 
 %___________________________________________________________________________
 
-\hypertarget{propagator-constraints-c-foo-and-ce-foo}{}
-\pdfbookmark[1]{Propagator Constraints: c:foo and ce:foo}{propagator-constraints-c-foo-and-ce-foo}
 @subsection{Propagator Constraints: c:foo and ce:foo}
-\label{propagator-constraints-c-foo-and-ce-foo}
 
 Although the primitive propagators are like functions in that they
 compute only from inputs to outputs, we can also define constraints,
@@ -638,10 +602,7 @@ c:==~~~~~~ce:==
 
 %___________________________________________________________________________
 
-\hypertarget{constants-and-literal-values}{}
-\pdfbookmark[1]{Constants and Literal Values}{constants-and-literal-values}
 @subsection{Constants and Literal Values}
-\label{constants-and-literal-values}
 
 Programs have embedded constants all the time, and propagator programs
 are no different (except that constant values, like all other values,
@@ -670,10 +631,7 @@ There is also an expression-oriented version, called, naturally,
 
 %___________________________________________________________________________
 
-\hypertarget{constant-conversion}{}
-\pdfbookmark[1]{Constant Conversion}{constant-conversion}
 @subsection{Constant Conversion}
-\label{constant-conversion}
 
 In fact, inserting constants is so important, that there is one more
 nicification of this: whenever possible, the system will convert a raw
@@ -690,10 +648,7 @@ Some examples:
 
 %___________________________________________________________________________
 
-\hypertarget{making-cells}{}
-\pdfbookmark[1]{Making Cells}{making-cells}
 @subsection{Making Cells}
-\label{making-cells}
 
 Cells are the memory locations of the Scheme-Propagators
 language: Scheme variables whose bindings are cells correspond to
@@ -818,10 +773,7 @@ the next expression or assigned to variables.
 
 %___________________________________________________________________________
 
-\hypertarget{conditional-network-construction}{}
-\pdfbookmark[1]{Conditional Network Construction}{conditional-network-construction}
 @subsection{Conditional Network Construction}
-\label{conditional-network-construction}
 
 The \texttt{switch} propagator does conditional propagation -{}-{}- it only
 forwards its input to its output if its control is ``true''.  As such,
@@ -880,10 +832,7 @@ Expression-style variant of \texttt{p:if}.
 
 %___________________________________________________________________________
 
-\hypertarget{making-new-compound-propagators}{}
-\pdfbookmark[0]{Making New Compound Propagators}{making-new-compound-propagators}
 @section{Making New Compound Propagators}
-\label{making-new-compound-propagators}
 
 So, you know the primitives (the supplied propagators) and the means
 of combination (how to make cells and wire bunches of propagators up
@@ -959,10 +908,7 @@ So:
 
 %___________________________________________________________________________
 
-\hypertarget{lexical-scope}{}
-\pdfbookmark[1]{Lexical Scope}{lexical-scope}
 @subsection{Lexical Scope}
-\label{lexical-scope}
 
 Compound propagator definitions can be closed over cells available in
 their lexical environment:
@@ -985,10 +931,7 @@ mentioned.
 
 %___________________________________________________________________________
 
-\hypertarget{recursion}{}
-\pdfbookmark[1]{Recursion}{recursion}
 @subsection{Recursion}
-\label{recursion}
 
 Propagator abstractions defined by \texttt{define-propagator} are expanded
 immediately when applied to cells.  Therefore, magic is needed to
@@ -1046,10 +989,7 @@ Looks familiar, doesn't it?
 
 %___________________________________________________________________________
 
-\hypertarget{using-partial-information}{}
-\pdfbookmark[0]{Using Partial Information}{using-partial-information}
 @section{Using Partial Information}
-\label{using-partial-information}
 
 Partial, cumulative information is essential to
 multidirectional, non-sequential programming.  Each ``memory
@@ -1135,10 +1075,7 @@ propagator are particularly important.
 
 %___________________________________________________________________________
 
-\hypertarget{built-in-partial-information-structures}{}
-\pdfbookmark[0]{Built-in Partial Information Structures}{built-in-partial-information-structures}
 @section{Built-in Partial Information Structures}
-\label{built-in-partial-information-structures}
 
 The following partial information structures are provided with
 Scheme-Propagators:
@@ -1175,10 +1112,7 @@ contradiction
 
 %___________________________________________________________________________
 
-\hypertarget{nothing}{}
-\pdfbookmark[1]{Nothing}{nothing}
 @subsection{Nothing}
-\label{nothing}
 \begin{description}
 \item[{\texttt{nothing}}] \leavevmode 
 A single Scheme object that represents the complete absence of
@@ -1209,10 +1143,7 @@ do anything.
 
 %___________________________________________________________________________
 
-\hypertarget{just-a-value}{}
-\pdfbookmark[1]{Just a Value}{just-a-value}
 @subsection{Just a Value}
-\label{just-a-value}
 
 A Scheme object that is not otherwise defined as a partial information
 structure indicates that the content of the cell is
@@ -1241,10 +1172,7 @@ operator cell of an apply propagator.
 
 %___________________________________________________________________________
 
-\hypertarget{numerical-intervals}{}
-\pdfbookmark[1]{Numerical Intervals}{numerical-intervals}
 @subsection{Numerical Intervals}
-\label{numerical-intervals}
 
 An object of type \texttt{interval?} has fields for a lower bound and an
 upper bound.  Such an object represents the information ``This value is
@@ -1296,10 +1224,7 @@ operations on the information it is over.
 
 %___________________________________________________________________________
 
-\hypertarget{propagator-cells-as-partial-information}{}
-\pdfbookmark[1]{Propagator Cells as Partial Information}{propagator-cells-as-partial-information}
 @subsection{Propagator Cells as Partial Information}
-\label{propagator-cells-as-partial-information}
 
 A propagator cell interpreted as partial information is an
 indirection: it means ``I contain the structure that describes this
@@ -1322,10 +1247,7 @@ A propagator cell is never \texttt{contradictory?}.
 
 %___________________________________________________________________________
 
-\hypertarget{id1}{}
-\pdfbookmark[1]{Compound Data}{id1}
 @subsection{Compound Data}
-\label{id1}
 
 A Scheme pair is partial information that means ``This object is a
 pair.  My car and cdr contain cells that describe the car and cdr of
@@ -1376,10 +1298,7 @@ defines the propagators \texttt{p:pair?}, \texttt{e:pair?}, \texttt{p:cons},
 
 %___________________________________________________________________________
 
-\hypertarget{closures}{}
-\pdfbookmark[1]{Closures}{closures}
 @subsection{Closures}
-\label{closures}
 
 Propagator closures as mergeable data behave like a compound data
 structure.  A closure is a code pointer together with an environment.
@@ -1403,10 +1322,7 @@ and puts the results into appropriately named cells.
 
 %___________________________________________________________________________
 
-\hypertarget{truth-maintenance-systems}{}
-\pdfbookmark[1]{Truth Maintenance Systems}{truth-maintenance-systems}
 @subsection{Truth Maintenance Systems}
-\label{truth-maintenance-systems}
 
 A Truth Maintenance System (TMS) is a set of contingent values.  A
 contingent value is any partial information object that describes the
@@ -1519,10 +1435,7 @@ operation itself.
 
 %___________________________________________________________________________
 
-\hypertarget{contradiction}{}
-\pdfbookmark[1]{Contradiction}{contradiction}
 @subsection{Contradiction}
-\label{contradiction}
 
 The Scheme object \texttt{the-contradiction} represents a completely
 contradictory state of information.  If a cell ever finds itself in
@@ -1553,10 +1466,7 @@ run.
 
 %___________________________________________________________________________
 
-\hypertarget{implicit-dependency-directed-search}{}
-\pdfbookmark[1]{Implicit Dependency-Directed Search}{implicit-dependency-directed-search}
 @subsection{Implicit Dependency-Directed Search}
-\label{implicit-dependency-directed-search}
 
 If a cell discovers that it contains a TMS that harbors a contingent
 contradiction, the cell will signal that the premises of that
@@ -1613,10 +1523,7 @@ distinct (in the sense of \texttt{eqv?})
 
 %___________________________________________________________________________
 
-\hypertarget{making-new-kinds-of-partial-information}{}
-\pdfbookmark[0]{Making New Kinds of Partial Information}{making-new-kinds-of-partial-information}
 @section{Making New Kinds of Partial Information}
-\label{making-new-kinds-of-partial-information}
 
 The procedures defining the behavior of partial information are
 generic, and therefore extensible.  The ones that define the
@@ -1670,10 +1577,7 @@ relevant here.
 
 %___________________________________________________________________________
 
-\hypertarget{an-example-adding-interval-arithmetic}{}
-\pdfbookmark[1]{An Example: Adding Interval Arithmetic}{an-example-adding-interval-arithmetic}
 @subsection{An Example: Adding Interval Arithmetic}
-\label{an-example-adding-interval-arithmetic}
 
 The first step is to define a data structure to represent an interval.
 Intervals have upper and lower bounds, so a Scheme record structure
@@ -1730,10 +1634,7 @@ with support for automatic coercions for this purpose.
 
 %___________________________________________________________________________
 
-\hypertarget{generic-coercions}{}
-\pdfbookmark[1]{Generic Coercions}{generic-coercions}
 @subsection{Generic Coercions}
-\label{generic-coercions}
 
 Every number can be seen as an interval (whose lower and upper bounds
 are equal).  The definition of arithmetic on mixed intervals and
@@ -1801,10 +1702,7 @@ may be declared later).
 
 %___________________________________________________________________________
 
-\hypertarget{the-partial-information-generics}{}
-\pdfbookmark[1]{The Partial Information Generics}{the-partial-information-generics}
 @subsection{The Partial Information Generics}
-\label{the-partial-information-generics}
 
 \texttt{(equivalent? info1 info2)  ==>  {\#}t or {\#}f}
 
@@ -1885,10 +1783,7 @@ not.
 
 %___________________________________________________________________________
 
-\hypertarget{the-full-story-on-merge}{}
-\pdfbookmark[2]{The Full Story on Merge}{the-full-story-on-merge}
 \subsubsection{The Full Story on Merge}
-\label{the-full-story-on-merge}
 
 The description of \texttt{merge} as always returning a new partial
 information structure is an approximation.  Sometimes, \texttt{merge} may
@@ -2072,10 +1967,7 @@ synchronize contingently.
 
 %___________________________________________________________________________
 
-\hypertarget{individual-propagator-generics}{}
-\pdfbookmark[1]{Individual Propagator Generics}{individual-propagator-generics}
 @subsection{Individual Propagator Generics}
-\label{individual-propagator-generics}
 
 Most primitive propagators are actually built from generic Scheme functions.
 Those propagators can therefore be extended to new
@@ -2106,10 +1998,7 @@ produced by the propagator).
 
 %___________________________________________________________________________
 
-\hypertarget{uniform-applicative-extension-of-propagators}{}
-\pdfbookmark[1]{Uniform Applicative Extension of Propagators}{uniform-applicative-extension-of-propagators}
 @subsection{Uniform Applicative Extension of Propagators}
-\label{uniform-applicative-extension-of-propagators}
 
 Also, almost all primitive propagators are wrapped
 with the \texttt{nary-mapping} wrapper function around their underlying
@@ -2174,10 +2063,7 @@ idea anyway, and saves the trouble of writing handlers for an explicit
 
 %___________________________________________________________________________
 
-\hypertarget{interoperation-with-existing-partial-information-types}{}
-\pdfbookmark[1]{Interoperation with Existing Partial Information Types}{interoperation-with-existing-partial-information-types}
 @subsection{Interoperation with Existing Partial Information Types}
-\label{interoperation-with-existing-partial-information-types}
 
 A new partial information structure may interact with an existing one
 in two ways:
@@ -2256,10 +2142,7 @@ generic operations \texttt{execute-effect}, \texttt{redundant-effect?}, and
 
 %___________________________________________________________________________
 
-\hypertarget{making-new-primitive-propagators}{}
-\pdfbookmark[0]{Making New Primitive Propagators}{making-new-primitive-propagators}
 @section{Making New Primitive Propagators}
-\label{making-new-primitive-propagators}
 
 Almost all definition of new primitive propagators can be handled
 correctly either by \texttt{propagatify} or by
@@ -2270,10 +2153,7 @@ lower-level tools first, however.
 
 %___________________________________________________________________________
 
-\hypertarget{direct-construction-from-functions}{}
-\pdfbookmark[1]{Direct Construction from Functions}{direct-construction-from-functions}
 @subsection{Direct Construction from Functions}
-\label{direct-construction-from-functions}
 
 The fundamental way to make your own primitive propagators is
 the procedure \texttt{function->propagator-constructor}.  It takes a Scheme
@@ -2328,10 +2208,7 @@ you need to supply the name yourself, with \texttt{(name!  your-function
 
 %___________________________________________________________________________
 
-\hypertarget{expression-style-variants}{}
-\pdfbookmark[2]{Expression Style Variants}{expression-style-variants}
 \subsubsection{Expression Style Variants}
-\label{expression-style-variants}
 
 Once you've made a diagram-style propagator constructor, you can make
 a variant that likes to be applied in expression style with
@@ -2344,10 +2221,7 @@ defined as:
 
 %___________________________________________________________________________
 
-\hypertarget{propagatify}{}
-\pdfbookmark[1]{Propagatify}{propagatify}
 @subsection{Propagatify}
-\label{propagatify}
 
 All that wrapping in \texttt{nary-mapping}, and naming your propagator
 functions with \texttt{name!}, and calling \texttt{expression-style-variant} to
@@ -2399,10 +2273,7 @@ Scheme procedure \texttt{foo} becomes a generic procedure named
 
 %___________________________________________________________________________
 
-\hypertarget{compound-cell-carrier-construction}{}
-\pdfbookmark[1]{Compound Cell Carrier Construction}{compound-cell-carrier-construction}
 @subsection{Compound Cell Carrier Construction}
-\label{compound-cell-carrier-construction}
 
 \texttt{p:cons} is an interesting propagator, because while it performs the
 job of a Scheme procedure (to wit, \texttt{cons}), it operates directly on
@@ -2430,10 +2301,7 @@ strategy from the propagator thesis.
 
 %___________________________________________________________________________
 
-\hypertarget{fully-manual-low-level-propagator-construction}{}
-\pdfbookmark[1]{Fully-manual Low-level Propagator Construction}{fully-manual-low-level-propagator-construction}
 @subsection{Fully-manual Low-level Propagator Construction}
-\label{fully-manual-low-level-propagator-construction}
 
 Finally, when the thing you want your propagator to do is so low-level and
 interesting that it doesn't even correspond to a Scheme function,
@@ -2462,10 +2330,7 @@ of \texttt{function->propagator-constructor} and
 
 %___________________________________________________________________________
 
-\hypertarget{debugging}{}
-\pdfbookmark[0]{Debugging}{debugging}
 @section{Debugging}
-\label{debugging}
 
 There is no stand-alone ``propagator debugger''; if something goes
 wrong, the underlying Scheme debugger is your friend.  Some effort
@@ -2548,18 +2413,12 @@ for examples of how this is done.
 
 %___________________________________________________________________________
 
-\hypertarget{miscellany}{}
-\pdfbookmark[0]{Miscellany}{miscellany}
 @section{Miscellany}
-\label{miscellany}
 
 
 %___________________________________________________________________________
 
-\hypertarget{macrology}{}
-\pdfbookmark[1]{Macrology}{macrology}
 @subsection{Macrology}
-\label{macrology}
 
 Sometimes you will need to make something that looks like a macro to
 Scheme-Propagators.  The macro language of Scheme-Propagators is
@@ -2602,10 +2461,7 @@ provided by \texttt{define-propagator}.  This is what
 
 %___________________________________________________________________________
 
-\hypertarget{reboots}{}
-\pdfbookmark[1]{Reboots}{reboots}
 @subsection{Reboots}
-\label{reboots}
 
 The procedure \texttt{initialize-scheduler} wipes out an existing
 propagator network and lets you start afresh:
@@ -2623,10 +2479,7 @@ reload Scheme-Propagators if you need to blow away your state.
 
 %___________________________________________________________________________
 
-\hypertarget{compiling}{}
-\pdfbookmark[1]{Compiling}{compiling}
 @subsection{Compiling}
-\label{compiling}
 
 It turns out that \texttt{make-cell} and \texttt{cell?} are also MIT Scheme
 primitives, so if you want to compile your Scheme-Propagators
@@ -2643,10 +2496,7 @@ the syntaxer when it processes your file.  See
 
 %___________________________________________________________________________
 
-\hypertarget{scmutils}{}
-\pdfbookmark[1]{Scmutils}{scmutils}
 @subsection{Scmutils}
-\label{scmutils}
 
 The \href{http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm}{Scmutils} system built by Gerald Jay Sussman and friends for
 thinking about physics can be very useful for many purposes.  Among
@@ -2660,10 +2510,7 @@ included.
 
 %___________________________________________________________________________
 
-\hypertarget{editing}{}
-\pdfbookmark[1]{Editing}{editing}
 @subsection{Editing}
-\label{editing}
 
 We edit code in Emacs.  You should edit code in Emacs too.  Emacs of
 course has a Scheme mode; nothing more need be said about that here.
@@ -2685,10 +2532,7 @@ from Scheme.
 
 %___________________________________________________________________________
 
-\hypertarget{hacking}{}
-\pdfbookmark[1]{Hacking}{hacking}
 @subsection{Hacking}
-\label{hacking}
 
 Scheme-Propagators is a work in progress.  Be aware that we will
 continue to hack it.  Likewise, feel free to hack it as well -{}-{}- let
@@ -2698,10 +2542,7 @@ Source be with you.
 
 %___________________________________________________________________________
 
-\hypertarget{arbitrary-choices}{}
-\pdfbookmark[1]{Arbitrary Choices}{arbitrary-choices}
 @subsection{Arbitrary Choices}
-\label{arbitrary-choices}
 
 Several language design choices affecting the structure of
 Scheme-Propagators appeared arbitrary at the time they were made.
@@ -2709,10 +2550,7 @@ Scheme-Propagators appeared arbitrary at the time they were made.
 
 %___________________________________________________________________________
 
-\hypertarget{default-application-and-definition-style}{}
-\pdfbookmark[2]{Default Application and Definition Style}{default-application-and-definition-style}
 \subsubsection{Default Application and Definition Style}
-\label{default-application-and-definition-style}
 
 Diagram style application was picked as the default over
 expression style when applying cells whose contents are not yet known,
@@ -2727,10 +2565,7 @@ fan-in requires diagram style.
 
 %___________________________________________________________________________
 
-\hypertarget{locus-of-delayed-construction}{}
-\pdfbookmark[2]{Locus of Delayed Construction}{locus-of-delayed-construction}
 \subsubsection{Locus of Delayed Construction}
-\label{locus-of-delayed-construction}
 
 There was a choice about where to put the delaying of pieces
 of propagator network that should be constructed only conditionally.
@@ -2782,10 +2617,7 @@ what one wanted.
 
 %___________________________________________________________________________
 
-\hypertarget{strategy-for-compound-data}{}
-\pdfbookmark[2]{Strategy for Compound Data}{strategy-for-compound-data}
 \subsubsection{Strategy for Compound Data}
-\label{strategy-for-compound-data}
 
 The decision to go with the carrying cells strategy for
 compound data felt, while not really arbitrary, at least enough not
@@ -2889,10 +2721,7 @@ locality, maybe \texttt{cons} really should be the locality-breaking object.
 
 %___________________________________________________________________________
 
-\hypertarget{how-this-supports-the-goal}{}
-\pdfbookmark[0]{How this supports the goal}{how-this-supports-the-goal}
 @section{How this supports the goal}
-\label{how-this-supports-the-goal}
 
 We started with the goal of making it easier for people to build
 systems that are additive.  A system should not become so
