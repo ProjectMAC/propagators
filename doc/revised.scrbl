@@ -93,8 +93,8 @@ need in order to use it.  You will also need Scheme-Propagators
 itself, which you can download from
 @url{http://groups.csail.mit.edu/mac/users/gjs/propagators/propagator.tar}
 Once you
-have it, go to the \texttt{propagator/} directory, start up your Scheme and
-load the main entry file with \texttt{(load "load")}.  This gives you a
+have it, go to the @tt{propagator/} directory, start up your Scheme and
+load the main entry file with @tt{(load "load")}.  This gives you a
 read-eval-print loop (traditionally called a REPL for short) for both
 the Scheme-Propagators system and the underlying Scheme
 implementation.  Check out the README for more on this.
@@ -116,30 +116,30 @@ five:
 }\end{quote}
 
 Each of the parenthesized phrases above are things to type into the
-REPL, and the \texttt{==> 5} at the end is the result that Scheme will
+REPL, and the @tt{==> 5} at the end is the result that Scheme will
 print.  The results of all the other expressions are not interesting.
 
 Let's have a closer look at what's going on in this example, to serve
-as a guide for more in-depth discussion later.  \texttt{define-cell} is a
+as a guide for more in-depth discussion later.  @tt{define-cell} is a
 Scheme macro for making and naming propagator cells:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~a)
 }\end{quote}
-creates a new cell and binds it to the Scheme variable \texttt{a}.
+creates a new cell and binds it to the Scheme variable @tt{a}.
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~b)
 }\end{quote}
-makes another one.  Then \texttt{add-content} is the Scheme procedure that
+makes another one.  Then @tt{add-content} is the Scheme procedure that
 directly zaps some information into a propagator cell (all the
 propagators use it to talk to the cells, and you can too).  So:
 \begin{quote}{\ttfamily \raggedright \noindent
 (add-content~a~3)
 }\end{quote}
-puts a \texttt{3} into the cell named \texttt{a}, and:
+puts a @tt{3} into the cell named @tt{a}, and:
 \begin{quote}{\ttfamily \raggedright \noindent
 (add-content~b~2)
 }\end{quote}
-puts a \texttt{2} into the cell named \texttt{b}.  Now \texttt{e:+} (the naming
+puts a @tt{2} into the cell named @tt{b}.  Now @tt{e:+} (the naming
 convention will be explained later) is a Scheme procedure that creates
 a propagator that adds, attaches it to the given cells as inputs, and
 makes a cell to hold the adder's output and returns it.  So:
@@ -147,23 +147,23 @@ makes a cell to hold the adder's output and returns it.  So:
 (define-cell~answer~(e:+~a~b))
 }\end{quote}
 creates an adding propagator, and also creates a cell, now called
-\texttt{answer}, to hold the result of the addition.  Be careful!  No
+@tt{answer}, to hold the result of the addition.  Be careful!  No
 computation has happened yet.  You've just made up a network, but it
-hasn't done its work yet.  That's what the Scheme procedure \texttt{run} is
+hasn't done its work yet.  That's what the Scheme procedure @tt{run} is
 for:
 \begin{quote}{\ttfamily \raggedright \noindent
 (run)
 }\end{quote}
 actually executes the network, and only when the network is done
 computing does it give you back the REPL to interact with.  Finally
-\texttt{content} is a Scheme procedure that gets the content of cells:
+@tt{content} is a Scheme procedure that gets the content of cells:
 \begin{quote}{\ttfamily \raggedright \noindent
 (content~answer)
 }\end{quote}
-looks at what the cell named \texttt{answer} has now, which is \texttt{5}
-because the addition propagator created by \texttt{e:+} has had a chance to
-do its job.  If you had forgotten to type \texttt{(run)} before typing
-\texttt{(content answer)}, it would have printed out \texttt{{\#}(*the-nothing*)},
+looks at what the cell named @tt{answer} has now, which is @tt{5}
+because the addition propagator created by @tt{e:+} has had a chance to
+do its job.  If you had forgotten to type @tt{(run)} before typing
+@tt{(content answer)}, it would have printed out @tt{{\#}(*the-nothing*)},
 which means that cell has no information about the value it is meant
 to have.
 
@@ -173,8 +173,8 @@ to have.
 @subsection{Examples}
 
 There are some basic examples of Scheme-Propagators programs in
-\texttt{core/example-networks.scm}; more elaborate examples are available
-in \texttt{examples/}.
+@tt{core/example-networks.scm}; more elaborate examples are available
+in @tt{examples/}.
 
 
 @;___________________________________________________________________________
@@ -203,7 +203,7 @@ writing information to them.
 
 The two basic operations when making a propagator network are making
 cells and attaching propagators to cells.  You already met one way to
-make cells in the form of \texttt{define-cell}; we will talk about more
+make cells in the form of @tt{define-cell}; we will talk about more
 later, but let's talk about propagators first.
 
 
@@ -211,29 +211,29 @@ later, but let's talk about propagators first.
 
 @subsection{Attaching Basic Propagators: d@"@"}
 
-The Scheme procedure \texttt{d@"@"} attaches propagators to cells.  The
-name \texttt{d@"@"} is mnemonic for ``diagram apply''.  For
-example, \texttt{p:+} makes adder propagators:
+The Scheme procedure @tt{d@"@"} attaches propagators to cells.  The
+name @tt{d@"@"} is mnemonic for ``diagram apply''.  For
+example, @tt{p:+} makes adder propagators:
 \begin{quote}{\ttfamily \raggedright \noindent
 (d@"@"~p:+~foo~bar~baz)
 }\end{quote}
 means attach a propagator that will add the contents of the cells
-named \texttt{foo} and \texttt{bar} and write the sum into the cell named \texttt{baz}.
-Once attached, whenever either the \texttt{foo} cell or the \texttt{bar} cell
+named @tt{foo} and @tt{bar} and write the sum into the cell named @tt{baz}.
+Once attached, whenever either the @tt{foo} cell or the @tt{bar} cell
 gets any new interesting information, the adding propagator will
-eventually compute the appropriate sum and give it to \texttt{baz} as an
+eventually compute the appropriate sum and give it to @tt{baz} as an
 update.
 \begin{description}
-\item[{\texttt{(d@"@" propagator boundary-cell ...)}}] \leavevmode 
+\item[{@tt{(d@"@" propagator boundary-cell ...)}}] \leavevmode 
 Attaches a propagator to the given boundary cells.  By convention,
-cells used as outputs go last.  As a Scheme procedure, \texttt{d@"@"} does
+cells used as outputs go last.  As a Scheme procedure, @tt{d@"@"} does
 not return a useful value.
 
 \end{description}
 
-As in Scheme, \texttt{p:+} is actually the name of a cell that contains a
+As in Scheme, @tt{p:+} is actually the name of a cell that contains a
 propagator constructor for attaching propagators that do addition.
-The first argument to \texttt{d@"@"} can be any cell that contains any desired
+The first argument to @tt{d@"@"} can be any cell that contains any desired
 partial information (see Section~\ref{using-partial-information})
 about a propagator constructor.
 Actual attachment of propagators will occur as the propagator
@@ -244,11 +244,11 @@ constructor becomes sufficiently well constrained.
 
 @subsection{Propagator Expressions: e@"@"}
 
-The \texttt{d@"@"} style is the right underlying way to think about the
+The @tt{d@"@"} style is the right underlying way to think about the
 construction of propagator networks.  However, it has the unfortunate
 feature that it requires the naming of cells for holding all
 intermediate values in a computation, and in that sense programming
-with \texttt{d@"@"} feels a lot like writing assembly language.
+with @tt{d@"@"} feels a lot like writing assembly language.
 
 It is pretty common to have expressions: one's propagator networks
 will have some intermediate values that are produced by only one
@@ -258,18 +258,18 @@ just name it ``the output of foo''.  Scheme-Propagators provides a
 syntactic sugar for writing cases like this in an expression style, like a
 traditional programming language.
 
-The Scheme procedure \texttt{e@"@"} attaches propagators in expression style.
-The name \texttt{e@"@"} is mnemonic for ``expression apply''.  The \texttt{e@"@"}
-procedure is just like \texttt{d@"@"}, except it synthesizes an extra cell to
-serve as the last argument to \texttt{d@"@"}, and returns it from the \texttt{e@"@"}
-expression (whereas the return value of \texttt{d@"@"} is unspecified).
+The Scheme procedure @tt{e@"@"} attaches propagators in expression style.
+The name @tt{e@"@"} is mnemonic for ``expression apply''.  The @tt{e@"@"}
+procedure is just like @tt{d@"@"}, except it synthesizes an extra cell to
+serve as the last argument to @tt{d@"@"}, and returns it from the @tt{e@"@"}
+expression (whereas the return value of @tt{d@"@"} is unspecified).
 \begin{description}
-\item[{\texttt{(e@"@" propagator boundary-cell ...)}}] \leavevmode 
+\item[{@tt{(e@"@" propagator boundary-cell ...)}}] \leavevmode 
 Attaches the given propagator to a boundary consisting of the given
 boundary cells augmented with an additional, synthesized cell.  The
 synthesized cell goes last, because that is the conventional
 position for an output cell.  Returns the synthesized cell as the
-Scheme return value of \texttt{e@"@"}.
+Scheme return value of @tt{e@"@"}.
 
 \end{description}
 
@@ -287,21 +287,21 @@ and:
 (define-cell~z~(e@"@"~p:*~x~y))
 }\end{quote}
 
-Generally the \texttt{e@"@"} style is convenient because it chains in
+Generally the @tt{e@"@"} style is convenient because it chains in
 the familiar way
 \begin{quote}{\ttfamily \raggedright \noindent
 (e@"@"~p:-~w~(e@"@"~p:*~(e@"@"~p:+~x~y)~z))
 }\end{quote}
 
 Because of the convention that output cells are listed last,
-expressions in \texttt{e@"@"} style build propagator networks that
+expressions in @tt{e@"@"} style build propagator networks that
 compute corresponding Lisp expressions.
 
-On the other hand, the \texttt{d@"@"} style is necessary when a propagator
+On the other hand, the @tt{d@"@"} style is necessary when a propagator
 needs to be attached to a full set of cells that are already there.
-For example, if one wanted to be able to go back from \texttt{z} and one of
-\texttt{x} or \texttt{y} to the other, rather than just from \texttt{x} and \texttt{y} to
-\texttt{z}, one could write:
+For example, if one wanted to be able to go back from @tt{z} and one of
+@tt{x} or @tt{y} to the other, rather than just from @tt{x} and @tt{y} to
+@tt{z}, one could write:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~x)~\\
 (define-cell~y)~\\
@@ -318,9 +318,9 @@ and get a multidirectional constraint:
 }\end{quote}
 
 To save typing when the propagator being attached is known at network
-construction time, the \texttt{p:foo} objects are also themselves
-applicable in Scheme, defaulting to applying themselves in the \texttt{d@"@"}
-style.  Each also has an \texttt{e:foo} variant that defaults to the \texttt{e@"@"}
+construction time, the @tt{p:foo} objects are also themselves
+applicable in Scheme, defaulting to applying themselves in the @tt{d@"@"}
+style.  Each also has an @tt{e:foo} variant that defaults to the @tt{e@"@"}
 style.  So the following also works:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~x)~\\
@@ -356,18 +356,18 @@ computation will proceed:
 (content~answer)~~==>~~12
 }\end{quote}
 
-In fact, in this case, \texttt{d@"@"} (or \texttt{e@"@"}) will build an \emph{apply propagator}
+In fact, in this case, @tt{d@"@"} (or @tt{e@"@"}) will build an \emph{apply propagator}
 that will wait until an operation appears in the
-\texttt{operation} cell, and then apply it.
+@tt{operation} cell, and then apply it.
 
-What would have happened if we had left off the \texttt{d@"@"} and just
-written \texttt{(operation 3 4 answer)}?  If you put into operator position
+What would have happened if we had left off the @tt{d@"@"} and just
+written @tt{(operation 3 4 answer)}?  If you put into operator position
 a cell that does not have a fully-known propagator at network
 construction time, it will be applied in diagram style by default.  If
 you put into operator position a cell that contains a fully-known
 propagator at network construction time, it will be applied either in
 diagram style or expression style, as dependent on that propagator's
-default preference.  \texttt{d@"@"} and \texttt{e@"@"} override these defaults.
+default preference.  @tt{d@"@"} and @tt{e@"@"} override these defaults.
 
 
 @;___________________________________________________________________________
@@ -375,54 +375,54 @@ default preference.  \texttt{d@"@"} and \texttt{e@"@"} override these defaults.
 @subsection{Provided Primitives: p:foo and e:foo}
 
 Many propagator primitives directly expose procedures from the
-underlying Scheme, with the naming conventions that \texttt{p:foo}, and
-\texttt{e:foo} does the job \texttt{foo} to the contents of an appropriate pile
+underlying Scheme, with the naming conventions that @tt{p:foo}, and
+@tt{e:foo} does the job @tt{foo} to the contents of an appropriate pile
 of input cells and gives the result to an output cell (which is passed
-in as the last argument to \texttt{p:foo} and synthesized and returned by
-\texttt{e:foo}).  \texttt{p:} is mnemonic for ``propagator'' and \texttt{e:} is
+in as the last argument to @tt{p:foo} and synthesized and returned by
+@tt{e:foo}).  @tt{p:} is mnemonic for ``propagator'' and @tt{e:} is
 mnemonic for ``expression''.
 \begin{description}
-\item[{\texttt{(p:foo input ... output)}}] \leavevmode 
-Attaches a propagator that does the \texttt{foo} job to the given input
-and output cells.  \texttt{p:abs}, \texttt{p:square}, \texttt{p:sqrt},
-\texttt{p:not}, \texttt{p:pair?}, and \texttt{p:null?} accept one input cell and one
-output cell.  \texttt{p:+}, \texttt{p:-}, \texttt{p:*}, \texttt{p:/}, \texttt{p:=}, \texttt{p:<},
-\texttt{p:>}, \texttt{p:<=}, \texttt{p:>=}, \texttt{p:and}, \texttt{p:or}, \texttt{p:eq?},
-\texttt{p:eqv?}, and \texttt{p:expt}, accept two input cells and one output
+\item[{@tt{(p:foo input ... output)}}] \leavevmode 
+Attaches a propagator that does the @tt{foo} job to the given input
+and output cells.  @tt{p:abs}, @tt{p:square}, @tt{p:sqrt},
+@tt{p:not}, @tt{p:pair?}, and @tt{p:null?} accept one input cell and one
+output cell.  @tt{p:+}, @tt{p:-}, @tt{p:*}, @tt{p:/}, @tt{p:=}, @tt{p:<},
+@tt{p:>}, @tt{p:<=}, @tt{p:>=}, @tt{p:and}, @tt{p:or}, @tt{p:eq?},
+@tt{p:eqv?}, and @tt{p:expt}, accept two input cells and one output
 cell.
 
-\item[{\texttt{(e:foo input ...)}}] \leavevmode 
-The \texttt{e:foo} equivalents of all the \texttt{p:foo} propagator
+\item[{@tt{(e:foo input ...)}}] \leavevmode 
+The @tt{e:foo} equivalents of all the @tt{p:foo} propagator
 constructors are all available and accept the same number of input
 cells (and make their own output cell).
 
-\item[{\texttt{(p:id input output)}, \texttt{(e:id input)}}] \leavevmode 
+\item[{@tt{(p:id input output)}, @tt{(e:id input)}}] \leavevmode 
 Attaches an identity propagator to the given cells.  The identity
-propagator will continuously copy the contents of the \texttt{input} cell
-to the \texttt{output} cell.
+propagator will continuously copy the contents of the @tt{input} cell
+to the @tt{output} cell.
 
-\item[{\texttt{(p:== input ... output)}, \texttt{(e:== input ...)}}] \leavevmode 
-These are variadic versions of \texttt{p:id}.  The result is a
+\item[{@tt{(p:== input ... output)}, @tt{(e:== input ...)}}] \leavevmode 
+These are variadic versions of @tt{p:id}.  The result is a
 star topology, with every input feeding into the one output.
 
-\item[{\texttt{(p:switch control input output)}, \texttt{(e:switch control input)}}] \leavevmode 
-Conditional propagation.  The propagator made by \texttt{switch} copies
-its \texttt{input} to its \texttt{output} if and only if its \texttt{control} is
+\item[{@tt{(p:switch control input output)}, @tt{(e:switch control input)}}] \leavevmode 
+Conditional propagation.  The propagator made by @tt{switch} copies
+its @tt{input} to its @tt{output} if and only if its @tt{control} is
 ``true''.  The presence of partial information (see Section~\ref{using-partial-information}) makes this
-interesting.  For example, a \texttt{{\#}t} contingent on some premise will
-cause \texttt{switch} to propagate, but the result written to the
-\texttt{output} will be contingent on that premise (in addition to any
-other premises the \texttt{input} may already be contingent on).
+interesting.  For example, a @tt{{\#}t} contingent on some premise will
+cause @tt{switch} to propagate, but the result written to the
+@tt{output} will be contingent on that premise (in addition to any
+other premises the @tt{input} may already be contingent on).
 
-\item[{\texttt{(p:conditional control consequent alternate output)},}]
-\item[{\texttt{(e:conditional control consequent alternate)}}] \leavevmode 
+\item[{@tt{(p:conditional control consequent alternate output)},}]
+\item[{@tt{(e:conditional control consequent alternate)}}] \leavevmode 
 Two-armed conditional propagation.  May be defined by use of two
-\texttt{switch} propagators and a \texttt{not} propagator.
+@tt{switch} propagators and a @tt{not} propagator.
 
-\item[{\texttt{(p:conditional-router control input consequent alternate)},}]
-\item[{\texttt{(p:conditional-router control input consequent)}}] \leavevmode 
+\item[{@tt{(p:conditional-router control input consequent alternate)},}]
+\item[{@tt{(p:conditional-router control input consequent)}}] \leavevmode 
 Two-output-armed conditional propagation.  This is symmetric with
-\texttt{conditional}; the \texttt{consequent} and \texttt{alternate} are possible
+@tt{conditional}; the @tt{consequent} and @tt{alternate} are possible
 output destinations.
 
 \end{description}
@@ -438,26 +438,26 @@ and are therefore perfectly legitimate contents of other
 cells.  The event that two different cells A and B find themselves
 held in the same third cell C means that A and B are now known to
 contain information about the same thing.  The two cells are therefore
-merged by attaching \texttt{c:id} propagators to them so as to keep their
+merged by attaching @tt{c:id} propagators to them so as to keep their
 contents in sync in the future.
 \begin{description}
-\item[{\texttt{(p:deposit cell place-cell)}, \texttt{(e:deposit cell)}}] \leavevmode 
-Grabs the given \texttt{cell} and deposits it into \texttt{place-cell}.  The
-rule for merging cells has the effect that the given \texttt{cell} will
-be identified with any other cells that \texttt{place-cell} may come to
+\item[{@tt{(p:deposit cell place-cell)}, @tt{(e:deposit cell)}}] \leavevmode 
+Grabs the given @tt{cell} and deposits it into @tt{place-cell}.  The
+rule for merging cells has the effect that the given @tt{cell} will
+be identified with any other cells that @tt{place-cell} may come to
 hold.
 
-\item[{\texttt{(p:examine place-cell cell)}, \texttt{(e:examine place-cell)}}] \leavevmode 
-Grabs the given \texttt{cell} and deposits it into \texttt{place-cell}.  The
-rule for merging cells has the effect that the given \texttt{cell} will
-be identified with any other cells that \texttt{place-cell} may come to
+\item[{@tt{(p:examine place-cell cell)}, @tt{(e:examine place-cell)}}] \leavevmode 
+Grabs the given @tt{cell} and deposits it into @tt{place-cell}.  The
+rule for merging cells has the effect that the given @tt{cell} will
+be identified with any other cells that @tt{place-cell} may come to
 hold.
 
-In fact, \texttt{p:deposit} and \texttt{p:examine} are the same operation,
+In fact, @tt{p:deposit} and @tt{p:examine} are the same operation,
 except with the arguments reversed.
 
-The \texttt{e:examine} variant includes an optimization: if the
-\texttt{place-cell} already contains a cell, \texttt{e:examine} will just
+The @tt{e:examine} variant includes an optimization: if the
+@tt{place-cell} already contains a cell, @tt{e:examine} will just
 Scheme-return that cell instead of synthesizing a new one and
 identifying it with the cell present.
 
@@ -469,46 +469,46 @@ identifying it with the cell present.
 @subsection{Compound Data}
 
 Propagator compound data structures are made out of Scheme compound
-data structures that carry around cells collected as with \texttt{deposit}.
-The corresponding accessors take those cells out as with \texttt{examine}.
+data structures that carry around cells collected as with @tt{deposit}.
+The corresponding accessors take those cells out as with @tt{examine}.
 \begin{description}
-\item[{\texttt{(p:cons car-cell cdr-cell output)}, \texttt{(e:cons car-cell cdr-cell)}}] \leavevmode 
-Constructs a propagator that collects the \texttt{car-cell} and the
-\texttt{cdr-cell}, makes a pair of them, and writes that pair into the
-\texttt{output} cell.  This is like a binary \texttt{p:deposit}.
+\item[{@tt{(p:cons car-cell cdr-cell output)}, @tt{(e:cons car-cell cdr-cell)}}] \leavevmode 
+Constructs a propagator that collects the @tt{car-cell} and the
+@tt{cdr-cell}, makes a pair of them, and writes that pair into the
+@tt{output} cell.  This is like a binary @tt{p:deposit}.
 
-\item[{\texttt{(p:pair? input output)}, \texttt{(e:pair? input)}}] \leavevmode 
+\item[{@tt{(p:pair? input output)}, @tt{(e:pair? input)}}] \leavevmode 
 Attaches a propaagtor that tests whether input cell contains a
 pair.
 
-\item[{\texttt{(p:null? input output)}, \texttt{(e:null? input)}}] \leavevmode 
+\item[{@tt{(p:null? input output)}, @tt{(e:null? input)}}] \leavevmode 
 Attaches a propaagtor that tests whether input cell contains
 the empty list.
 
-\item[{\texttt{(p:car input output)}, \texttt{(e:car input)}}] \leavevmode 
-Makes a propagator that identifies the given \texttt{output} with the
-cell in the \texttt{car} of the pair in the given \texttt{input}.  This is
-like a \texttt{p:examine} of that field.  Note that using \texttt{p:car} on an
-\texttt{input} implies the expectation that said \texttt{input} contains a
+\item[{@tt{(p:car input output)}, @tt{(e:car input)}}] \leavevmode 
+Makes a propagator that identifies the given @tt{output} with the
+cell in the @tt{car} of the pair in the given @tt{input}.  This is
+like a @tt{p:examine} of that field.  Note that using @tt{p:car} on an
+@tt{input} implies the expectation that said @tt{input} contains a
 pair.  That wish is treated as a command, and a pair appears.
-If fact, \texttt{(p:car input output)} is equivalent to
-\texttt{(p:cons output nothing input)}.
+If fact, @tt{(p:car input output)} is equivalent to
+@tt{(p:cons output nothing input)}.
 
-The \texttt{e:} variant includes the same optimization that \texttt{e:examine}
-does: if the \texttt{input} already contains a pair with a cell in the
-\texttt{car}, \texttt{e:car} will just Scheme-return that cell instead of
+The @tt{e:} variant includes the same optimization that @tt{e:examine}
+does: if the @tt{input} already contains a pair with a cell in the
+@tt{car}, @tt{e:car} will just Scheme-return that cell instead of
 synthesizing a new one and identifying it with the cell present.
 
-\item[{\texttt{(p:cdr input output)}, \texttt{(e:cdr input)}}] \leavevmode 
-Same as \texttt{p:car} and \texttt{e:car}, except the other field of the
+\item[{@tt{(p:cdr input output)}, @tt{(e:cdr input)}}] \leavevmode 
+Same as @tt{p:car} and @tt{e:car}, except the other field of the
 pair.
 
 \end{description}
 
 Note that the identification of cells that merge is bidirectional, so
-information written into the \texttt{output} of a \texttt{p:car} will flow into
-the cell in the \texttt{car} of the pair in the \texttt{input} (and therefore
-into any other cells identified with it by other uses of \texttt{p:car} on
+information written into the @tt{output} of a @tt{p:car} will flow into
+the cell in the @tt{car} of the pair in the @tt{input} (and therefore
+into any other cells identified with it by other uses of @tt{p:car} on
 the same pair).  For example, in a program like:
 \begin{quote}{\ttfamily \raggedright \noindent
 (let-cell~frob~\\
@@ -517,11 +517,11 @@ the same pair).  For example, in a program like:
 ~~(let-cell~(quux2~(e:car~frob))~\\
 ~~~~...~quux2~...))
 }\end{quote}
-the two cells named \texttt{quux} and \texttt{quux2} will end up identified, and
-the cell named \texttt{frob} will end up containing a pair whose car field
+the two cells named @tt{quux} and @tt{quux2} will end up identified, and
+the cell named @tt{frob} will end up containing a pair whose car field
 will contain one of them.
 
-Scheme pairs created by \texttt{p:cons} and company are partial information
+Scheme pairs created by @tt{p:cons} and company are partial information
 structures, and they merge by recursively merging their corresponding
 fields.  Together with the rule for merging cells, the emergent
 behavior is unification (with a merge delay instead of the occurs
@@ -536,13 +536,13 @@ Although the primitive propagators are like functions in that they
 compute only from inputs to outputs, we can also define constraints,
 which may also derive information about the arguments of a function
 from information about the value.  Constraints are so useful that many
-are predefined, and they have their own naming convention.  \texttt{c:}
-stands for ``constraining''.  A thing named \texttt{c:foo} is the
-constraining analogue of \texttt{p:foo}, in that in addition to attaching a
-propagator that does \texttt{foo} to its cells, it also attaches
-\texttt{foo-inverse} propagators that deduce ``inputs'' from ``outputs''.  For
+are predefined, and they have their own naming convention.  @tt{c:}
+stands for ``constraining''.  A thing named @tt{c:foo} is the
+constraining analogue of @tt{p:foo}, in that in addition to attaching a
+propagator that does @tt{foo} to its cells, it also attaches
+@tt{foo-inverse} propagators that deduce ``inputs'' from ``outputs''.  For
 example, the product constraint that we built in a previous section is
-available as \texttt{c:*}:
+available as @tt{c:*}:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~x)~\\
 (define-cell~y)~\\
@@ -555,32 +555,32 @@ available as \texttt{c:*}:
 (content~x)~==>~3
 }\end{quote}
 
-The \texttt{c:foo} objects, like the \texttt{p:foo} objects, are also
+The @tt{c:foo} objects, like the @tt{p:foo} objects, are also
 self-applicable, and also default to applying themselves
 in diagram style:
 \begin{quote}{\ttfamily \raggedright \noindent
 (c:*~x~y~z)~~==~~(d@"@"~c:*~x~y~z)
 }\end{quote}
 
-The \texttt{c:foo} objects also have \texttt{ce:foo} analogues, that
+The @tt{c:foo} objects also have @tt{ce:foo} analogues, that
 apply themselves in expression style:
 \begin{quote}{\ttfamily \raggedright \noindent
 (ce:*~x~y)~~==~~(e@"@"~c:*~x~y)
 }\end{quote}
 
 Of course, not every operation has a useful inverse, so there are
-fewer \texttt{c:} procedures defined than \texttt{p:}:
+fewer @tt{c:} procedures defined than @tt{p:}:
 \begin{description}
-\item[{\texttt{(c:foo constrainee ...)}}] \leavevmode 
+\item[{@tt{(c:foo constrainee ...)}}] \leavevmode 
 Attaches propagators to the given boundary cells that collectively
-constrain them to be in the \texttt{foo} relationship with each other.
-\texttt{c:+} and \texttt{c:*} accept three cells to constrain.  \texttt{c:square},
-\texttt{c:not}, and \texttt{c:id} accept two cells to constrain.  \texttt{c:==}
+constrain them to be in the @tt{foo} relationship with each other.
+@tt{c:+} and @tt{c:*} accept three cells to constrain.  @tt{c:square},
+@tt{c:not}, and @tt{c:id} accept two cells to constrain.  @tt{c:==}
 accepts any number of cells.
 
-\item[{\texttt{(ce:foo constrainee ...)}}] \leavevmode 
+\item[{@tt{(ce:foo constrainee ...)}}] \leavevmode 
 Synthesizes one additional constrainee cell and attaches propagators
-that constrain the given cells to be in the \texttt{foo} relationship
+that constrain the given cells to be in the @tt{foo} relationship
 with the new one.  Since the position of the synthesized cell in
 the argument list is fixed, some diagram style constraints have
 multiple expression style variants:
@@ -602,10 +602,10 @@ c:==~~~~~~ce:==
 Programs have embedded constants all the time, and propagator programs
 are no different (except that constant values, like all other values,
 can be partial).  We've already seen one way to put a Scheme value
-into a propagator program: the \texttt{add-content} procedure zaps a value
+into a propagator program: the @tt{add-content} procedure zaps a value
 straight into a cell.  This is generally encouraged at the REPL, but
-frowned upon in actual programs.  It is much nicer to use \texttt{constant}
-or \texttt{p:constant} (they're the same) to make a propagator that will
+frowned upon in actual programs.  It is much nicer to use @tt{constant}
+or @tt{p:constant} (they're the same) to make a propagator that will
 zap your value into your cell for you:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~thing)~\\
@@ -616,7 +616,7 @@ zap your value into your cell for you:
 }\end{quote}
 
 There is also an expression-oriented version, called, naturally,
-\texttt{e:constant}:
+@tt{e:constant}:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~thing~(e:constant~5))~\\
 (run)~\\
@@ -631,7 +631,7 @@ There is also an expression-oriented version, called, naturally,
 In fact, inserting constants is so important, that there is one more
 nicification of this: whenever possible, the system will convert a raw
 constant (i.e. a non-cell Scheme object) into a cell, using
-\texttt{e:constant}.
+@tt{e:constant}.
 
 Some examples:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -653,77 +653,77 @@ already met one way to make cells:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~x)
 }\end{quote}
-creates a Scheme variable named \texttt{x} and binds a cell to it.  The
-underlying mechanism underneath this is the procedure \texttt{make-cell},
+creates a Scheme variable named @tt{x} and binds a cell to it.  The
+underlying mechanism underneath this is the procedure @tt{make-cell},
 which creates a cell and lets you do whatever you want with it.  So
 you could write:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define~x~(make-cell))
 }\end{quote}
-which would also make a Scheme variable named \texttt{x} and bind a cell to
-it.  In fact, that is almost exactly what \texttt{define-cell} does, except
-that \texttt{define-cell} attaches some metadata to the cell it creates to
+which would also make a Scheme variable named @tt{x} and bind a cell to
+it.  In fact, that is almost exactly what @tt{define-cell} does, except
+that @tt{define-cell} attaches some metadata to the cell it creates to
 make it easier to debug the network (see Section~\ref{debugging})
 and also does constant
-conversion (so \texttt{(define-cell x 5)} makes \texttt{x} a cell that will get
-a \texttt{5} put into it, whereas \texttt{(define x 5)} would just bind \texttt{x} to
-\texttt{5}).
+conversion (so @tt{(define-cell x 5)} makes @tt{x} a cell that will get
+a @tt{5} put into it, whereas @tt{(define x 5)} would just bind @tt{x} to
+@tt{5}).
 
 Just as Scheme has several mechanisms of making variables, so
 Scheme-Propagators has corresponding ones.  Corresponding to Scheme's
-\texttt{let}, Scheme-Propagators has \texttt{let-cells}:
+@tt{let}, Scheme-Propagators has @tt{let-cells}:
 \begin{quote}{\ttfamily \raggedright \noindent
 (let-cells~((foo~(e:+~x~y))~\\
 ~~~~~~~~~~~~(bar~(e:*~x~y)))~\\
 ~~...)
 }\end{quote}
-will create the Scheme bindings \texttt{foo} and \texttt{bar}, and bind them to
-the cells made by \texttt{(e:+ x y)} and \texttt{(e:* x y)}, respectively (this
-code is only sensible if \texttt{x} and \texttt{y} are already bound to cells
+will create the Scheme bindings @tt{foo} and @tt{bar}, and bind them to
+the cells made by @tt{(e:+ x y)} and @tt{(e:* x y)}, respectively (this
+code is only sensible if @tt{x} and @tt{y} are already bound to cells
 (or subject to constant conversion)).  The new bindings will only be
-visible inside the scope of the \texttt{let-cells}, just like in Scheme;
+visible inside the scope of the @tt{let-cells}, just like in Scheme;
 but if you attach propagators to them, the cells themselves will
 continue to exist and function as part of your propagator network.
 
 One notable difference from Scheme: a cell in a propagator network,
 unlike a variable in Scheme, has a perfectly good ``initial state''.
-Every cell starts life knowing \texttt{nothing} about its intended
+Every cell starts life knowing @tt{nothing} about its intended
 contents; where Scheme variables have to start life in a weird
-``unassigned'' state, \texttt{nothing} is a perfectly good partial
+``unassigned'' state, @tt{nothing} is a perfectly good partial
 information structure.  This means that it's perfectly reasonable
-for \texttt{let-cells} to make cells with no initialization forms:
+for @tt{let-cells} to make cells with no initialization forms:
 \begin{quote}{\ttfamily \raggedright \noindent
 (let-cells~(x~y~(foo~(some~thing)))~...)
 }\end{quote}
-creates cells named \texttt{x} and \texttt{y}, which are empty and have
+creates cells named @tt{x} and @tt{y}, which are empty and have
 no propagators attached to them initially, and also a cell
-named \texttt{foo} like above.  \texttt{let-cells} also recognizes the
+named @tt{foo} like above.  @tt{let-cells} also recognizes the
 usage:
 \begin{quote}{\ttfamily \raggedright \noindent
 (let-cells~((x)~(y)~(foo~(some~thing)))~...)
 }\end{quote}
-by analogy with Scheme \texttt{let}.
+by analogy with Scheme @tt{let}.
 
-Corresponding to Scheme's \texttt{let*}, Scheme-Propagators has
-\texttt{let-cells*}.  \texttt{let-cells*} is to \texttt{let-cells} what \texttt{let*} is
-to \texttt{let}:
+Corresponding to Scheme's @tt{let*}, Scheme-Propagators has
+@tt{let-cells*}.  @tt{let-cells*} is to @tt{let-cells} what @tt{let*} is
+to @tt{let}:
 \begin{quote}{\ttfamily \raggedright \noindent
 (let-cells*~((x)~\\
 ~~~~~~~~~~~~~(y~(e:+~x~x)))~\\
 ~~...)
 }\end{quote}
-will make a cell named \texttt{x} and a cell named \texttt{y} with an adder both
-of whose inputs are \texttt{x} and whose output is \texttt{y}.
+will make a cell named @tt{x} and a cell named @tt{y} with an adder both
+of whose inputs are @tt{x} and whose output is @tt{y}.
 
-Corresponding to Scheme's \texttt{letrec}, Scheme-Propagators has
-\texttt{let-cells-rec}.  \texttt{let-cells-rec} has the same scoping rules as
-Scheme's \texttt{letrec}, namely that all the names it defines are
+Corresponding to Scheme's @tt{letrec}, Scheme-Propagators has
+@tt{let-cells-rec}.  @tt{let-cells-rec} has the same scoping rules as
+Scheme's @tt{letrec}, namely that all the names it defines are
 available to all the defining forms.  Moreover, since an
 ``uninitialized'' propagator cell can still start life in a perfectly
-sensible state, namely the state of containing \texttt{nothing},
-\texttt{let-cells-rec} removes a restriction that Scheme's \texttt{letrec}
+sensible state, namely the state of containing @tt{nothing},
+@tt{let-cells-rec} removes a restriction that Scheme's @tt{letrec}
 enforced; namely, you may use the names defined by a given
-\texttt{let-cells-rec} directly in the defining forms, without any explicit
+@tt{let-cells-rec} directly in the defining forms, without any explicit
 intermediate delay in evaluation.  For example:
 \begin{quote}{\ttfamily \raggedright \noindent
 (let-cells-rec~((z~(e:+~x~y))~\\
@@ -732,20 +732,20 @@ intermediate delay in evaluation.  For example:
 ~~...)
 }\end{quote}
 is a perfectly reasonable bit of Scheme-Propagators code, and binds
-the names \texttt{x}, \texttt{y} and \texttt{z} to cells that are
+the names @tt{x}, @tt{y} and @tt{z} to cells that are
 interconnected with the three propagators indicated.
 
-Now, \texttt{let-cells}, \texttt{let-cells*}, and \texttt{let-cells-rec} are, like
-\texttt{define-cell}, basically a convenience over doing the same thing in
-Scheme with \texttt{let}, \texttt{let*}, \texttt{letrec} and \texttt{make-cell}.  Also
-like \texttt{define-cell}, \texttt{let-cells}, \texttt{let-cells*}, and
-\texttt{let-cells-rec} do constant conversion (so in \texttt{(let-cells ((x 3)) ...)},
-\texttt{x} becomes a cell, not a Scheme object), and attach
+Now, @tt{let-cells}, @tt{let-cells*}, and @tt{let-cells-rec} are, like
+@tt{define-cell}, basically a convenience over doing the same thing in
+Scheme with @tt{let}, @tt{let*}, @tt{letrec} and @tt{make-cell}.  Also
+like @tt{define-cell}, @tt{let-cells}, @tt{let-cells*}, and
+@tt{let-cells-rec} do constant conversion (so in @tt{(let-cells ((x 3)) ...)},
+@tt{x} becomes a cell, not a Scheme object), and attach
 debugging information to the cells they bind.
 
-Since \texttt{let-cells} is plural (where \texttt{let} was number-neutral),
-Scheme-Propagators also define \texttt{let-cell} and \texttt{let-cell-rec}
-(\texttt{let-cell*} being useless) for the case when you just want to make
+Since @tt{let-cells} is plural (where @tt{let} was number-neutral),
+Scheme-Propagators also define @tt{let-cell} and @tt{let-cell-rec}
+(@tt{let-cell*} being useless) for the case when you just want to make
 one cell:
 \begin{quote}{\ttfamily \raggedright \noindent
 (let-cell~x~...)~~~~~~~~~~~~~~==~~(let-cells~(x)~...)~\\
@@ -754,11 +754,11 @@ one cell:
 (let-cells-rec~((ones~(e:cons~1~ones)))~...)
 }\end{quote}
 
-Scheme-Propagators currently has no analogue of Scheme's named \texttt{let}
+Scheme-Propagators currently has no analogue of Scheme's named @tt{let}
 syntax.
 
 Finally, there is one more, somewhat sneaky way to make cells.
-The \texttt{e@"@"}
+The @tt{e@"@"}
 procedure makes and returns a cell to hold the ``output'' of the
 propagator being applied.  These implicit cells are just
 like the implicit memory locations that Scheme creates under the hood
@@ -770,7 +770,7 @@ the next expression or assigned to variables.
 
 @subsection{Conditional Network Construction}
 
-The \texttt{switch} propagator does conditional propagation -{}-{}- it only
+The @tt{switch} propagator does conditional propagation -{}-{}- it only
 forwards its input to its output if its control is ``true''.  As such,
 it serves the purpose of controlling the flow of data through an existing
 propagator network.  However, it is also appropriate to control the
@@ -778,49 +778,49 @@ construction of more network, for example to design recursive networks
 that expand themselves no further than needed.  The basic idea here
 is to delay the construction of some chunk of network until
 some information appears on its boundary, and control whether
-said information appears by judicious use of \texttt{switch} propagators.  The
+said information appears by judicious use of @tt{switch} propagators.  The
 low-level tools for accomplishing this effect are
-\texttt{delayed-propagator-constructor} and \texttt{switch}.  The supported
+@tt{delayed-propagator-constructor} and @tt{switch}.  The supported
 user interface is:
 \begin{description}
-\item[{\texttt{(p:when internal-cells condition-cell body ...)}}] \leavevmode 
+\item[{@tt{(p:when internal-cells condition-cell body ...)}}] \leavevmode 
 Delays the construction of the body until sufficiently ``true'' (in
-the sense of \texttt{switch}) partial information appears in the
-\texttt{condition-cell}.  The \texttt{condition-cell} argument is an
+the sense of @tt{switch}) partial information appears in the
+@tt{condition-cell}.  The @tt{condition-cell} argument is an
 expression to evaluate to produce the cell controlling whether
-construction of the \texttt{body} takes place.  The \texttt{body} is an
+construction of the @tt{body} takes place.  The @tt{body} is an
 arbitrary collection of code, defining some amount of propagator
 network that will not be built until the controlling cell indicates
-that it should.  The \texttt{internal-cells} argument is a list of the
-free variables in \texttt{body}.  This is the same kind of kludge as the
-\texttt{import} clause in \texttt{define-propagator} (see Section~\ref{lexical-scope}).
+that it should.  The @tt{internal-cells} argument is a list of the
+free variables in @tt{body}.  This is the same kind of kludge as the
+@tt{import} clause in @tt{define-propagator} (see Section~\ref{lexical-scope}).
 
-\item[{\texttt{(e:when internal-cells condition-cell body ...)}}] \leavevmode 
-Expression-style variant of \texttt{p:when}.  Augments its boundary with
+\item[{@tt{(e:when internal-cells condition-cell body ...)}}] \leavevmode 
+Expression-style variant of @tt{p:when}.  Augments its boundary with
 a fresh cell, which is then synchronized with the cell returned from
-the last expression in \texttt{body} when \texttt{body} is constructed.
+the last expression in @tt{body} when @tt{body} is constructed.
 
 \end{description}
 
-\texttt{(p:unless internal-cells condition-cell body ...)}
+@tt{(p:unless internal-cells condition-cell body ...)}
 \begin{description}
-\item[{\texttt{(e:unless internal-cells condition-cell body ...)}}] \leavevmode 
-Same as \texttt{p:when} and \texttt{e:when}, but reversing the sense of the
+\item[{@tt{(e:unless internal-cells condition-cell body ...)}}] \leavevmode 
+Same as @tt{p:when} and @tt{e:when}, but reversing the sense of the
 control cell.
 
-\item[{\texttt{(p:if internal-cells condition-cell consequent alternate)}}] \leavevmode 
-Two-armed conditional construction.  Just like a \texttt{p:when} and a
-\texttt{p:unless}: constructs the network indicated by the \texttt{consequent}
-form when the \texttt{condition-cell} becomes sufficiently ``true'', and
-constructs the network indicated by the \texttt{alternate} form when the
-\texttt{condition-cell} becomes sufficiently ``false''.  Note that both can
-occur for the same \texttt{p:if} over the life of a single computation,
-for example if the \texttt{condition-cell} comes to have a TMS that includes
-a \texttt{{\#}t} contingent on some premises and later a \texttt{{\#}f} contingent
+\item[{@tt{(p:if internal-cells condition-cell consequent alternate)}}] \leavevmode 
+Two-armed conditional construction.  Just like a @tt{p:when} and a
+@tt{p:unless}: constructs the network indicated by the @tt{consequent}
+form when the @tt{condition-cell} becomes sufficiently ``true'', and
+constructs the network indicated by the @tt{alternate} form when the
+@tt{condition-cell} becomes sufficiently ``false''.  Note that both can
+occur for the same @tt{p:if} over the life of a single computation,
+for example if the @tt{condition-cell} comes to have a TMS that includes
+a @tt{{\#}t} contingent on some premises and later a @tt{{\#}f} contingent
 on others.
 
-\item[{\texttt{(e:if internal-cells condition-cell consequent alternate)}}] \leavevmode 
-Expression-style variant of \texttt{p:if}.
+\item[{@tt{(e:if internal-cells condition-cell consequent alternate)}}] \leavevmode 
+Expression-style variant of @tt{p:if}.
 
 \end{description}
 
@@ -832,15 +832,15 @@ Expression-style variant of \texttt{p:if}.
 So, you know the primitives (the supplied propagators) and the means
 of combination (how to make cells and wire bunches of propagators up
 into networks).  Now for the means of abstraction.  A propagator
-constructor such as \texttt{p:+} is like a wiring diagram with a few holes
-where it can be attached to other structures.  Supply \texttt{p:+} with
+constructor such as @tt{p:+} is like a wiring diagram with a few holes
+where it can be attached to other structures.  Supply @tt{p:+} with
 cells, and it makes an actual propagator for addition whose inputs and
 outputs are those cells.  How do you make compound propagator
 constructors?
 
 The main way to abstract propagator construction is with the
-\texttt{define-d:propagator} and \texttt{define-e:propagator} Scheme macros.
-\texttt{define-d:propagator} defines a compound propagator in diagram style,
+@tt{define-d:propagator} and @tt{define-e:propagator} Scheme macros.
+@tt{define-d:propagator} defines a compound propagator in diagram style,
 that is, with explicit named parameters for the entire boundary of the
 compound:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -850,7 +850,7 @@ compound:
 ~~(p:-~z~x~y))
 }\end{quote}
 
-\texttt{define-e:propagator} defines a compound propagator in expression
+@tt{define-e:propagator} defines a compound propagator in expression
 style, that is, expecting the body of the propagator to return one
 additional cell to add to the boundary at the end:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -858,10 +858,10 @@ additional cell to add to the boundary at the end:
 ~~(e:+~x~x))
 }\end{quote}
 
-Both defining forms will make variants with names beginning in \texttt{p:}
-and \texttt{e:}, that default to being applied in diagram and expression
+Both defining forms will make variants with names beginning in @tt{p:}
+and @tt{e:}, that default to being applied in diagram and expression
 style, respectively.  Note that this definition does not bind
-the Scheme variable \texttt{double}.
+the Scheme variable @tt{double}.
 
 With these definitions we can use those pieces to build more complex
 structures:
@@ -875,22 +875,22 @@ as if they were primitive:
 ~~(p:my-sum-constraint~x~(e:double~x)~z))
 }\end{quote}
 
-\texttt{define-propagator} is an alias for \texttt{define-d:propagator} because
+@tt{define-propagator} is an alias for @tt{define-d:propagator} because
 that's the most common use case.
 
 Just as in Scheme, the definition syntaxes have a corresponding
-syntax for anonymous compound propagators, \texttt{lambda-d:propagator} and
-\texttt{lambda-e:propagator}.
+syntax for anonymous compound propagators, @tt{lambda-d:propagator} and
+@tt{lambda-e:propagator}.
 
 Compound propagator constructors perform constant conversion:
 \begin{quote}{\ttfamily \raggedright \noindent
 (p:my-sum-constraint~x~3~z)~~==~~(p:my-sum-constraint~x~(e:constant~3)~z)
 }\end{quote}
 
-\texttt{define-propagator} and \texttt{define-e:propagator} respect the \texttt{c:}
-and \texttt{ce:} naming convention, in that if the name supplied for
-definition begins with \texttt{c:} or \texttt{ce:}, that pair of prefixes will
-be used in the names actually defined instead of \texttt{p:} and \texttt{e:}.
+@tt{define-propagator} and @tt{define-e:propagator} respect the @tt{c:}
+and @tt{ce:} naming convention, in that if the name supplied for
+definition begins with @tt{c:} or @tt{ce:}, that pair of prefixes will
+be used in the names actually defined instead of @tt{p:} and @tt{e:}.
 So:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-propagator~(foo~...)~...)~~~~~defines~~p:foo~and~e:foo~\\
@@ -915,12 +915,12 @@ their lexical environment:
 ~~e:the-adder)
 }\end{quote}
 
-\texttt{import} is a kludge, which is a consequence of the embedding of
+@tt{import} is a kludge, which is a consequence of the embedding of
 Scheme-Propagators into Scheme.  Without enough access to the Scheme
 interpreter, or enough macrological wizardry, we cannot detect the
 free variables in an expression, so they must be listed explicitly by
-the user.  Globally bound objects like \texttt{e:+} (and \texttt{p:addn} and
-\texttt{e:addn} if the above were evaluated at the top level) need not be
+the user.  Globally bound objects like @tt{e:+} (and @tt{p:addn} and
+@tt{e:addn} if the above were evaluated at the top level) need not be
 mentioned.
 
 
@@ -928,29 +928,29 @@ mentioned.
 
 @subsection{Recursion}
 
-Propagator abstractions defined by \texttt{define-propagator} are expanded
+Propagator abstractions defined by @tt{define-propagator} are expanded
 immediately when applied to cells.  Therefore, magic is needed to
 build recursive networks, because otherwise the structure would be
-expanded infinitely far.  As in Scheme, this magic is in \texttt{if}.  The
-Scheme-Propagators construct \texttt{p:if} (which is implemented as a
+expanded infinitely far.  As in Scheme, this magic is in @tt{if}.  The
+Scheme-Propagators construct @tt{p:if} (which is implemented as a
 Scheme macro) delays the construction of the diagrams in its branches
 until sufficient information is available about the predicate.
 Specifically, the consequent is constructed only when the predicate is
 sufficiently ``true'', and the alternate is constructed only when the
 predicate is sufficiently ``false''.  Note that, unlike in Scheme, these
-can both occur to the same \texttt{p:if}.
+can both occur to the same @tt{p:if}.
 
 In Scheme-Propagators, the one-armed conditional construction
-construct \texttt{p:when} is more fundamental than the two-armed construct
-\texttt{p:if}.  This is because, where Scheme's \texttt{if} is about selecting
-values, and so has to have two options to select from, \texttt{p:when} and
-\texttt{p:if} are about building machinery, and there is no particular
+construct @tt{p:when} is more fundamental than the two-armed construct
+@tt{p:if}.  This is because, where Scheme's @tt{if} is about selecting
+values, and so has to have two options to select from, @tt{p:when} and
+@tt{p:if} are about building machinery, and there is no particular
 reason why choosing among two pieces of machinery to construct is any
 more basic than choosing whether or not to construct one particular
 piece.
 
-For example, here is the familiar recursive \texttt{factorial}, rendered in
-propagators with \texttt{p:if}:
+For example, here is the familiar recursive @tt{factorial}, rendered in
+propagators with @tt{p:if}:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-propagator~(p:factorial~n~n!)~\\
 ~~(p:if~(n~n!)~(e:=~0~n)~\\
@@ -961,17 +961,17 @@ propagators with \texttt{p:if}:
 The only syntactic difference between this and what one would write in
 Scheme for this same job is that this is written in diagram style,
 with an explicit name for the cell that holds the answer, and that
-\texttt{p:if} needs to be told the names of the non-global variables that
-are free in its branches, just like the \texttt{import} clause of a
+@tt{p:if} needs to be told the names of the non-global variables that
+are free in its branches, just like the @tt{import} clause of a
 propagator definition (and for the same kludgerous reason).
-\texttt{p:when} is the one-armed version.  \texttt{p:unless} is also provided;
+@tt{p:when} is the one-armed version.  @tt{p:unless} is also provided;
 it reverses the sense of the predicate.
 
-Like everything else whose name begins with \texttt{p:}, \texttt{p:if} and co
+Like everything else whose name begins with @tt{p:}, @tt{p:if} and co
 have expression-style variants.  The difference is that the tail
 positions of the branches are expected to return cells, which are
-wired together and returned to the caller of the \texttt{e:if}.  Here is
-\texttt{factorial} again, in expression style:
+wired together and returned to the caller of the @tt{e:if}.  Here is
+@tt{factorial} again, in expression style:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-e:propagator~(e:factorial~n)~\\
 ~~(e:if~(n)~(e:=~0~n)~\\
@@ -992,54 +992,54 @@ location'' of Scheme-Propagators, that is each cell, maintains not ``a
 value'', but ``all the information it has about a value''.  Such
 information may be as little as ``I know absolutely nothing about my
 value'', as much as ``I know everything there is to know about my value,
-and it is \texttt{42}'', and many possible variations in between; and also
+and it is @tt{42}'', and many possible variations in between; and also
 one not-in-between variation, which is ``Stop the presses!  I know
 there is a contradiction!''
 
 All these various possible states of information are represented
-(perforce) as Scheme objects.  The Scheme object \texttt{nothing} represents
+(perforce) as Scheme objects.  The Scheme object @tt{nothing} represents
 the information ``I don't know anything''.  This requires only a single
 Scheme object, because not knowing anything is a single state of
 knowledge.  Most Scheme objects represent ``perfect, consistent''
-information: the Scheme object \texttt{5} represents the information ``I
-know everything there is to know, and the answer is \texttt{5}.''  There are
+information: the Scheme object @tt{5} represents the information ``I
+know everything there is to know, and the answer is @tt{5}.''  There are
 also several Scheme types provided with the system that denote
 specific other states of knowledge, and you can make your own.  For
-example, objects of type \texttt{interval?} contain an upper bound and a
+example, objects of type @tt{interval?} contain an upper bound and a
 lower bound, and represent information of the form ``I know my value is
 between this real number and that one.''
 
 The way to get partial knowledge into the network is to put it into
-cells with \texttt{add-content} or constant propagators.  For example:
+cells with @tt{add-content} or constant propagators.  For example:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~x~(make-interval~3~5))
 }\end{quote}
-produces a cell named \texttt{x} that now holds the partial information
-\texttt{(make-interval 3 5)}, which means that its value is
-between \texttt{3} and \texttt{5}.
+produces a cell named @tt{x} that now holds the partial information
+@tt{(make-interval 3 5)}, which means that its value is
+between @tt{3} and @tt{5}.
 
 Partial information structures are generally built to be contagious,
 so that once you've inserted a structure of a certain type into
 the network, the normal propagators will generally produce answers
 in kind, and, if needed, coerce their inputs into the right form
-to co-operate.  For example, if \texttt{x} has an interval like above,
+to co-operate.  For example, if @tt{x} has an interval like above,
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~y~(e:+~x~2))
 }\end{quote}
-will make an adder that will eventually need to add \texttt{2} to the
-interval between \texttt{3} and \texttt{5}.  This is a perfectly reasonable
-thing to ask, because both \texttt{2} and \texttt{(make-interval 3 5)} are
+will make an adder that will eventually need to add @tt{2} to the
+interval between @tt{3} and @tt{5}.  This is a perfectly reasonable
+thing to ask, because both @tt{2} and @tt{(make-interval 3 5)} are
 states of knowledge about the inputs to that adder, so it ought to
 produce the best possible representation of the knowledge it can
 deduce about the result of the addition.  In this case, that would be
-the interval between \texttt{5} and \texttt{7}:
+the interval between @tt{5} and @tt{7}:
 \begin{quote}{\ttfamily \raggedright \noindent
 (run)~\\
 (content~y)~~==>~~{\#}(interval~5~7)
 }\end{quote}
 
 The key thing about partial information is that it's
-cumulative.  So if you also added some other knowledge to the \texttt{y}
+cumulative.  So if you also added some other knowledge to the @tt{y}
 cell, it would need to merge with the interval that's there to
 represent the complete knowledge available as a result:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -1058,13 +1058,13 @@ standard MIT Scheme debugging facilities.
 
 The partial information types are defined by a suite of Scheme
 procedures.  The ones defining the actual partial information types
-are \texttt{equivalent?}, \texttt{merge}, and \texttt{contradictory?}, which test
+are @tt{equivalent?}, @tt{merge}, and @tt{contradictory?}, which test
 whether two information structures represent the same information,
 merge given information structures, and test whether a given
 information structure represents an impossible state, respectively.
 Each partial information structure also defines the way various
 propagators treat it.  The behavior in the control position of a
-\texttt{switch} propagator and in the operator position of an apply
+@tt{switch} propagator and in the operator position of an apply
 propagator are particularly important.
 
 
@@ -1090,30 +1090,30 @@ Scheme-Propagators:
 
 @subsection{Nothing}
 \begin{description}
-\item[{\texttt{nothing}}] \leavevmode 
+\item[{@tt{nothing}}] \leavevmode 
 A single Scheme object that represents the complete absence of
 information.
 
-\item[{\texttt{(nothing? thing)}}] \leavevmode 
-A predicate that tests whether a given Scheme object is the \texttt{nothing}
+\item[{@tt{(nothing? thing)}}] \leavevmode 
+A predicate that tests whether a given Scheme object is the @tt{nothing}
 object.
 
 \end{description}
 
-\texttt{nothing} is \texttt{equivalent?} only to itself.
+@tt{nothing} is @tt{equivalent?} only to itself.
 
-\texttt{nothing} never contributes anything to a merge -{}-{}- the merge of
-anything with \texttt{nothing} is the anything.
+@tt{nothing} never contributes anything to a merge -{}-{}- the merge of
+anything with @tt{nothing} is the anything.
 
-\texttt{nothing} is not \texttt{contradictory?}.
+@tt{nothing} is not @tt{contradictory?}.
 
-Strict propagators, such as ones made by \texttt{p:+}, output \texttt{nothing}
-if any of their inputs are \texttt{nothing}.
+Strict propagators, such as ones made by @tt{p:+}, output @tt{nothing}
+if any of their inputs are @tt{nothing}.
 
-A \texttt{switch} whose control cell contains \texttt{nothing} will emit
-\texttt{nothing}.
+A @tt{switch} whose control cell contains @tt{nothing} will emit
+@tt{nothing}.
 
-An apply propagator whose operator cell contains \texttt{nothing} will not
+An apply propagator whose operator cell contains @tt{nothing} will not
 do anything.
 
 
@@ -1123,22 +1123,22 @@ do anything.
 
 A Scheme object that is not otherwise defined as a partial information
 structure indicates that the content of the cell is
-completely known, and is exactly (by \texttt{eqv?}) that object.  Note:
+completely known, and is exactly (by @tt{eqv?}) that object.  Note:
 floating point numbers are compared by approximate numerical equality;
 this is guaranteed to screw you eventually, but we don't know how to
 do better.
 
-Raw Scheme objects are \texttt{equivalent?} if they are \texttt{eqv?} (or are
+Raw Scheme objects are @tt{equivalent?} if they are @tt{eqv?} (or are
 approximately equal floating point numbers).
 
-Non-\texttt{equivalent?} raw Scheme objects merge into the contradiction object.
+Non-@tt{equivalent?} raw Scheme objects merge into the contradiction object.
 
-A raw Scheme object is never \texttt{contradictory?}.
+A raw Scheme object is never @tt{contradictory?}.
 
-A \texttt{switch} interprets any non-\texttt{{\#}f} raw Scheme object in its
+A @tt{switch} interprets any non-@tt{{\#}f} raw Scheme object in its
 control cell as true and forwards its input cell to its output cell
-unmodified.  A \texttt{switch} whose control cell is \texttt{{\#}f} emits
-\texttt{nothing} to its output cell.
+unmodified.  A @tt{switch} whose control cell is @tt{{\#}f} emits
+@tt{nothing} to its output cell.
 
 An apply propagator whose operator cell contains a raw Scheme
 procedure will apply it to the boundary cells.  It is an error for a
@@ -1150,26 +1150,26 @@ operator cell of an apply propagator.
 
 @subsection{Numerical Intervals}
 
-An object of type \texttt{interval?} has fields for a lower bound and an
+An object of type @tt{interval?} has fields for a lower bound and an
 upper bound.  Such an object represents the information ``This value is
 between these bounds.''
 \begin{description}
-\item[{\texttt{(make-interval low high)}}] \leavevmode 
+\item[{@tt{(make-interval low high)}}] \leavevmode 
 Creates an interval with the given lower and upper bounds
 
-\item[{\texttt{(interval-low interval)}}] \leavevmode 
+\item[{@tt{(interval-low interval)}}] \leavevmode 
 Extracts the lower bound of an interval
 
-\item[{\texttt{(interval-high interval)}}] \leavevmode 
+\item[{@tt{(interval-high interval)}}] \leavevmode 
 Extracts the upper bound of an interval
 
-\item[{\texttt{(interval? thing)}}] \leavevmode 
+\item[{@tt{(interval? thing)}}] \leavevmode 
 Tests whether the given object is an interval
 
 \end{description}
 
-Two interval objects are \texttt{equivalent?} if they are the same
-interval.  An interval is \texttt{equivalent?} to a number if both the
+Two interval objects are @tt{equivalent?} if they are the same
+interval.  An interval is @tt{equivalent?} to a number if both the
 upper and lower bounds are that number.
 
 Interval objects merge with each other by intersection.  Interval
@@ -1178,15 +1178,15 @@ interval and performing intersection (whose result will either be that
 number or an empty interval).  Interval objects merge with other
 raw Scheme objects into the contradiction object.
 
-An interval object is \texttt{contradictory?} if and only if it represents
+An interval object is @tt{contradictory?} if and only if it represents
 a strictly empty interval (that is, if the upper bound is strictly
 less than the lower bound).
 
 The arithmetic propagators react to interval objects by performing
 interval arithmetic.
 
-A \texttt{switch} propagator treats any interval object in its control as a
-non-\texttt{{\#}f} object and forwards its input to its output.
+A @tt{switch} propagator treats any interval object in its control as a
+non-@tt{{\#}f} object and forwards its input to its output.
 
 It is an error for an interval object to appear in the operator
 position of an apply propagator.
@@ -1205,10 +1205,10 @@ operations on the information it is over.
 A propagator cell interpreted as partial information is an
 indirection: it means ``I contain the structure that describes this
 value''.  Cells can appear as the contents of cells or other structures
-via the \texttt{deposit} and \texttt{examine} propagators
+via the @tt{deposit} and @tt{examine} propagators
 (see Section~\ref{cells-are-data-too}).
 
-Propagator cells are \texttt{equivalent?} if they are known to contain
+Propagator cells are @tt{equivalent?} if they are known to contain
 information about the same subject.  This occurs only if they are
 identically the same cell, or if they have previously been
 unconditionally identified (by merging).
@@ -1218,7 +1218,7 @@ identity propagators that keep the contents of the cells in sync.
 These identity propagators will cause the contents of the cells to
 merge, both now and in the future.
 
-A propagator cell is never \texttt{contradictory?}.
+A propagator cell is never @tt{contradictory?}.
 
 
 @;___________________________________________________________________________
@@ -1230,44 +1230,44 @@ pair.  My car and cdr contain cells that describe the car and cdr of
 this object.''  A Scheme empty list means ``This object is the empty
 list''.
 
-The propagators \texttt{p:cons}, \texttt{e:cons}, \texttt{p:car}, \texttt{e:cdr},
-\texttt{p:pair?}, \texttt{e:pair?}, \texttt{p:null?}, and \texttt{e:null?}
+The propagators @tt{p:cons}, @tt{e:cons}, @tt{p:car}, @tt{e:cdr},
+@tt{p:pair?}, @tt{e:pair?}, @tt{p:null?}, and @tt{e:null?}
 (see Section~\ref{compound-data})
 introduce and examine pairs and empty lists.
 
-Two pairs are \texttt{equivalent?} if their cars and cdrs are both
-\texttt{equivalent?}.  A pair is not \texttt{equivalent?} to any non-pair.  The
-empty list is only \texttt{`equivalent?} to itself.
+Two pairs are @tt{equivalent?} if their cars and cdrs are both
+@tt{equivalent?}.  A pair is not @tt{equivalent?} to any non-pair.  The
+empty list is only @tt{`equivalent?} to itself.
 
-Pairs merge by recursively merging the \texttt{car} and \texttt{cdr} fields.
+Pairs merge by recursively merging the @tt{car} and @tt{cdr} fields.
 Given the behavior of propagator cells as mergeable data, the effect
 will be unification (with a delay instead of the occurs check).  A
 pair merged with a Scheme object of a different type will produce a
 contradiction.  An empty list merged with anything that is not the
 empty list will produce a contradiction.
 
-Neither a pair nor the empty list is ever \texttt{contradictory?}.
+Neither a pair nor the empty list is ever @tt{contradictory?}.
 
-A \texttt{switch} propagator treats any pair or empty list in its control
-as a non-\texttt{{\#}f} object and forwards its input to its output.
+A @tt{switch} propagator treats any pair or empty list in its control
+as a non-@tt{{\#}f} object and forwards its input to its output.
 
 It is an error for a pair or the empty list to appear in the operator
 position of an apply propagator.
 
 Other compound data structures can be made partial information that
-behaves like pairs using \texttt{define-propagator-structure}.
+behaves like pairs using @tt{define-propagator-structure}.
 \begin{description}
-\item[{\texttt{(define-propagator-structure type constructor accessor ...)}}] \leavevmode 
+\item[{@tt{(define-propagator-structure type constructor accessor ...)}}] \leavevmode 
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
 that handle them.  For example:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-propagator-structure~pair?~cons~car~cdr)
 }\end{quote}
-is the declaration that causes Scheme pairs to \texttt{merge}, be
-\texttt{equivalent?}, and be \texttt{contradictory?} the way they are, and
-defines the propagators \texttt{p:pair?}, \texttt{e:pair?}, \texttt{p:cons},
-\texttt{e:cons}, \texttt{p:car}, and \texttt{e:cdr}.
+is the declaration that causes Scheme pairs to @tt{merge}, be
+@tt{equivalent?}, and be @tt{contradictory?} the way they are, and
+defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
+@tt{e:cons}, @tt{p:car}, and @tt{e:cdr}.
 
 \end{description}
 
@@ -1285,11 +1285,11 @@ Code pointers merge by testing that they point to the same code
 environments merge by merging all the cells they contain in
 corresponding places.
 \begin{description}
-\item[{\texttt{lambda-d:propagator}, \texttt{lambda-e:propagator}}] \leavevmode 
+\item[{@tt{lambda-d:propagator}, @tt{lambda-e:propagator}}] \leavevmode 
 Scheme-Propagators syntax for anonymous compound propagator
 constructors (which are implemented as closures).
 
-\item[{\texttt{define-propagator}}] \leavevmode 
+\item[{@tt{define-propagator}}] \leavevmode 
 Internally produces lambda-d:propagator or lambda-e:propagator
 and puts the results into appropriately named cells.
 
@@ -1304,9 +1304,9 @@ A Truth Maintenance System (TMS) is a set of contingent values.  A
 contingent value is any partial information object that describes the
 ``value'' in the cell, together with a set of premises.  The premises
 are Scheme objects that have no interesting properties except identity
-(by \texttt{eq?}).  A worldview defines which premises are believed.
+(by @tt{eq?}).  A worldview defines which premises are believed.
 
-The meaning of a TMS as information is the logical \texttt{and} of the
+The meaning of a TMS as information is the logical @tt{and} of the
 meanings of all of its contingent values.  The meaning of each
 contingent value is an implication: The conjunction of the premises
 implies the contingent information.  Therefore, given a worldview,
@@ -1320,33 +1320,33 @@ starts out believing all premises.  The worldview may be changed to
 exclude (or re-include) individual premises, allowing the user to
 examine the consequences of different consistent subsets of premises.
 \begin{description}
-\item[{\texttt{(kick-out! premise)}}] \leavevmode 
+\item[{@tt{(kick-out! premise)}}] \leavevmode 
 Remove the given premise from the current worldview.
 
-\item[{\texttt{(bring-in! premise)}}] \leavevmode 
+\item[{@tt{(bring-in! premise)}}] \leavevmode 
 Return the given premise to the current worldview.
 
-\item[{\texttt{(premise-in? premise)}}] \leavevmode 
+\item[{@tt{(premise-in? premise)}}] \leavevmode 
 Is the given premise believed in the current worldview?
 
-\item[{\texttt{(contingent info premises)}}] \leavevmode 
+\item[{@tt{(contingent info premises)}}] \leavevmode 
 Constructs a contingency object representing the information
 that the given info is contingent on the given list of premises.
 
-\item[{\texttt{(contingent-info contingency-object)}}] \leavevmode 
+\item[{@tt{(contingent-info contingency-object)}}] \leavevmode 
 The information that is contingent.
 
-\item[{\texttt{(contingent-premises contingency-object)}}] \leavevmode 
+\item[{@tt{(contingent-premises contingency-object)}}] \leavevmode 
 The list of premises on which that information is contingent.
 
-\item[{\texttt{(contingency-object-believed? contingency-object)}}] \leavevmode 
+\item[{@tt{(contingency-object-believed? contingency-object)}}] \leavevmode 
 Whether the given contingency object is believed.
 
-\item[{\texttt{(make-tms contingency-object-list)}}] \leavevmode 
+\item[{@tt{(make-tms contingency-object-list)}}] \leavevmode 
 Constructs a TMS with the given contingency objects as its initial
 set.
 
-\item[{\texttt{(tms-query tms)}}] \leavevmode 
+\item[{@tt{(tms-query tms)}}] \leavevmode 
 Returns a contingency object representing the strongest deduction
 the given TMS can make in the current worldview.  tms-query gives
 the contingency with the strongest contingent information that is
@@ -1356,10 +1356,10 @@ contingent upon.
 
 \end{description}
 
-Calling \texttt{initialize-scheduler} resets the worldview to believing all
+Calling @tt{initialize-scheduler} resets the worldview to believing all
 premises.
 
-TMSes are \texttt{equivalent?} if they contain equivalent contingent
+TMSes are @tt{equivalent?} if they contain equivalent contingent
 objects.  Contingent objects are equivalent if they have equivalent
 info and the same set of premises.
 
@@ -1371,13 +1371,13 @@ ingredients for computation.  The result of a computation is
 contingent on the premises of the ingredients that contribute to that
 result.
 
-If a TMS appears in the control of a \texttt{switch}, the \texttt{switch} will
-first query the TMS to extract a contingent object.  The \texttt{switch}
+If a TMS appears in the control of a @tt{switch}, the @tt{switch} will
+first query the TMS to extract a contingent object.  The @tt{switch}
 will choose whether to forward its input or not based on the info that
 is contingent, but if it does forward, it will additionally make the
 result contingent upon the premises on which that info was contingent
 (as well as any premises on which the input may have been contingent).
-If the input itself is a TMS, \texttt{switch} queries it and (possibly)
+If the input itself is a TMS, @tt{switch} queries it and (possibly)
 forwards the result of the query, rather than forwarding the entire
 TMS.  For example:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -1403,7 +1403,7 @@ outputs.  For example, suppose Bill wanted us to add 3 to 4:
 (tms-query~(content~answer))~~==>~~{\#}(contingent~7~(bill))
 }\end{quote}
 
-The \texttt{answer} cell contains a 7 contingent on the Bill premise.  This
+The @tt{answer} cell contains a 7 contingent on the Bill premise.  This
 is the right thing, because that answer depends not only on the inputs
 to the operation being performed, but also on the identity of the
 operation itself.
@@ -1413,29 +1413,29 @@ operation itself.
 
 @subsection{Contradiction}
 
-The Scheme object \texttt{the-contradiction} represents a completely
+The Scheme object @tt{the-contradiction} represents a completely
 contradictory state of information.  If a cell ever finds itself in
 such a contradictory state, it will signal an error.  The
-explicit \texttt{the-contradiction} object is useful, however, for
+explicit @tt{the-contradiction} object is useful, however, for
 representing contradictory information in recursive contexts.  For
 example, a truth maintenance system may discover that some collection
 of premises leads to a contradiction -{}-{}- this is represented by a
-\texttt{the-contradiction} object contingent on those premises.
+@tt{the-contradiction} object contingent on those premises.
 \begin{description}
-\item[{\texttt{the-contradiction}}] \leavevmode 
+\item[{@tt{the-contradiction}}] \leavevmode 
 A Scheme object representing a contradictory state of information
 with no further structure.
 
 \end{description}
 
-\texttt{the-contradiction} is \texttt{equivalent?} only to itself.
+@tt{the-contradiction} is @tt{equivalent?} only to itself.
 
-Any information state merges with \texttt{the-contradiction} to produce
-\texttt{the-contradiction}.
+Any information state merges with @tt{the-contradiction} to produce
+@tt{the-contradiction}.
 
-\texttt{the-contradiction} is \texttt{contradictory?}.
+@tt{the-contradiction} is @tt{contradictory?}.
 
-Propagators cannot operate on \texttt{the-contradiction} because any cell
+Propagators cannot operate on @tt{the-contradiction} because any cell
 containing it will signal an error before any such propagator might
 run.
 
@@ -1454,45 +1454,45 @@ worldview never has a subset which is a known nogood.
 If a nogood set consists entirely of user-introduced premises, the
 computation will be suspended, a description of the nogood set will be
 printed, and the user will have the opportunity to remove an offending
-premise (with \texttt{kick-out!}) and, if desired, resume the computation
-(with \texttt{run}).
+premise (with @tt{kick-out!}) and, if desired, resume the computation
+(with @tt{run}).
 
 There is also a facility for introducing hypothetical premises that
 the system is free to manipulate automatically.  If a nogood set
 contains at least one hypothetical, some hypothetical from that nogood
 set will be retracted, and the computation will proceed.
 \begin{description}
-\item[{\texttt{(p:amb cell)}, \texttt{(e:amb)}}] \leavevmode 
+\item[{@tt{(p:amb cell)}, @tt{(e:amb)}}] \leavevmode 
 A propagator that emits a TMS consisting of a pair of contingencies.
-One contains the information \texttt{{\#}t} contingent on one fresh
-hypothetical premise, and the other contains the information \texttt{{\#}f}
-contingent on anther.  \texttt{amb} also tries to maintain the invariant
+One contains the information @tt{{\#}t} contingent on one fresh
+hypothetical premise, and the other contains the information @tt{{\#}f}
+contingent on anther.  @tt{amb} also tries to maintain the invariant
 that exactly one of those premises is believed.  If doing so
 does not cause the current worldview to believe a known nogood set,
-\texttt{amb} can just \texttt{bring-in!} one premise or the other.  If the current
+@tt{amb} can just @tt{bring-in!} one premise or the other.  If the current
 worldview is such that bringing either premise in will cause a known
-nogood set to be believed, then, by performing a cut, the \texttt{amb}
+nogood set to be believed, then, by performing a cut, the @tt{amb}
 discovers and signals a new nogood set that does not include either
 of them.  Together with the reaction of the system to nogood sets,
 this induces an emergent satisfiability solver by the resolution
 principle.
 
-\item[{\texttt{(p:require cell)}, \texttt{(e:require)}}] \leavevmode 
+\item[{@tt{(p:require cell)}, @tt{(e:require)}}] \leavevmode 
 A propagator that requires its given cell to be true (to wit,
 signals contradictions if it is not).
 
-\item[{\texttt{(p:forbid cell)}, \texttt{(e:forbid)}}] \leavevmode 
+\item[{@tt{(p:forbid cell)}, @tt{(e:forbid)}}] \leavevmode 
 A propagator that forbids its given cell from being true (to wit,
 signals contradictions if it is).
 
-\item[{\texttt{(p:one-of input ... output)}, \texttt{(e:one-of input ...)}}] \leavevmode 
-An n-ary version of \texttt{amb}.  Picks one of the objects in the given
-input cells using an appropriate collection of \texttt{amb} and
-\texttt{switch} propagators and puts it into its output cell.
+\item[{@tt{(p:one-of input ... output)}, @tt{(e:one-of input ...)}}] \leavevmode 
+An n-ary version of @tt{amb}.  Picks one of the objects in the given
+input cells using an appropriate collection of @tt{amb} and
+@tt{switch} propagators and puts it into its output cell.
 
-\item[{\texttt{(require-distinct cells)}}] \leavevmode 
+\item[{@tt{(require-distinct cells)}}] \leavevmode 
 Requires all of the objects in its list of input cells to be
-distinct (in the sense of \texttt{eqv?})
+distinct (in the sense of @tt{eqv?})
 
 \end{description}
 
@@ -1503,21 +1503,21 @@ distinct (in the sense of \texttt{eqv?})
 
 The procedures defining the behavior of partial information are
 generic, and therefore extensible.  The ones that define the
-actual partial information types are \texttt{equivalent?}, \texttt{merge}, and
-\texttt{contradictory?}, which test whether two information structures
+actual partial information types are @tt{equivalent?}, @tt{merge}, and
+@tt{contradictory?}, which test whether two information structures
 represent the same information, merge given information structures,
 and test whether a given information structure represents an
 impossible state, respectively.  In addition, the primitive
 propagators are equipped with generic operations for giving them
 custom behaviors on the various information structures.  The
-generic operation \texttt{binary-map} is very useful for the circumstance
+generic operation @tt{binary-map} is very useful for the circumstance
 when all the strict propagators should handle a particular
 information type uniformly.
 
 To create your own partial information structure, you should create an
 appropriate Scheme data structure to represent it, and then add
-handlers to the operations \texttt{equivalent?}, \texttt{merge}, and
-\texttt{contradictory?} to define that data structure's interpretation as
+handlers to the operations @tt{equivalent?}, @tt{merge}, and
+@tt{contradictory?} to define that data structure's interpretation as
 information.  In order to do anything useful with your new information
 structure, you will also need to make sure that the propagators you
 intend to use with it can deal with it appropriately.  You can of
@@ -1533,7 +1533,7 @@ structure intermixes and interoperates properly with the existing
 ones (see Section~\ref{built-in-partial-information-structures}).
 
 Method addition in the generic operation system used in
-Scheme-Propagators is done with the \texttt{defhandler} procedure:
+Scheme-Propagators is done with the @tt{defhandler} procedure:
 \begin{quote}{\ttfamily \raggedright \noindent
 (defhandler~operation~handler~arg-predicate~...)
 }\end{quote}
@@ -1557,8 +1557,8 @@ relevant here.
 
 The first step is to define a data structure to represent an interval.
 Intervals have upper and lower bounds, so a Scheme record structure
-with constructor \texttt{make-interval}, accessors \texttt{interval-low} and
-\texttt{interval-high}, and predicate \texttt{interval?} will do.
+with constructor @tt{make-interval}, accessors @tt{interval-low} and
+@tt{interval-high}, and predicate @tt{interval?} will do.
 
 The second step is to define handlers for the generic operations that
 every partial information structure must implement.  Assuming
@@ -1587,7 +1587,7 @@ we can add a few more handlers:
 }\end{quote}
 
 The third step is to teach the arithmetic propagators to handle
-intervals.  Interval arithmetic does not fit into the \texttt{binary-map}
+intervals.  Interval arithmetic does not fit into the @tt{binary-map}
 worldview (see Section~\ref{uniform-applicative-extension-of-propagators})
 so the only way to do intervals is to
 individually add the appropriate handlers to the generic procedures
@@ -1619,27 +1619,27 @@ intervals, arithmetic on just numbers, and this procedure for viewing
 numbers as intervals.  The generic operations system provided with
 Scheme-Propagators has explicit support for this idea.
 \begin{description}
-\item[{\texttt{(declare-coercion-target type {[} default-coercion {]})}}] \leavevmode 
+\item[{@tt{(declare-coercion-target type {[} default-coercion {]})}}] \leavevmode 
 This is a Scheme macro that expands into the definitions needed to
-declare \texttt{type} as something that other objects may be coerced
+declare @tt{type} as something that other objects may be coerced
 into.  If supplied, it also registers a default coercion from
-anything declared coercible to \texttt{type}.
+anything declared coercible to @tt{type}.
 
-\texttt{declare-coercion-target} defines the procedure \texttt{type-able?},
+@tt{declare-coercion-target} defines the procedure @tt{type-able?},
 which tests whether a given object has been declared to be coercible
-to \texttt{type}, and the procedure \texttt{->type}, which does that coercion.
-These rely on the type-tester for \texttt{type} already being defined and
-named \texttt{type?}.  For example:
+to @tt{type}, and the procedure @tt{->type}, which does that coercion.
+These rely on the type-tester for @tt{type} already being defined and
+named @tt{type?}.  For example:
 \begin{quote}{\ttfamily \raggedright \noindent
 (declare-coercion-target~interval)
 }\end{quote}
-relies on the procedure \texttt{interval?} and defines the procedures
-\texttt{->interval} and \texttt{interval-able?}.  This call does not declare a
+relies on the procedure @tt{interval?} and defines the procedures
+@tt{->interval} and @tt{interval-able?}.  This call does not declare a
 default means of coercing arbitrary objects into intervals.
 
-\item[{\texttt{(declare-coercion from-type to-coercer {[} mechanism {]})}}] \leavevmode 
-Declares that the given \texttt{from-type} is coercible by the given
-coercer operation, either by the given \texttt{mechanism} if supplied or
+\item[{@tt{(declare-coercion from-type to-coercer {[} mechanism {]})}}] \leavevmode 
+Declares that the given @tt{from-type} is coercible by the given
+coercer operation, either by the given @tt{mechanism} if supplied or
 by the default mechanism declared in the definition of the given
 coercer.  For example:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -1647,29 +1647,29 @@ coercer.  For example:
 }\end{quote}
 declares that Scheme number objects may be coerced to intervals
 whose lower and upper bounds are equal to that number.  After this
-declaration, \texttt{interval-able?} will return true on numbers, and
-\texttt{->interval} will make intervals out of numbers.
+declaration, @tt{interval-able?} will return true on numbers, and
+@tt{->interval} will make intervals out of numbers.
 
-\item[{\texttt{(defhandler-coercing operation handler coercer)}}] \leavevmode 
+\item[{@tt{(defhandler-coercing operation handler coercer)}}] \leavevmode 
 The given generic operation must be binary.  Defines handlers for
-the given generic operation that have two effects: \texttt{handler} is
+the given generic operation that have two effects: @tt{handler} is
 invoked if that operation is given two arguments of the type
-corresponding to \texttt{coercer}; and if one argument is of that type
+corresponding to @tt{coercer}; and if one argument is of that type
 and the other has been declared coercable to that type it will be so
 coerced, and then handler will be invoked.  For example:
 \begin{quote}{\ttfamily \raggedright \noindent
 (defhandler-coercing~generic-+~add-interval~->interval)
 }\end{quote}
-declares that intervals should be added by \texttt{add-interval}, and
-that anything \texttt{interval-able?} can be added to an interval by
-first coercing it into an interval with \texttt{->interval} and then
-doing \texttt{add-interval}.  This subsumes
+declares that intervals should be added by @tt{add-interval}, and
+that anything @tt{interval-able?} can be added to an interval by
+first coercing it into an interval with @tt{->interval} and then
+doing @tt{add-interval}.  This subsumes
 \begin{quote}{\ttfamily \raggedright \noindent
 (defhandler generic-+ add-interval interval? interval?)
 }\end{quote}
 
-\texttt{defhandler-coercing} may only be called after a call to
-\texttt{declare-coercion-target} defining the appropriate coercer and
+@tt{defhandler-coercing} may only be called after a call to
+@tt{declare-coercion-target} defining the appropriate coercer and
 coercability tester procedures (but the various specific coercions
 may be declared later).
 
@@ -1680,44 +1680,44 @@ may be declared later).
 
 @subsection{The Partial Information Generics}
 
-\texttt{(equivalent? info1 info2)  ==>  {\#}t or {\#}f}
+@tt{(equivalent? info1 info2)  ==>  {\#}t or {\#}f}
 
-The \texttt{equivalent?} procedure is used by cells to determine whether
+The @tt{equivalent?} procedure is used by cells to determine whether
 their content has actually changed after an update.  Its job is to
 ascertain, for any two partial information structures, whether they
-represent the same information.  As a fast path, any two \texttt{eqv?}
+represent the same information.  As a fast path, any two @tt{eqv?}
 objects are assumed to represent equivalent information structures.
-The default operation on \texttt{equivalent?} returns false for any two
-non-\texttt{eqv?} objects.
+The default operation on @tt{equivalent?} returns false for any two
+non-@tt{eqv?} objects.
 
-A handler for \texttt{equivalent?} is expected to accept two partial
-information structures and return \texttt{{\#}t} if they represent
-semantically the same information, and \texttt{{\#}f} if they do not.
+A handler for @tt{equivalent?} is expected to accept two partial
+information structures and return @tt{{\#}t} if they represent
+semantically the same information, and @tt{{\#}f} if they do not.
 
-The built-in \texttt{equivalent?} determines an equivalence relation.
+The built-in @tt{equivalent?} determines an equivalence relation.
 Extensions to it must maintain this invariant.
 
-\texttt{(merge info1 info2)  ==>  new-info}
+@tt{(merge info1 info2)  ==>  new-info}
 
-The \texttt{merge} procedure is the key to the propagation idea.  Its job
+The @tt{merge} procedure is the key to the propagation idea.  Its job
 is to take any two partial information structures, and produce a new
 one that represents all the information present in both of the
 input structures.  This happens every time a propagator gives a cell
-some new information.  Any two \texttt{equivalent?} information structures
+some new information.  Any two @tt{equivalent?} information structures
 merge to identically the first of them.  The default operation for
-\texttt{merge} on a pair of non-\texttt{equivalent?} structures that the handlers for
-\texttt{merge} do not recognize is to assume that they cannot be usefully
-merged, and return \texttt{the-contradiction}.
+@tt{merge} on a pair of non-@tt{equivalent?} structures that the handlers for
+@tt{merge} do not recognize is to assume that they cannot be usefully
+merged, and return @tt{the-contradiction}.
 
-A handler for \texttt{merge} is expected to accept two partial
+A handler for @tt{merge} is expected to accept two partial
 information structures and return another partial information
 structure that semantically includes all the information present in
 both input structures.  The handler may return
-\texttt{the-contradiction} to indicate that the two given partial
+@tt{the-contradiction} to indicate that the two given partial
 information structures are completely mutually exclusive.
 
-\texttt{merge} is expected to determine a (semi-)lattice (up to equivalence
-by \texttt{equivalent?}).  That is
+@tt{merge} is expected to determine a (semi-)lattice (up to equivalence
+by @tt{equivalent?}).  That is
 @itemlist[
 @item{associativity:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -1738,21 +1738,21 @@ by \texttt{equivalent?}).  That is
 }\end{quote}}
 ]
 
-\texttt{(contradictory? info)  ==>  {\#}t or {\#}f}
+@tt{(contradictory? info)  ==>  {\#}t or {\#}f}
 
-The \texttt{contradictory?} procedure tests whether a given information
-structure represents an impossible situation.  \texttt{contradictory?}
+The @tt{contradictory?} procedure tests whether a given information
+structure represents an impossible situation.  @tt{contradictory?}
 states of information may arise in the computation without causing
 errors.  For example, a TMS (see Section~\ref{truth-maintenance-systems})
 may contain a contradiction in
-a contingent context, without itself being \texttt{contradictory?}.  But if
-a \texttt{contradictory?} object gets to the top level, that is if a cell
-discovers that it directly contains a \texttt{contradictory?} state of
+a contingent context, without itself being @tt{contradictory?}.  But if
+a @tt{contradictory?} object gets to the top level, that is if a cell
+discovers that it directly contains a @tt{contradictory?} state of
 information, it will signal an error and stop the computation.
 
-A handler for \texttt{contradictory?} is expected to accept a partial
-information structure, and to return \texttt{{\#}t} if it represents an
-impossible situation (such as an empty interval) or \texttt{{\#}f} if it does
+A handler for @tt{contradictory?} is expected to accept a partial
+information structure, and to return @tt{{\#}t} if it represents an
+impossible situation (such as an empty interval) or @tt{{\#}f} if it does
 not.
 
 
@@ -1760,8 +1760,8 @@ not.
 
 \subsubsection{The Full Story on Merge}
 
-The description of \texttt{merge} as always returning a new partial
-information structure is an approximation.  Sometimes, \texttt{merge} may
+The description of @tt{merge} as always returning a new partial
+information structure is an approximation.  Sometimes, @tt{merge} may
 return a new partial information structure together with instructions
 for an additional effect that needs to be carried out.  For example,
 when merging two propagator cells
@@ -1776,7 +1776,7 @@ nogood set (that this requires signalling and is not just another
 partial information structure is a consequence of an implementation
 decision of TMSes in Scheme-Propagators).
 
-The fully nuanced question that \texttt{merge} answers is
+The fully nuanced question that @tt{merge} answers is
 \begin{quote}
 
 ``What do I need to do to the network in order to make it reflect
@@ -1789,74 +1789,74 @@ In the common case, the answer to this question is going to be
 This answer is represented by returning the relevant information
 structure directly.  Another possible answer is ``These two information
 structures cannot describe the same object.''  This answer is
-represented by returning \texttt{the-contradiction}.  Other answers, such
+represented by returning @tt{the-contradiction}.  Other answers, such
 as ``Record this information structure and connect these two cells with
-synchronizing propagators'', are represented by the \texttt{effectful} data
+synchronizing propagators'', are represented by the @tt{effectful} data
 structure, which has one field for a new partial information structure
 to record, and one field for a list of other effects to carry out.
 These instructions are represented as explicit objects returned from
-\texttt{merge} rather than being carried out directly because this allows
-recursive calls to \texttt{merge} to modify the effects to account for the
-context in which that \texttt{merge} occurs.  For example, if a merge of
+@tt{merge} rather than being carried out directly because this allows
+recursive calls to @tt{merge} to modify the effects to account for the
+context in which that @tt{merge} occurs.  For example, if a merge of
 two cells occurs in a contingent context inside a merge of two
 TMSes, then the instructions to connect those two cells must be
 adjusted to make the connection also contingent on the appropriate
 premises.
 \begin{description}
-\item[{\texttt{(make-effectful info effects)}}] \leavevmode 
+\item[{@tt{(make-effectful info effects)}}] \leavevmode 
 Constructs a new effectful result of merge, with the given new
 partial information structure and the given list of effects to carry
 out.  If the resulting effectful object reaches the top level in a
 cell, those effects will be executed in the order they appear in the
 list.
 
-\item[{\texttt{(effectful-info effectful)}}] \leavevmode 
+\item[{@tt{(effectful-info effectful)}}] \leavevmode 
 Returns the new information content carried in the given
 effectful object.
 
-\item[{\texttt{(effectful-effects effectful)}}] \leavevmode 
+\item[{@tt{(effectful-effects effectful)}}] \leavevmode 
 Returns the list of effects that this effectful object carries.
 
-\item[{\texttt{(effectful? thing)}}] \leavevmode 
+\item[{@tt{(effectful? thing)}}] \leavevmode 
 Tells whether the given object is an effectful object.
 
-\item[{\texttt{(->effectful thing)}}] \leavevmode 
+\item[{@tt{(->effectful thing)}}] \leavevmode 
 Coerces a possibly-effectless information structure into an
-effectful object.  If the \texttt{thing} was already effectful,
+effectful object.  If the @tt{thing} was already effectful,
 returns it, otherwise wraps it into an effectful object
 with an empty list of effects.
 
-\item[{\texttt{(effectful-> effectful)}}] \leavevmode 
+\item[{@tt{(effectful-> effectful)}}] \leavevmode 
 Attempts to coerce an effectful object into an explicitly effectless
 one.  If the given effectful object was not carrying any effects
 that would have any effect when executed, returns just the
 information structure it was carrying.  Otherwise, returns
 the given effectful object.
 
-\item[{\texttt{(effectful-bind effectful func)}}] \leavevmode 
-Runs the given \texttt{func} on the information content in the given
-\texttt{effectful} object, and reattaches any effects.  The effectful
+\item[{@tt{(effectful-bind effectful func)}}] \leavevmode 
+Runs the given @tt{func} on the information content in the given
+@tt{effectful} object, and reattaches any effects.  The effectful
 object may actually be a partial information structure without
 explicit effects.  The func may return a new partial information
 structure or a new effectful object.  The overall result of
-\texttt{effectful-bind} is the information returned by the call to
-\texttt{func}, together with all the effects in the original effectful
-object, and any effects in the return value of the \texttt{func}.  The
+@tt{effectful-bind} is the information returned by the call to
+@tt{func}, together with all the effects in the original effectful
+object, and any effects in the return value of the @tt{func}.  The
 former effects are listed first.
 
-\item[{\texttt{(effectful-list-bind effectfuls func)}}] \leavevmode 
-Like \texttt{effectful-bind}, but accepts a list of effectful objects,
-and calls the \texttt{func} on the list of their information contents.
+\item[{@tt{(effectful-list-bind effectfuls func)}}] \leavevmode 
+Like @tt{effectful-bind}, but accepts a list of effectful objects,
+and calls the @tt{func} on the list of their information contents.
 
 \end{description}
 
 There are two reasons why this matters to a user of the system.
-First, callers of \texttt{merge} (for example recursive ones in contexts
+First, callers of @tt{merge} (for example recursive ones in contexts
 where a new partial information structure is defined that may contain
-arbitrary other ones) must be aware that \texttt{merge} may return an
-\texttt{effectful} object.  In this case, it is the responsibility of the
-caller to \texttt{merge} to shepherd the effects appropriately, adjusting
-them if necessary.  For example, the \texttt{merge} handler for two pairs
+arbitrary other ones) must be aware that @tt{merge} may return an
+@tt{effectful} object.  In this case, it is the responsibility of the
+caller to @tt{merge} to shepherd the effects appropriately, adjusting
+them if necessary.  For example, the @tt{merge} handler for two pairs
 recursively merges the cars and cdrs of the pairs.  If either of those
 recursive merges produces effects, the pair merge forwards all of
 them.  Here is the code that does that:
@@ -1879,55 +1879,55 @@ effects built into Scheme-Propagators are independent, in that their
 executions commute.
 
 Scheme-Propagators has two built-in effect types:
-\texttt{cell-join-effect}, defined in \texttt{core/cells.scm}, instructs the
+@tt{cell-join-effect}, defined in @tt{core/cells.scm}, instructs the
 system to make sure two cells are joined by synchronizing propagators;
-\texttt{nogood-effect}, defined in \texttt{core/contradictions.scm}, instructs
+@tt{nogood-effect}, defined in @tt{core/contradictions.scm}, instructs
 the system to record that a list of premises constitutes a nogood set.
 (The error that the system signals when discovering a toplevel
 contradiction is not an effect in this sense).
 
 Second, a new partial information structure may want to have some
 side-effect when merged.  This must be accomplished through returning
-an appropriate \texttt{effectful} object containing appropriate
+an appropriate @tt{effectful} object containing appropriate
 instructions.  New types of effects can be defined for that purpose.
 For example, the built-in TMSes are added to the system through this
 mechanism.
 
 The handling of effects is extensible through two generic procedures.
 \begin{description}
-\item[{\texttt{(execute-effect effect)}}] \leavevmode 
-The \texttt{execute-effect} procedure is used by cells to actually
+\item[{@tt{(execute-effect effect)}}] \leavevmode 
+The @tt{execute-effect} procedure is used by cells to actually
 execute any effects that reach the top level.  A handler for
-\texttt{execute-effect} should execute the effect specified by the given
-effect object.  The return value of \texttt{execute-effect} is not used.
+@tt{execute-effect} should execute the effect specified by the given
+effect object.  The return value of @tt{execute-effect} is not used.
 
-\item[{\texttt{(redundant-effect? effect)  ==>  {\#}t or {\#}f}}] \leavevmode 
-The \texttt{redundant-effect?} procedure is used to determine which
+\item[{@tt{(redundant-effect? effect)  ==>  {\#}t or {\#}f}}] \leavevmode 
+The @tt{redundant-effect?} procedure is used to determine which
 effects will predictably have no effect if executed, so they may be
 removed.  For example, synchronizing a cell to itself, or
 synchronizing two cells that are already synchronized, are redundant
 effects.  Detecting redundant effects is important for testing
 network quiescence.
 
-The default operation of \texttt{redundant-effect?} is to return \texttt{{\#}f}
+The default operation of @tt{redundant-effect?} is to return @tt{{\#}f}
 for all effects, which is conservative but could lead to excess
-computation in the network.  A handler for \texttt{redundant-effect?} is
-expected to return \texttt{{\#}t} if the effect will provably have no
-consequence on any values to be computed in the future, or \texttt{{\#}f} if
+computation in the network.  A handler for @tt{redundant-effect?} is
+expected to return @tt{{\#}t} if the effect will provably have no
+consequence on any values to be computed in the future, or @tt{{\#}f} if
 the effect may have consequences.
 
 \end{description}
 
-If an effect is generated by a \texttt{merge} that occurs in a contingent
+If an effect is generated by a @tt{merge} that occurs in a contingent
 context in a TMS, the TMS will modify the effect to incorporate the
 contingency.  This mechanism is also extensible.  To teach TMSes
 about making new effects contingent, add handlers to the generic
-operation \texttt{generic-attach-premises}.
+operation @tt{generic-attach-premises}.
 \begin{description}
-\item[{\texttt{((generic-attach-premises effect) premises)  ==>  new-effect}}] \leavevmode 
-The \texttt{generic-attach-premises} procedure is used by the TMS
+\item[{@tt{((generic-attach-premises effect) premises)  ==>  new-effect}}] \leavevmode 
+The @tt{generic-attach-premises} procedure is used by the TMS
 machinery to modify effects produced by merges of contingent
-information.  A handler for \texttt{generic-attach-premises} must return
+information.  A handler for @tt{generic-attach-premises} must return
 a procedure that will accept a list of premises and return a new
 effect, which represents the same action but appropriately
 contingent on those premises.  In particular, the consequences of
@@ -1949,16 +1949,16 @@ Those propagators can therefore be extended to new
 partial information types just by adding appropriate methods to their
 Scheme generic operations.  This is what we did in the interval example.
 \begin{description}
-\item[{\texttt{(generic-foo argument ...)  ==>  result}}] \leavevmode 
-A generic procedure for carrying out the \texttt{foo} job over any
+\item[{@tt{(generic-foo argument ...)  ==>  result}}] \leavevmode 
+A generic procedure for carrying out the @tt{foo} job over any
 desired partial information inputs, producing an appropriately
-partial result.  \texttt{generic-abs}, \texttt{generic-square},
-\texttt{generic-sqrt}, \texttt{generic-not}, \texttt{generic-pair?}, and
-\texttt{generic-null?} accept one input.
-\texttt{generic-+}, \texttt{generic-{}-}, \texttt{generic-*}, \texttt{generic-/},
-\texttt{generic-=}, \texttt{generic-<}, \texttt{generic->}, \texttt{generic-<=},
-\texttt{generic->=}, \texttt{generic-and}, \texttt{generic-or}, \texttt{generic-eq?},
-\texttt{generic-eqv?}, \texttt{generic-expt}, and \texttt{generic-switch} accept two inputs.
+partial result.  @tt{generic-abs}, @tt{generic-square},
+@tt{generic-sqrt}, @tt{generic-not}, @tt{generic-pair?}, and
+@tt{generic-null?} accept one input.
+@tt{generic-+}, @tt{generic-{}-}, @tt{generic-*}, @tt{generic-/},
+@tt{generic-=}, @tt{generic-<}, @tt{generic->}, @tt{generic-<=},
+@tt{generic->=}, @tt{generic-and}, @tt{generic-or}, @tt{generic-eq?},
+@tt{generic-eqv?}, @tt{generic-expt}, and @tt{generic-switch} accept two inputs.
 
 \end{description}
 
@@ -1967,7 +1967,7 @@ a partial information structure on one input and a different one on
 another -{}-{}- if both represent states of knowledge about compatible
 ultimate values, it should be possible to produce a state of knowledge
 about the results of the computation (though in extreme cases that
-state of knowledge might be \texttt{nothing}, implying no new information
+state of knowledge might be @tt{nothing}, implying no new information
 produced by the propagator).
 
 
@@ -1976,23 +1976,23 @@ produced by the propagator).
 @subsection{Uniform Applicative Extension of Propagators}
 
 Also, almost all primitive propagators are wrapped
-with the \texttt{nary-mapping} wrapper function around their underlying
+with the @tt{nary-mapping} wrapper function around their underlying
 generic operation.  This wrapper function is an implementation of the
 idea of applicative functors \cite{mcbride-paterson-2008-applicative-functors},
 so if your partial information structure is an applicative functor, you can
 use this to teach most propagators how to handle it.
 
-The propagators wrapped in \texttt{nary-mapping} are exactly the strict
+The propagators wrapped in @tt{nary-mapping} are exactly the strict
 propagators.  This includes all the built-in propagators except
-\texttt{:deposit}, \texttt{:examine}, \texttt{:cons}, \texttt{:car}, and \texttt{:cdr} because
-those operate on cells rather than their contents, and \texttt{:amb}
+@tt{:deposit}, @tt{:examine}, @tt{:cons}, @tt{:car}, and @tt{:cdr} because
+those operate on cells rather than their contents, and @tt{:amb}
 because it essentially has no inputs.
 
-\texttt{((binary-map info1 info2) f)  ==>  new-info}
-The generic procedure \texttt{binary-map} encodes how to apply a strict
-function to partial information arguments.  \texttt{binary-map} itself is
+@tt{((binary-map info1 info2) f)  ==>  new-info}
+The generic procedure @tt{binary-map} encodes how to apply a strict
+function to partial information arguments.  @tt{binary-map} itself is
 generic over the two information arguments, and is expected to return
-a handler that will accept the desired function \texttt{f} and properly
+a handler that will accept the desired function @tt{f} and properly
 apply it.  For example, consider contingent information.  A strict
 operation on the underlying information that is actually contingent
 should be applied by collecting the premises that both inputs are
@@ -2011,29 +2011,29 @@ contingent upon the set-union of the premises from both inputs:
 
 Note that the information inside a contingency object may itself be
 partial, and so perhaps necessitate a recursive call to
-\texttt{binary-map}.  This recursion is handled by the given function
-\texttt{f}, and need not the invoked explicitly in handlers for
-\texttt{binary-map}.
+@tt{binary-map}.  This recursion is handled by the given function
+@tt{f}, and need not the invoked explicitly in handlers for
+@tt{binary-map}.
 
-A handler for \texttt{binary-map} is expected to accept two partial
+A handler for @tt{binary-map} is expected to accept two partial
 information structures and return a procedure of one argument that
 will accept a binary function.  It is free to apply that function as
 many or as few times as necessary, and is expected to produce the
 appropriate result of ``mapping'' that function over the information in
 the input partial information structures to produce a new partial
 information structure, encoding all the appropriate uncertainty from
-both inputs.  The given function \texttt{f}, for example as a result of
-\texttt{(nary-mapping generic-switch)}, may return \texttt{nothing} even when
-both of its inputs are non-\texttt{nothing}.
+both inputs.  The given function @tt{f}, for example as a result of
+@tt{(nary-mapping generic-switch)}, may return @tt{nothing} even when
+both of its inputs are non-@tt{nothing}.
 
-The \texttt{nary-mapping} wrapper works by repeated use of \texttt{binary-map}
+The @tt{nary-mapping} wrapper works by repeated use of @tt{binary-map}
 on arguments of arity greater than two.  For unary arguments,
-\texttt{nary-mapping} invokes \texttt{binary-map} with a bogus second argument.
-Therefore, handlers for \texttt{binary-map} must handle
+@tt{nary-mapping} invokes @tt{binary-map} with a bogus second argument.
+Therefore, handlers for @tt{binary-map} must handle
 applications thereof that have your new partial information structure
 as one argument, and a raw Scheme object as the other (this is a good
 idea anyway, and saves the trouble of writing handlers for an explicit
-\texttt{unary-map} operation).
+@tt{unary-map} operation).
 
 
 @;___________________________________________________________________________
@@ -2046,15 +2046,15 @@ in two ways:
 @item{as arguments to merge or to binary propagators}
 @item{by containment (of and by)}]
 
-The first is in general handled by making sure that \texttt{merge},
-\texttt{binary-map}, and all appropriate individual propagator generic
+The first is in general handled by making sure that @tt{merge},
+@tt{binary-map}, and all appropriate individual propagator generic
 operations have methods that can handle any combinations that may
 arise.  Often, the way to deal with two information structures of
 different but compatible types is to realize that one of them can be
 seen as an instance of the other type.  The coercion machinery
 (see Section~\ref{generic-coercions})
 allows one to declare when this situation obtains so that
-\texttt{defhandler-coercing} does the right thing.  The specific touch
+@tt{defhandler-coercing} does the right thing.  The specific touch
 points for this are the type testers and coercers of the existing
 partial information types:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -2075,7 +2075,7 @@ partial information types:
 Notes:
 @itemlist[
 @item{
-The \texttt{nothing} information structure defines methods on \texttt{merge}
+The @tt{nothing} information structure defines methods on @tt{merge}
 and the propagators that do the right thing for any other object, so
 does not require any additional effort.}
 
@@ -2088,8 +2088,8 @@ For example:
 (declare-coercion~interval?~->contingent)
 }\end{quote}
 allows raw intervals to be seen as TMSes.  This has the effect that if
-a binary operation (either \texttt{merge} or a primitive propagator subject
-to \texttt{nary-mapping}) encounter a TMS on one input and an interval on
+a binary operation (either @tt{merge} or a primitive propagator subject
+to @tt{nary-mapping}) encounter a TMS on one input and an interval on
 the other, it will coerce the interval to a TMS containing exactly
 that interval contingent on the empty set of premises, and then
 operate on those two structures as on TMSes.
@@ -2102,10 +2102,10 @@ effects that may arise when recursively merging the partial
 information your structure contains.  If you make a new partial
 information structure that may need to have effects performed on
 merge, you should return those as appropriate merge effects in an
-\texttt{effectful} structure, and, if you need to create new kinds of
+@tt{effectful} structure, and, if you need to create new kinds of
 effects in addition to the built-in ones, you should extend the
-generic operations \texttt{execute-effect}, \texttt{redundant-effect?}, and
-\texttt{generic-attach-premises} (Section~\ref{the-full-story-on-merge}).
+generic operations @tt{execute-effect}, @tt{redundant-effect?}, and
+@tt{generic-attach-premises} (Section~\ref{the-full-story-on-merge}).
 
 
 @;___________________________________________________________________________
@@ -2113,8 +2113,8 @@ generic operations \texttt{execute-effect}, \texttt{redundant-effect?}, and
 @section{Making New Primitive Propagators}
 
 Almost all definition of new primitive propagators can be handled
-correctly either by \texttt{propagatify} or by
-\texttt{define-propagator-structure} (see Section~\ref{id1}).
+correctly either by @tt{propagatify} or by
+@tt{define-propagator-structure} (see Section~\ref{id1}).
 We discuss the
 lower-level tools first, however.
 
@@ -2124,42 +2124,42 @@ lower-level tools first, however.
 @subsection{Direct Construction from Functions}
 
 The fundamental way to make your own primitive propagators is
-the procedure \texttt{function->propagator-constructor}.  It takes a Scheme
+the procedure @tt{function->propagator-constructor}.  It takes a Scheme
 function, and makes a propagator construction procedure out of it that
 makes a propagator that does the job implemented by that Scheme
 function.  The propagator constructor in question takes one more
 argument than the original function, the extra argument being the cell
 into which to write the output.  So the result of
-\texttt{function->propagator-constructor} is a diagram-style procedure
+@tt{function->propagator-constructor} is a diagram-style procedure
 (complete with (most of) the debugging information, and the constant
-conversion).  The return value of \texttt{function->propagator-constructor}
+conversion).  The return value of @tt{function->propagator-constructor}
 can be put into a cell, just same way that a Scheme procedure
 can be the value of a Scheme variable.  For example, you might define:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~p:my-primitive~(function->propagator-constructor~do-it))
 }\end{quote}
-where \texttt{do-it} is the appropriate Scheme function.
+where @tt{do-it} is the appropriate Scheme function.
 
-Something important to pay attention to: \texttt{function->propagator-constructor}
+Something important to pay attention to: @tt{function->propagator-constructor}
 wraps the given function up into a propagator directly, and it is up
 to the function itself to handle any interesting partial information
-type that might come out of its argument cells.  Notably, \texttt{nothing}
+type that might come out of its argument cells.  Notably, @tt{nothing}
 might show up in the arguments of that function when it is called.
 Therefore, it may be appropriate the make the function itself generic,
-and/or wrap it in \texttt{nary-mapping}.
+and/or wrap it in @tt{nary-mapping}.
 
 For example, let us walk through the implementation of the provided
-primitive \texttt{p:and} in \texttt{core/standard-propagators.scm}.  First, we
-make a generic version of the Scheme procedure \texttt{boolean/and} to
+primitive @tt{p:and} in @tt{core/standard-propagators.scm}.  First, we
+make a generic version of the Scheme procedure @tt{boolean/and} to
 serve as a point of future extension:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define~generic-and~(make-generic-operator~2~'and~boolean/and))
 }\end{quote}
 
-Then we wrap that generic procedure with \texttt{nary-mapping} to make it
+Then we wrap that generic procedure with @tt{nary-mapping} to make it
 process all partial information types that have declared applicative
 functor behavior, and then we give the result to
-\texttt{function->propagator-constructor} to make a propagator
+@tt{function->propagator-constructor} to make a propagator
 constructor:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~p:and~\\
@@ -2167,10 +2167,10 @@ constructor:
 }\end{quote}
 
 Another detail to think about is metadata.
-\texttt{function->propagator-constructor} can supply all the metadata that
+@tt{function->propagator-constructor} can supply all the metadata that
 the debugger uses except the name of your function.  If your function
 is generic, the generic machinery already expects a name; otherwise,
-you need to supply the name yourself, with \texttt{(name!  your-function
+you need to supply the name yourself, with @tt{(name!  your-function
 'some-name)}.
 
 
@@ -2180,7 +2180,7 @@ you need to supply the name yourself, with \texttt{(name!  your-function
 
 Once you've made a diagram-style propagator constructor, you can make
 a variant that likes to be applied in expression style with
-\texttt{expression-style-variant}.  For example, \texttt{e:and} is actually
+@tt{expression-style-variant}.  For example, @tt{e:and} is actually
 defined as:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-cell~e:and~(expression-style-variant~p:and))
@@ -2191,10 +2191,10 @@ defined as:
 
 @subsection{Propagatify}
 
-All that wrapping in \texttt{nary-mapping}, and naming your propagator
-functions with \texttt{name!}, and calling \texttt{expression-style-variant} to
+All that wrapping in @tt{nary-mapping}, and naming your propagator
+functions with @tt{name!}, and calling @tt{expression-style-variant} to
 convert them to expression-style versions can get tedious.  This whole
-shebang is automated by the \texttt{propagatify} macro:
+shebang is automated by the @tt{propagatify} macro:
 \begin{quote}{\ttfamily \raggedright \noindent
 (propagatify~+)
 }\end{quote}
@@ -2208,8 +2208,8 @@ turns into
 
 The easy syntax covers the common case.  You can also specify an
 explicit arity for the generic operation to construct (because
-sometimes \texttt{propagatify} will guess wrong).  The above is also
-equivalent to \texttt{(propagatify + 2)}.  Sometimes you may want to avoid
+sometimes @tt{propagatify} will guess wrong).  The above is also
+equivalent to @tt{(propagatify + 2)}.  Sometimes you may want to avoid
 constructing the generic operation.  That can be done also:
 \begin{quote}{\ttfamily \raggedright \noindent
 (propagatify~+~'no-generic)
@@ -2222,7 +2222,7 @@ becomes
 }\end{quote}
 
 Finally, in the case where you want completely custom handling of
-partial information, even the \texttt{nary-mapping} can be avoided with
+partial information, even the @tt{nary-mapping} can be avoided with
 \begin{quote}
 
 (propagatify-raw +)
@@ -2233,36 +2233,36 @@ which becomes
 (define-cell~e:+~(expression-style-variant~p:+))
 }\end{quote}
 
-Note that \texttt{propagatify} follows the naming convention that the
-Scheme procedure \texttt{foo} becomes a generic procedure named
-\texttt{generic-foo} and then turns into propagators \texttt{p:foo} and
-\texttt{e:foo}.
+Note that @tt{propagatify} follows the naming convention that the
+Scheme procedure @tt{foo} becomes a generic procedure named
+@tt{generic-foo} and then turns into propagators @tt{p:foo} and
+@tt{e:foo}.
 
 
 @;___________________________________________________________________________
 
 @subsection{Compound Cell Carrier Construction}
 
-\texttt{p:cons} is an interesting propagator, because while it performs the
-job of a Scheme procedure (to wit, \texttt{cons}), it operates directly on
+@tt{p:cons} is an interesting propagator, because while it performs the
+job of a Scheme procedure (to wit, @tt{cons}), it operates directly on
 the cells that are its arguments, rather than on their contents.
 Other compound data structures can be made partial information that
-behaves like pairs using \texttt{define-propagator-structure}.
+behaves like pairs using @tt{define-propagator-structure}.
 \begin{description}
-\item[{\texttt{(define-propagator-structure type constructor accessor ...)}}] \leavevmode 
+\item[{@tt{(define-propagator-structure type constructor accessor ...)}}] \leavevmode 
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
 that handle them.  For example:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-propagator-structure~pair?~cons~car~cdr)
 }\end{quote}
-defines the propagators \texttt{p:pair?}, \texttt{e:pair?}, \texttt{p:cons},
-\texttt{e:cons}, \texttt{p:car}, and \texttt{e:cdr} (and also makes pairs
+defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
+@tt{e:cons}, @tt{p:car}, and @tt{e:cdr} (and also makes pairs
 a partial information structure).
 
 \end{description}
 
-Defining \texttt{p:cons} to operate on its argument cells constitutes a
+Defining @tt{p:cons} to operate on its argument cells constitutes a
 decision to follow the ``carrying cells'' rather than the ``copying data''
 strategy from the propagator thesis.
 
@@ -2273,9 +2273,9 @@ strategy from the propagator thesis.
 
 Finally, when the thing you want your propagator to do is so low-level and
 interesting that it doesn't even correspond to a Scheme function,
-there's always the \texttt{propagator} procedure.  This is the lowest level
+there's always the @tt{propagator} procedure.  This is the lowest level
 interface to asking cells to notify a propagator when they change.
-\texttt{propagator} expects a list of cells that your propagator is
+@tt{propagator} expects a list of cells that your propagator is
 interested in, and a thunk that implements the job that propagator is
 supposed to do.  The scheduler will execute your thunk from time to
 time -{}-{}- the only promise is that it will run at least once after the
@@ -2288,12 +2288,12 @@ information.  For example:
 ~~~~~~do-something-presumably-with-cell1-and-cell2)))
 }\end{quote}
 
-The \texttt{propagator} procedure being the lowest possible level, it has
+The @tt{propagator} procedure being the lowest possible level, it has
 no access to any useful sources of metadata, so you will need to
 provide yourself any metadata you want to be able to access later.
 For an example of how this facility is used, see the implementations
-of \texttt{function->propagator-constructor} and
-\texttt{delayed-propagator-constructor} in \texttt{core/propagators.scm}.
+of @tt{function->propagator-constructor} and
+@tt{delayed-propagator-constructor} in @tt{core/propagators.scm}.
 
 
 @;___________________________________________________________________________
@@ -2318,8 +2318,8 @@ tracks anyway.}
 
 To make sure that your network tracks this metadata well, you should
 use the high level interfaces to making cells, propagators, and
-propagator constructors when possible (\texttt{define-cell}, \texttt{let-cells},
-\texttt{define-propagator}, \texttt{propagatify}, etc).  Any gaps not
+propagator constructors when possible (@tt{define-cell}, @tt{let-cells},
+@tt{define-propagator}, @tt{propagatify}, etc).  Any gaps not
 filled by use of these interfaces must either be accepted as gaps or
 be filled by hand.
 
@@ -2365,10 +2365,10 @@ very nicely at the REPL.
 If you find yourself doing something strange that circumvents the
 usual metadata tracking mechanisms, you can add the desired metadata
 yourself.  All the metadata collection procedures are defined in
-\texttt{core/metadata.scm}; they generally use the \texttt{eq-properties}
-mechanism in \texttt{support/eq-properties.scm} to track the metadata, so
+@tt{core/metadata.scm}; they generally use the @tt{eq-properties}
+mechanism in @tt{support/eq-properties.scm} to track the metadata, so
 you can use it to add more.  In particular, see the definition of, say,
-\texttt{function->propagator-constructor} or \texttt{define-propagator}
+@tt{function->propagator-constructor} or @tt{define-propagator}
 for examples of how this is done.
 
 
@@ -2391,7 +2391,7 @@ Scheme.  For example:
 ~~(p:-~z~x~y))
 }\end{quote}
 
-\texttt{my-diagram} is a Scheme-Propagators macro that, when given three
+@tt{my-diagram} is a Scheme-Propagators macro that, when given three
 cells, wires up three arithmetic propagators to them.  This simple
 example of course gains nothing from being a macro rather
 than a normal compound propagator, but using Scheme as a macro
@@ -2404,13 +2404,13 @@ language lets you do more interesting things:
 ~~~cells))
 }\end{quote}
 
-This \texttt{require-distinct} uses a Scheme iterator to perform a
+This @tt{require-distinct} uses a Scheme iterator to perform a
 repetitive task over a bunch of Scheme-Propagators cells.
 
 This is quite convenient, but sometimes one wants the debugging data
-provided by \texttt{define-propagator}.  This is what
-\texttt{define-propagator-syntax} is for.  Just change \texttt{define} to
-\texttt{define-propagator-syntax}:
+provided by @tt{define-propagator}.  This is what
+@tt{define-propagator-syntax} is for.  Just change @tt{define} to
+@tt{define-propagator-syntax}:
 \begin{quote}{\ttfamily \raggedright \noindent
 (define-propagator-syntax~(require-distinct~cells)~\\
 ~~(for-each-distinct-pair~\\
@@ -2424,7 +2424,7 @@ provided by \texttt{define-propagator}.  This is what
 
 @subsection{Reboots}
 
-The procedure \texttt{initialize-scheduler} wipes out an existing
+The procedure @tt{initialize-scheduler} wipes out an existing
 propagator network and lets you start afresh:
 \begin{quote}{\ttfamily \raggedright \noindent
 build~lots~of~network~\\
@@ -2442,7 +2442,7 @@ reload Scheme-Propagators if you need to blow away your state.
 
 @subsection{Compiling}
 
-It turns out that \texttt{make-cell} and \texttt{cell?} are also MIT Scheme
+It turns out that @tt{make-cell} and @tt{cell?} are also MIT Scheme
 primitives, so if you want to compile your Scheme-Propagators
 code with the MIT-Scheme compiler, be sure to put
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -2451,8 +2451,8 @@ code with the MIT-Scheme compiler, be sure to put
 at the top of your source files.  Also, of course, you need to be
 suitably careful to make sure that the defined macros are available to
 the syntaxer when it processes your file.  See
-\texttt{support/auto-compilation.scm} for how I do this, and, say,
-\texttt{core/load.scm} for how I use the compiler.
+@tt{support/auto-compilation.scm} for how I do this, and, say,
+@tt{core/load.scm} for how I use the compiler.
 
 
 @;___________________________________________________________________________
@@ -2482,9 +2482,9 @@ If you are going to edit any parenthesized source code in Emacs,
 In addition to the above, we find it very useful to have Emacs
 highlight and indent some of the Scheme-Propagators macros we have
 defined the same way as their Scheme analogues; notably
-\texttt{define-propagator} and \texttt{let-cells}.  Sadly the
+@tt{define-propagator} and @tt{let-cells}.  Sadly the
 Emacs Scheme mode does not do this by default, so you need to tweak
-the Emacs config to do that.  The file \texttt{support/scm-propagators.el}
+the Emacs config to do that.  The file @tt{support/scm-propagators.el}
 contains a dump of the relevant portion of my Emacs configuration.
 
 There is at present no Emacs mode for Scheme-Propagators as distinct
@@ -2539,12 +2539,12 @@ alternatives: the first idea was to put the barrier around the
 application of recursive compound propagators; the second was to
 generalize this to put it around the application of all compound
 propagators; and the third was to capture the bodies of conditional
-expressions like \texttt{p:if} and delay only their construction.  During
+expressions like @tt{p:if} and delay only their construction.  During
 most of the development of Scheme-Propagators, we were using option 1,
 on the grounds that it sufficed and was easy to implement.  Doing this
 had the effect that in order to actually make a proper recursive
 propagator, one had to manually ``guard'', using a hand-crafted pile of
-\texttt{switch} propagators, all the i/o of a recursive call to prevent it
+@tt{switch} propagators, all the i/o of a recursive call to prevent it
 from being expanded prematurely.  For example, a recursive factorial
 network written in that style would have looked something like:
 \begin{quote}{\ttfamily \raggedright \noindent
@@ -2558,15 +2558,15 @@ network written in that style would have looked something like:
 with the added caveat that it would need to be marked as being
 recursive, so the expansion of the internal factorial would be delayed
 until it got some information on its boundary (which would be
-prevented from happening in the base case by the \texttt{conditional-wire}
+prevented from happening in the base case by the @tt{conditional-wire}
 propagators).  As the system matured, we decided to write a
-series of macros (\texttt{p:when}, \texttt{p:unless}, \texttt{p:if}, and their
+series of macros (@tt{p:when}, @tt{p:unless}, @tt{p:if}, and their
 expression-style variants) that automated the process of constructing
-those \texttt{conditional-wire} propagators.  On making these macros work,
-we realized that adjusting \texttt{p:when} and company to delay their
+those @tt{conditional-wire} propagators.  On making these macros work,
+we realized that adjusting @tt{p:when} and company to delay their
 interior would be just as easy as delaying the opening of
 abstractions.  At that point we decided to switch to doing it that
-way, on the grounds that, since \texttt{if} is special in all other computer
+way, on the grounds that, since @tt{if} is special in all other computer
 languages, so it might as well be special here too, and we will leave
 the operation of abstractions relatively simple.  (Partial information
 makes abstractions complicated enough as it is!)  This has the further
@@ -2642,7 +2642,7 @@ object?
 The latter nicely subsumes the former: a normal merge is just the
 answer ``record in the appropriate cell that the object of interest is
 described by this information structure''.  So everything fell into
-place.  The strange \texttt{set!} in the most basic definition of the cell
+place.  The strange @tt{set!} in the most basic definition of the cell
 is, indeed, an effect that needs to be performed on the network to
 acknowledge the discovery that two particular information structures
 are about the same object.  The even stranger error signalled on
@@ -2677,7 +2677,7 @@ still be made to work in all the scenarios where carrying cells is
 currently winning.  We just decided not to pursue that path.
 
 And on the note of copying data being preferable because it preserves
-locality, maybe \texttt{cons} really should be the locality-breaking object.
+locality, maybe @tt{cons} really should be the locality-breaking object.
 
 
 @;___________________________________________________________________________
@@ -2728,7 +2728,7 @@ offending old thing) can be ignored, locally and dynamically, by
 retracting a premise.  Dependency tracking also decreases the amount
 each module needs to know about its interlocutors; for example,
 instead of having to guess which square root a client wants, the
-\texttt{sqrt} routine can return both of them, contingent on different
+@tt{sqrt} routine can return both of them, contingent on different
 premises, and let the eventual users decide which ones they wanted.
 
 Dependency tracking is natural in the propagator model.  By contrast
@@ -2769,7 +2769,7 @@ various kinds of meters for monitoring and debugging.
 
 Now for something completely different!  Scheme-Propagators is built
 with dynamically-extensible generic operations.  The pervasive
-\texttt{merge} operation, as well as all the primitive propagators, are
+@tt{merge} operation, as well as all the primitive propagators, are
 generic, and this makes it easier for us to add new forms of partial
 information.  Adding new forms of partial information is a way to
 extend the capabilities of the propagation infrastructure to novel
