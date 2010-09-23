@@ -1,5 +1,12 @@
 #lang scribble/base
 
+@(require (only-in scribble/sigplan abstract))
+
+@; TODO Solve \ref
+@; TODO Solve \cite (and the bibliography)
+@; TODO Search for more backslashes
+@; TODO Reread and fix bugs
+
 @; TODO convert definitions with commas in them into definitions of
 @; lists of items
 
@@ -24,13 +31,13 @@
 @author{Alexey Radul and Gerald Jay Sussman}
 
 
-\begin{abstract}
+@abstract{
 In the past year we have made serious progress
 on elaborating the propagator programming model
 \cite{art-thesis, art}.  Things have gotten serious enough to
 build a system that can be used for real
 experiments.
-\end{abstract}
+}
 
 The most important problem facing a programmer is the revision
 of an existing program to extend it for some new situation.
