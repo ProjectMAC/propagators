@@ -166,7 +166,7 @@ computing does it give you back the REPL to interact with.  Finally
 looks at what the cell named @tt{answer} has now, which is @tt{5}
 because the addition propagator created by @tt{e:+} has had a chance to
 do its job.  If you had forgotten to type @tt{(run)} before typing
-@tt{(content answer)}, it would have printed out @tt{{\#}(*the-nothing*)},
+@tt{(content answer)}, it would have printed out @tt{#(*the-nothing*)},
 which means that cell has no information about the value it is meant
 to have.
 
@@ -412,7 +412,7 @@ star topology, with every input feeding into the one output.
 Conditional propagation.  The propagator made by @tt{switch} copies
 its @tt{input} to its @tt{output} if and only if its @tt{control} is
 ``true''.  The presence of partial information (see Section \ref{using-partial-information}) makes this
-interesting.  For example, a @tt{{\#}t} contingent on some premise will
+interesting.  For example, a @tt{#t} contingent on some premise will
 cause @tt{switch} to propagate, but the result written to the
 @tt{output} will be contingent on that premise (in addition to any
 other premises the @tt{input} may already be contingent on).
@@ -613,7 +613,7 @@ zap your value into your cell for you:
 @example{
 (define-cell thing)
 ((constant 5) thing)
-(content thing) ==> {\#}(*the-nothing*)
+(content thing) ==> #(*the-nothing*)
 (run)
 (content thing) ==> 5
 }
@@ -773,7 +773,7 @@ the next expression or assigned to variables.
 
 @subsection{Conditional Network Construction}
 
-The @tt{switch} propagator does conditional propagation -{}-{}- it only
+The @tt{switch} propagator does conditional propagation --- it only
 forwards its input to its output if its control is ``true''.  As such,
 it serves the purpose of controlling the flow of data through an existing
 propagator network.  However, it is also appropriate to control the
@@ -819,7 +819,7 @@ constructs the network indicated by the @tt{alternate} form when the
 @tt{condition-cell} becomes sufficiently ``false''.  Note that both can
 occur for the same @tt{p:if} over the life of a single computation,
 for example if the @tt{condition-cell} comes to have a TMS that includes
-a @tt{{\#}t} contingent on some premises and later a @tt{{\#}f} contingent
+a @tt{#t} contingent on some premises and later a @tt{#f} contingent
 on others.
 
 \item[{@tt{(e:if internal-cells condition-cell consequent alternate)}}] \leavevmode 
@@ -1038,7 +1038,7 @@ deduce about the result of the addition.  In this case, that would be
 the interval between @tt{5} and @tt{7}:
 @example{
 (run)
-(content y)  ==>  {\#}(interval 5 7)
+(content y)  ==>  #(interval 5 7)
 }
 
 The key thing about partial information is that it's
@@ -1047,7 +1047,7 @@ cell, it would need to merge with the interval that's there to
 represent the complete knowledge available as a result:
 @example{
 (add-content y (make-interval 4 6))
-(content y)  ==>  {\#}(interval 5 6)
+(content y)  ==>  #(interval 5 6)
 }
 
 If incoming knowledge hopelessly contradicts the knowledge a cell
@@ -1105,7 +1105,7 @@ object.
 
 @tt{nothing} is @tt{equivalent?} only to itself.
 
-@tt{nothing} never contributes anything to a merge -{}-{}- the merge of
+@tt{nothing} never contributes anything to a merge --- the merge of
 anything with @tt{nothing} is the anything.
 
 @tt{nothing} is not @tt{contradictory?}.
@@ -1138,9 +1138,9 @@ Non-@tt{equivalent?} raw Scheme objects merge into the contradiction object.
 
 A raw Scheme object is never @tt{contradictory?}.
 
-A @tt{switch} interprets any non-@tt{{\#}f} raw Scheme object in its
+A @tt{switch} interprets any non-@tt{#f} raw Scheme object in its
 control cell as true and forwards its input cell to its output cell
-unmodified.  A @tt{switch} whose control cell is @tt{{\#}f} emits
+unmodified.  A @tt{switch} whose control cell is @tt{#f} emits
 @tt{nothing} to its output cell.
 
 An apply propagator whose operator cell contains a raw Scheme
@@ -1189,7 +1189,7 @@ The arithmetic propagators react to interval objects by performing
 interval arithmetic.
 
 A @tt{switch} propagator treats any interval object in its control as a
-non-@tt{{\#}f} object and forwards its input to its output.
+non-@tt{#f} object and forwards its input to its output.
 
 It is an error for an interval object to appear in the operator
 position of an apply propagator.
@@ -1252,7 +1252,7 @@ empty list will produce a contradiction.
 Neither a pair nor the empty list is ever @tt{contradictory?}.
 
 A @tt{switch} propagator treats any pair or empty list in its control
-as a non-@tt{{\#}f} object and forwards its input to its output.
+as a non-@tt{#f} object and forwards its input to its output.
 
 It is an error for a pair or the empty list to appear in the operator
 position of an apply propagator.
@@ -1385,9 +1385,9 @@ forwards the result of the query, rather than forwarding the entire
 TMS.  For example:
 @example{
 (define-cell frob (make-tms (contingent 4 '(bill))))
-(define-cell maybe-frob (e:switch (make-tms (contingent {\#}t '(fred))) frob))
+(define-cell maybe-frob (e:switch (make-tms (contingent #t '(fred))) frob))
 (run)
-(tms-query (content maybe-frob))  ==>  {\#}(contingent 4 (bill fred))
+(tms-query (content maybe-frob))  ==>  #(contingent 4 (bill fred))
 }
 
 If a TMS appears in the operator cell of an apply propagator, the
@@ -1400,10 +1400,10 @@ outputs.  For example, suppose Bill wanted us to add 3 to 4:
 @example{
 (define-cell operation)
 (define-cell answer)
-(p:switch (make-tms (contingent {\#}t '(bill))) p:+ operation)
+(p:switch (make-tms (contingent #t '(bill))) p:+ operation)
 (d@"@" operation 3 4 answer)
 (run)
-(tms-query (content answer))  ==>  {\#}(contingent 7 (bill))
+(tms-query (content answer))  ==>  #(contingent 7 (bill))
 }
 
 The @tt{answer} cell contains a 7 contingent on the Bill premise.  This
@@ -1422,7 +1422,7 @@ such a contradictory state, it will signal an error.  The
 explicit @tt{the-contradiction} object is useful, however, for
 representing contradictory information in recursive contexts.  For
 example, a truth maintenance system may discover that some collection
-of premises leads to a contradiction -{}-{}- this is represented by a
+of premises leads to a contradiction --- this is represented by a
 @tt{the-contradiction} object contingent on those premises.
 \begin{description}
 \item[{@tt{the-contradiction}}] \leavevmode 
@@ -1467,8 +1467,8 @@ set will be retracted, and the computation will proceed.
 \begin{description}
 \item[{@tt{(p:amb cell)}, @tt{(e:amb)}}] \leavevmode 
 A propagator that emits a TMS consisting of a pair of contingencies.
-One contains the information @tt{{\#}t} contingent on one fresh
-hypothetical premise, and the other contains the information @tt{{\#}f}
+One contains the information @tt{#t} contingent on one fresh
+hypothetical premise, and the other contains the information @tt{#f}
 contingent on anther.  @tt{amb} also tries to maintain the invariant
 that exactly one of those premises is believed.  If doing so
 does not cause the current worldview to believe a known nogood set,
@@ -1683,7 +1683,7 @@ may be declared later).
 
 @subsection{The Partial Information Generics}
 
-@tt{(equivalent? info1 info2)  ==>  {\#}t or {\#}f}
+@tt{(equivalent? info1 info2)  ==>  #t or #f}
 
 The @tt{equivalent?} procedure is used by cells to determine whether
 their content has actually changed after an update.  Its job is to
@@ -1694,8 +1694,8 @@ The default operation on @tt{equivalent?} returns false for any two
 non-@tt{eqv?} objects.
 
 A handler for @tt{equivalent?} is expected to accept two partial
-information structures and return @tt{{\#}t} if they represent
-semantically the same information, and @tt{{\#}f} if they do not.
+information structures and return @tt{#t} if they represent
+semantically the same information, and @tt{#f} if they do not.
 
 The built-in @tt{equivalent?} determines an equivalence relation.
 Extensions to it must maintain this invariant.
@@ -1725,23 +1725,23 @@ by @tt{equivalent?}).  That is
 @item{associativity:
 @example{
 (merge X (merge Y Z))  {\textasciitilde}  (merge (merge X Y) Z)
-(equivalent? (merge X (merge Y Z)) (merge (merge X Y) Z)) ==> {\#}t
+(equivalent? (merge X (merge Y Z)) (merge (merge X Y) Z)) ==> #t
 }}
 
 @item{commutativity:
 @example{
 (merge X Y)  {\textasciitilde}  (merge Y X)
-(equivalent? (merge X Y) (merge Y X)) ==> {\#}t
+(equivalent? (merge X Y) (merge Y X)) ==> #t
 }}
 
 @item{idempotence:
 @example{
 (X {\textasciitilde} Y) implies (X {\textasciitilde} (merge X Y))
-(or (not (equivalent? X Y)) (equivalent? X (merge X Y))) ==> {\#}t
+(or (not (equivalent? X Y)) (equivalent? X (merge X Y))) ==> #t
 }}
 ]
 
-@tt{(contradictory? info)  ==>  {\#}t or {\#}f}
+@tt{(contradictory? info)  ==>  #t or #f}
 
 The @tt{contradictory?} procedure tests whether a given information
 structure represents an impossible situation.  @tt{contradictory?}
@@ -1754,8 +1754,8 @@ discovers that it directly contains a @tt{contradictory?} state of
 information, it will signal an error and stop the computation.
 
 A handler for @tt{contradictory?} is expected to accept a partial
-information structure, and to return @tt{{\#}t} if it represents an
-impossible situation (such as an empty interval) or @tt{{\#}f} if it does
+information structure, and to return @tt{#t} if it represents an
+impossible situation (such as an empty interval) or @tt{#f} if it does
 not.
 
 
@@ -1904,7 +1904,7 @@ execute any effects that reach the top level.  A handler for
 @tt{execute-effect} should execute the effect specified by the given
 effect object.  The return value of @tt{execute-effect} is not used.
 
-\item[{@tt{(redundant-effect? effect)  ==>  {\#}t or {\#}f}}] \leavevmode 
+\item[{@tt{(redundant-effect? effect)  ==>  #t or #f}}] \leavevmode 
 The @tt{redundant-effect?} procedure is used to determine which
 effects will predictably have no effect if executed, so they may be
 removed.  For example, synchronizing a cell to itself, or
@@ -1912,11 +1912,11 @@ synchronizing two cells that are already synchronized, are redundant
 effects.  Detecting redundant effects is important for testing
 network quiescence.
 
-The default operation of @tt{redundant-effect?} is to return @tt{{\#}f}
+The default operation of @tt{redundant-effect?} is to return @tt{#f}
 for all effects, which is conservative but could lead to excess
 computation in the network.  A handler for @tt{redundant-effect?} is
-expected to return @tt{{\#}t} if the effect will provably have no
-consequence on any values to be computed in the future, or @tt{{\#}f} if
+expected to return @tt{#t} if the effect will provably have no
+consequence on any values to be computed in the future, or @tt{#f} if
 the effect may have consequences.
 
 \end{description}
@@ -1967,7 +1967,7 @@ partial result.  @tt{generic-abs}, @tt{generic-square},
 
 Don't forget to teach the propagators what to do if they encounter
 a partial information structure on one input and a different one on
-another -{}-{}- if both represent states of knowledge about compatible
+another --- if both represent states of knowledge about compatible
 ultimate values, it should be possible to produce a state of knowledge
 about the results of the computation (though in extreme cases that
 state of knowledge might be @tt{nothing}, implying no new information
@@ -2280,7 +2280,7 @@ interface to asking cells to notify a propagator when they change.
 @tt{propagator} expects a list of cells that your propagator is
 interested in, and a thunk that implements the job that propagator is
 supposed to do.  The scheduler will execute your thunk from time to
-time -{}-{}- the only promise is that it will run at least once after the
+time --- the only promise is that it will run at least once after the
 last time any cell in the supplied neighbor list gains any new
 information.  For example:
 @example{
@@ -2432,7 +2432,7 @@ propagator network and lets you start afresh:
 build lots of network
 ...
 (initialize-scheduler)
-(run) -{}-{}- nothing happens; no propagators to run!
+(run) --- nothing happens; no propagators to run!
 }
 
 This is the lightest-weight way to restart your Scheme-Propagators
@@ -2498,7 +2498,7 @@ from Scheme.
 @subsection{Hacking}
 
 Scheme-Propagators is a work in progress.  Be aware that we will
-continue to hack it.  Likewise, feel free to hack it as well -{}-{}- let
+continue to hack it.  Likewise, feel free to hack it as well --- let
 us know if you invent or implement something interesting.  May the
 Source be with you.
 
@@ -2663,7 +2663,7 @@ suddenly collapsed.  Cells could be merged with a simple ``link these
 two with (conditional) identity propagators''.  Therefore compound data
 could be merged by recursively merging their fields, regardless of
 whether they were carrying cells or other partial information
-structures.  Closures fell into place -{}-{}- they were just a particular
+structures.  Closures fell into place --- they were just a particular
 kind of compound data, and merged the way compound data merges.
 Closures had been a conceptual problem for the copying data view of
 the world, because closures really felt like they wanted to able to
@@ -2777,7 +2777,7 @@ information.  Adding new forms of partial information is a way to
 extend the capabilities of the propagation infrastructure to novel
 circumstances.  With appropriate foresight, new partial information
 structures can interoperate with old, and additively extend the
-capabilities of existing systems -{}-{}- a way to teach old dogs new
+capabilities of existing systems --- a way to teach old dogs new
 tricks.  Of course, such power is dangerous: if a network that depends
 on commutativity of multiplication of numbers meets an extension to
 square matrices, we will get wrong answers.  But then, cross-checking
