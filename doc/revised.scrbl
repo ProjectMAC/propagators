@@ -86,10 +86,12 @@ respect to the lattice induced by the merge operation.
 
 @section{Getting Started}
 
-Scheme-Propagators is implemented in \href{http://www.gnu.org/software/mit-scheme/}{MIT/GNU Scheme}, which you will
+Scheme-Propagators is implemented in
+@hyperlink["http://www.gnu.org/software/mit-scheme/"]{MIT/GNU Scheme},
+which you will
 need in order to use it.  You will also need Scheme-Propagators
 itself, which you can download from
-\href{http://groups.csail.mit.edu/mac/users/gjs/propagators/propagator.tar}
+@url{http://groups.csail.mit.edu/mac/users/gjs/propagators/propagator.tar}
 Once you
 have it, go to the \texttt{propagator/} directory, start up your Scheme and
 load the main entry file with \texttt{(load "load")}.  This gives you a
@@ -2457,7 +2459,7 @@ the syntaxer when it processes your file.  See
 
 @subsection{Scmutils}
 
-The \href{http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm}{Scmutils} system built by Gerald Jay Sussman and friends for
+The @hyperlink["http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm"]{Scmutils} system built by Gerald Jay Sussman and friends for
 thinking about physics can be very useful for many purposes.  Among
 other things, it knows about units and dimensions, about symbolic
 algebra, about solving systems of equations, etc.  Scheme-Propagators
@@ -2475,7 +2477,7 @@ We edit code in Emacs.  You should edit code in Emacs too.  Emacs of
 course has a Scheme mode; nothing more need be said about that here.
 
 If you are going to edit any parenthesized source code in Emacs,
-\href{http://www.emacswiki.org/emacs/ParEdit}{Paredit mode} is an option you should not overlook.
+@hyperlink["http://www.emacswiki.org/emacs/ParEdit"]{Paredit mode} is an option you should not overlook.
 
 In addition to the above, we find it very useful to have Emacs
 highlight and indent some of the Scheme-Propagators macros we have
