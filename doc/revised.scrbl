@@ -72,7 +72,6 @@ This work was supported in part by the MIT Mind Machine Project.
 
 @table-of-contents[]
 
-@;___________________________________________________________________________
 
 @section{Propagator System}
 
@@ -102,7 +101,6 @@ idempotent.  The behavior of propagators must be monotonic with
 respect to the lattice induced by the merge operation.
 
 
-@;___________________________________________________________________________
 
 @section{Getting Started}
 
@@ -188,7 +186,6 @@ which means that cell has no information about the value it is meant
 to have.
 
 
-@;___________________________________________________________________________
 
 @subsection{Examples}
 
@@ -197,7 +194,6 @@ There are some basic examples of Scheme-Propagators programs in
 in @tt{examples/}.
 
 
-@;___________________________________________________________________________
 
 @section{The Details}
 
@@ -208,7 +204,6 @@ be combined, and means by which combinations can be abstracted so that
 they can be named and treated as if they are primitive.
 
 
-@;___________________________________________________________________________
 
 @section{Making Propagator Networks}
 
@@ -227,7 +222,6 @@ make cells in the form of @tt{define-cell}; we will talk about more
 later, but let's talk about propagators first.
 
 
-@;___________________________________________________________________________
 
 @subsection{Attaching Basic Propagators: d@"@"}
 
@@ -258,7 +252,6 @@ Actual attachment of propagators will occur as the propagator
 constructor becomes sufficiently well constrained.
 
 
-@;___________________________________________________________________________
 
 @subsection{Propagator Expressions: e@"@"}
 
@@ -347,7 +340,6 @@ style.  So the following also works:
 }
 
 
-@;___________________________________________________________________________
 
 @subsection{Late Binding of Application}
 
@@ -386,7 +378,6 @@ diagram style or expression style, as dependent on that propagator's
 default preference.  @tt{d@"@"} and @tt{e@"@"} override these defaults.
 
 
-@;___________________________________________________________________________
 
 @subsection{Provided Primitives: p:foo and e:foo}
 
@@ -442,7 +433,6 @@ output destinations.}
 
 
 
-@;___________________________________________________________________________
 
 @subsection{Cells are Data Too}
 
@@ -476,7 +466,6 @@ identifying it with the cell present.
 
 
 
-@;___________________________________________________________________________
 
 @subsection{Compound Data}
 
@@ -538,7 +527,6 @@ behavior is unification (with a merge delay instead of the occurs
 check).
 
 
-@;___________________________________________________________________________
 
 @subsection{Propagator Constraints: c:foo and ce:foo}
 
@@ -603,7 +591,6 @@ c:==      ce:==
 }}
 
 
-@;___________________________________________________________________________
 
 @subsection{Constants and Literal Values}
 
@@ -632,7 +619,6 @@ There is also an expression-oriented version, called, naturally,
 }
 
 
-@;___________________________________________________________________________
 
 @subsection{Constant Conversion}
 
@@ -649,7 +635,6 @@ Some examples:
 }
 
 
-@;___________________________________________________________________________
 
 @subsection{Making Cells}
 
@@ -774,7 +759,6 @@ for holding the return values of expressions before they get used by
 the next expression or assigned to variables.
 
 
-@;___________________________________________________________________________
 
 @subsection{Conditional Network Construction}
 
@@ -829,7 +813,6 @@ Expression-style variant of @tt{p:if}.}
 
 
 
-@;___________________________________________________________________________
 
 @section{Making New Compound Propagators}
 
@@ -905,7 +888,6 @@ So:
 }
 
 
-@;___________________________________________________________________________
 
 @subsection{Lexical Scope}
 
@@ -928,7 +910,6 @@ the user.  Globally bound objects like @tt{e:+} (and @tt{p:addn} and
 mentioned.
 
 
-@;___________________________________________________________________________
 
 @subsection{Recursion}
 
@@ -986,7 +967,6 @@ wired together and returned to the caller of the @tt{e:if}.  Here is
 Looks familiar, doesn't it?
 
 
-@;___________________________________________________________________________
 
 @section{Using Partial Information}
 
@@ -1072,7 +1052,6 @@ propagators treat it.  The behavior in the control position of a
 propagator are particularly important.
 
 
-@;___________________________________________________________________________
 
 @section{Built-in Partial Information Structures}
 
@@ -1090,7 +1069,6 @@ Scheme-Propagators:
 @item{contradiction}]
 
 
-@;___________________________________________________________________________
 
 @subsection{Nothing}
 @definition["nothing"]{
@@ -1119,7 +1097,6 @@ An apply propagator whose operator cell contains @tt{nothing} will not
 do anything.
 
 
-@;___________________________________________________________________________
 
 @subsection{Just a Value}
 
@@ -1148,7 +1125,6 @@ raw Scheme object which is not a Scheme procedure to flow into the
 operator cell of an apply propagator.
 
 
-@;___________________________________________________________________________
 
 @subsection{Numerical Intervals}
 
@@ -1198,7 +1174,6 @@ structure with an intuitive meaning, and that requires nontrivial
 operations on the information it is over.
 
 
-@;___________________________________________________________________________
 
 @subsection{Propagator Cells as Partial Information}
 
@@ -1221,7 +1196,6 @@ merge, both now and in the future.
 A propagator cell is never @tt{contradictory?}.
 
 
-@;___________________________________________________________________________
 
 @subsection{Partial Information about Compound Data}
 
@@ -1270,7 +1244,6 @@ defines the propagators @tt{p:pair?}, @tt{e:pair?}, @tt{p:cons},
 
 
 
-@;___________________________________________________________________________
 
 @subsection{Closures}
 
@@ -1292,7 +1265,6 @@ and puts the results into appropriately named cells.}
 
 
 
-@;___________________________________________________________________________
 
 @subsection{Truth Maintenance Systems}
 
@@ -1403,7 +1375,6 @@ to the operation being performed, but also on the identity of the
 operation itself.
 
 
-@;___________________________________________________________________________
 
 @subsection{Contradiction}
 
@@ -1432,7 +1403,6 @@ containing it will signal an error before any such propagator might
 run.
 
 
-@;___________________________________________________________________________
 
 @subsection{Implicit Dependency-Directed Search}
 
@@ -1487,7 +1457,6 @@ distinct (in the sense of @tt{eqv?})}
 
 
 
-@;___________________________________________________________________________
 
 @section{Making New Kinds of Partial Information}
 
@@ -1541,7 +1510,6 @@ You can also define your own generic operations, but that is not
 relevant here.
 
 
-@;___________________________________________________________________________
 
 @subsection{An Example: Adding Interval Arithmetic}
 
@@ -1598,7 +1566,6 @@ circumstances.  The generic procedure system has been extended
 with support for automatic coercions for this purpose.
 
 
-@;___________________________________________________________________________
 
 @subsection{Generic Coercions}
 
@@ -1664,7 +1631,6 @@ may be declared later).
 
 
 
-@;___________________________________________________________________________
 
 @subsection{The Partial Information Generics}
 
@@ -1744,7 +1710,6 @@ impossible situation (such as an empty interval) or @tt{#f} if it does
 not.
 
 
-@;___________________________________________________________________________
 
 \subsubsection{The Full Story on Merge}
 
@@ -1922,7 +1887,6 @@ synchronize contingently.}
 
 
 
-@;___________________________________________________________________________
 
 @subsection{Individual Propagator Generics}
 
@@ -1951,7 +1915,6 @@ state of knowledge might be @tt{nothing}, implying no new information
 produced by the propagator).
 
 
-@;___________________________________________________________________________
 
 @subsection{Uniform Applicative Extension of Propagators}
 
@@ -2016,7 +1979,6 @@ idea anyway, and saves the trouble of writing handlers for an explicit
 @tt{unary-map} operation).
 
 
-@;___________________________________________________________________________
 
 @subsection{Interoperation with Existing Partial Information Types}
 
@@ -2086,7 +2048,6 @@ generic operations @tt{execute-effect}, @tt{redundant-effect?}, and
 @tt{generic-attach-premises} (Section \ref{the-full-story-on-merge}).
 
 
-@;___________________________________________________________________________
 
 @section{Making New Primitive Propagators}
 
@@ -2097,7 +2058,6 @@ We discuss the
 lower-level tools first, however.
 
 
-@;___________________________________________________________________________
 
 @subsection{Direct Construction from Functions}
 
@@ -2152,7 +2112,6 @@ you need to supply the name yourself, with @tt{(name!  your-function
 'some-name)}.
 
 
-@;___________________________________________________________________________
 
 \subsubsection{Expression Style Variants}
 
@@ -2165,7 +2124,6 @@ defined as:
 }
 
 
-@;___________________________________________________________________________
 
 @subsection{Propagatify}
 
@@ -2216,7 +2174,6 @@ Scheme procedure @tt{foo} becomes a generic procedure named
 @tt{e:foo}.
 
 
-@;___________________________________________________________________________
 
 @subsection{Compound Cell Carrier Construction}
 
@@ -2242,7 +2199,6 @@ decision to follow the ``carrying cells'' rather than the ``copying data''
 strategy from the propagator thesis.
 
 
-@;___________________________________________________________________________
 
 @subsection{Fully-manual Low-level Propagator Construction}
 
@@ -2271,7 +2227,6 @@ of @tt{function->propagator-constructor} and
 @tt{delayed-propagator-constructor} in @tt{core/propagators.scm}.
 
 
-@;___________________________________________________________________________
 
 @section{Debugging}
 
@@ -2345,12 +2300,10 @@ you can use it to add more.  In particular, see the definition of, say,
 for examples of how this is done.
 
 
-@;___________________________________________________________________________
 
 @section{Miscellany}
 
 
-@;___________________________________________________________________________
 
 @subsection{Macrology}
 
@@ -2393,7 +2346,6 @@ provided by @tt{define-propagator}.  This is what
 }
 
 
-@;___________________________________________________________________________
 
 @subsection{Reboots}
 
@@ -2411,7 +2363,6 @@ session.  You can of course also restart the underlying Scheme or just
 reload Scheme-Propagators if you need to blow away your state.
 
 
-@;___________________________________________________________________________
 
 @subsection{Compiling}
 
@@ -2428,7 +2379,6 @@ the syntaxer when it processes your file.  See
 @tt{core/load.scm} for how I use the compiler.
 
 
-@;___________________________________________________________________________
 
 @subsection{Scmutils}
 
@@ -2442,7 +2392,6 @@ symbolic expressions and solve symbolic systems of equations are
 included.
 
 
-@;___________________________________________________________________________
 
 @subsection{Editing}
 
@@ -2464,7 +2413,6 @@ There is at present no Emacs mode for Scheme-Propagators as distinct
 from Scheme.
 
 
-@;___________________________________________________________________________
 
 @subsection{Hacking}
 
@@ -2474,7 +2422,6 @@ us know if you invent or implement something interesting.  May the
 Source be with you.
 
 
-@;___________________________________________________________________________
 
 @subsection{Arbitrary Choices}
 
@@ -2482,7 +2429,6 @@ Several language design choices affecting the structure of
 Scheme-Propagators appeared arbitrary at the time they were made.
 
 
-@;___________________________________________________________________________
 
 \subsubsection{Default Application and Definition Style}
 
@@ -2497,7 +2443,6 @@ least some of one's code actually has fan-in, and writing code with
 fan-in requires diagram style.
 
 
-@;___________________________________________________________________________
 
 \subsubsection{Locus of Delayed Construction}
 
@@ -2549,7 +2494,6 @@ abstraction, automatic delay of its expansion would presumably not be
 what one wanted.
 
 
-@;___________________________________________________________________________
 
 \subsubsection{Strategy for Compound Data}
 
@@ -2653,7 +2597,6 @@ And on the note of copying data being preferable because it preserves
 locality, maybe @tt{cons} really should be the locality-breaking object.
 
 
-@;___________________________________________________________________________
 
 @section{How this supports the goal}
 
