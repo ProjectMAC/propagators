@@ -233,7 +233,7 @@ gets any new interesting information, the adding propagator will
 eventually compute the appropriate sum and give it to @tt{baz} as an
 update.
 \begin{description}
-@definition[@tt{(d@"@" propagator boundary-cell ...)}]{
+@definition["(d@ propagator boundary-cell ...)"]{
 Attaches a propagator to the given boundary cells.  By convention,
 cells used as outputs go last.  As a Scheme procedure, @tt{d@"@"} does
 not return a useful value.}
@@ -273,7 +273,7 @@ procedure is just like @tt{d@"@"}, except it synthesizes an extra cell to
 serve as the last argument to @tt{d@"@"}, and returns it from the @tt{e@"@"}
 expression (whereas the return value of @tt{d@"@"} is unspecified).
 \begin{description}
-@definition[@tt{(e@"@" propagator boundary-cell ...)}]{
+@definition["(e@ propagator boundary-cell ...)"]{
 Attaches the given propagator to a boundary consisting of the given
 boundary cells augmented with an additional, synthesized cell.  The
 synthesized cell goes last, because that is the conventional
@@ -391,7 +391,7 @@ in as the last argument to @tt{p:foo} and synthesized and returned by
 @tt{e:foo}).  @tt{p:} is mnemonic for ``propagator'' and @tt{e:} is
 mnemonic for ``expression''.
 \begin{description}
-@definition[@tt{(p:foo input ... output)}]{
+@definition["(p:foo input ... output)"]{
 Attaches a propagator that does the @tt{foo} job to the given input
 and output cells.  @tt{p:abs}, @tt{p:square}, @tt{p:sqrt},
 @tt{p:not}, @tt{p:pair?}, and @tt{p:null?} accept one input cell and one
@@ -400,7 +400,7 @@ output cell.  @tt{p:+}, @tt{p:-}, @tt{p:*}, @tt{p:/}, @tt{p:=}, @tt{p:<},
 @tt{p:eqv?}, and @tt{p:expt}, accept two input cells and one output
 cell.}
 
-@definition[@tt{(e:foo input ...)}]{
+@definition["(e:foo input ...)"]{
 The @tt{e:foo} equivalents of all the @tt{p:foo} propagator
 constructors are all available and accept the same number of input
 cells (and make their own output cell).}
@@ -423,17 +423,17 @@ cause @tt{switch} to propagate, but the result written to the
 @tt{output} will be contingent on that premise (in addition to any
 other premises the @tt{input} may already be contingent on).}
 
-@definition[@tt{(p:conditional control consequent alternate output)}]{
+@definition["(p:conditional control consequent alternate output)"]{
 FINDME}
 
-@definition[@tt{(e:conditional control consequent alternate)}]{
+@definition["(e:conditional control consequent alternate)"]{
 Two-armed conditional propagation.  May be defined by use of two
 @tt{switch} propagators and a @tt{not} propagator.}
 
-@definition[@tt{(p:conditional-router control input consequent alternate)}]{
+@definition["(p:conditional-router control input consequent alternate)"]{
 FINDME}
 
-@definition[@tt{(p:conditional-router control input consequent)}]{
+@definition["(p:conditional-router control input consequent)"]{
 Two-output-armed conditional propagation.  This is symmetric with
 @tt{conditional}; the @tt{consequent} and @tt{alternate} are possible
 output destinations.}
@@ -584,14 +584,14 @@ apply themselves in expression style:
 Of course, not every operation has a useful inverse, so there are
 fewer @tt{c:} procedures defined than @tt{p:}:
 \begin{description}
-@definition[@tt{(c:foo constrainee ...)}]{
+@definition["(c:foo constrainee ...)"]{
 Attaches propagators to the given boundary cells that collectively
 constrain them to be in the @tt{foo} relationship with each other.
 @tt{c:+} and @tt{c:*} accept three cells to constrain.  @tt{c:square},
 @tt{c:not}, and @tt{c:id} accept two cells to constrain.  @tt{c:==}
 accepts any number of cells.}
 
-@definition[@tt{(ce:foo constrainee ...)}]{
+@definition["(ce:foo constrainee ...)"]{
 Synthesizes one additional constrainee cell and attaches propagators
 that constrain the given cells to be in the @tt{foo} relationship
 with the new one.  Since the position of the synthesized cell in
@@ -796,7 +796,7 @@ low-level tools for accomplishing this effect are
 @tt{delayed-propagator-constructor} and @tt{switch}.  The supported
 user interface is:
 \begin{description}
-@definition[@tt{(p:when internal-cells condition-cell body ...)}]{
+@definition["(p:when internal-cells condition-cell body ...)"]{
 Delays the construction of the body until sufficiently ``true'' (in
 the sense of @tt{switch}) partial information appears in the
 @tt{condition-cell}.  The @tt{condition-cell} argument is an
@@ -808,7 +808,7 @@ that it should.  The @tt{internal-cells} argument is a list of the
 free variables in @tt{body}.  This is the same kind of kludge as the
 @tt{import} clause in @tt{define-propagator} (see Section \ref{lexical-scope}).}
 
-@definition[@tt{(e:when internal-cells condition-cell body ...)}]{
+@definition["(e:when internal-cells condition-cell body ...)"]{
 Expression-style variant of @tt{p:when}.  Augments its boundary with
 a fresh cell, which is then synchronized with the cell returned from
 the last expression in @tt{body} when @tt{body} is constructed.}
@@ -817,11 +817,11 @@ the last expression in @tt{body} when @tt{body} is constructed.}
 
 @tt{(p:unless internal-cells condition-cell body ...)}
 \begin{description}
-@definition[@tt{(e:unless internal-cells condition-cell body ...)}]{
+@definition["(e:unless internal-cells condition-cell body ...)"]{
 Same as @tt{p:when} and @tt{e:when}, but reversing the sense of the
 control cell.}
 
-@definition[@tt{(p:if internal-cells condition-cell consequent alternate)}]{
+@definition["(p:if internal-cells condition-cell consequent alternate)"]{
 Two-armed conditional construction.  Just like a @tt{p:when} and a
 @tt{p:unless}: constructs the network indicated by the @tt{consequent}
 form when the @tt{condition-cell} becomes sufficiently ``true'', and
@@ -832,7 +832,7 @@ for example if the @tt{condition-cell} comes to have a TMS that includes
 a @tt{#t} contingent on some premises and later a @tt{#f} contingent
 on others.}
 
-@definition[@tt{(e:if internal-cells condition-cell consequent alternate)}]{
+@definition["(e:if internal-cells condition-cell consequent alternate)"]{
 Expression-style variant of @tt{p:if}.}
 
 \end{description}
@@ -1103,11 +1103,11 @@ Scheme-Propagators:
 
 @subsection{Nothing}
 \begin{description}
-@definition[@tt{nothing}]{
+@definition["nothing"]{
 A single Scheme object that represents the complete absence of
 information.}
 
-@definition[@tt{(nothing? thing)}]{
+@definition["(nothing? thing)"]{
 A predicate that tests whether a given Scheme object is the @tt{nothing}
 object.}
 
@@ -1167,16 +1167,16 @@ An object of type @tt{interval?} has fields for a lower bound and an
 upper bound.  Such an object represents the information ``This value is
 between these bounds.''
 \begin{description}
-@definition[@tt{(make-interval low high)}]{
+@definition["(make-interval low high)"]{
 Creates an interval with the given lower and upper bounds}
 
-@definition[@tt{(interval-low interval)}]{
+@definition["(interval-low interval)"]{
 Extracts the lower bound of an interval}
 
-@definition[@tt{(interval-high interval)}]{
+@definition["(interval-high interval)"]{
 Extracts the upper bound of an interval}
 
-@definition[@tt{(interval? thing)}]{
+@definition["(interval? thing)"]{
 Tests whether the given object is an interval}
 
 \end{description}
@@ -1270,7 +1270,7 @@ position of an apply propagator.
 Other compound data structures can be made partial information that
 behaves like pairs using @tt{define-propagator-structure}.
 \begin{description}
-@definition[@tt{(define-propagator-structure type constructor accessor ...)}]{
+@definition["(define-propagator-structure type constructor accessor ...)"]{
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
 that handle them.  For example:
@@ -1302,7 +1302,7 @@ corresponding places.
 Scheme-Propagators syntax for anonymous compound propagator
 constructors (which are implemented as closures).}
 
-@definition[@tt{define-propagator}]{
+@definition["define-propagator"]{
 Internally produces lambda-d:propagator or lambda-e:propagator
 and puts the results into appropriately named cells.}
 
@@ -1333,33 +1333,33 @@ starts out believing all premises.  The worldview may be changed to
 exclude (or re-include) individual premises, allowing the user to
 examine the consequences of different consistent subsets of premises.
 \begin{description}
-@definition[@tt{(kick-out! premise)}]{
+@definition["(kick-out! premise)"]{
 Remove the given premise from the current worldview.}
 
-@definition[@tt{(bring-in! premise)}]{
+@definition["(bring-in! premise)"]{
 Return the given premise to the current worldview.}
 
-@definition[@tt{(premise-in? premise)}]{
+@definition["(premise-in? premise)"]{
 Is the given premise believed in the current worldview?}
 
-@definition[@tt{(contingent info premises)}]{
+@definition["(contingent info premises)"]{
 Constructs a contingency object representing the information
 that the given info is contingent on the given list of premises.}
 
-@definition[@tt{(contingent-info contingency-object)}]{
+@definition["(contingent-info contingency-object)"]{
 The information that is contingent.}
 
-@definition[@tt{(contingent-premises contingency-object)}]{
+@definition["(contingent-premises contingency-object)"]{
 The list of premises on which that information is contingent.}
 
-@definition[@tt{(contingency-object-believed? contingency-object)}]{
+@definition["(contingency-object-believed? contingency-object)"]{
 Whether the given contingency object is believed.}
 
-@definition[@tt{(make-tms contingency-object-list)}]{
+@definition["(make-tms contingency-object-list)"]{
 Constructs a TMS with the given contingency objects as its initial
 set.}
 
-@definition[@tt{(tms-query tms)}]{
+@definition["(tms-query tms)"]{
 Returns a contingency object representing the strongest deduction
 the given TMS can make in the current worldview.  tms-query gives
 the contingency with the strongest contingent information that is
@@ -1435,7 +1435,7 @@ example, a truth maintenance system may discover that some collection
 of premises leads to a contradiction --- this is represented by a
 @tt{the-contradiction} object contingent on those premises.
 \begin{description}
-@definition[@tt{the-contradiction}]{
+@definition["the-contradiction"]{
 A Scheme object representing a contradictory state of information
 with no further structure.}
 
@@ -1503,7 +1503,7 @@ An n-ary version of @tt{amb}.  Picks one of the objects in the given
 input cells using an appropriate collection of @tt{amb} and
 @tt{switch} propagators and puts it into its output cell.}
 
-@definition[@tt{(require-distinct cells)}]{
+@definition["(require-distinct cells)"]{
 Requires all of the objects in its list of input cells to be
 distinct (in the sense of @tt{eqv?})}
 
@@ -1632,7 +1632,7 @@ intervals, arithmetic on just numbers, and this procedure for viewing
 numbers as intervals.  The generic operations system provided with
 Scheme-Propagators has explicit support for this idea.
 \begin{description}
-@definition[@tt{(declare-coercion-target type {[} default-coercion {]})}]{
+@definition["(declare-coercion-target type [ default-coercion ])"]{
 This is a Scheme macro that expands into the definitions needed to
 declare @tt{type} as something that other objects may be coerced
 into.  If supplied, it also registers a default coercion from
@@ -1650,7 +1650,7 @@ relies on the procedure @tt{interval?} and defines the procedures
 @tt{->interval} and @tt{interval-able?}.  This call does not declare a
 default means of coercing arbitrary objects into intervals.
 
-@definition[@tt{(declare-coercion from-type to-coercer {[} mechanism {]})}]{
+@definition["(declare-coercion from-type to-coercer [ mechanism ])"]{
 Declares that the given @tt{from-type} is coercible by the given
 coercer operation, either by the given @tt{mechanism} if supplied or
 by the default mechanism declared in the definition of the given
@@ -1663,7 +1663,7 @@ whose lower and upper bounds are equal to that number.  After this
 declaration, @tt{interval-able?} will return true on numbers, and
 @tt{->interval} will make intervals out of numbers.}
 
-@definition[@tt{(defhandler-coercing operation handler coercer)}]{
+@definition["(defhandler-coercing operation handler coercer)"]{
 The given generic operation must be binary.  Defines handlers for
 the given generic operation that have two effects: @tt{handler} is
 invoked if that operation is given two arguments of the type
@@ -1816,37 +1816,37 @@ TMSes, then the instructions to connect those two cells must be
 adjusted to make the connection also contingent on the appropriate
 premises.
 \begin{description}
-@definition[@tt{(make-effectful info effects)}]{
+@definition["(make-effectful info effects)"]{
 Constructs a new effectful result of merge, with the given new
 partial information structure and the given list of effects to carry
 out.  If the resulting effectful object reaches the top level in a
 cell, those effects will be executed in the order they appear in the
 list.}
 
-@definition[@tt{(effectful-info effectful)}]{
+@definition["(effectful-info effectful)"]{
 Returns the new information content carried in the given
 effectful object.}
 
-@definition[@tt{(effectful-effects effectful)}]{
+@definition["(effectful-effects effectful)"]{
 Returns the list of effects that this effectful object carries.}
 
-@definition[@tt{(effectful? thing)}]{
+@definition["(effectful? thing)"]{
 Tells whether the given object is an effectful object.}
 
-@definition[@tt{(->effectful thing)}]{
+@definition["(->effectful thing)"]{
 Coerces a possibly-effectless information structure into an
 effectful object.  If the @tt{thing} was already effectful,
 returns it, otherwise wraps it into an effectful object
 with an empty list of effects.}
 
-@definition[@tt{(effectful-> effectful)}]{
+@definition["(effectful-> effectful)"]{
 Attempts to coerce an effectful object into an explicitly effectless
 one.  If the given effectful object was not carrying any effects
 that would have any effect when executed, returns just the
 information structure it was carrying.  Otherwise, returns
 the given effectful object.}
 
-@definition[@tt{(effectful-bind effectful func)}]{
+@definition["(effectful-bind effectful func)"]{
 Runs the given @tt{func} on the information content in the given
 @tt{effectful} object, and reattaches any effects.  The effectful
 object may actually be a partial information structure without
@@ -1857,7 +1857,7 @@ structure or a new effectful object.  The overall result of
 object, and any effects in the return value of the @tt{func}.  The
 former effects are listed first.}
 
-@definition[@tt{(effectful-list-bind effectfuls func)}]{
+@definition["(effectful-list-bind effectfuls func)"]{
 Like @tt{effectful-bind}, but accepts a list of effectful objects,
 and calls the @tt{func} on the list of their information contents.}
 
@@ -1908,13 +1908,13 @@ mechanism.
 
 The handling of effects is extensible through two generic procedures.
 \begin{description}
-@definition[@tt{(execute-effect effect)}]{
+@definition["(execute-effect effect)"]{
 The @tt{execute-effect} procedure is used by cells to actually
 execute any effects that reach the top level.  A handler for
 @tt{execute-effect} should execute the effect specified by the given
 effect object.  The return value of @tt{execute-effect} is not used.}
 
-@definition[@tt{(redundant-effect? effect)  ==>  #t or #f}]{
+@definition["(redundant-effect? effect)  ==>  #t or #f"]{
 The @tt{redundant-effect?} procedure is used to determine which
 effects will predictably have no effect if executed, so they may be
 removed.  For example, synchronizing a cell to itself, or
@@ -1937,7 +1937,7 @@ contingency.  This mechanism is also extensible.  To teach TMSes
 about making new effects contingent, add handlers to the generic
 operation @tt{generic-attach-premises}.
 \begin{description}
-@definition[@tt{((generic-attach-premises effect) premises)  ==>  new-effect}]{
+@definition["((generic-attach-premises effect) premises)  ==>  new-effect"]{
 The @tt{generic-attach-premises} procedure is used by the TMS
 machinery to modify effects produced by merges of contingent
 information.  A handler for @tt{generic-attach-premises} must return
@@ -1962,7 +1962,7 @@ Those propagators can therefore be extended to new
 partial information types just by adding appropriate methods to their
 Scheme generic operations.  This is what we did in the interval example.
 \begin{description}
-@definition[@tt{(generic-foo argument ...)  ==>  result}]{
+@definition["(generic-foo argument ...)  ==>  result"]{
 A generic procedure for carrying out the @tt{foo} job over any
 desired partial information inputs, producing an appropriately
 partial result.  @tt{generic-abs}, @tt{generic-square},
@@ -2259,7 +2259,7 @@ the cells that are its arguments, rather than on their contents.
 Other compound data structures can be made partial information that
 behaves like pairs using @tt{define-propagator-structure}.
 \begin{description}
-@definition[@tt{(define-propagator-structure type constructor accessor ...)}]{
+@definition["(define-propagator-structure type constructor accessor ...)"]{
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
 that handle them.  For example:
