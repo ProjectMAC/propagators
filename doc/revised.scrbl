@@ -1,5 +1,5 @@
 #lang scribble/base
-
+@(require "bib.rkt")
 @(require (only-in scribble/sigplan abstract))
 
 @; TODO Solve \cite (and the bibliography)
@@ -33,7 +33,7 @@
 @abstract{
 In the past year we have made serious progress
 on elaborating the propagator programming model
-\cite{art-thesis, art}.  Things have gotten serious enough to
+@~cite[art-thesis art].  Things have gotten serious enough to
 build a system that can be used for real
 experiments.
 }
@@ -2694,6 +2694,7 @@ square matrices, we will get wrong answers.  But then, cross-checking
 across complementary methods, together with dependency tracking,
 simplifies the task of debugging such errors.
 
+@generate-bib[]
 \bibliographystyle{plain}
 \bibliography{revised-auto}
 
