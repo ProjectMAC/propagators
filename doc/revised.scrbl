@@ -3,9 +3,17 @@
 @(require (only-in scribble/sigplan abstract))
 
 @; TODO Reread and fix bugs
-
+@; TODO Fix generic--
+@; TODO Lines broken on code
+@; Overfull hboxes
 @; TODO convert definitions with commas in them into definitions of
 @; lists of items
+@; TODO Autogenerate the lists of defined things in a useful way
+@; TODO Separate definitions of Scheme-Propagators procedures,
+@; Scheme-Propagators syntax, and Scheme procedures in a useful way.
+@; TODO You know, I never actually said that propagators should be
+@; monotonic...  Perhaps this goes in the "making new partial information"
+@; section?
 
 @(define (example . args)
   (apply verbatim #:indent 4 (append (list "\n") args (list "\n"))))
@@ -438,6 +446,12 @@ Two-output-armed conditional propagation.  This is symmetric with
 @tt{conditional}; the @tt{consequent} and @tt{alternate} are possible
 output destinations.}
 
+@definition[(list "(p:conditional-wire control cell1 cell2)"
+		  "(e:conditional-wire control cell)")]{
+Bidirectional conditional propagation.  The contents of the two given
+cells are each copied into the other if the @tt{control} is ``true''.
+May be defined by the use of two @tt{switch} propagators.}
+
 
 
 
@@ -449,7 +463,7 @@ and are therefore perfectly legitimate contents of other
 cells.  The event that two different cells A and B find themselves
 held in the same third cell C means that A and B are now known to
 contain information about the same thing.  The two cells are therefore
-merged by attaching @tt{c:id} propagators to them so as to keep their
+merged by attaching @tt{p:id} propagators to them so as to keep their
 contents in sync in the future.
 @definition["(p:deposit cell place-cell), (e:deposit cell)"]{
 Grabs the given @tt{cell} and deposits it into @tt{place-cell}.  The
@@ -574,7 +588,7 @@ apply themselves in expression style:
 }
 
 Of course, not every operation has a useful inverse, so there are
-fewer @tt{c:} procedures defined than @tt{p:}:
+fewer @tt{c:} procedures defined than @tt{p:} procedures.
 @definition["(c:foo constrainee ...)"]{
 Attaches propagators to the given boundary cells that collectively
 constrain them to be in the @tt{foo} relationship with each other.
@@ -631,7 +645,7 @@ There is also an expression-oriented version, called, naturally,
 
 In fact, inserting constants is so important, that there is one more
 nicification of this: whenever possible, the system will convert a raw
-constant (i.e. a non-cell Scheme object) into a cell, using
+constant (to wit, a non-cell Scheme object) into a cell, using
 @tt{e:constant}.
 
 Some examples:
@@ -683,7 +697,8 @@ code is only sensible if @tt{x} and @tt{y} are already bound to cells
 (or subject to constant conversion)).  The new bindings will only be
 visible inside the scope of the @tt{let-cells}, just like in Scheme;
 but if you attach propagators to them, the cells themselves will
-continue to exist and function as part of your propagator network.
+continue to exist and function as part of your propagator network
+as long as they are needed.
 
 One notable difference from Scheme: a cell in a propagator network,
 unlike a variable in Scheme, has a perfectly good ``initial state''.
@@ -769,7 +784,7 @@ the next expression or assigned to variables.
 
 @subsection{Conditional Network Construction}
 
-The @tt{switch} propagator does conditional propagation --- it only
+The @tt{switch} propagator does conditional propagation---it only
 forwards its input to its output if its control is ``true''.  As such,
 it serves the purpose of controlling the flow of data through an existing
 propagator network.  However, it is also appropriate to control the
@@ -799,8 +814,8 @@ a fresh cell, which is then synchronized with the cell returned from
 the last expression in @tt{body} when @tt{body} is constructed.}
 
 
-@tt{(p:unless internal-cells condition-cell body ...)}
-@definition["(e:unless internal-cells condition-cell body ...)"]{
+@definition[(list "(p:unless internal-cells condition-cell body ...)"
+		  "(e:unless internal-cells condition-cell body ...)")]{
 Same as @tt{p:when} and @tt{e:when}, but reversing the sense of the
 control cell.}
 
@@ -821,7 +836,7 @@ Expression-style variant of @tt{p:if}.}
 
 
 
-@section{Making New Compound Propagators}
+@section[#:tag "making-new-compound-propagators"]{Making New Compound Propagators}
 
 So, you know the primitives (the supplied propagators) and the means
 of combination (how to make cells and wire bunches of propagators up
@@ -1039,7 +1054,7 @@ represent the complete knowledge available as a result:
 }
 
 If incoming knowledge hopelessly contradicts the knowledge a cell
-already has, it will complain:
+already has, it will complain,
 @example{
 (add-content y 15)  ==>  An error
 }
@@ -1071,7 +1086,7 @@ Scheme-Propagators:
 @item{propagator cells}
 @item{compound data}
 @item{closures}
-@item{supported values}
+@item{contingent values}
 @item{truth maintenance systems}
 @item{contradiction}]
 
@@ -1089,7 +1104,7 @@ object.}
 
 @tt{nothing} is @tt{equivalent?} only to itself.
 
-@tt{nothing} never contributes anything to a merge --- the merge of
+@tt{nothing} never contributes anything to a merge---the merge of
 anything with @tt{nothing} is the anything.
 
 @tt{nothing} is not @tt{contradictory?}.
@@ -1156,7 +1171,7 @@ interval.  An interval is @tt{equivalent?} to a number if both the
 upper and lower bounds are that number.
 
 Interval objects merge with each other by intersection.  Interval
-object merge with numbers by treating the number as a degenerate
+objects merge with numbers by treating the number as a degenerate
 interval and performing intersection (whose result will either be that
 number or an empty interval).  Interval objects merge with other
 raw Scheme objects into the contradiction object.
@@ -1166,16 +1181,18 @@ a strictly empty interval (that is, if the upper bound is strictly
 less than the lower bound).
 
 The arithmetic propagators react to interval objects by performing
-interval arithmetic.
+interval arithmetic.  Binary arithmetic propagators observing an
+interval and a number will interpret the number as a degenerate
+interval.
 
 A @tt{switch} propagator treats any interval object in its control as a
-non-@tt{#f} object and forwards its input to its output.
+non-@tt{#f} object and forwards its input to its output unmodified.
 
 It is an error for an interval object to appear in the operator
 position of an apply propagator.
 
 As an interval arithmetic facility, this one is very primitive.  In
-particular it assumes that all the numbers involved are positive.  The
+particular it assumes that all the bounds involved are positive.  The
 main purpose of including it is to have a partial information
 structure with an intuitive meaning, and that requires nontrivial
 operations on the information it is over.
@@ -1218,7 +1235,7 @@ introduce and examine pairs and empty lists.
 
 Two pairs are @tt{equivalent?} if their cars and cdrs are both
 @tt{equivalent?}.  A pair is not @tt{equivalent?} to any non-pair.  The
-empty list is only @tt{`equivalent?} to itself.
+empty list is only @tt{equivalent?} to itself.
 
 Pairs merge by recursively merging the @tt{car} and @tt{cdr} fields.
 Given the behavior of propagator cells as mergeable data, the effect
@@ -1236,7 +1253,7 @@ It is an error for a pair or the empty list to appear in the operator
 position of an apply propagator.
 
 Other compound data structures can be made partial information that
-behaves like pairs using @tt{define-propagator-structure}.
+behave like pairs using @tt{define-propagator-structure}.
 @definition["(define-propagator-structure type constructor accessor ...)"]{
 Declares that additional Scheme data structures are partial
 information like pairs, and defines appropriate propagators
@@ -1267,8 +1284,9 @@ Scheme-Propagators syntax for anonymous compound propagator
 constructors (which are implemented as closures).}
 
 @definition["define-propagator"]{
-Internally produces lambda-d:propagator or lambda-e:propagator
-and puts the results into appropriately named cells.}
+Internally produces @tt{lambda-d:propagator} or @tt{lambda-e:propagator}
+and puts the results into appropriately named cells.
+See @Secref{making-new-compound-propagators}.}
 
 
 
@@ -1322,10 +1340,10 @@ set.}
 
 @definition["(tms-query tms)"]{
 Returns a contingency object representing the strongest deduction
-the given TMS can make in the current worldview.  tms-query gives
+the given TMS can make in the current worldview.  @tt{tms-query} gives
 the contingency with the strongest contingent information that is
 believed in the current worldview.  Given that desideratum,
-tms-query tries to minimize the premises that information is
+@tt{tms-query} tries to minimize the premises that information is
 contingent upon.}
 
 
@@ -1391,7 +1409,7 @@ such a contradictory state, it will signal an error.  The
 explicit @tt{the-contradiction} object is useful, however, for
 representing contradictory information in recursive contexts.  For
 example, a truth maintenance system may discover that some collection
-of premises leads to a contradiction --- this is represented by a
+of premises leads to a contradiction---this is represented by a
 @tt{the-contradiction} object contingent on those premises.
 @definition["the-contradiction"]{
 A Scheme object representing a contradictory state of information
@@ -1415,7 +1433,7 @@ run.
 
 If a cell discovers that it contains a TMS that harbors a contingent
 contradiction, the cell will signal that the premises of that
-contradiction form a nogood set, and that nogood set will be recorded.
+contradiction form a @emph{nogood set}, and that nogood set will be recorded.
 For the worldview to be consistent, at least one of those premises
 must be removed.  The system maintains the invariant that the current
 worldview never has a subset which is a known nogood.
@@ -1641,15 +1659,14 @@ may be declared later).
 
 @subsection{The Partial Information Generics}
 
-@tt{(equivalent? info1 info2)  ==>  #t or #f}
-
+@definition["(equivalent? info1 info2)  ==>  #t or #f"]{
 The @tt{equivalent?} procedure is used by cells to determine whether
 their content has actually changed after an update.  Its job is to
 ascertain, for any two partial information structures, whether they
 represent the same information.  As a fast path, any two @tt{eqv?}
 objects are assumed to represent equivalent information structures.
 The default operation on @tt{equivalent?} returns false for any two
-non-@tt{eqv?} objects.
+non-@tt{eqv?} objects.}
 
 A handler for @tt{equivalent?} is expected to accept two partial
 information structures and return @tt{#t} if they represent
@@ -1658,8 +1675,7 @@ semantically the same information, and @tt{#f} if they do not.
 The built-in @tt{equivalent?} determines an equivalence relation.
 Extensions to it must maintain this invariant.
 
-@tt{(merge info1 info2)  ==>  new-info}
-
+@definition["(merge info1 info2)  ==>  new-info"]{
 The @tt{merge} procedure is the key to the propagation idea.  Its job
 is to take any two partial information structures, and produce a new
 one that represents all the information present in both of the
@@ -1668,7 +1684,7 @@ some new information.  Any two @tt{equivalent?} information structures
 merge to identically the first of them.  The default operation for
 @tt{merge} on a pair of non-@tt{equivalent?} structures that the handlers for
 @tt{merge} do not recognize is to assume that they cannot be usefully
-merged, and return @tt{the-contradiction}.
+merged, and return @tt{the-contradiction}.}
 
 A handler for @tt{merge} is expected to accept two partial
 information structures and return another partial information
@@ -1699,8 +1715,7 @@ by @tt{equivalent?}).  That is
 }}
 ]
 
-@tt{(contradictory? info)  ==>  #t or #f}
-
+@definition["(contradictory? info)  ==>  #t or #f"]{
 The @tt{contradictory?} procedure tests whether a given information
 structure represents an impossible situation.  @tt{contradictory?}
 states of information may arise in the computation without causing
@@ -1710,6 +1725,9 @@ a contingent context, without itself being @tt{contradictory?}.  But if
 a @tt{contradictory?} object gets to the top level, that is if a cell
 discovers that it directly contains a @tt{contradictory?} state of
 information, it will signal an error and stop the computation.
+The default operation on @tt{contradictory?} is to assume
+that information states are not contradictory unless some handler
+explicitly decides they are.}
 
 A handler for @tt{contradictory?} is expected to accept a partial
 information structure, and to return @tt{#t} if it represents an
@@ -1913,7 +1931,7 @@ partial result.  @tt{generic-abs}, @tt{generic-square},
 
 Don't forget to teach the propagators what to do if they encounter
 a partial information structure on one input and a different one on
-another --- if both represent states of knowledge about compatible
+another---if both represent states of knowledge about compatible
 ultimate values, it should be possible to produce a state of knowledge
 about the results of the computation (though in extreme cases that
 state of knowledge might be @tt{nothing}, implying no new information
@@ -1936,12 +1954,14 @@ propagators.  This includes all the built-in propagators except
 those operate on cells rather than their contents, and @tt{:amb}
 because it essentially has no inputs.
 
-@tt{((binary-map info1 info2) f)  ==>  new-info}
+@definition["((binary-map info1 info2) f)  ==>  new-info"]{
 The generic procedure @tt{binary-map} encodes how to apply a strict
 function to partial information arguments.  @tt{binary-map} itself is
 generic over the two information arguments, and is expected to return
 a handler that will accept the desired function @tt{f} and properly
-apply it.  For example, consider contingent information.  A strict
+apply it.}
+
+For example, consider contingent information.  A strict
 operation on the underlying information that is actually contingent
 should be applied by collecting the premises that both inputs are
 contingent on, applying the function, and wrapping the result up in a
@@ -1972,7 +1992,8 @@ the input partial information structures to produce a new partial
 information structure, encoding all the appropriate uncertainty from
 both inputs.  The given function @tt{f}, for example as a result of
 @tt{(nary-mapping generic-switch)}, may return @tt{nothing} even when
-both of its inputs are non-@tt{nothing}.
+both of its inputs are non-@tt{nothing}, so a handler for @tt{binary-map}
+must be prepared for that circumstance.
 
 The @tt{nary-mapping} wrapper works by repeated use of @tt{binary-map}
 on arguments of arity greater than two.  For unary arguments,
@@ -2214,7 +2235,7 @@ interface to asking cells to notify a propagator when they change.
 @tt{propagator} expects a list of cells that your propagator is
 interested in, and a thunk that implements the job that propagator is
 supposed to do.  The scheduler will execute your thunk from time to
-time --- the only promise is that it will run at least once after the
+time---the only promise is that it will run at least once after the
 last time any cell in the supplied neighbor list gains any new
 information.  For example:
 @example{
@@ -2260,32 +2281,32 @@ be filled by hand.
 
 In order to use the metadata for debugging, you must be able to read
 it.  Inspection procedures using the metadata are provided:
-@definition["name"]{
+@definition["(name object)"]{
 the name of an object, or the object itself if it is not named}
 
-@definition["cell?"]{
+@definition["(cell? thing)"]{
 whether something is a cell or not}
 
-@definition["content"]{
+@definition["(content cell)"]{
 the information content of a cell}
 
-@definition["propagator?"]{
+@definition["(propagator? thing)"]{
 whether something is a propagator or not}
 
-@definition["propagator-inputs"]{
+@definition["(propagator-inputs propagator)"]{
 the inputs of a propagator (a list of cells)}
 
-@definition["propagator-outputs"]{
+@definition["(propagator-outputs propagator)"]{
 the outputs of a propagator (a list of cells)}
 
-@definition["neighbors"]{
+@definition["(neighbors cell)"]{
 the readers of a cell (a list of propagators)}
 
-@definition["cell-non-readers"]{
+@definition["(cell-non-readers cell)"]{
 other propagators somehow associated with a cell (presumably ones
 that write to it)}
 
-@definition["cell-connections"]{
+@definition["(cell-connections cell)"]{
 all propagators around a cell (the append of the neighbors
 and the non-readers)}
 
@@ -2360,7 +2381,7 @@ propagator network and lets you start afresh:
 build lots of network
 ...
 (initialize-scheduler)
-(run) --- nothing happens; no propagators to run!
+(run)---nothing happens; no propagators to run!
 }
 
 This is the lightest-weight way to restart your Scheme-Propagators
@@ -2380,8 +2401,8 @@ code with the MIT-Scheme compiler, be sure to put
 at the top of your source files.  Also, of course, you need to be
 suitably careful to make sure that the defined macros are available to
 the syntaxer when it processes your file.  See
-@tt{support/auto-compilation.scm} for how I do this, and, say,
-@tt{core/load.scm} for how I use the compiler.
+@tt{support/auto-compilation.scm} for how we do this, and, say,
+@tt{core/load.scm} for how we use the compiler.
 
 
 
@@ -2412,7 +2433,7 @@ defined the same way as their Scheme analogues; notably
 @tt{define-propagator} and @tt{let-cells}.  Sadly the
 Emacs Scheme mode does not do this by default, so you need to tweak
 the Emacs config to do that.  The file @tt{support/scm-propagators.el}
-contains a dump of the relevant portion of my Emacs configuration.
+contains an appropriate piece of Emacs configuration.
 
 There is at present no Emacs mode for Scheme-Propagators as distinct
 from Scheme.
@@ -2422,7 +2443,7 @@ from Scheme.
 @subsection{Hacking}
 
 Scheme-Propagators is a work in progress.  Be aware that we will
-continue to hack it.  Likewise, feel free to hack it as well --- let
+continue to hack it.  Likewise, feel free to hack it as well---let
 us know if you invent or implement something interesting.  May the
 Source be with you.
 
@@ -2490,7 +2511,7 @@ we realized that adjusting @tt{p:when} and company to delay their
 interior would be just as easy as delaying the opening of
 abstractions.  At that point we decided to switch to doing it that
 way, on the grounds that, since @tt{if} is special in all other computer
-languages, so it might as well be special here too, and we will leave
+languages, it might as well be special here too, and we will leave
 the operation of abstractions relatively simple.  (Partial information
 makes abstractions complicated enough as it is!)  This has the further
 nice feature that it sidesteps a possible bug with delayed
@@ -2579,7 +2600,7 @@ suddenly collapsed.  Cells could be merged with a simple ``link these
 two with (conditional) identity propagators''.  Therefore compound data
 could be merged by recursively merging their fields, regardless of
 whether they were carrying cells or other partial information
-structures.  Closures fell into place --- they were just a particular
+structures.  Closures fell into place---they were just a particular
 kind of compound data, and merged the way compound data merges.
 Closures had been a conceptual problem for the copying data view of
 the world, because closures really felt like they wanted to able to
@@ -2682,7 +2703,7 @@ information.  Adding new forms of partial information is a way to
 extend the capabilities of the propagation infrastructure to novel
 circumstances.  With appropriate foresight, new partial information
 structures can interoperate with old, and additively extend the
-capabilities of existing systems --- a way to teach old dogs new
+capabilities of existing systems---a way to teach old dogs new
 tricks.  Of course, such power is dangerous: if a network that depends
 on commutativity of multiplication of numbers meets an extension to
 square matrices, we will get wrong answers.  But then, cross-checking

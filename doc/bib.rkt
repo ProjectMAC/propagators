@@ -14,7 +14,7 @@
   (make-bib
    #:author axch
    #:title "Propagation Networks: A Flexible and Expressive Substrate for Computation"
-   #:date "Sep 2009"
+   #:date "2009" ; September
    #:url "http://hdl.handle.net/1721.1/49525"
    #:location (dissertation-location #:institution mit)
    #:is-book? #t))
