@@ -2,7 +2,6 @@
 @(require "bib.rkt")
 @(require (only-in scribble/sigplan abstract))
 
-@; TODO Solve \cite (and the bibliography)
 @; TODO Search for more backslashes
 @; TODO Reread and fix bugs
 
@@ -1927,7 +1926,7 @@ produced by the propagator).
 Also, almost all primitive propagators are wrapped
 with the @tt{nary-mapping} wrapper function around their underlying
 generic operation.  This wrapper function is an implementation of the
-idea of applicative functors \cite{mcbride-paterson-2008-applicative-functors},
+idea of applicative functors @~cite[mcbride-paterson-2008-applicative-functors],
 so if your partial information structure is an applicative functor, you can
 use this to teach most propagators how to handle it.
 
@@ -2695,7 +2694,3 @@ across complementary methods, together with dependency tracking,
 simplifies the task of debugging such errors.
 
 @generate-bib[]
-\bibliographystyle{plain}
-\bibliography{revised-auto}
-
-\end{document}

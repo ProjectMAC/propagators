@@ -28,3 +28,13 @@
 	       #:number "MIT-CSAIL-TR-2009-002")
    #:date "2009"
    #:url "http://hdl.handle.net/1721.1/44215"))
+
+(define mcbride-paterson-2008-applicative-functors
+  (make-bib
+   #:author (authors "Conor McBride" "Ross Paterson")
+   #:title "Applicative programming with effects"
+   #:location (journal-location "Journal of Functional Programming"
+	       #:pages (list 1 13)
+	       #:number 1
+	       #:volume 18)
+   #:date "2008"))
