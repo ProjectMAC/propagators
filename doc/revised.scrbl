@@ -2,7 +2,6 @@
 
 @(require (only-in scribble/sigplan abstract))
 
-@; TODO Solve \ref
 @; TODO Solve \cite (and the bibliography)
 @; TODO Search for more backslashes
 @; TODO Reread and fix bugs
@@ -253,7 +252,7 @@ not return a useful value.}
 As in Scheme, @tt{p:+} is actually the name of a cell that contains a
 propagator constructor for attaching propagators that do addition.
 The first argument to @tt{d@"@"} can be any cell that contains any desired
-partial information (see Section \ref{using-partial-information})
+partial information (see @Secref["using-partial-information"])
 about a propagator constructor.
 Actual attachment of propagators will occur as the propagator
 constructor becomes sufficiently well constrained.
@@ -421,7 +420,7 @@ star topology, with every input feeding into the one output.}
 @definition["(p:switch control input output), (e:switch control input)"]{
 Conditional propagation.  The propagator made by @tt{switch} copies
 its @tt{input} to its @tt{output} if and only if its @tt{control} is
-``true''.  The presence of partial information (see Section \ref{using-partial-information}) makes this
+``true''.  The presence of partial information (see @Secref{using-partial-information}) makes this
 interesting.  For example, a @tt{#t} contingent on some premise will
 cause @tt{switch} to propagate, but the result written to the
 @tt{output} will be contingent on that premise (in addition to any
@@ -441,10 +440,10 @@ output destinations.}
 
 
 
-@subsection{Cells are Data Too}
+@subsection[#:tag "cells-are-data-too"]{Cells are Data Too}
 
 Cells, and structures thereof, are perfectly good partial information
-(see Section \ref{using-partial-information})
+(see @Secref{using-partial-information})
 and are therefore perfectly legitimate contents of other
 cells.  The event that two different cells A and B find themselves
 held in the same third cell C means that A and B are now known to
@@ -474,7 +473,7 @@ identifying it with the cell present.
 
 
 
-@subsection{Compound Data}
+@subsection[#:tag "compound-data"]{Compound Data}
 
 Propagator compound data structures are made out of Scheme compound
 data structures that carry around cells collected as with @tt{deposit}.
@@ -663,7 +662,7 @@ you could write:
 which would also make a Scheme variable named @tt{x} and bind a cell to
 it.  In fact, that is almost exactly what @tt{define-cell} does, except
 that @tt{define-cell} attaches some metadata to the cell it creates to
-make it easier to debug the network (see Section \ref{debugging})
+make it easier to debug the network (see @Secref{debugging})
 and also does constant
 conversion (so @tt{(define-cell x 5)} makes @tt{x} a cell that will get
 a @tt{5} put into it, whereas @tt{(define x 5)} would just bind @tt{x} to
@@ -791,7 +790,7 @@ arbitrary collection of code, defining some amount of propagator
 network that will not be built until the controlling cell indicates
 that it should.  The @tt{internal-cells} argument is a list of the
 free variables in @tt{body}.  This is the same kind of kludge as the
-@tt{import} clause in @tt{define-propagator} (see Section \ref{lexical-scope}).}
+@tt{import} clause in @tt{define-propagator} (see @Secref{lexical-scope}).}
 
 @definition["(e:when internal-cells condition-cell body ...)"]{
 Expression-style variant of @tt{p:when}.  Augments its boundary with
@@ -896,7 +895,7 @@ So:
 
 
 
-@subsection{Lexical Scope}
+@subsection[#:tag "lexical-scope"]{Lexical Scope}
 
 Compound propagator definitions can be closed over cells available in
 their lexical environment:
@@ -975,7 +974,7 @@ Looks familiar, doesn't it?
 
 
 
-@section{Using Partial Information}
+@section[#:tag "using-partial-information"]{Using Partial Information}
 
 Partial, cumulative information is essential to
 multidirectional, non-sequential programming.  Each ``memory
@@ -1060,7 +1059,7 @@ propagator are particularly important.
 
 
 
-@section{Built-in Partial Information Structures}
+@section[#:tag "built-in-partial-information-structures"]{Built-in Partial Information Structures}
 
 The following partial information structures are provided with
 Scheme-Propagators:
@@ -1182,13 +1181,13 @@ operations on the information it is over.
 
 
 
-@subsection{Propagator Cells as Partial Information}
+@subsection[#:tag "propagator-cells-as-partial-information"]{Propagator Cells as Partial Information}
 
 A propagator cell interpreted as partial information is an
 indirection: it means ``I contain the structure that describes this
 value''.  Cells can appear as the contents of cells or other structures
 via the @tt{deposit} and @tt{examine} propagators
-(see Section \ref{cells-are-data-too}).
+(see @Secref{cells-are-data-too}).
 
 Propagator cells are @tt{equivalent?} if they are known to contain
 information about the same subject.  This occurs only if they are
@@ -1204,7 +1203,7 @@ A propagator cell is never @tt{contradictory?}.
 
 
 
-@subsection{Partial Information about Compound Data}
+@subsection[#:tag "id1"]{Partial Information about Compound Data}
 
 A Scheme pair is partial information that means ``This object is a
 pair.  My car and cdr contain cells that describe the car and cdr of
@@ -1213,7 +1212,7 @@ list''.
 
 The propagators @tt{p:cons}, @tt{e:cons}, @tt{p:car}, @tt{e:cdr},
 @tt{p:pair?}, @tt{e:pair?}, @tt{p:null?}, and @tt{e:null?}
-(see Section \ref{compound-data})
+(see @Secref{compound-data})
 introduce and examine pairs and empty lists.
 
 Two pairs are @tt{equivalent?} if their cars and cdrs are both
@@ -1273,7 +1272,7 @@ and puts the results into appropriately named cells.}
 
 
 
-@subsection{Truth Maintenance Systems}
+@subsection[#:tag "truth-maintenance-systems"]{Truth Maintenance Systems}
 
 A Truth Maintenance System (TMS) is a set of contingent values.  A
 contingent value is any partial information object that describes the
@@ -1496,7 +1495,7 @@ primitives.
 
 It is also important to make sure that your new partial information
 structure intermixes and interoperates properly with the existing
-ones (see Section \ref{built-in-partial-information-structures}).
+ones (see @Secref{built-in-partial-information-structures}).
 
 Method addition in the generic operation system used in
 Scheme-Propagators is done with the @tt{defhandler} procedure:
@@ -1553,7 +1552,7 @@ we can add a few more handlers:
 
 The third step is to teach the arithmetic propagators to handle
 intervals.  Interval arithmetic does not fit into the @tt{binary-map}
-worldview (see Section \ref{uniform-applicative-extension-of-propagators})
+worldview (see @Secref{uniform-applicative-extension-of-propagators})
 so the only way to do intervals is to
 individually add the appropriate handlers to the generic procedures
 underlying the primitive propagators:
@@ -1574,7 +1573,7 @@ with support for automatic coercions for this purpose.
 
 
 
-@subsection{Generic Coercions}
+@subsection[#:tag "generic-coercions"]{Generic Coercions}
 
 Every number can be seen as an interval (whose lower and upper bounds
 are equal).  The definition of arithmetic on mixed intervals and
@@ -1704,7 +1703,7 @@ by @tt{equivalent?}).  That is
 The @tt{contradictory?} procedure tests whether a given information
 structure represents an impossible situation.  @tt{contradictory?}
 states of information may arise in the computation without causing
-errors.  For example, a TMS (see Section \ref{truth-maintenance-systems})
+errors.  For example, a TMS (see @Secref{truth-maintenance-systems})
 may contain a contradiction in
 a contingent context, without itself being @tt{contradictory?}.  But if
 a @tt{contradictory?} object gets to the top level, that is if a cell
@@ -1718,18 +1717,18 @@ not.
 
 
 
-@subsubsection{The Full Story on Merge}
+@subsubsection[#:tag "the-full-story-on-merge"]{The Full Story on Merge}
 
 The description of @tt{merge} as always returning a new partial
 information structure is an approximation.  Sometimes, @tt{merge} may
 return a new partial information structure together with instructions
 for an additional effect that needs to be carried out.  For example,
 when merging two propagator cells
-(see Section \ref{propagator-cells-as-partial-information}),
+(see @Secref{propagator-cells-as-partial-information}),
 the new information is just one of those cells, but the two cells also
 need to be connected with propagators that will synchronize their
 contents.  For another example, in Scheme-Propagators, if a merge
-produces a TMS (see Section \ref{truth-maintenance-systems})
+produces a TMS (see @Secref{truth-maintenance-systems})
 that contains a contingent contradiction,
 the premises that contradiction depends upon must be signalled as a
 nogood set (that this requires signalling and is not just another
@@ -1923,7 +1922,7 @@ produced by the propagator).
 
 
 
-@subsection{Uniform Applicative Extension of Propagators}
+@subsection[#:tag "uniform-applicative-extension-of-propagators"]{Uniform Applicative Extension of Propagators}
 
 Also, almost all primitive propagators are wrapped
 with the @tt{nary-mapping} wrapper function around their underlying
@@ -2001,7 +2000,7 @@ operations have methods that can handle any combinations that may
 arise.  Often, the way to deal with two information structures of
 different but compatible types is to realize that one of them can be
 seen as an instance of the other type.  The coercion machinery
-(see Section \ref{generic-coercions})
+(see @Secref{generic-coercions})
 allows one to declare when this situation obtains so that
 @tt{defhandler-coercing} does the right thing.  The specific touch
 points for this are the type testers and coercers of the existing
@@ -2042,7 +2041,7 @@ that interval contingent on the empty set of premises, and then
 operate on those two structures as on TMSes.
 
 The second kind of interoperation is handled by correctly dealing with
-merge effects (see Section \ref{the-full-story-on-merge}).
+merge effects (see @Secref{the-full-story-on-merge}).
 If you make a new partial information
 structure that contains others, you must make sure to handle any merge
 effects that may arise when recursively merging the partial
@@ -2052,7 +2051,7 @@ merge, you should return those as appropriate merge effects in an
 @tt{effectful} structure, and, if you need to create new kinds of
 effects in addition to the built-in ones, you should extend the
 generic operations @tt{execute-effect}, @tt{redundant-effect?}, and
-@tt{generic-attach-premises} (Section \ref{the-full-story-on-merge}).
+@tt{generic-attach-premises} (@Secref{the-full-story-on-merge}).
 
 
 
@@ -2060,7 +2059,7 @@ generic operations @tt{execute-effect}, @tt{redundant-effect?}, and
 
 Almost all definition of new primitive propagators can be handled
 correctly either by @tt{propagatify} or by
-@tt{define-propagator-structure} (see Section \ref{id1}).
+@tt{define-propagator-structure} (see @Secref{id1}).
 We discuss the
 lower-level tools first, however.
 
@@ -2235,7 +2234,7 @@ of @tt{function->propagator-constructor} and
 
 
 
-@section{Debugging}
+@section[#:tag "debugging"]{Debugging}
 
 There is no stand-alone ``propagator debugger''; if something goes
 wrong, the underlying Scheme debugger is your friend.  Some effort
