@@ -2,7 +2,6 @@
 @(require "bib.rkt")
 @(require (only-in scribble/sigplan abstract))
 
-@; TODO Search for more backslashes
 @; TODO Reread and fix bugs
 
 @; TODO convert definitions with commas in them into definitions of
@@ -24,6 +23,9 @@
 	      (para @tt{@definiend}))
 	    (listify definiend))
      ,(apply nested #:style 'inset body))))
+
+@(define (pull-quote . body)
+  (apply nested #:style 'inset body))
 
 @title{Revised Report on the Propagator Model}
 @author{Alexey Radul and Gerald Jay Sussman}
@@ -1680,19 +1682,19 @@ by @tt{equivalent?}).  That is
 @itemlist[
 @item{associativity:
 @example{
-(merge X (merge Y Z))  {\textasciitilde}  (merge (merge X Y) Z)
+(merge X (merge Y Z))  ~  (merge (merge X Y) Z)
 (equivalent? (merge X (merge Y Z)) (merge (merge X Y) Z)) ==> #t
 }}
 
 @item{commutativity:
 @example{
-(merge X Y)  {\textasciitilde}  (merge Y X)
+(merge X Y)  ~  (merge Y X)
 (equivalent? (merge X Y) (merge Y X)) ==> #t
 }}
 
 @item{idempotence:
 @example{
-(X {\textasciitilde} Y) implies (X {\textasciitilde} (merge X Y))
+(X ~ Y) implies (X ~ (merge X Y))
 (or (not (equivalent? X Y)) (equivalent? X (merge X Y))) ==> #t
 }}
 ]
@@ -1735,12 +1737,10 @@ partial information structure is a consequence of an implementation
 decision of TMSes in Scheme-Propagators).
 
 The fully nuanced question that @tt{merge} answers is
-\begin{quote}
-
+@pull-quote{
 ``What do I need to do to the network in order to make it reflect
 the discovery that these two information structures are about the
-same object?''
-\end{quote}
+same object?''}
 
 In the common case, the answer to this question is going to be
 ``Record: that object is best described by this information structure''.
@@ -2548,18 +2548,14 @@ really should have legitimate side effects on the network, but should
 package those effects up in manipulable objects that it returns,
 instead of trying to just execute them.  So the question that merge
 answers was changed from
-\begin{quote}
-
-What is the least-commitment information structure that captures
-all the knowledge in these two information structures?
-\end{quote}
+@pull-quote{
+``What is the least-commitment information structure that captures
+all the knowledge in these two information structures?''}
 to
-\begin{quote}
-
-What needs to be done to the network in order to make it reflect the
+@pull-quote{
+``What needs to be done to the network in order to make it reflect the
 discovery that these two information structures are about the same
-object?
-\end{quote}
+object?''}
 
 The latter nicely subsumes the former: a normal merge is just the
 answer ``record in the appropriate cell that the object of interest is
