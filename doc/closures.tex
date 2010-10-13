@@ -73,4 +73,114 @@ contained a one-entry TMS.
 
 Which to choose?
 
+\section{Discussion of Candidate Solutions}
+
+Recursive partial information is appealingly safe.  The contents of
+every cell remains a data structure in the underlying implementation
+system; merging such data structures can be done by recursively
+calling \code{merge} because \code{merge} remains functional; the
+effects of every propagator are perfectly local.  If such a data
+structure acquires dependencies, for example by traveling through a
+conditional, they can be attached at the outermost level, and any
+attempt to access the gets will have to go through them.  Everything
+looks clean and nice.
+
+From the perspective of thinking about record structures (as opposed
+to closures), there is just one downside: if a field of some record
+structure gains new information, that new information has to be
+propagated by local steps through every propagator that manipulates
+the record structure, even though only the accessor at the end of this
+chain is interested in what that information actually is.  And
+unfortunately this effect is contagious: a field of a field of a field
+must be pushed around through every record in the whole tower.  This
+creates a large amount of uninteresting extra work.
+
+Partial information carrying cells avoids the extra recopying work,
+because an update into the cell holding information about a field of a
+datastructure is immediately visible in any place where that cell has
+been carried, without any effort on the part of the intermediate
+propagators on the path.  Partial information carrying cells is also
+intellectually appealing for the reason that propagator cells are
+meant to be analagous to memory locations in a conventional
+programming language, and the fields of a conventional record
+structure are memory locations, so the fields of a propagator record
+structure should, by symmetry, be cells.  Unfortunately, partial
+information carrying cells also creates a host of semantic problems.
+Those semantic problems will turn out to have an elegant solution, but
+let us first enumerate them.
+
+First and least troublesome, carrying cells around just feels a little
+weird.  At the very least, we need to invent what a cell means when
+interpreted as itself being a partial information structure.  But this
+is a purely aesthetic concern.  Second, carrying cells introduces
+creepy action at a distance: a cell can be carried arbitrarily far,
+and then becomes a channel for instantaneous communication across that
+distance.  This is somewhat strange, but on the other hand, this was
+arguably the point, because the alternative is for that communication
+channel to be an emergent property of lots and lots of boring
+propagation of updates to fields of data structures.  There is an
+interesting issue of how to make that channel properly respect
+introduction of, say, dependencies on the way, but is subsumed by the
+most pressing problem with partial information carrying cells.
+
+The most pressing problem with partial information carrying cells is
+the question of how to merge the resulting structures.  Certainly a
+pair should be merged by merging its constituents; but how to merge
+two propagator cells?
+
+There is only one sensible way to merge two propagator cells.  If two
+cells are being merged, that means the program has discovered that the
+information they store is about the same entity.  Therefore, the thing
+to do is to attach identity propagators to those two cells, to keep
+their information equal in the future.\footnote{Theoretically, one
+  could imagine detaching all the propagators that read and write one
+  of them and attaching them to the other instead (and also copying
+  all the information currently present in the loser into the winner).
+  However, this is a pain to do when propagators are implemented as
+  Scheme closures, and still suffers from all the problems described
+  in the following text.}  The trouble is, this attachment of identity
+propagators needs to be sensitive to the context in which the merge is
+being done.  If, for example, the two cells in question are being
+merged contingently on some premise, then the forwarding of
+information from one to the other has to be kept contingent on the
+same premise.  But how should this be arranged?  If \code{merge} is to
+return the information structure that results from merging its two
+arguments, then it must do any necessary attaching itself, as a side
+effect.  But if it is to be called recursively from inside, say, a
+TMS, then it must be pure, so that the TMS can attach the premises it
+needs to attach to all the results of \code{merge}.  This conundrum,
+which turns out to have a solution that proved elegant but took time
+to think of, caused the propagator system described in the thesis to
+prefer the recursive partial information strategy.
+
+A note about closures.  A closure is a compound data structure whose
+fields correspond to the free variables of the expression being
+closed.  Therefore, the recursive partial information versus carrying
+cells question applies to closures as well.  A cell-carrying closure
+would contain the actual cells that were the free variables of the
+expression; a recursive partial information closure would contain the
+information present in those cells.  In the context of closures,
+grabbing the cells themselves feels much nicer, because the expression
+being closed may want to attach propagators to some of its free
+variables (for example, to compute something about them from some of
+its arguments); if so, the information those propagators compute
+should flow to the original cells holding those variables, and thence
+to any other closures or propagators that read those cells.  A closure
+that carried partial information rather than cells would need to
+always be treated bidirectionally by all the propagators that moved
+the closure itself around to arrange this, whereas a closure that
+carries cells provides that bidirectional channel automatically.
+\todo{Discuss the pros and cons of having cell merge produce
+  bidirectional links.  Leads to automatic unification of stuff
+  carried around in data structures --- if this ever undesirable?  Can
+  it be shut off?  (Maybe by manually inserting a unidirectional
+  copying frob somewhere...)}  Also, the \code{apply} propagator would
+have to do something interesting with recursive information closures,
+because if new partial information became available about the closed
+variables of a closure that had already been applied, it would need to
+be communicated into (and out of) the network created by that
+application.  We never did figure out a good way to arrange this, so
+the system built around recursive partial information did not have
+closures.
+
 \end{document}
