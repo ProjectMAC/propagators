@@ -203,13 +203,14 @@ information about that entity, it concludes that \emph{both} of those
 pieces of information are known about that entity, and it must merge
 them to compute the new best information known about that entity.
 
-The story just presented suggests that the interface of \code{merge}
-is
+The story just presented suggests the following contract between
+\code{merge} and the cell: \code{merge} answers the question
 \begin{quote}
 ``What is the least-commitment information structure that captures
 all the knowledge in these two information structures?''
 \end{quote}
-This is a pure function, and is therefore nice to deal with, including
+and the cell updates itself to contain the answer.  This \code{merge}
+is a pure function, and is therefore nice to deal with, including
 calling it recursively to handle partial information structures that
 contain other partial information structures.  However, this question
 has no answer when the structures being merged are themselves cells.
@@ -218,8 +219,141 @@ it is something else.  Merging two cells does not cleanly produce a
 new pile of knowledge, because it must somehow connect the cells.
 This story is not adequate.
 
-Let us return to the propagator cell, then.
+Let us return to the propagator cell, then.  It is a locus for storing
+all information about some program entity, and adding information to
+it constitutes asserting that the new information also describes that
+entity.  But merely functionally merging information, and updating the
+cell to hold the merged information, is not enough to describe all the
+possible consequences of that discovery.  Learning that two
+cells-as-information are actually about the same object, for example,
+necessitates synchronizing them.
+
+The solution is to refine the contract between \code{merge} and the
+cell.  Now \code{merge} answers the question
+\begin{quote}
+``What needs to be done to the network in order to make it reflect the
+discovery that these two information structures are about the same
+object?''
+\end{quote}
+and the cell executes the answer.  This subsumes the previous
+interface, because the answer can just be ``update the cell
+responsible for that object to contain the following information
+structure.''  But now there is room for other answers: ``synchronize
+these two cells,'' or ``signal these premises as a nogood set.''
+
+With that question in mind as the question \code{merge} answers,
+\code{merge} can still be a pure function that can be used
+recursively.  The only extension is that it may return a data
+structure representing a side-effect that may need to be performed on
+the network, and any partial information structure whose merging
+recursively calls \code{merge} must take care to do the right things
+with those representations of side-effects.  But of course, with
+responsibility comes power: doing it this way gives that partial
+information structure the opportunity to adjust the side-effect to
+reflect the context in which it was called for.
+
+For example, suppose we are merging one pair contingent on the premise
+\code{bill} with another contingent on \code{fred}.  The code for
+merging the contingent objects intends to recursively merge the pairs
+and then attach the \code{bill} and \code{fred} dependencies to them.
+Merging the pairs is the assertion that the two pairs represent the
+same object, so their corresponding fields also represent the same
+objects; therefore we must recursively merge them.  Each field in each
+pair is a cell; each of these merges produces an object that requests
+that the corresponding cells be synchronized by connecting them with
+identity propagators.  The merge of the pairs concatenates those
+effects into one side-effect object that represents a request to do
+both of those things.  But now that side-effect-request object is
+handed to the contingency merge.  The thing the contingency merge must
+produce has to capture the idea that these two pairs we started with
+may represent the same object, but we are only sure of that if the
+\code{bill} and \code{fred} premises are believed.  In particular, all
+the consequences of merging those cells in that pair must be made
+contingent on those two premises.  One way to do that is, instead of
+attaching identity propagators to the cells to synchronize them, we
+can attach bidirectional \code{switch} propagators to synchornize the
+contents only if both the desired premises are believed.  Because of
+the way \code{switch} operates, the premises will get attached to the
+transmitted data, and the deductions made from the transmission along
+this bridge will remain contingent on those premises.
+
+Adopting this interface also solves a long-standing bug we had with
+our TMSes.  We had built our TMSes to signal nogood sets with a
+side-effect that occurred when the TMSes were merged.  This worked
+fine as long as the TMSes were always over atomic data, but would give
+the wrong answers if we had a pair of TMSes over compound structures
+that contained TMSes over fields, because any nogoods signalled by the
+recursive merges of the interior TMSes would be missing the
+dependencies carried for the structures themselves by the exterior
+ones.  But now, signalling a nogood set can also be a side-effect
+requested by a merge, which is returned until is gets all the way to
+the cell that actually initiated the merging; and so the exterior TMS
+has a chance to intercept it and attach more premises to it.
 
 \section{The Consequences}
+
+The meaning of a propagator cell as a partial information structure
+now becomes clear.  A cell is a locus for strong all information
+available about some program entity.  When one cell contains another,
+this is an indirection: it says ``The information about this entity is
+actually stored in \emph{this} cell.''  When two such cells are
+written as partial information into the same container cell, the
+meaning is ``\emph{Both} of these cells store information about my
+entity,'' and those cells must be connected.  This would happen most
+naturally if the entity one cell was responsible for was actually a
+pair, and two different cells were found to be responsible for its
+\code{car}, say.
+
+With this way of thinking about cells as partial information, we can
+further subdivide \code{cons}.  Instead of worrying about the strategy
+of \code{cons}, we can define a unary primitive called, say,
+\code{deposit}, that picks up its single argument cell and writes it
+as partial information into the cell holding its return value.  Then
+the partial information carrying cells strategy can be seen as a use
+pattern of the recursive partial information strategy, where all the
+fields of every \code{cons} propagator are required to be
+\code{deposit}ed cells, rather than any other partial information.
+Pleasantly, the inverse of \code{deposit} is also \code{deposit},
+because of the bidirectionality of the connections created by merging
+cells.  Accessors like \code{car}, however, do need to know whether
+the relevant field of the record being accessed is a cell, because if
+it is an inverse \code{deposit} suffices, but if it is not, they must
+actually access that field and write the result to their output cell.
+
+With the problem of merging cells solved, the only major obstacle to
+implementing closures disappears.  Just grab the cells holding the
+free variables and go.  Merge closures by checking that their
+expressions are equivalent (read: identical) and by merging the cells
+they close over.
+
+With this new contract for \code{merge} in place, the cell gains a
+clear role as the locus of side effects.  Only a cell may initiate a
+side-effect on the structure of the network, whereas the \code{merge}
+operation may not; but any cell may do so.  There is no single
+\code{IO} monad to thread through everything here; no hot-spot
+filtering all side-effects and imposing a total order on them.  Side
+effects on separate portions of the network structure can and should
+interleave in unspecified order, to avoid imposing spurious
+dependencies by specifying it.  It is up to the monotonicity of
+information to ensure that these ``race conditions'' at the network
+structure level do not cause non-deterministic behavior at the
+information level.
+
+Record structures that carry propagator cells that contain more
+records that carry more cells are like large record piles in
+conventional languages, but with an extra level of indirection.  The
+emergent behavior of merging such partial record structures is
+unification, with the carried cells serving the role of the
+unification variables.  Merging obeys the indirection, so merging two
+different cells differs from unifying two variables: instead of
+recurring on the structures they contain immediately, merging cells
+just attaches synchornization propagators to them.  As the network
+continues to run, the structures those cells contain will be merged,
+but a single \code{merge} will not do an unbounded amount of work.
+The indirection also removes the need for an occurs check:
+violating the occurs rule produces not an infinite but a cyclic data
+structure.  Representing the cyclic structure causes no trouble in
+itself, and leaves the reader with the opportunity to interpret the
+cycle usefully.
 
 \end{document}
