@@ -14,7 +14,7 @@ This document describes the problem, the two alternatives, and why
 the propagator system chose one of them.
 \end{abstract}
 
-\section{What the problem is}
+\section{The Question}
 
 Propagation of partial information is perfectly clear and sensible
 when the partial information is over atomic base data.  A truth
@@ -73,7 +73,7 @@ contained a one-entry TMS.
 
 Which to choose?
 
-\section{Discussion of Candidate Solutions}
+\section{The Options}
 
 Recursive partial information is appealingly safe.  The contents of
 every cell remains a data structure in the underlying implementation
@@ -182,5 +182,44 @@ be communicated into (and out of) the network created by that
 application.  We never did figure out a good way to arrange this, so
 the system built around recursive partial information did not have
 closures.
+
+\section{The Answer}
+
+The main problem with recursive partial information is essential to
+it: If \code{cons} has a purely local effect on information
+structures, then updating a field will require updating the compound.
+The main problem with partial information carrying cells, however, is
+conceptual: what does a cell mean as partial information?  How to
+merge cells in a functional way?  It turns out that the conceptual
+problem has a solution.
+
+What is a propagator cell, really?  It is a locus for storing all
+information known about some program entity.\footnote{Where a memory
+  location in a traditional programming language is a way to hold on
+  to a (fixed, known) program entity.}  Adding information to a cell
+is saying that the information being added is known to describe the
+entity that cell is responsible for.  If the cell already had some
+information about that entity, it concludes that \emph{both} of those
+pieces of information are known about that entity, and it must merge
+them to compute the new best information known about that entity.
+
+The story just presented suggests that the interface of \code{merge}
+is
+\begin{quote}
+``What is the least-commitment information structure that captures
+all the knowledge in these two information structures?''
+\end{quote}
+This is a pure function, and is therefore nice to deal with, including
+calling it recursively to handle partial information structures that
+contain other partial information structures.  However, this question
+has no answer when the structures being merged are themselves cells.
+A cell as partial information is not really just a pile of knowledge;
+it is something else.  Merging two cells does not cleanly produce a
+new pile of knowledge, because it must somehow connect the cells.
+This story is not adequate.
+
+Let us return to the propagator cell, then.
+
+\section{The Consequences}
 
 \end{document}
