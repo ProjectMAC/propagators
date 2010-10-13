@@ -1,0 +1,76 @@
+\documentclass[12pt,letterpaper]{article}
+
+\input{preamble.tex}
+\author{Alexey Radul}
+\title{Cells, Compounds, and Closures}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+How should one represent partial information over compound data?
+This document describes the problem, the two alternatives, and why
+the propagator system chose one of them.
+\end{abstract}
+
+\section{What the problem is}
+
+Propagation of partial information is perfectly clear and sensible
+when the partial information is over atomic base data.  A truth
+maintenance system over numbers is a perfectly sensible object.  The
+history of propagation and data flow systems has no major
+disagreements about what to do with atoms.  Compound data, however,
+present more of a challenge.  Let us consider what to do with partial
+information over record structures (such as pairs made by \code{cons})
+and over closures---these turn out to evoke interestingly different
+intuitions about the right answer.  We will not consider compound
+structures with intended invariants, such as unordered sets, because
+there is enough trouble with just pairs and closures.
+
+So, what's the problem?  Well, what should the \code{cons} propagator
+do?  Clearly the output cell of the \code{cons} must learn that its
+object is a pair, and that the information in the two input cells of
+the \code{cons} is known about the respective fields of that pair.
+Furthermore, subsequent manipulations of that resulting information
+structure must be able to affect the pair as a whole: for example, the
+output of
+\begin{verbatim}
+(e:switch (contingent #t '(bill)) (e:cons 1 2))
+\end{verbatim}
+is only known to be a pair if we believe \code{bill}.
+
+There are two ways to arrange partial information over record
+structures like \code{cons}: recursive partial information, and
+partial information carrying cells.\footnote{Actually, there is also a
+  third, that might be called flat partial information.  While
+  conservative, it is grossly wasteful of information.  Since it is
+  clearly a bad idea, and since the propagator thesis already
+  discusses it, we will omit flat partial information from the present
+  text.}  Recursive partial information is the strategy of copying the
+partial information about the fields of the \code{cons} into those
+fields, and emitting into the output a pair that recursively contains
+whatever partial information was known about the fields.  For example,
+the program
+\begin{verbatim}
+(define-cell x (e:cons (make-interval 1 2) (make-tms (contingent 'foo '(bill)))))
+\end{verbatim}
+would (eventually) put into the cell \code{x} a partial information
+structure that is a pair, whose \code{car} field is an interval, and
+whose \code{cdr} field is a one-entry TMS that contains a contingent
+symbol.
+
+Partial information carrying cells is the strategy of directly
+grabbing the cells that contain the information about the fields of a
+structure and emitting a structure whose fields carry those cells.
+Under partial information carrying cells, the same program
+\begin{verbatim}
+(define-cell x (e:cons (make-interval 1 2) (make-tms (contingent 'foo '(bill)))))
+\end{verbatim}
+would (eventually) put into \code{x} a pair whose \code{car} was a
+cell that contained an interval, and whose \code{cdr} was a cell that
+contained a one-entry TMS.
+
+Which to choose?
+
+\end{document}
