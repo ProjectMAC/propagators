@@ -53,7 +53,8 @@ fields, and emitting into the output a pair that recursively contains
 whatever partial information was known about the fields.  For example,
 the program
 \begin{verbatim}
-(define-cell x (e:cons (make-interval 1 2) (make-tms (contingent 'foo '(bill)))))
+(define-cell x (e:cons (make-interval 1 2)
+                       (make-tms (contingent 'foo '(bill)))))
 \end{verbatim}
 would (eventually) put into the cell \code{x} a partial information
 structure that is a pair, whose \code{car} field is an interval, and
@@ -65,7 +66,8 @@ grabbing the cells that contain the information about the fields of a
 structure and emitting a structure whose fields carry those cells.
 Under partial information carrying cells, the same program
 \begin{verbatim}
-(define-cell x (e:cons (make-interval 1 2) (make-tms (contingent 'foo '(bill)))))
+(define-cell x (e:cons (make-interval 1 2)
+                       (make-tms (contingent 'foo '(bill)))))
 \end{verbatim}
 would (eventually) put into \code{x} a pair whose \code{car} was a
 cell that contained an interval, and whose \code{cdr} was a cell that
