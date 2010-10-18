@@ -56,7 +56,8 @@ the program
 (define-cell x (e:cons (make-interval 1 2)
                        (make-tms (contingent 'foo '(bill)))))
 \end{verbatim}
-would (eventually) put into the cell \code{x} a partial information
+would put\footnote{Eventually, after all relevant propagators ran to quiescence.}
+into the cell \code{x} a partial information
 structure that is a pair, whose \code{car} field is an interval, and
 whose \code{cdr} field is a one-entry TMS that contains a contingent
 symbol.
@@ -69,8 +70,8 @@ Under partial information carrying cells, the same program
 (define-cell x (e:cons (make-interval 1 2)
                        (make-tms (contingent 'foo '(bill)))))
 \end{verbatim}
-would (eventually) put into \code{x} a pair whose \code{car} was a
-cell that contained an interval, and whose \code{cdr} was a cell that
+would (eventually) put into \code{x} a pair whose \code{car} is a
+cell that contained an interval, and whose \code{cdr} is a cell that
 contained a one-entry TMS.
 
 Which to choose?
@@ -84,7 +85,7 @@ calling \code{merge} because \code{merge} remains functional; the
 effects of every propagator are perfectly local.  If such a data
 structure acquires dependencies, for example by traveling through a
 conditional, they can be attached at the outermost level, and any
-attempt to access the gets will have to go through them.  Everything
+attempt to access the guts will have to go through them.  Everything
 looks clean and nice.
 
 From the perspective of thinking about record structures (as opposed
@@ -111,11 +112,13 @@ information carrying cells also creates a host of semantic problems.
 Those semantic problems will turn out to have an elegant solution, but
 let us first enumerate them.
 
+\todo{CONS is fundamentally nonlocal}
+
 First and least troublesome, carrying cells around just feels a little
 weird.  At the very least, we need to invent what a cell means when
 interpreted as itself being a partial information structure.  But this
 is a purely aesthetic concern.  Second, carrying cells introduces
-creepy action at a distance: a cell can be carried arbitrarily far,
+spooky action at a distance: a cell can be carried arbitrarily far,
 and then becomes a channel for instantaneous communication across that
 distance.  This is somewhat strange, but on the other hand, this was
 arguably the point, because the alternative is for that communication
@@ -174,7 +177,7 @@ the closure itself around to arrange this, whereas a closure that
 carries cells provides that bidirectional channel automatically.
 \todo{Discuss the pros and cons of having cell merge produce
   bidirectional links.  Leads to automatic unification of stuff
-  carried around in data structures --- if this ever undesirable?  Can
+  carried around in data structures --- is this ever undesirable?  Can
   it be shut off?  (Maybe by manually inserting a unidirectional
   copying frob somewhere...)}  Also, the \code{apply} propagator would
 have to do something interesting with recursive information closures,
