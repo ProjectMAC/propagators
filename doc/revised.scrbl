@@ -293,8 +293,8 @@ expression (whereas the return value of @tt{d@"@"} is unspecified).
 Attaches the given propagator to a boundary consisting of the given
 boundary cells augmented with an additional, synthesized cell.  The
 synthesized cell goes last, because that is the conventional
-position for an output cell.  Returns the synthesized cell as the
-Scheme return value of @tt{e@"@"}.}
+position for an output cell.  @tt{e@"@"} returns the synthesized cell its
+Scheme return value.}
 
 
 For example, here are two ways to do the same thing:
@@ -472,13 +472,14 @@ be identified with any other cells that @tt{place-cell} may come to
 hold.}
 
 @definition["(p:examine place-cell cell), (e:examine place-cell)"]{
-Grabs the given @tt{cell} and deposits it into @tt{place-cell}.  The
-rule for merging cells has the effect that the given @tt{cell} will
-be identified with any other cells that @tt{place-cell} may come to
-hold.}
-
-In fact, @tt{p:deposit} and @tt{p:examine} are the same operation,
-except with the arguments reversed.
+Makes a propagator that identifies the given @tt{cell} with the cell
+held in the given @tt{place-cell}.  Since cell identifications are
+bidirectional, using @tt{examine} on a @tt{place-cell} implies that
+the @tt{place-cell} is meant to contain a cell.  The rule for merging
+cells therefore entails that the job of @tt{examine} can be
+accomplished by depositing the given @tt{cell} into the
+@tt{placec-cell}, so @tt{p:deposit} and @tt{p:examine} are, in fact,
+the same operation, except with the arguments reversed.}
 
 The @tt{e:examine} variant includes an optimization: if the
 @tt{place-cell} already contains a cell, @tt{e:examine} will just
@@ -499,33 +500,33 @@ Constructs a propagator that collects the @tt{car-cell} and the
 @tt{output} cell.  This is like a binary @tt{p:deposit}.}
 
 @definition["(p:pair? input output), (e:pair? input)"]{
-Attaches a propaagtor that tests whether input cell contains a
+Attaches a propagator that tests whether @tt{input} cell contains a
 pair.}
 
 @definition["(p:null? input output), (e:null? input)"]{
-Attaches a propaagtor that tests whether input cell contains
+Attaches a propagator that tests whether @tt{input} cell contains
 the empty list.}
 
 @definition["(p:car input output), (e:car input)"]{
-Makes a propagator that identifies the given @tt{output} with the
-cell in the @tt{car} of the pair in the given @tt{input}.  This is
-like a @tt{p:examine} of that field.  Note that using @tt{p:car} on an
-@tt{input} implies the expectation that said @tt{input} contains a
-pair.  That wish is treated as a command, and a pair appears.
-If fact, @tt{(p:car input output)} is equivalent to
-@tt{(p:cons output nothing input)}.}
+Makes a propagator that identifies the given @tt{output} with the cell
+in the @tt{car} of the pair in the given @tt{input}.  This is like a
+@tt{p:examine} of that field.  Using @tt{p:car} on an @tt{input}
+implies that said @tt{input} should contain a pair.  That wish is
+treated as a command, and a pair appears.  In fact, @tt{(p:car input
+output)} is equivalent to @tt{(p:cons output nothing input)}.}
 
-The @tt{e:} variant includes the same optimization that @tt{e:examine}
-does: if the @tt{input} already contains a pair with a cell in the
-@tt{car}, @tt{e:car} will just Scheme-return that cell instead of
-synthesizing a new one and identifying it with the cell present.
+The @tt{e:car} variant includes the same optimization that
+@tt{e:examine} does: if the @tt{input} already contains a pair with a
+cell in the @tt{car}, @tt{e:car} will just Scheme-return that cell
+instead of synthesizing a new one and identifying it with the cell
+present.
 
 @definition["(p:cdr input output), (e:cdr input)"]{
 Same as @tt{p:car} and @tt{e:car}, except the other field of the
 pair.}
 
 
-Note that the identification of cells that merge is bidirectional, so
+The identification of cells that merge is bidirectional, so
 information written into the @tt{output} of a @tt{p:car} will flow into
 the cell in the @tt{car} of the pair in the @tt{input} (and therefore
 into any other cells identified with it by other uses of @tt{p:car} on
@@ -824,11 +825,12 @@ Two-armed conditional construction.  Just like a @tt{p:when} and a
 @tt{p:unless}: constructs the network indicated by the @tt{consequent}
 form when the @tt{condition-cell} becomes sufficiently ``true'', and
 constructs the network indicated by the @tt{alternate} form when the
-@tt{condition-cell} becomes sufficiently ``false''.  Note that both can
-occur for the same @tt{p:if} over the life of a single computation,
-for example if the @tt{condition-cell} comes to have a TMS that includes
-a @tt{#t} contingent on some premises and later a @tt{#f} contingent
-on others.}
+@tt{condition-cell} becomes sufficiently ``false''.  Note that both
+can occur for the same @tt{p:if} over the life of a single
+computation, for example if the @tt{condition-cell} comes to have a
+truth maintenance system (see @Secref{truth-maintenance-systems})
+that includes a @tt{#t} contingent on some
+premises and later a @tt{#f} contingent on others.}
 
 @definition["(e:if internal-cells condition-cell consequent alternate)"]{
 Expression-style variant of @tt{p:if}.}
@@ -974,7 +976,7 @@ propagator definition (and for the same kludgerous reason).
 @tt{p:when} is the one-armed version.  @tt{p:unless} is also provided;
 it reverses the sense of the predicate.
 
-Like everything else whose name begins with @tt{p:}, @tt{p:if} and co
+Like everything else whose name begins with @tt{p:}, @tt{p:if} and company
 have expression-style variants.  The difference is that the tail
 positions of the branches are expected to return cells, which are
 wired together and returned to the caller of the @tt{e:if}.  Here is
@@ -1126,7 +1128,7 @@ A Scheme object that is not otherwise defined as a partial information
 structure indicates that the content of the cell is
 completely known, and is exactly (by @tt{eqv?}) that object.  Note:
 floating point numbers are compared by approximate numerical equality;
-this is guaranteed to screw you eventually, but we don't know how to
+this is guaranteed to cause trouble eventually, but we don't know how to
 do better.
 
 Raw Scheme objects are @tt{equivalent?} if they are @tt{eqv?} (or are
@@ -1372,10 +1374,13 @@ If the input itself is a TMS, @tt{switch} queries it and (possibly)
 forwards the result of the query, rather than forwarding the entire
 TMS.  For example:
 @example{
-(define-cell frob (make-tms (contingent 4 '(bill))))
-(define-cell maybe-frob (e:switch (make-tms (contingent #t '(fred))) frob))
+(define-cell frob
+  (make-tms (contingent 4 '(bill))))
+(define-cell maybe-frob
+  (e:switch (make-tms (contingent #t '(fred))) frob))
 (run)
-(tms-query (content maybe-frob))  ==>  #(contingent 4 (bill fred))
+(tms-query (content maybe-frob))
+  ==>  #(contingent 4 (bill fred))
 }
 
 If a TMS appears in the operator cell of an apply propagator, the
@@ -1559,10 +1564,13 @@ we can add a few more handlers:
 (define (number=interval? number interval)
   (= number (interval-low interval) (interval-high interval)))
 (defhandler equivalent? number=interval? number? interval?)
-(defhandler equivalent? (binary-flip number=interval?) interval? number?)
+(defhandler equivalent?
+  (binary-flip number=interval?) interval? number?)
 
 (define (number-in-interval number interval)
-  (if (<= (interval-low interval) number (interval-high interval))
+  (if (<= (interval-low interval)
+          number
+          (interval-high interval))
       number
       the-contradiction))
 (defhandler merge number-in-interval number? interval?)
@@ -1624,7 +1632,8 @@ coercer operation, either by the given @tt{mechanism} if supplied or
 by the default mechanism declared in the definition of the given
 coercer.  For example:
 @example{
-(declare-coercion number? ->interval (lambda (x) (make-interval x x)))
+(declare-coercion number? ->interval
+  (lambda (x) (make-interval x x)))
 }
 declares that Scheme number objects may be coerced to intervals
 whose lower and upper bounds are equal to that number.  After this
@@ -1761,7 +1770,8 @@ the discovery that these two information structures are about the
 same object?''}
 
 In the common case, the answer to this question is going to be
-``Record: that object is best described by this information structure''.
+``Record the fact that that object is best described by this
+information structure''.
 This answer is represented by returning the relevant information
 structure directly.  Another possible answer is ``These two information
 structures cannot describe the same object.''  This answer is
@@ -1972,15 +1982,17 @@ contingent upon the set-union of the premises from both inputs:
   (lambda (f)
     (contingent
      (f (contingent-info c1) (contingent-info c2))
-     (set-union (contingent-premises c1) (contingent-premises c2)))))
+     (set-union (contingent-premises c1)
+                (contingent-premises c2)))))
 
-(defhandler binary-map contingency-binary-map contingency? contingency?)
+(defhandler binary-map
+  contingency-binary-map contingency? contingency?)
 }
 
 Note that the information inside a contingency object may itself be
 partial, and so perhaps necessitate a recursive call to
 @tt{binary-map}.  This recursion is handled by the given function
-@tt{f}, and need not the invoked explicitly in handlers for
+@tt{f}, and need not be invoked explicitly in handlers for
 @tt{binary-map}.
 
 A handler for @tt{binary-map} is expected to accept two partial
@@ -2097,7 +2109,7 @@ into which to write the output.  So the result of
 @tt{function->propagator-constructor} is a diagram-style procedure
 (complete with (most of) the debugging information, and the constant
 conversion).  The return value of @tt{function->propagator-constructor}
-can be put into a cell, just same way that a Scheme procedure
+can be put into a cell, just the same way that a Scheme procedure
 can be the value of a Scheme variable.  For example, you might define:
 @example{
 (define-cell p:my-primitive (function->propagator-constructor do-it))
@@ -2109,7 +2121,7 @@ wraps the given function up into a propagator directly, and it is up
 to the function itself to handle any interesting partial information
 type that might come out of its argument cells.  Notably, @tt{nothing}
 might show up in the arguments of that function when it is called.
-Therefore, it may be appropriate the make the function itself generic,
+Therefore, it may be appropriate to make the function itself generic,
 and/or wrap it in @tt{nary-mapping}.
 
 For example, let us walk through the implementation of the provided
