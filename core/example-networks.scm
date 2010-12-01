@@ -33,7 +33,7 @@
  (define-cell f)
  (define-cell c)
 
- (c:fahrenheit->celsius f c)
+ (p:fahrenheit->celsius f c)
 
  (add-content f 77)
  (run)
