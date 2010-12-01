@@ -59,6 +59,10 @@
   (make-interval (+ (interval-low x) (interval-low y))
 		 (+ (interval-high x) (interval-high y))))
 
+(define (sub-interval x y)
+  (make-interval (- (interval-low x) (interval-high y))
+		 (- (interval-high x) (interval-low y))))
+
 (define (mul-interval x y)
   (make-interval (* (interval-low x) (interval-low y))
                  (* (interval-high x) (interval-high y))))
@@ -75,6 +79,14 @@
   (make-interval (sqrt (interval-low x))
                  (sqrt (interval-high x))))
 
+(define (log-interval x)
+  (make-interval (log (interval-low x))
+                 (log (interval-high x))))
+
+(define (exp-interval x)
+  (make-interval (exp (interval-low x))
+                 (exp (interval-high x))))
+
 (define (empty-interval? x)
   (> (interval-low x) (interval-high x)))
 
@@ -88,10 +100,15 @@
    (exactness-min (interval-high x) (interval-high y))))
 
 (defhandler-coercing generic-+ add-interval ->%interval)
+(defhandler-coercing generic-- sub-interval ->%interval)
 (defhandler-coercing generic-* mul-interval ->%interval)
 (defhandler-coercing generic-/ div-interval ->%interval)
+
 (defhandler generic-square square-interval %interval?)
 (defhandler generic-sqrt sqrt-interval %interval?)
+
+(defhandler generic-log log-interval %interval?)
+(defhandler generic-exp exp-interval %interval?)
 
 (defhandler-coercing merge intersect-intervals ->%interval)
 (defhandler-coercing equivalent? interval-equal? ->%interval)
