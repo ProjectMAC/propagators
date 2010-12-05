@@ -22,4 +22,5 @@
 (for-each load-relative
   '(; "selectors-test"
     "voltage-divider-test"
-    "bridge-rectifier-test"))
+    "bridge-rectifier-test"
+    "galaxy-range-test"))
