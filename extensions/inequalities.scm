@@ -96,8 +96,11 @@
       (car (inequality-variables ineq))
       (error "No unique variable in" ineq)))
 
+(define (normalized-ineq? ineq)
+  (number? (inequality-expr2 ineq)))
+
 (define (normalize-ineq ineq)
-  (if (solved-ineq? ineq)
+  (if (normalized-ineq? ineq)
       ineq
       (make-inequality
        (inequality-direction ineq)
@@ -141,7 +144,7 @@
     (and answer (map inequality->list answer))))
 
 (define (simplify-inequalities inequalities)
-  (let loop ((inequalities (map normalize-ineq inequalities))
+  (let loop ((inequalities (map simplify-ineq inequalities))
 	     (solved '())
 	     (unsolved '()))
     (if (null? inequalities)
@@ -415,3 +418,46 @@
 	   (loop (cdr addends)
 		 coefficients-of-var
 		 (cons (car addends) constants))))))
+
+(define (simplify-ineq ineq)
+  (define (try-power dir expr num loop done)
+    (numerify
+     (cadr (operands expr))
+     (lambda (power)
+       (if (even? power)
+	   ;; Even powers are not monotonic
+	   (done)
+	   (loop dir (car (operands expr)) (expt num (/ 1 power)))))
+     done))
+  (define (try-product dir expr num loop done)
+    (let ((numbers (filter number? expr)))
+      (if (null? numbers)
+	  (done)
+	  (let ((coeff (apply * numbers)))
+	    ;; Assume coeff = 0 would have simplifed already
+	    (loop (if (> coeff 0) dir (reverse-sense dir))
+		  (simplify (symb:/ expr coeff))
+		  (/ num coeff))))))
+  (define (try-sum dir expr num loop done)
+    (let ((numbers (filter number? expr)))
+      (if (null? numbers)
+	  (done)
+	  (let ((addend (apply + numbers)))
+	    (loop dir
+		  (simplify (symb:- expr addend))
+		  (- num addend))))))
+  (let ((ineq (normalize-ineq ineq)))
+    (if (determined-ineq? ineq)
+	ineq
+	(let loop ((dir (inequality-direction ineq))
+		   (expr (inequality-expr1 ineq))
+		   (num  (inequality-expr2 ineq)))
+	  (define (done)
+	    (%make-inequality dir expr num))
+	  (cond ((expt? expr)
+		 (try-power dir expr num loop done))
+		((product? expr)
+		 (try-product dir expr num loop done))
+		((sum? expr)
+		 (try-sum dir expr num loop done))
+		(else (done)))))))

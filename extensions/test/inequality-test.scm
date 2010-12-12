@@ -84,7 +84,7 @@
 	   (make-inequality '<= '(- (* 2 x) 8)))))
    (generic-match
     (list (make-solved-inequality '< 'x 4)
-	  (make-inequality '>= '(+ (expt z 2) z 2)))
+	  (%make-inequality '>= '(+ (expt z 2) z) -2))
     (simplify-inequalities
      (list (make-inequality '< '(- x 4))
 	   (make-inequality '>= '(+ z 2 (* z z)))
@@ -122,6 +122,17 @@
     (transitive-ineq (make-solved-inequality '> 'x 4)
 		     (make-solved-inequality '< 'x 5)))
 
+   (equal?
+    '()
+    (solve-inequalities '((<= (* x y) (* x y)))))
+
+   (equal?
+    '((>= x -2))
+    (solve-inequalities '((<= (+ (* 2 x) 1) (+ (* 5 x) 7)))))
+
+   (equal?
+    '((>= (* x y) -2))
+    (solve-inequalities '((<= (+ (* 2 (* x y)) 1) (+ (* 5 (* x y)) 7)))))
    ))
  
 
