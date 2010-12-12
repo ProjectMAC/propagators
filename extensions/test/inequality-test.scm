@@ -133,6 +133,11 @@
    (equal?
     '((>= (* x y) -2))
     (solve-inequalities '((<= (+ (* 2 (* x y)) 1) (+ (* 5 (* x y)) 7)))))
+
+   (equal?
+    '((>= (* x y) -2))
+    (solve-inequalities '((<= (+ (* 2 (* x y)) 1) (+ (* 5 (* x y)) 7))
+			  (>= (* x y) -3))))
    ))
  
 

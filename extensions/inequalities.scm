@@ -148,9 +148,7 @@
 	     (solved '())
 	     (unsolved '()))
     (if (null? inequalities)
-	(let ((consistent (consistent-subset solved)))
-	  (and consistent
-	       (append consistent (reverse unsolved))))	
+	(consistent-subset (append unsolved solved))	
 	(try-inequality
 	 (car inequalities)
 	 (lambda (deduction)
@@ -171,21 +169,23 @@
 		 solved 
 		 (cons (car inequalities) unsolved)))))))
 
-(define (consistent-subset solved-inequalities)
-  (let loop ((variables
-	      (delete-duplicates
-	       (map the-ineq-variable solved-inequalities)))
-	     (answer '()))
-    (if (null? variables)
-	answer
-	(let ((one-var-consistent
-	       (consistent-subset-one-var
-		(filter (lambda (ineq)
-			  (equal? (car variables)
-				  (the-ineq-variable ineq)))
-			solved-inequalities))))
-	  (and one-var-consistent
-	       (loop (cdr variables) (append one-var-consistent answer)))))))
+(define (consistent-subset inequalities)
+  (let ((inequalities (map normalize-ineq inequalities)))
+    (let loop ((expressions
+		(delete-duplicates
+		 (map inequality-expr1 inequalities)))
+	       (answer '()))
+      (if (null? expressions)
+	  answer
+	  (let ((one-expr-consistent
+		 (consistent-subset-one-expr
+		  (filter (lambda (ineq)
+			    (equal? (car expressions)
+				    (inequality-expr1 ineq)))
+			  inequalities))))
+	    (and one-expr-consistent
+		 (loop (cdr expressions)
+		       (append one-expr-consistent answer))))))))
 
 (define (minimum lst <)
   (if (null? lst)
@@ -204,17 +204,9 @@
 (define (lower-bound-ineq? ineq)
   (memq (inequality-direction ineq) '(> >=)))
 
-(define (solved-upper-bound-ineq? ineq)
-  (and (upper-bound-ineq? ineq)
-       (solved-ineq? ineq)))
-
-(define (solved-lower-bound-ineq? ineq)
-  (and (lower-bound-ineq? ineq)
-       (solved-ineq? ineq)))
-
 (define (stricter-upper-bound? ineq1 ineq2)
-  (and (solved-upper-bound-ineq? ineq1)
-       (solved-upper-bound-ineq? ineq2)
+  (and (equal? (inequality-expr1 ineq1)
+	       (inequality-expr1 ineq2))
        (or (< (inequality-expr2 ineq1)
 	      (inequality-expr2 ineq2))
 	   (and (= (inequality-expr2 ineq1)
@@ -224,8 +216,8 @@
 			 (eq? '<= (inequality-direction ineq2))))))))
 
 (define (stricter-lower-bound? ineq1 ineq2)
-  (and (solved-lower-bound-ineq? ineq1)
-       (solved-lower-bound-ineq? ineq2)
+  (and (equal? (inequality-expr1 ineq1)
+	       (inequality-expr1 ineq2))
        (or (> (inequality-expr2 ineq1)
 	      (inequality-expr2 ineq2))
 	   (and (= (inequality-expr2 ineq1)
@@ -234,11 +226,13 @@
 		    (and (eq? '>= (inequality-direction ineq1))
 			 (eq? '>= (inequality-direction ineq2))))))))
 
-(define (consistent-subset-one-var solved-inequalities)
-  (let ((best-upper-bound (minimum (filter solved-upper-bound-ineq? solved-inequalities)
-				   stricter-upper-bound?))
-	(best-lower-bound (minimum (filter solved-lower-bound-ineq? solved-inequalities)
-				   stricter-lower-bound?)))
+(define (consistent-subset-one-expr inequalities)
+  (let ((best-upper-bound
+	 (minimum (filter upper-bound-ineq? inequalities)
+		  stricter-upper-bound?))
+	(best-lower-bound
+	 (minimum (filter lower-bound-ineq? inequalities)
+		  stricter-lower-bound?)))
     (cond ((and best-upper-bound best-lower-bound)
 	   (let ((consistent?
 		  (evaluate-ineq
