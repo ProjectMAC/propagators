@@ -61,7 +61,10 @@
     ,(inequality-expr2 ineq)))
 
 (define (list->inequality lst)
-  (%make-inequality (car lst) (cadr lst) (caddr lst)))
+  (if (and (= 3 (length lst))
+	   (memq (car lst) '(< > <= >=)))
+      (%make-inequality (car lst) (cadr lst) (caddr lst))
+      (error "Given list does not look like an inequality" lst)))
 
 (define (%make-inequality dir expr1 expr2)
   (if (not (memq dir '(< <= > >=)))
