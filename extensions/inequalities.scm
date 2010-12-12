@@ -49,12 +49,26 @@
 	     (cons tree answer)))))
   (delete-duplicates (filter symbolic-variable? (tree-fringe expr))))
 
+(define-structure (inequality (constructor %%make-inequality) safe-accessors)
+  direction
+  expr1
+  expr2
+  variables)
+
+(define (inequality->list ineq)
+  `(,(inequality-direction ineq)
+    ,(inequality-expr1 ineq)
+    ,(inequality-expr2 ineq)))
+
+(define (list->inequality lst)
+  (%make-inequality (car lst) (cadr lst) (caddr lst)))
+
 (define (%make-inequality dir expr1 expr2)
   (if (not (memq dir '(< <= > >=)))
       (error "Unsupported direction" dir))
   (let ((expr1 (simplify expr1))
 	(expr2 (simplify expr2)))
-    (list dir expr1 expr2 (find-variables (cons expr1 expr2)))))
+    (%%make-inequality dir expr1 expr2 (find-variables (cons expr1 expr2)))))
 
 (define (make-inequality dir expr)
   (%make-inequality dir expr 0))
@@ -64,9 +78,6 @@
       (error "Incomplete solution" dir var answer))
   (%make-inequality dir var answer))
 
-(define (inequality-direction ineq) (car ineq))
-(define (inequality-expr1 ineq) (cadr ineq))
-(define (inequality-expr2 ineq) (caddr ineq))
 (define (inequality-expression ineq)
   (if (and (number? (inequality-expr2 ineq))
 	   (= 0 (inequality-expr2 ineq)))
@@ -74,7 +85,6 @@
       (simplify
        (symb:- (inequality-expr1 ineq)
 	       (inequality-expr2 ineq)))))
-(define (inequality-variables ineq) (cadddr ineq))
 (define (the-ineq-variable ineq)
   (if (= 1 (length (inequality-variables ineq)))
       (car (inequality-variables ineq))
