@@ -61,10 +61,13 @@
     ,(inequality-expr2 ineq)))
 
 (define (list->inequality lst)
-  (if (and (= 3 (length lst))
-	   (memq (car lst) '(< > <= >=)))
-      (%make-inequality (car lst) (cadr lst) (caddr lst))
-      (error "Given list does not look like an inequality" lst)))
+  (if (inequality? lst)
+      lst
+      (if (and (pair? lst)
+	       (= 3 (length lst))
+	       (memq (car lst) '(< > <= >=)))
+	  (%make-inequality (car lst) (cadr lst) (caddr lst))
+	  (error "Given object does not look like an inequality" lst))))
 
 (define (%make-inequality dir expr1 expr2)
   (if (not (memq dir '(< <= > >=)))
@@ -133,6 +136,10 @@
 ;;; This is the main interface to the inequality solver.  Given a list
 ;;; of inequalities, it either returns a simplified list of
 ;;; inequalities, of #f if the inequalities are inconsistent.
+(define (solve-inequalities inequalities)
+  (let ((answer (simplify-inequalities (map list->inequality inequalities))))
+    (and answer (map inequality->list answer))))
+
 (define (simplify-inequalities inequalities)
   (let loop ((inequalities inequalities)
 	     (solved '())
