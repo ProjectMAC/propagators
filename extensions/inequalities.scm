@@ -141,7 +141,7 @@
     (and answer (map inequality->list answer))))
 
 (define (simplify-inequalities inequalities)
-  (let loop ((inequalities inequalities)
+  (let loop ((inequalities (map normalize-ineq inequalities))
 	     (solved '())
 	     (unsolved '()))
     (if (null? inequalities)
