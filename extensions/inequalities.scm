@@ -147,7 +147,7 @@
     (if (null? inequalities)
 	(let ((consistent (consistent-subset solved)))
 	  (and consistent
-	       (append consistent unsolved)))	
+	       (append consistent (reverse unsolved))))	
 	(try-inequality
 	 (car inequalities)
 	 (lambda (deduction)
