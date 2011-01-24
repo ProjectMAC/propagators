@@ -68,6 +68,36 @@
   (function->propagator-constructor (binary-mapping generic-or)))
 (define-cell e:or (expression-style-variant p:or))
 
+(define (boolean/dna c x)
+  (if (and (not c) x) #f nothing))
+(define generic-dna (make-generic-operator 2 'dna boolean/dna))
+(define-cell p:dna
+  (function->propagator-constructor (binary-mapping generic-dna)))
+(define-cell e:dna
+  (expression-style-variant p:dna))
+
+(define (boolean/imp a) (if a #t nothing))
+(define generic-imp (make-generic-operator 1 'imp boolean/imp))
+(define-cell p:imp
+  (function->propagator-constructor (unary-mapping generic-imp)))
+(define-cell e:imp
+  (expression-style-variant p:imp))
+
+(define (boolean/ro c x)
+  (if (and c (not x)) #t nothing))
+(define generic-ro (make-generic-operator 2 'ro boolean/ro))
+(define-cell p:ro
+  (function->propagator-constructor (binary-mapping generic-ro)))
+(define-cell e:ro
+  (expression-style-variant p:ro))
+
+(define (boolean/pmi a) (if (not a) #f nothing))
+(define generic-pmi (make-generic-operator 1 'pmi boolean/pmi))
+(define-cell p:pmi
+  (function->propagator-constructor (unary-mapping generic-pmi)))
+(define-cell e:pmi
+  (expression-style-variant p:pmi))
+
 (propagatify eq?)
 (propagatify eqv?)
 (propagatify expt)
@@ -128,9 +158,23 @@
 (define-propagator (c:not p1 p2)
   (p:not p1 p2)        (p:not p2 p1))
 
+(define-propagator (c:and p1 p2 p)
+  (p:and p1 p2 p)
+  (p:dna p p1 p2)
+  (p:dna p p2 p1)
+  (p:imp p p1)
+  (p:imp p p2))
+
+(define-propagator (c:or p1 p2 p)
+  (p:or p1 p2 p)
+  (p:ro p p1 p2)
+  (p:ro p p2 p1)
+  (p:pmi p p1)
+  (p:pmi p p2))
+
 (define-propagator (c:id c1 c2)
   (p:id c1 c2) (p:id c2 c1))
-
+
 (define-cell p:==
   (propagator-constructor!
    (lambda args
