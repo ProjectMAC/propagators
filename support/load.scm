@@ -40,7 +40,6 @@
   '("profiler"
     "mit-profile"
     "eq-properties"
-    "generic-system"
     "generics-again"
     "coercions"
     "insertion-order-sets"
