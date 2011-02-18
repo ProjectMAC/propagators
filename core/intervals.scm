@@ -99,10 +99,29 @@
    (exactness-max (interval-low x) (interval-low y))
    (exactness-min (interval-high x) (interval-high y))))
 
+
+(define (<-interval x y)
+  (< (interval-high x) (interval-low y)))
+
+(define (<=-interval x y)
+  (<= (interval-high x) (interval-low y)))
+
+(define (>-interval x y)
+  (> (interval-low x) (interval-high y)))
+
+(define (>=-interval x y)
+  (>= (interval-low x) (interval-high y)))
+
+
 (defhandler-coercing generic-+ add-interval ->%interval)
 (defhandler-coercing generic-- sub-interval ->%interval)
 (defhandler-coercing generic-* mul-interval ->%interval)
 (defhandler-coercing generic-/ div-interval ->%interval)
+
+(defhandler-coercing generic-< <-interval ->%interval)
+(defhandler-coercing generic-<= <=-interval ->%interval)
+(defhandler-coercing generic-> >-interval ->%interval)
+(defhandler-coercing generic->= >=-interval ->%interval)
 
 (defhandler generic-square square-interval %interval?)
 (defhandler generic-sqrt sqrt-interval %interval?)
