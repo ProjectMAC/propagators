@@ -101,17 +101,24 @@
 
 
 (define (<-interval x y)
-  (< (interval-high x) (interval-low y)))
+  (or (< (interval-high x) (interval-low y))
+      (and (< (interval-low x) (interval-high y))
+	   nothing)))
 
 (define (<=-interval x y)
-  (<= (interval-high x) (interval-low y)))
+  (or (<= (interval-high x) (interval-low y))
+      (and (<= (interval-low x) (interval-high y))
+	   nothing)))
 
 (define (>-interval x y)
-  (> (interval-low x) (interval-high y)))
+  (or (> (interval-low x) (interval-high y))
+      (and (> (interval-high x) (interval-low y))
+	   nothing)))
 
 (define (>=-interval x y)
-  (>= (interval-low x) (interval-high y)))
-
+  (or (>= (interval-low x) (interval-high y))
+      (and (>= (interval-high x) (interval-low y))
+	   nothing)))
 
 (defhandler-coercing generic-+ add-interval ->%interval)
 (defhandler-coercing generic-- sub-interval ->%interval)
