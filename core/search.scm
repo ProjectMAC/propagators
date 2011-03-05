@@ -25,8 +25,8 @@
 (define *avoid-false-true-flips* #t)
 
 (define (binary-amb cell)
-  (let ((true-premise (make-hypothetical))
-        (false-premise (make-hypothetical)))
+  (let ((true-premise (make-hypothetical (list 'true cell)))
+        (false-premise (make-hypothetical (list 'false cell))))
     (define (amb-choose)
       (if (and *avoid-false-true-flips*
 	       (or (premise-in? true-premise)

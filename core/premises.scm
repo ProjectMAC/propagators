@@ -23,7 +23,8 @@
 
 (define-structure
   (hypothetical (type vector) (named 'hypothetical)
-                (print-procedure #f) (safe-accessors #t)))
+                (print-procedure #f) (safe-accessors #t))
+  specified)
 
 (define *worldview-number* 0)
 (define *premise-outness* (make-eq-hash-table))
