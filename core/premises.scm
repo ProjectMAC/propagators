@@ -26,7 +26,7 @@
     (lambda (port)
       (pp `(hypothetical
 	    ,(hypothetical-sign object)
-	    ,(name (hypothetical-cell object)))
+	    ,@(name-stack (hypothetical-cell object)))
 	  port))))
 
 (define-structure
