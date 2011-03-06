@@ -24,9 +24,9 @@
 (define (hypothetical-printer state object)
   (with-current-unparser-state state
     (lambda (port)
-      (pp `(hypothetical
-	    ,(hypothetical-sign object)
-	    ,@(name-stack (hypothetical-cell object)))
+      (write `(hypothetical
+	       ,(hypothetical-sign object)
+	       ,@(name-stack (hypothetical-cell object)))
 	  port))))
 
 (define-structure
