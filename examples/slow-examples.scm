@@ -156,20 +156,21 @@
      (check
       ;; The puzzle has two consistent assignments, and which one is
       ;; found depends on propagator firing order.
-      (or (generic-match
-	   '(#(deck poop     windlass  galliard-lute        rum)
-	     #(deck quarter  scurvy    tamarind-jewels      biscuits)
-	     #(deck main     bosun     calypso-figure       firearms)
-	     #(deck gun      draconio  casket-of-magenta    ropes)
-	     #(deck lower    kraken    goldenhall-talisman  spare-sails))
-	   answer)
-	  (generic-match
-	   '(#(deck poop     windlass  galliard-lute        rum)
-	     #(deck quarter  bosun     tamarind-jewels      biscuits)
-	     #(deck main     draconio  calypso-figure       firearms)
-	     #(deck gun      scurvy    casket-of-magenta    ropes)
-	     #(deck lower    kraken    goldenhall-talisman  spare-sails))
-	   answer))))
+      (boolean/or
+       (generic-match
+	'(#(deck poop     windlass  galliard-lute        rum)
+	  #(deck quarter  scurvy    tamarind-jewels      biscuits)
+	  #(deck main     bosun     calypso-figure       firearms)
+	  #(deck gun      draconio  casket-of-magenta    ropes)
+	  #(deck lower    kraken    goldenhall-talisman  spare-sails))
+	answer)
+       (generic-match
+	'(#(deck poop     windlass  galliard-lute        rum)
+	  #(deck quarter  bosun     tamarind-jewels      biscuits)
+	  #(deck main     draconio  calypso-figure       firearms)
+	  #(deck gun      scurvy    casket-of-magenta    ropes)
+	  #(deck lower    kraken    goldenhall-talisman  spare-sails))
+	answer))))
    (check (= *number-of-calls-to-fail* 803))
    (check (= *worldview-number* 3098))))
 
