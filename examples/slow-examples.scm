@@ -145,8 +145,8 @@
        #(knight sir-jules     ,s8 ,h8)
        #(knight sir-balthus   ,s9 ,h9))
      (map v&s-value (map tms-query (show-time find-solution)))))
-   (check (= *number-of-calls-to-fail* 399))
-   (check (= *worldview-number* 1358))))
+   (check (= *number-of-calls-to-fail* 488))
+   (check (= *worldview-number* 2410))))
 
 (in-test-group
  albatross-conundrum
@@ -171,8 +171,8 @@
 	  #(deck gun      scurvy    casket-of-magenta    ropes)
 	  #(deck lower    kraken    goldenhall-talisman  spare-sails))
 	answer))))
-   (check (= *number-of-calls-to-fail* 803))
-   (check (= *worldview-number* 3098))))
+   (check (= *number-of-calls-to-fail* 607))
+   (check (= *worldview-number* 1858))))
 
 ;;; This one is too slow even for the slow-examples!
 #;

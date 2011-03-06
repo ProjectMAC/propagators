@@ -168,17 +168,15 @@
 (defhandler-coercing merge the-tms-handler ->tms)
 
 (define (tms-> tms)
-  (cond ((null? (tms-values tms))
-	 nothing)
-	((and (= 1 (length (tms-values tms)))
-	      (v&s? (car (tms-values tms)))
-	      (null? (v&s-support (car (tms-values tms)))))
-	 (v&s-value (car (tms-values tms))))
-	((and (= 1 (length (tms-values tms)))
-	      (nothing? (car (tms-values tms))))
-	 nothing)
-	(else
-	 tms)))
+  (let ((values (filter v&s? (map v&s-> (map ->contingent (tms-values tms))))))
+    (cond ((null? values)
+	   nothing)
+	  ((and (= 1 (length values))
+		(v&s? (car values))
+		(null? (v&s-support (car values))))
+	   (v&s-value (car values)))
+	  (else
+	   (make-tms values)))))
 
 (define (tms-binary-map tms1 tms2)
   (lambda (f)
