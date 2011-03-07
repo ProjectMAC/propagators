@@ -34,13 +34,21 @@
 |#
 
 (define (interval-printer state object)
-  (with-current-unparser-state state
-    (lambda (port)
-      (display "#[interval " port)
-      (write (interval-low object) port)
-      (display " " port)
-      (write (interval-high object) port)
-      (display "]" port))))
+  (if (empty-interval? object)
+      (with-current-unparser-state state
+	(lambda (port)
+	  (display "#[contradictory-interval " port)
+	  (write (interval-low object) port)
+	  (display " " port)
+	  (write (interval-high object) port)
+	  (display "]" port)))
+      (with-current-unparser-state state
+	(lambda (port)
+	  (display "#[interval " port)
+	  (write (interval-low object) port)
+	  (display " " port)
+	  (write (interval-high object) port)
+	  (display "]" port)))))
 
 (define-structure
   (%interval (safe-accessors #t)
@@ -67,7 +75,9 @@
   (%interval-high (->%interval thing)))
 
 (define (make-interval low high)
-  (%interval-> (make-%interval low high)))
+  (%interval-> (make-%interval low high)))
+
+
 (define (interval-equal? int1 int2)
   (and (= (interval-low int1) (interval-low int2))
        (= (interval-high int1) (interval-high int2))))
