@@ -114,7 +114,11 @@
       (fluid-let ((*number-of-calls-to-fail* #f))
 	(apply with-independent-scheduler args)))))
 
+
+(define *contradiction-wallp* #f)
+
 (define (process-nogood! nogood)
   (set! *number-of-calls-to-fail*
         (+ *number-of-calls-to-fail* 1))
+  (if *contradiction-wallp* (pp `(nogood ,@nogood)))
   (process-one-contradiction nogood))

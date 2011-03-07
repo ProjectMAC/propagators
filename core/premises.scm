@@ -26,6 +26,7 @@
     (lambda (port)
       (write `(hypothetical
 	       ,(hypothetical-sign object)
+	       ,(if (premise-in? object) 'in 'out)
 	       ,@(name-stack (hypothetical-cell object)))
 	  port))))
 
