@@ -21,6 +21,7 @@
 
 (declare (usual-integrations make-cell cell?))
 
+#|
 (define-structure
   (%interval (safe-accessors #t)
 	     (print-procedure
@@ -30,6 +31,22 @@
 		 (list (interval-low interval)
 		       (interval-high interval))))))
   low high)
+|#
+
+(define (interval-printer state object)
+  (with-current-unparser-state state
+    (lambda (port)
+      (display "#[interval " port)
+      (write (interval-low object) port)
+      (display " ")
+      (write (interval-high object) port)
+      (display "]" port))))
+
+(define-structure
+  (%interval (safe-accessors #t)
+	     (print-procedure interval-printer))
+  low high)
+
 (declare-type-tester %interval? rtd:%interval)
 (declare-coercion-target %interval)
 (declare-coercion <number> ->%interval (lambda (x) (make-%interval x x)))
