@@ -38,7 +38,7 @@
     (lambda (port)
       (display "#[interval " port)
       (write (interval-low object) port)
-      (display " ")
+      (display " " port)
       (write (interval-high object) port)
       (display "]" port))))
 
