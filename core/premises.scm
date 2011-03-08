@@ -25,6 +25,7 @@
   (with-current-unparser-state state
     (lambda (port)
       (write `(hypothetical
+	       ,(hash object)
 	       ,(hypothetical-sign object)
 	       ,(if (premise-in? object) 'in 'out)
 	       ,@(name-stack (hypothetical-cell object)))
