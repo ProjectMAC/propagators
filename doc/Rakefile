@@ -37,15 +37,6 @@ def autobib filename
 end
 # End copied definitions
 
-def rstify filename
-  file "#{filename}.html" => ["#{filename}.rst", "style.css"] do
-    sh "rst2html --stylesheet style.css #{filename}.rst > #{filename}.html"
-  end
-  task :doc => "#{filename}.html"
-end
-
-rstify "programmer-guide"
-
 task :doc => :pdflatex
 
 pdflatex "revised"
