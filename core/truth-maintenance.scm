@@ -21,11 +21,29 @@
 
 (declare (usual-integrations make-cell cell?))
 
+#|
+;;; This causes real trouble with pretty-printing
 (define-structure
   (tms (type vector) (named 'tms)
        (constructor %make-tms) (print-procedure #f)
        (safe-accessors #t))
   values)
+|#
+
+(define (%make-tms values)
+  (vector 'tms values))
+
+(define (tms? x)
+  (and (vector? x) (eq? (vector-ref x 0) 'tms)))
+
+(define (tms-values tms)
+  (if (not (tms? tms)) (error "Bad tms -- TMS-VALUES" tms))
+  (vector-ref tms 1))
+
+(define (set-tms-values! tms new-values)
+  (if (not (tms? tms)) (error "Bad tms -- SET-TMS-VALUES!" tms))
+  (vector-set! tms 1 new-values))
+
 
 (define (make-tms arg)
   (%make-tms (listify arg)))
