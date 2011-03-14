@@ -180,4 +180,19 @@
      (check (eqv? 1 (content (e:car ones))))
      (check (eqv? 1 (content (e:car (e:cdr ones)))))
      (check (eqv? 1 (content (e:car (e:cdr (e:cdr ones))))))))
+
+ ;; Fails because of bug in interval-equal?
+ #;
+ (define-test (monotonic-intervals)
+   (interaction
+    (initialize-scheduler)
+    (define-cell range1 (make-interval -5 5))
+    (define-cell range2 (make-interval -5 5))
+    (define-cell same? (e:= range1 range2))
+    (run)
+    (add-content range1 (make-interval 3 5))
+    (add-content range2 (make-interval 1 2))
+    (run)
+    (content same?)
+    (produces #f)))
  )
