@@ -91,12 +91,19 @@
 		 (- (interval-high x) (interval-low y))))
 
 (define (mul-interval x y)
-  (make-interval (* (interval-low x) (interval-low y))
-                 (* (interval-high x) (interval-high y))))
+  (let ((p1 (* (interval-low x)  (interval-low y)))
+	(p2 (* (interval-low x)  (interval-high y)))
+	(p3 (* (interval-high x) (interval-low y)))
+	(p4 (* (interval-high x) (interval-high y))))
+    (make-interval (min p1 p2 p3 p4)
+		   (max p1 p2 p3 p4))))
 
 (define (div-interval x y)
-  (mul-interval x (make-interval (/ 1.0 (interval-high y))
-                                 (/ 1.0 (interval-low y)))))
+  (if (<= (interval-low y) 0 (interval-high y))
+      (error "Cannot divide by interval spanning 0" x y))
+  (mul-interval x
+		(make-interval (/ 1 (interval-high y))
+			       (/ 1 (interval-low y)))))
 
 (define (square-interval x)
   (make-interval (square (interval-low x))
