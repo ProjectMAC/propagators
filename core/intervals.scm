@@ -126,6 +126,13 @@
    (exactness-max (interval-low x) (interval-low y))
    (exactness-min (interval-high x) (interval-high y))))
 
+;; This differs from interval-equal? because is has to be monotonic
+;; with respect to the intervals shrinking.
+(define (=-interval x y)
+  (or (= (interval-low x) (interval-high x)
+         (interval-low y) (interval-high y))
+      (and (not (empty-interval? (intersect-intervals x y)))
+           nothing)))
 
 (define (<-interval x y)
   (or (< (interval-high x) (interval-low y))
@@ -152,7 +159,7 @@
 (defhandler-coercing generic-* mul-interval ->%interval)
 (defhandler-coercing generic-/ div-interval ->%interval)
 
-(defhandler-coercing generic-= interval-equal? ->%interval)
+(defhandler-coercing generic-= =-interval ->%interval)
 (defhandler-coercing generic-< <-interval ->%interval)
 (defhandler-coercing generic-<= <=-interval ->%interval)
 (defhandler-coercing generic-> >-interval ->%interval)

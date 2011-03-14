@@ -181,8 +181,6 @@
      (check (eqv? 1 (content (e:car (e:cdr ones)))))
      (check (eqv? 1 (content (e:car (e:cdr (e:cdr ones))))))))
 
- ;; Fails because of bug in interval-equal?
- #;
  (define-test (monotonic-intervals)
    (interaction
     (initialize-scheduler)
