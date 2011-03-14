@@ -152,6 +152,7 @@
 (defhandler-coercing generic-* mul-interval ->%interval)
 (defhandler-coercing generic-/ div-interval ->%interval)
 
+(defhandler-coercing generic-= interval-equal? ->%interval)
 (defhandler-coercing generic-< <-interval ->%interval)
 (defhandler-coercing generic-<= <=-interval ->%interval)
 (defhandler-coercing generic-> >-interval ->%interval)

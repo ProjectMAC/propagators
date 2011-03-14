@@ -48,8 +48,8 @@
 
 (propagatify +)
 (propagatify -)
-(propagatify *)
-(propagatify /)
+;;;(propagatify *)  ;See below, to make more sophisticated version
+;;;(propagatify /)  ;See below, to make more sophisticated version
 (propagatify =)
 (propagatify <)
 (propagatify >)
@@ -58,16 +58,18 @@
 (propagatify atan2)
 
 ;; Not using propagatify because the name AND names syntax, and I want
-;; the procedure BOOLEAN/AND
+;; the procedure BOOLEAN/AND.  Also, see more sophisticated version
+;; below.
 (define generic-and (make-generic-operator 2 'and boolean/and))
-(define-cell p:and
+(define-cell p:and-dumb
   (function->propagator-constructor (binary-mapping generic-and)))
-(define-cell e:and (expression-style-variant p:and))
+(define-cell e:and-dumb (expression-style-variant p:and-dumb))
 (define generic-or  (make-generic-operator 2 'or  boolean/or))
-(define-cell p:or
+(define-cell p:or-dumb
   (function->propagator-constructor (binary-mapping generic-or)))
-(define-cell e:or (expression-style-variant p:or))
+(define-cell e:or-dumb (expression-style-variant p:or-dumb))
 
+;;; DNA is to AND as division is to multiplication
 (define (boolean/dna c x)
   (if (and (not c) x) #f nothing))
 (define generic-dna (make-generic-operator 2 'dna boolean/dna))
@@ -83,6 +85,7 @@
 (define-cell e:imp
   (expression-style-variant p:imp))
 
+;;; RO is to OR as division is to multiplication
 (define (boolean/ro c x)
   (if (and c (not x)) #t nothing))
 (define generic-ro (make-generic-operator 2 'ro boolean/ro))
@@ -134,6 +137,49 @@
 (define conditional p:conditional)
 (define conditional-router p:conditional-router)
 (define conditional-wire p:conditional-wire)
+
+;;; Clever Propagators that know about short cuts.
+
+(define-propagator (p:or p1 p2 p)
+  (p:or-dumb p1 p2 p)
+  ;; Short cuts
+  (p:imp p1 p)
+  (p:imp p2 p))
+
+(define-propagator (p:and p1 p2 p)
+  (p:and-dumb p1 p2 p)
+  ;; Short cuts
+  (p:pmi p1 p)
+  (p:pmi p2 p))
+
+
+(define generic-* (make-generic-operator 2 '* *))
+(define-cell p:*-dumb
+  (function->propagator-constructor (binary-mapping generic-*)))
+(define-cell e:*-dumb (expression-style-variant p:*-dumb))
+
+(define-propagator (p:* m1 m2 product)
+  (p:*-dumb m1 m2 product)
+  ;; Short cuts
+  (p:switch (e:= m1 0) m1 product)
+  (p:switch (e:= m2 0) m2 product))
+
+
+
+(define (/-safe dividend divisor)
+  (if (and (zero? dividend) (zero? divisor))
+      nothing
+      (/ dividend divisor)))
+
+(define generic-/ (make-generic-operator 2 '/ /-safe))
+(define-cell p:/-dumb
+  (function->propagator-constructor (binary-mapping generic-/)))
+(define-cell e:/-dumb (expression-style-variant p:/-dumb))
+
+(define-propagator (p:/ product m1 m2)
+  (p:/-dumb product m1 m2)
+  ;; Short cut
+  (p:switch (e:= product 0) product m1))
 
 ;;; Constraining propagators
 
