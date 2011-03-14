@@ -166,12 +166,12 @@
 
 
 
-(define (/-safe dividend divisor)
-  (if (and (zero? dividend) (zero? divisor))
-      nothing
-      (/ dividend divisor)))
+;; (define (/-safe dividend divisor)
+;;   (if (and (zero? dividend) (zero? divisor))
+;;       nothing
+;;       (/ dividend divisor)))
 
-(define generic-/ (make-generic-operator 2 '/ /-safe))
+(define generic-/ (make-generic-operator 2 '/ /))
 (define-cell p:/-dumb
   (function->propagator-constructor (binary-mapping generic-/)))
 (define-cell e:/-dumb (expression-style-variant p:/-dumb))
