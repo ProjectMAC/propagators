@@ -166,12 +166,22 @@
 
 
 
-;; (define (/-safe dividend divisor)
-;;   (if (and (zero? dividend) (zero? divisor))
-;;       nothing
-;;       (/ dividend divisor)))
-
 (define generic-/ (make-generic-operator 2 '/ /))
+
+(define (numerical-zero? x) (and (number? x) (zero? x)))
+
+(define (binary-nothing a b) nothing)
+
+(defhandler generic-/ binary-nothing numerical-zero? numerical-zero?)
+
+(define (numerical-non-zero? x) (and (number? x) (not (zero? x))))
+
+(define (binary-contradiction a b) the-contradiction)
+
+(defhandler generic-/ binary-contradiction
+            numerical-non-zero? numerical-zero?)
+
+
 (define-cell p:/-dumb
   (function->propagator-constructor (binary-mapping generic-/)))
 (define-cell e:/-dumb (expression-style-variant p:/-dumb))

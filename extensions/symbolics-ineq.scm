@@ -342,7 +342,10 @@
 (no-abstract-comparisons generic->=)
 (no-abstract-comparisons generic-<=)
 
+#|
 ;;; TODO This feels like a hack...
+;;; moved to standard-propagators
 (defhandler generic-/ 
   (lambda (a b) nothing)
   any? (lambda (x) (and (number? x) (zero? x))))
+|#

@@ -183,3 +183,20 @@
 
 (defhandler contradictory? empty-interval? %interval?)
 
+
+(define (interval-non-zero? x)
+  (and (interval? x)
+       (or (< 0 (interval-low x)) (> 0 (interval-high x)))))
+
+(defhandler generic-/ binary-contradiction
+            interval-non-zero? numerical-zero?)
+
+(define (interval-contains-zero? x)
+  (and (interval? x)
+       (and (<= (interval-low x) 0) (>= (interval-high x) 0))))
+  
+(defhandler generic-/ binary-nothing
+            interval-contains-zero? numerical-zero?)
+
+
+

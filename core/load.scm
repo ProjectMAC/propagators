@@ -46,6 +46,10 @@
     "physical-closures"
     "standard-propagators"
     "carrying-cells"
+
+    ;;Intervals must follow standard-propagators in the load order
+    ;;because it depends on interval-non-zero?, numerical-zero?,
+    ;;binary-nothing, and binary-contradiction previously defined.
    
     "intervals"
     "premises"
