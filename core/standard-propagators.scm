@@ -179,7 +179,9 @@
 (define-propagator (p:/ product m1 m2)
   (p:/-dumb product m1 m2)
   ;; Short cut
-  (p:switch (e:= product 0) product m1))
+  (p:switch (e:and (e:= product 0)
+                   (e:not (e:= m1 0)))
+            product m2))
 
 ;;; Constraining propagators
 
