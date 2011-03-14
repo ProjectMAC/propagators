@@ -199,4 +199,8 @@
     (produces #f)
     (content more?)
     (produces #t)))
+
+ (define-test (divisible-intervals)
+   (check (contradictory? (generic-/ (make-interval 3 4) 0)))
+   (check (contradictory? (generic-/ (make-interval 3 4) (make-interval 0 0)))))
  )

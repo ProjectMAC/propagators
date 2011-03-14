@@ -169,12 +169,14 @@
 (define generic-/ (make-generic-operator 2 '/ /))
 
 (define (numerical-zero? x) (and (number? x) (zero? x)))
+(declare-explicit-guard numerical-zero? (guard <number> zero?))
 
 (define (binary-nothing a b) nothing)
 
 (defhandler generic-/ binary-nothing numerical-zero? numerical-zero?)
 
 (define (numerical-non-zero? x) (and (number? x) (not (zero? x))))
+(declare-explicit-guard numerical-non-zero? (guard <number> numerical-non-zero?))
 
 (define (binary-contradiction a b) the-contradiction)
 
