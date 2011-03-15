@@ -50,13 +50,19 @@
 (propagatify -)
 ;;;(propagatify *)  ;See below, to make more sophisticated version
 ;;;(propagatify /)  ;See below, to make more sophisticated version
-(propagatify =)
+;;;(propagatify =)  ;See below, to support floating comparisons...
 (propagatify <)
 (propagatify >)
 (propagatify <=)
 (propagatify >=)
 (propagatify atan2)
 
+; see ../support/utils for num=?
+(define generic-= (make-generic-operator 2 '= num=?)) 
+(define-cell p:=
+  (function->propagator-constructor (binary-mapping generic-=)))
+(define-cell e:= (expression-style-variant p:=))  
+
 ;; Not using propagatify because the name AND names syntax, and I want
 ;; the procedure BOOLEAN/AND.  Also, see more sophisticated version
 ;; below.

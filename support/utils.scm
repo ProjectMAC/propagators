@@ -21,7 +21,29 @@
 
 (declare (usual-integrations make-cell cell?))
 
+;;; For floating-point stuff...
 
+(define *machine-epsilon*
+  (let loop ((e 1.0))
+     (if (= 1.0 (+ e 1.0))
+         (* 2 e)
+         (loop (/ e 2)))))
+
+(define default-tolerance (* 16 *machine-epsilon*))
+
+(define (close-enuf? h1 h2 #!optional tolerance)
+  (if (default-object? tolerance)
+      (set! tolerance default-tolerance)
+      (set! tolerance (max tolerance *machine-epsilon*))) 
+  (<= (magnitude (- h1 h2))
+      (* .5 tolerance
+	 (+ (magnitude h1) (magnitude h2) 2.0))))
+
+(define (num=? x y)
+  (if (or (inexact? x) (inexact? y))
+      (close-enuf? x y)
+      (= x y)))
+
 (define negate
   (if (lexical-unbound? (the-environment) 'negate)
       (lambda (x)

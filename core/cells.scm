@@ -163,8 +163,13 @@
   (or (eqv? info1 info2)
       (generic-equivalent? info1 info2)))
 
+(define (eqv=? x y)
+  (if (and (number? x) (number? y))
+      (num=? x y)
+      (eqv? x y)))
+
 (define generic-equivalent?
-  (make-generic-operator 2 'equivalent? eqv?))
+  (make-generic-operator 2 'equivalent? eqv=?))
 
 (set-operator-record! equivalent? (get-operator-record generic-equivalent?))
 
