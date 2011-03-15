@@ -58,7 +58,7 @@
 (propagatify atan2)
 
 ; see ../support/utils for num=?
-(define generic-= (make-generic-operator 2 '= num=?)) 
+(define generic-= (make-generic-operator 2 '= default-equal?)) 
 (define-cell p:=
   (function->propagator-constructor (binary-mapping generic-=)))
 (define-cell e:= (expression-style-variant p:=))  
