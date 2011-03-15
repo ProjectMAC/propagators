@@ -98,12 +98,16 @@
     (make-interval (min p1 p2 p3 p4)
 		   (max p1 p2 p3 p4))))
 
+(define *error-on-zero-interval-division* #f)
+
 (define (div-interval x y)
   (if (<= (interval-low y) 0 (interval-high y))
-      (error "Cannot divide by interval spanning 0" x y))
-  (mul-interval x
-		(make-interval (/ 1 (interval-high y))
-			       (/ 1 (interval-low y)))))
+      (if *error-on-zero-interval-division*
+	  (error "Cannot divide by interval spanning 0" x y)
+	  nothing)
+      (mul-interval x
+		    (make-interval (/ 1 (interval-high y))
+				   (/ 1 (interval-low y))))))
 
 (define (square-interval x)
   (make-interval (square (interval-low x))
@@ -199,6 +203,5 @@
   
 (defhandler generic-/ binary-nothing
             interval-contains-zero? numerical-zero?)
-
 
 
