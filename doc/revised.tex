@@ -1371,9 +1371,9 @@ It is an error for an interval object to appear in the operator
 position of an apply propagator.
 
 As an interval arithmetic facility, this one is very primitive.  It
-does not allow division by an interval that contains zero, because the
-result is an interval around the point at infinity.
-The main purpose of including it is to have a partial
+does not allow division by an interval that contains zero, because that 
+would require intervals around the point at infinity.
+The main purpose of including intervals is to have a partial
 information structure with an intuitive meaning, and that requires
 nontrivial operations on the information it is over.
 
