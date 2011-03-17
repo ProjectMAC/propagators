@@ -74,14 +74,15 @@
 ;;;; Propagator cells
 
 (define (%make-cell)			; message-accepter style
-  (let ((neighbors '()) (content nothing))
+  (let ((neighbors '()) (content nothing) (whoiam #f))
     (define (add-content increment)
       (let ((info+effects (->effectful (merge content increment))))
         (let ((effects (effectful-effects info+effects))
 	      (new-content (effectful-info info+effects)))
 	  (cond ((eq? new-content content) 'ok)
 		((contradictory? new-content)
-		 (error "Ack! Inconsistency!" me increment)
+		 (error "Ack! Inconsistency!"
+			(name-stack whoiam) increment)
 		 'this-is-not-a-tail-call)
 		(else 
 		 (set! content new-content)
@@ -98,6 +99,11 @@
             ((eq? message 'add-content) add-content)
             ((eq? message 'neighbors) neighbors)
             ((eq? message 'new-neighbor!) new-neighbor!)
+	    ((eq? message 'iam!)
+	     (lambda (who)
+	       (if whoiam (error "Psychotic cell!" who whoiam))
+	       (set! whoiam who)))
+	    ((eq? message 'who?) whoiam)	     
             (else (error "Unknown message" message))))
     me))
 
@@ -108,6 +114,7 @@
        (apply application self args))
      (%make-cell)))
   (eq-put! me 'cell #t)
+  (((entity-extra me) 'iam!) me)
   (network-register me)
   me)
 
@@ -119,6 +126,8 @@
   ((entity-extra cell) 'neighbors))
 (define (new-neighbor! cell neighbor)
   (((entity-extra cell) 'new-neighbor!) neighbor))
+(define (who? cell)
+  ((entity-extra cell) 'who?))
 (define (cell? thing)
   (eq-get thing 'cell))
 
