@@ -74,8 +74,8 @@
 ;;;; Propagator cells
 
 (define (%make-cell)			; message-accepter style
-  (let ((neighbors '()) (content nothing) (whoiam #f))
-    (define (add-content increment)
+  (let ((neighbors '()) (content nothing) (whoiam #f) (history '()))
+    (define (add-content increment informant)
       (let ((info+effects (->effectful (merge content increment))))
         (let ((effects (effectful-effects info+effects))
 	      (new-content (effectful-info info+effects)))
@@ -86,7 +86,13 @@
 		 'this-is-not-a-tail-call)
 		(else 
 		 (set! content new-content)
+		 ;; Two debugging aids.
 		 (eq-adjoin! content 'visited-cells me)
+		 (augment-history! whoiam informant new-content
+				   history
+				   (lambda (new)
+				     (set! history new)))
+
 		 (alert-propagators neighbors)))
 	  (for-each execute-effect effects))))
     (define (new-neighbor! new-neighbor)
@@ -103,7 +109,8 @@
 	     (lambda (who)
 	       (if whoiam (error "Psychotic cell!" who whoiam))
 	       (set! whoiam who)))
-	    ((eq? message 'who?) whoiam)	     
+	    ((eq? message 'who?) whoiam)
+	    ((eq? message 'history) history)
             (else (error "Unknown message" message))))
     me))
 
@@ -117,20 +124,27 @@
   (((entity-extra me) 'iam!) me)
   (network-register me)
   me)
-
+
 (define (content cell)
   ((entity-extra cell) 'content))
-(define (add-content cell increment)
-  (((entity-extra cell) 'add-content) increment))
+(define (add-content cell increment #!optional informant)
+  (((entity-extra cell) 'add-content) increment informant))
 (define (neighbors cell)
   ((entity-extra cell) 'neighbors))
 (define (new-neighbor! cell neighbor)
   (((entity-extra cell) 'new-neighbor!) neighbor))
 (define (who? cell)
   ((entity-extra cell) 'who?))
+(define (history cell)
+  ((entity-extra cell) 'history))
 (define (cell? thing)
   (eq-get thing 'cell))
-
+
+;;; Default history collector collects the most recent informant only
+(define (augment-history! cell informant new-content old-history permission-to-set)
+  (permission-to-set `(,informant ,new-content)))
+
+
 (define (make-named-cell name)
   (name! (make-cell) name))
 

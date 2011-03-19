@@ -88,13 +88,14 @@
    (lambda cells
      (let ((output (ensure-cell (car (last-pair cells))))
 	   (inputs (map ensure-cell (except-last-pair cells))))
-       (let ((the-propagator
-	      (lambda ()
-		(add-content output (apply f (map content inputs))))))
-	 (eq-adjoin! output 'shadow-connections the-propagator)
-	 (eq-label! the-propagator 'name f
-                    'inputs inputs 'outputs (list output))
-	 (propagator inputs the-propagator))))))
+       (define (the-propagator)
+	 (add-content output
+		      (apply f (map content inputs))
+		      the-propagator))
+       (eq-adjoin! output 'shadow-connections the-propagator)
+       (eq-label! the-propagator 'name f
+		  'inputs inputs 'outputs (list output))
+       (propagator inputs the-propagator)))))
 
 ;;; Returns a version of the supplied propagator constructor that
 ;;; creates a propagator that will wait until at least one of the
