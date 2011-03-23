@@ -165,7 +165,9 @@
     (generic-flatten
      (make-tms
       (generic-flatten
-       (supported (tms-query (v&s-value v&s)) (v&s-support v&s))))))
+       (supported (tms-query (v&s-value v&s))
+		  (v&s-support v&s)
+		  (v&s-informants v&s))))))
   (lambda (thing) (and (v&s? thing) (tms? (v&s-value thing)))))
 
 (declare-coercion-target tms

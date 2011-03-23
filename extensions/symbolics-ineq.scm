@@ -226,7 +226,8 @@
 		 (generic-flatten (v&s-value the-value))
 		 (symb-ineq-local symb-ineq)
 		 (symb-ineq-global symb-ineq)))
-	       (v&s-support the-value))))))))
+	       (v&s-support the-value)
+	       (v&s-informants the-value))))))))
   (guard rtd:symb-ineq (lambda (thing) (tms? (symb-ineq-expression thing)))))
 
 (defhandler generic-flatten

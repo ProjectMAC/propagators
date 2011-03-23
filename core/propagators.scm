@@ -32,7 +32,7 @@
 ;;; more network structure if needed), but the system doesn't need to
 ;;; know anything about that.
 
-(define (propagator neighbors to-do)
+(define (propagator neighbors to-do)  
   (for-each (lambda (cell)
               (new-neighbor! cell to-do))
             (listify neighbors))
@@ -89,9 +89,10 @@
      (let ((output (ensure-cell (car (last-pair cells))))
 	   (inputs (map ensure-cell (except-last-pair cells))))
        (define (the-propagator)
-	 (add-content output
-		      (apply f (map content inputs))
-		      the-propagator))
+	 (fluid-let ((*active-propagator* the-propagator))
+	   (add-content output
+			(apply f (map content inputs))
+			the-propagator)))
        (eq-adjoin! output 'shadow-connections the-propagator)
        (eq-label! the-propagator 'name f
 		  'inputs inputs 'outputs (list output))

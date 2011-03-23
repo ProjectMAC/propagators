@@ -59,8 +59,8 @@
 	;; Let's have the false premise start unbelieved.
 	(mark-premise-out! false-premise))
     ((constant (make-tms
-                (list (supported #t (list true-premise))
-                      (supported #f (list false-premise)))))
+                (list (supported #t (list true-premise) (list amb-choose))
+                      (supported #f (list false-premise) (list amb-choose)))))
      cell)
     ;; The cell is a spiritual neighbor...
     (propagator cell amb-choose)))

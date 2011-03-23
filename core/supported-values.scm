@@ -18,21 +18,57 @@
 ;;; along with Propagator Network Prototype.  If not, see
 ;;; <http://www.gnu.org/licenses/>.
 ;;; ----------------------------------------------------------------------
-
+
 (declare (usual-integrations make-cell cell?))
+
+(define *depends-wallp* #f)
+
+(define (depends-printer state object)
+  (with-current-unparser-state state
+    (lambda (port)
+      (display "#(depends-on " port)
+      (write (v&s-value object) port)
+      (display " " port)
+      (write (v&s-support object) port)
+      (display " " port)
+      (write
+       (map (if *depends-wallp* name-stack name)
+	    (v&s-informants object))
+       port)
+      (display ")" port))))
 
 (define-structure
  (v&s (named 'supported) (type vector)
-      (constructor supported) (print-procedure #f)
+      (constructor %supported)
+      (print-procedure depends-printer)
       (safe-accessors #t))
- value support)
+ value support informants)
+
+(define *active-propagator* 'user)
+
+(define (supported value depends #!optional informants)
+  (%supported value depends
+	      (if (default-object? informants)
+		  (list *active-propagator*)
+		  informants)))
+
+;;; Aliases
+
+(define make-dependent-value supported)
+(define depends? v&s?)
+(define depends-value v&s-value)
+(define depends-premises v&s-support)
+(define depends-informants v&s-informants)
 
 (define contingent supported)
+(define contingent? v&s?)
 (define contingent-info v&s-value)
 (define contingent-premises v&s-support)
-(define contingent? v&s?)
+(define contingent-informants v&s-informants)
 
-(declare-coercion-target contingent (lambda (thing) (contingent thing '())))
+(declare-coercion-target contingent
+			 (lambda (thing)
+			   (contingent thing '())))
 
 (declare-coercion <symbol> ->contingent)
 (declare-coercion <number> ->contingent)
@@ -71,7 +107,10 @@
 	      (else
 	       ;; Interesting merge, need both provenances
 	       (supported value-merge
-			  (merge-supports v&s1 v&s2))))
+			  (merge-supports v&s1 v&s2)
+			  (lset-union eq?
+				      (v&s-informants v&s1)
+				      (v&s-informants v&s2)))))
 	(map (attach-support-to-effect (merge-supports v&s1 v&s2))
 	     value-effects))))))
 
@@ -115,7 +154,10 @@
     (v&s->
      (supported
       (f (v&s-value v&s1) (v&s-value v&s2))
-      (merge-supports v&s1 v&s2)))))
+      (merge-supports v&s1 v&s2)
+      (lset-union eq?
+		  (v&s-informants v&s1)
+		  (v&s-informants v&s2))))))
 
 (defhandler-coercing binary-map v&s-binary-map ->contingent)
 
@@ -123,7 +165,8 @@
   (lambda (v&s function)
     (supported
      (generic-bind (v&s-value v&s) function)
-     (v&s-support v&s)))
+     (v&s-support v&s)
+     (v&s-informants v&s)))
   v&s? any?)
 
 ;;; This particular predicate dispatch system doesn't actually do 
@@ -142,5 +185,6 @@
     (generic-flatten
      (supported
       (v&s-value (v&s-value v&s))
-      (merge-supports v&s (v&s-value v&s)))))
+      (merge-supports v&s (v&s-value v&s))
+      (v&s-informants v&s))))
   (lambda (thing) (and (v&s? thing) (v&s? (v&s-value thing)))))
