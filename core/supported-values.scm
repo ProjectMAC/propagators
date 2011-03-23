@@ -26,11 +26,11 @@
 (define (depends-printer state object)
   (with-current-unparser-state state
     (lambda (port)
-      (display "#(depends-on " port)
+      (display "#(value=" port)
       (write (v&s-value object) port)
-      (display " " port)
+      (display ", premises=" port)
       (write (v&s-support object) port)
-      (display " " port)
+      (display " informants=" port)
       (write
        (map (if *depends-wallp* name-stack name)
 	    (v&s-informants object))
