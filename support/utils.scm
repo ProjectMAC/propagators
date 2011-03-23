@@ -143,11 +143,14 @@
 	       (warn "Are you running Scheme with the default heap size?")
 	       (warn "Try, say, --heap 6000 if you run out of memory")))))
 
-(define (name thing)
+(define (default-name thing)
   (let ((name-property (eq-get thing 'name)))
     (if name-property
 	(name name-property)
 	thing)))
+
+(define name
+  (make-generic-operator 1 'name default-name))
 
 (define (name-stack thing)
   (let ((name-property (eq-get thing 'name)))

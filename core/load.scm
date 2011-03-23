@@ -59,6 +59,8 @@
     "search"
     "amb-utils"
 
+    "ui"
+
     "example-networks"
     "test-utils"))
 
