@@ -32,7 +32,12 @@
       (write (v&s-support object) port)
       (display ", informants=" port)
       (write
-       (map (if *depends-wallp* name-stack name)
+       (map (lambda (inf)
+	      (if (symbol? inf)
+		  inf
+		  (cons (name inf)
+			(map name
+			     (eq-get inf 'inputs)))))
 	    (v&s-informants object))
        port)
       (display ")" port))))
