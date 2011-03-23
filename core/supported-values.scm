@@ -154,10 +154,7 @@
     (v&s->
      (supported
       (f (v&s-value v&s1) (v&s-value v&s2))
-      (merge-supports v&s1 v&s2)
-      (lset-union eq?
-		  (v&s-informants v&s1)
-		  (v&s-informants v&s2))))))
+      (merge-supports v&s1 v&s2)))))
 
 (defhandler-coercing binary-map v&s-binary-map ->contingent)
 
@@ -165,8 +162,7 @@
   (lambda (v&s function)
     (supported
      (generic-bind (v&s-value v&s) function)
-     (v&s-support v&s)
-     (v&s-informants v&s)))
+     (v&s-support v&s)))
   v&s? any?)
 
 ;;; This particular predicate dispatch system doesn't actually do 
@@ -178,13 +174,14 @@
 
 (defhandler generic-flatten
   (lambda (v&s) nothing)
-  (lambda (thing) (and (v&s? thing) (nothing? (v&s-value thing)))))
+  (lambda (thing)
+    (and (v&s? thing) (nothing? (v&s-value thing)))))
 
 (defhandler generic-flatten
   (lambda (v&s)
     (generic-flatten
      (supported
       (v&s-value (v&s-value v&s))
-      (merge-supports v&s (v&s-value v&s))
-      (v&s-informants v&s))))
-  (lambda (thing) (and (v&s? thing) (v&s? (v&s-value thing)))))
+      (merge-supports v&s (v&s-value v&s)))))
+  (lambda (thing)
+    (and (v&s? thing) (v&s? (v&s-value thing)))))
