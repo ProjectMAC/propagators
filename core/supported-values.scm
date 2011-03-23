@@ -30,7 +30,7 @@
       (write (v&s-value object) port)
       (display ", premises=" port)
       (write (v&s-support object) port)
-      (display " informants=" port)
+      (display ", informants=" port)
       (write
        (map (if *depends-wallp* name-stack name)
 	    (v&s-informants object))
