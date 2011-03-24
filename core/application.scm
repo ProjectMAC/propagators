@@ -195,11 +195,19 @@
   (c:== (car (last-pair boundary))
 	(proc (except-last-pair boundary))))
 
+
+(define generate-cell-name
+  (let ((cell-counter 0))
+    (lambda ()
+      (set! cell-counter (+ cell-counter 1))
+      (symbol 'cell cell-counter))))
+  
+
 (define (handle-implicit-cells inputs proc #!optional num-outputs)
   (if (default-object? num-outputs)
       (set! num-outputs 1))
   (define (manufacture-cell)
-    (eq-put! (make-named-cell 'cell) 'subexprs inputs))
+    (eq-put! (make-named-cell (generate-cell-name)) 'subexprs inputs))
   (define outputs (map (lambda (k) (manufacture-cell))
 		       (iota num-outputs)))
   (define true-inputs
