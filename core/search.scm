@@ -51,7 +51,7 @@
 		    (pairwise-resolve reasons-against-true
 				      reasons-against-false)))))))
 
-    (eq-label! amb-choose 'name 'amb-choose 'outputs (list cell))
+    (eq-label! amb-choose 'name 'amb-choose 'inputs '() 'outputs (list cell))
     ;; This only affects run order, and only in some experimental
     ;; schedulers
     (tag-slow! amb-choose)
