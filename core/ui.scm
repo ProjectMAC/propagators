@@ -28,8 +28,9 @@
 
 ;;; Make for nice transcripts.
 (define (cpp x)
-  (display "#;\n")
-  (pp x))
+  (display "#|\n")
+  (pp x)
+  (display "|#\n"))
 
 ;;; This is part of paranoid programming.
 (define (assert p #!optional error-comment irritant)
@@ -91,7 +92,7 @@
 			   infs))))
 	,@(if (null? (v&s-support c))
 	      '()
-	      (cons 'with-premises (map name-of (v&s-support c))))))
+	      (cons 'with-premises (v&s-support c)))))
     (define (explain cell)
       (let ((seen (hash-table/get mark cell #f)))
 	(if (not seen)
@@ -226,68 +227,50 @@
        (make-interval 30000 40000) 'Alyssa)
 
 (cpp (inquire (thing-of '(investments gross-income Ben))))
-#;
+#|
 ((investments gross-income ben)
  has
  #(value=#[interval 117000 127000], premises=(gaggle genescam alyssa irs), informants=((- gross-income part))))
+|#
 
 ;;; Ben is a tightwad
 (tell! (thing-of '(expenses Ben)) (make-interval 10000 20000) 'Ben)
 
 (cpp (inquire (thing-of '(net-income Ben))))
-#;
+#|
 ((net-income ben)
  has
  #(value=#[interval 297000 317000], premises=(ben genescam alyssa irs), informants=((- gross-income expenses))))
+|#
 
 ;;; But Alyssa is not cheap.  She likes luxury.
 (tell! (thing-of '(expenses Alyssa)) (make-interval 200000 215000) 'Alyssa)
 
-(cpp (inquire (thing-of '(net-income Alyssa))))#;
+(cpp (inquire (thing-of '(net-income Alyssa))))
+#|
 ((net-income alyssa)
  has
  #(value=#[interval -115000 -90000], premises=(alyssa genescam), informants=((- gross-income expenses))))
+|#
 
 ;;; But they are doing OK anyway!
 (cpp (inquire (thing-of '(net-income Ben-Alyssa))))
-#;
+#|
 ((net-income ben-alyssa)
  has
  #(value=#[interval 192000 217000], premises=(ben alyssa irs), informants=((- gross-income expenses))))
+|#
 
 ;;; Notice that this conclusion does not depend on the details, such
 ;;; as Gaggle or GeneScam!
 
 (cpp (explain (thing-of '(net-income Ben-Alyssa))))
-#;
-(((net-income ben-alyssa)
-  has-value
-  #[interval 192000 217000]
-  by
-  ((-) (gross-income ben-alyssa) (expenses ben-alyssa))
-  with-premises
-  (ben)
-  (alyssa)
-  (irs))
- ((gross-income ben-alyssa) has-value 427000 by (user) with-premises (irs))
- ((expenses ben-alyssa) has-value
-                        #[interval 210000 235000]
-                        by
-                        ((+) (expenses ben) (expenses alyssa))
-                        with-premises
-                        (alyssa)
-                        (ben))
- ((expenses ben) has-value
-                 #[interval 10000 20000]
-                 by
-                 (user)
-                 with-premises
-                 (ben))
- ((expenses alyssa) has-value
-                    #[interval 200000 215000]
-                    by
-                    (user)
-                    with-premises
-                    (alyssa)))
+#|
+(((net-income ben-alyssa) has-value #[interval 192000 217000] by ((-) (gross-income ben-alyssa) (expenses ben-alyssa)) with-premises ben alyssa irs)
+ ((gross-income ben-alyssa) has-value 427000 by (user) with-premises irs)
+ ((expenses ben-alyssa) has-value #[interval 210000 235000] by ((+) (expenses ben) (expenses alyssa)) with-premises alyssa ben)
+ ((expenses ben) has-value #[interval 10000 20000] by (user) with-premises ben)
+ ((expenses alyssa) has-value #[interval 200000 215000] by (user) with-premises alyssa))
+|#
 |#
 |#
