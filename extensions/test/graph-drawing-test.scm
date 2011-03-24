@@ -41,7 +41,7 @@
    (check (eq? the-adder (car (neighbors bar))))
    (check (equal? (list foo bar) (propagator-inputs the-adder)))
    (check (equal? (list baz) (propagator-outputs the-adder)))
-   (check (eq? '+ (name the-adder)))
+   (check (eq? 'p:+ (name the-adder)))
    (check (propagator? the-adder))
    (check (cell? foo))
    (check (cell? bar))
@@ -59,7 +59,7 @@
 "digraph G {
   ratio=fill;
   \"cell-201\" [label=\"foo\", shape=\"ellipse\" ];
-  \"prop-202\" [label=\"identity\", shape=\"box\" ];
+  \"prop-202\" [label=\"p:identity\", shape=\"box\" ];
   \"cell-201\" -> \"prop-202\" [label=\"\" ];
   \"prop-202\" -> \"cell-203\" [label=\"\" ];
   \"cell-203\" [label=\"bar\", shape=\"ellipse\" ];
@@ -110,7 +110,7 @@
   ratio=fill;
   subgraph cluster_215 { label=\"top-group\"; 
     subgraph cluster_216 { label=\"subgroup\"; 
-      \"prop-217\" [label=\"identity\", shape=\"box\" ];
+      \"prop-217\" [label=\"p:identity\", shape=\"box\" ];
       \"cell-219\" [label=\"bar\", shape=\"ellipse\" ];
     }
     \"cell-218\" [label=\"foo\", shape=\"ellipse\" ];
@@ -133,8 +133,8 @@
   ratio=fill;
   subgraph cluster_240 { label=\"top-group\"; 
     subgraph cluster_241 { label=\"c:id\"; 
-      \"prop-242\" [label=\"identity\", shape=\"box\" ];
-      \"prop-245\" [label=\"identity\", shape=\"box\" ];
+      \"prop-242\" [label=\"p:identity\", shape=\"box\" ];
+      \"prop-245\" [label=\"p:identity\", shape=\"box\" ];
     }
     \"cell-243\" [label=\"bar\", shape=\"ellipse\" ];
     \"cell-244\" [label=\"foo\", shape=\"ellipse\" ];

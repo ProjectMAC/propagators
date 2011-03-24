@@ -95,7 +95,10 @@
 			the-propagator)))
        (eq-adjoin! output 'shadow-connections the-propagator)
        (eq-label! the-propagator
-		  'name f
+		  'name (let ((n (name f)))
+			  (if (symbol? n)
+			      (symbol 'p: n)
+			      f))
 		  'inputs inputs
 		  'outputs (list output))
        (propagator inputs the-propagator)))))
