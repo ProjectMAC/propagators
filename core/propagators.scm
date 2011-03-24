@@ -94,8 +94,10 @@
 			(apply f (map content inputs))
 			the-propagator)))
        (eq-adjoin! output 'shadow-connections the-propagator)
-       (eq-label! the-propagator 'name f
-		  'inputs inputs 'outputs (list output))
+       (eq-label! the-propagator
+		  'name f
+		  'inputs inputs
+		  'outputs (list output))
        (propagator inputs the-propagator)))))
 
 ;;; Returns a version of the supplied propagator constructor that
