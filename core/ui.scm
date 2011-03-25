@@ -230,7 +230,7 @@
 #|
 ((investments gross-income ben)
  has
- #(value=#[interval 117000 127000], premises=(gaggle genescam alyssa irs), informants=((- gross-income part))))
+ #(value=#[interval 117000 127000], premises=(gaggle genescam alyssa irs), informants=((-:p gross-income part))))
 |#
 
 ;;; Ben is a tightwad
@@ -240,7 +240,7 @@
 #|
 ((net-income ben)
  has
- #(value=#[interval 297000 317000], premises=(ben genescam alyssa irs), informants=((- gross-income expenses))))
+ #(value=#[interval 297000 317000], premises=(ben genescam alyssa irs), informants=((-:p gross-income expenses))))
 |#
 
 ;;; But Alyssa is not cheap.  She likes luxury.
@@ -250,7 +250,7 @@
 #|
 ((net-income alyssa)
  has
- #(value=#[interval -115000 -90000], premises=(alyssa genescam), informants=((- gross-income expenses))))
+ #(value=#[interval -115000 -90000], premises=(alyssa genescam), informants=((-:p gross-income expenses))))
 |#
 
 ;;; But they are doing OK anyway!
@@ -258,7 +258,7 @@
 #|
 ((net-income ben-alyssa)
  has
- #(value=#[interval 192000 217000], premises=(ben alyssa irs), informants=((- gross-income expenses))))
+ #(value=#[interval 192000 217000], premises=(ben alyssa irs), informants=((-:p gross-income expenses))))
 |#
 
 ;;; Notice that this conclusion does not depend on the details, such
@@ -266,9 +266,9 @@
 
 (cpp (explain (thing-of '(net-income Ben-Alyssa))))
 #|
-(((net-income ben-alyssa) has-value #[interval 192000 217000] by ((-) (gross-income ben-alyssa) (expenses ben-alyssa)) with-premises ben alyssa irs)
+(((net-income ben-alyssa) has-value #[interval 192000 217000] by ((-:p) (gross-income ben-alyssa) (expenses ben-alyssa)) with-premises ben alyssa irs)
  ((gross-income ben-alyssa) has-value 427000 by (user) with-premises irs)
- ((expenses ben-alyssa) has-value #[interval 210000 235000] by ((+) (expenses ben) (expenses alyssa)) with-premises alyssa ben)
+ ((expenses ben-alyssa) has-value #[interval 210000 235000] by ((+:p) (expenses ben) (expenses alyssa)) with-premises alyssa ben)
  ((expenses ben) has-value #[interval 10000 20000] by (user) with-premises ben)
  ((expenses alyssa) has-value #[interval 200000 215000] by (user) with-premises alyssa))
 |#

@@ -83,25 +83,27 @@
 
 ;;; This version has additional metadata to allow the propagator
 ;;; network to be effectively traversed (see extensions/draw.scm)
+
 (define (function->propagator-constructor f)
-  (propagator-constructor!
-   (lambda cells
-     (let ((output (ensure-cell (car (last-pair cells))))
-	   (inputs (map ensure-cell (except-last-pair cells))))
-       (define (the-propagator)
-	 (fluid-let ((*active-propagator* the-propagator))
-	   (add-content output
-			(apply f (map content inputs))
-			the-propagator)))
-       (eq-adjoin! output 'shadow-connections the-propagator)
-       (eq-label! the-propagator
-		  'name (let ((n (name f)))
-			  (if (symbol? n)
-			      (symbol 'p: n)
-			      f))
-		  'inputs inputs
-		  'outputs (list output))
-       (propagator inputs the-propagator)))))
+  (let ((n (name f)))
+    (define (the-constructor . cells)
+      (let ((output (ensure-cell (car (last-pair cells))))
+	    (inputs (map ensure-cell (except-last-pair cells))))
+	(define (the-propagator)
+	  (fluid-let ((*active-propagator* the-propagator))
+	    (add-content output
+			 (apply f (map content inputs))
+			 the-propagator)))
+	(eq-adjoin! output 'shadow-connections the-propagator)
+	(eq-label! the-propagator
+		   'name (if (symbol? n)
+			     (symbol n ':p)
+			     f)
+		   'inputs inputs
+		   'outputs (list output))
+	(propagator inputs the-propagator)))
+    (if (symbol? n) (name! the-constructor (symbol 'p: n)))
+    (propagator-constructor! the-constructor)))
 
 ;;; Returns a version of the supplied propagator constructor that
 ;;; creates a propagator that will wait until at least one of the
