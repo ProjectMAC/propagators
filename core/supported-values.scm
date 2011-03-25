@@ -28,9 +28,9 @@
     (lambda (port)
       (display "#(value=" port)
       (write (v&s-value object) port)
-      (display ", premises=" port)
+      (display ",\n   premises=" port)
       (write (v&s-support object) port)
-      (display ", informants=" port)
+      (display ",\n   informants=" port)
       (write
        (map (lambda (inf)
 	      (if (symbol? inf)
