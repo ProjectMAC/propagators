@@ -128,11 +128,25 @@
 (define (empty-interval? x)
   (> (interval-low x) (interval-high x)))
 
+#| 
+;;; This makes a floating-point disaster...  UGH!
+;;; MERGE does not consider intervals differing by roundoff to be EQUAL.
+
 (define (intersect-intervals x y)
   (define (exactness-max x y)
     (if (>= x y) x y))
   (define (exactness-min x y)
     (if (<= x y) x y))
+  (make-interval
+   (exactness-max (interval-low x) (interval-low y))
+   (exactness-min (interval-high x) (interval-high y))))
+|#
+
+(define (intersect-intervals x y)
+  (define (exactness-max x y)
+    (if (or (num=? x y) (> x y)) x y))
+  (define (exactness-min x y)
+    (if (or (num=? x y) (< x y)) x y))
   (make-interval
    (exactness-max (interval-low x) (interval-low y))
    (exactness-min (interval-high x) (interval-high y))))
