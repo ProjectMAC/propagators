@@ -73,7 +73,7 @@
 
 (declare-coercion-target contingent
 			 (lambda (thing)
-			   (contingent thing '())))
+			   (contingent thing '() '())))
 
 (declare-coercion <symbol> ->contingent)
 (declare-coercion <number> ->contingent)
