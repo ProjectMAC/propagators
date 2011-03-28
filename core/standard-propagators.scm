@@ -123,6 +123,9 @@
 ; (define-cell p:id (function->propagator-constructor (nary-mapping identity)))
 (define-cell e:id (expression-style-variant p:id))
 
+(define same identity)
+(propagatify same)
+
 ;; TODO Do I still want to provide these old names for these things?
 (define constant p:constant) (define switch p:switch)
 
