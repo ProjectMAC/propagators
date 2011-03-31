@@ -73,6 +73,9 @@
 	'has 
 	(tms-query (->tms (content cell)))))
 
+#|
+;;; Superseded by explain.scm
+
 (define (explain cell)
   (assert (cell? cell) "Can only explain a cell.")
   (let ((mark (make-eq-hash-table)))
@@ -109,6 +112,7 @@
 		     infs)))
 	    '())))
     (explain cell)))
+|#
 
 (define (name-of thing)
   (let ((n (eq-get thing 'given-name)))

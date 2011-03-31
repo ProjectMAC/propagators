@@ -60,6 +60,7 @@
     "amb-utils"
 
     "ui"
+    "explain"
 
     "example-networks"
     "test-utils"))
