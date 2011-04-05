@@ -40,19 +40,22 @@
 		    '()
 		    (cons 'by
 			  (map (lambda (inf)
-				 (if (symbol? inf)
-				     (list inf)
-				     (let ((eainf (explanation-ancestor inf depth)))
-				       (if (network-group? eainf)
-					   (cons (name-of (explanation-ancestor inf depth))
-						 (map name-of
-						      (network-group-externals eainf cell)))
-					   (cons (name-of eainf)
-						 (map (lambda (i)
-							(name-of
-							 (explanation-ancestor i depth)))
-						      (or (eq-get inf 'inputs)
-							  '())))))))
+				 (cond  ((symbol? inf) (list inf))
+					((propagator? inf)
+					 (let ((eainf (explanation-ancestor inf depth)))
+					   (if (network-group? eainf)
+					       (cons (name-of (explanation-ancestor inf depth))
+						     (map name-of
+							  (network-group-externals eainf cell)))
+					       (cons (name-of eainf)
+						     (map (lambda (i)
+							    (name-of
+							     (explanation-ancestor i depth)))
+							  (or (eq-get inf 'inputs)
+							      '()))))))
+					(else
+					 (error "Unknown informant type -- EXPLAIN"
+						(name cell)))))
 			       infs))))
 	    ,@(if (null? (v&s-support c))
 		  '()
@@ -75,7 +78,6 @@
 		(if e (cons e r) r)))
 	    '())))
     (explain cell)))
-
 
 (define (network-group-level thing)
   (cond ((eq-get thing 'network-group)

@@ -117,7 +117,8 @@
 (define (name-of thing)
   (let ((n (eq-get thing 'given-name)))
     (if n
-	(let ((p (eq-get thing 'parent)))
+	(let ((n (if (list? n) (map name-of n) n))
+	      (p (eq-get thing 'parent)))
 	  (if p
 	      (cons n (name-of p))
 	      (list n)))
