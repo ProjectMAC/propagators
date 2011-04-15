@@ -74,11 +74,14 @@
 ;;;; Propagator cells
 
 (define (%make-cell)			; message-accepter style
-  (let ((neighbors '()) (content nothing) (whoiam #f) (history '()))
+  (let ((neighbors '()) (content nothing)
+	(whoiam #f) (history '())
+	(probe #f))
     (define (add-content increment informant)
       (let ((info+effects (->effectful (merge content increment))))
         (let ((effects (effectful-effects info+effects))
 	      (new-content (effectful-info info+effects)))
+	  (if probe (probe))
 	  (cond ((eq? new-content content) 'ok)
 		((contradictory? new-content)
 		 (error "Ack! Inconsistency!"
@@ -92,7 +95,6 @@
 				   history
 				   (lambda (new)
 				     (set! history new)))
-
 		 (alert-propagators neighbors)))
 	  (for-each execute-effect effects))))
     (define (new-neighbor! new-neighbor)
@@ -111,6 +113,9 @@
 	       (set! whoiam who)))
 	    ((eq? message 'who?) whoiam)
 	    ((eq? message 'history) history)
+	    ;; See ui.scm for probes.
+	    ((eq? message 'probe!) (lambda (p) (set! probe p)))
+	    ((eq? message 'unprobe!) (set! probe #f))
             (else (error "Unknown message" message))))
     me))
 

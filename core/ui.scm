@@ -73,6 +73,28 @@
 	'has 
 	(tms-query (->tms (content cell)))))
 
+(define (name-of thing)
+  (let ((n (eq-get thing 'given-name)))
+    (if n
+	(let ((n (if (list? n) (map name-of n) n))
+	      (p (eq-get thing 'parent)))
+	  (if p
+	      (cons n (name-of p))
+	      (list n)))
+	(list (name thing)))))
+
+
+;;; For debugging purposes
+
+(define (probe! cell thunk)
+  ;; thunk = (lambda () (lambda (cell) ...))
+  (define (the-probe)
+    ((thunk) cell))
+  ((cell 'probe!) thunk))
+
+(define (unprobe! cell)
+  (cell 'unprobe))
+
 #|
 ;;; Superseded by explain.scm
 
@@ -113,16 +135,6 @@
 	    '())))
     (explain cell)))
 |#
-
-(define (name-of thing)
-  (let ((n (eq-get thing 'given-name)))
-    (if n
-	(let ((n (if (list? n) (map name-of n) n))
-	      (p (eq-get thing 'parent)))
-	  (if p
-	      (cons n (name-of p))
-	      (list n)))
-	(list (name thing)))))
 
 #|
 ;;;; A Small Financial Example 
