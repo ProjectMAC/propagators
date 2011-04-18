@@ -28,6 +28,23 @@
   (if (default-object? depth) (set! depth 100))
   (let ((n (+ (network-group-level cell) depth))
 	(mark (make-eq-hash-table)))
+    (define (reason inf)
+      (cond  ((symbol? inf) (list inf))
+	     ((propagator? inf)
+	      (let ((eainf (explanation-ancestor inf depth)))
+		(if (network-group? eainf)
+		    (cons (name-of eainf)
+			  (map name-of
+			       (network-group-externals eainf cell)))
+		    (cons (name-of eainf)
+			  (map (lambda (i)
+				 (name-of
+				  (explanation-ancestor i depth)))
+			       (or (eq-get inf 'inputs)
+				   '()))))))
+	     (else
+	      (error "Unknown informant type -- EXPLAIN"
+		     (name cell)))))
     (define (explain-cell cell c)
       (if (and (< (network-group-level cell) n)
 	       (or (not (= (length (name-of cell)) 1))
@@ -38,25 +55,7 @@
 	    ,@(let ((infs (v&s-informants c)))
 		(if (null? infs)
 		    '()
-		    (cons 'by
-			  (map (lambda (inf)
-				 (cond  ((symbol? inf) (list inf))
-					((propagator? inf)
-					 (let ((eainf (explanation-ancestor inf depth)))
-					   (if (network-group? eainf)
-					       (cons (name-of (explanation-ancestor inf depth))
-						     (map name-of
-							  (network-group-externals eainf cell)))
-					       (cons (name-of eainf)
-						     (map (lambda (i)
-							    (name-of
-							     (explanation-ancestor i depth)))
-							  (or (eq-get inf 'inputs)
-							      '()))))))
-					(else
-					 (error "Unknown informant type -- EXPLAIN"
-						(name cell)))))
-			       infs))))
+		    (cons 'by (map reason infs))))
 	    ,@(if (null? (v&s-support c))
 		  '()
 		  (cons 'with-premises (v&s-support c))))

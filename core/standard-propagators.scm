@@ -243,6 +243,9 @@
 
 (define-propagator (c:id c1 c2)
   (p:id c1 c2) (p:id c2 c1))
+
+(define-propagator (c:same c1 c2)
+  (p:same c1 c2) (p:same c2 c1))
 
 (define-cell p:==
   (propagator-constructor!
