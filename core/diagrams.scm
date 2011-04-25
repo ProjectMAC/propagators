@@ -20,7 +20,7 @@
 ;;; ----------------------------------------------------------------------
 
 (declare (usual-integrations make-cell cell?))
-
+
 (define-structure (%diagram safe-accessors (constructor %make-%diagram))
   identity
   parts
@@ -71,7 +71,7 @@
 
 (define (add-diagram-club! thing club)
   (diagram-set-clubs! thing (lset-adjoin eq? club (diagram-clubs thing))))
-
+
 (define (make-%diagram identity parts promises)
   (let ((answer (%make-%diagram identity parts promises '())))
     ;; produces (eq-adjoin! output 'shadow-connections the-propagator)
