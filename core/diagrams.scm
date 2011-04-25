@@ -49,6 +49,9 @@
       (set-%diagram-parts! thing new-parts)
       (eq-put! thing 'parts new-parts)))
 
+(define (clear-diagram-parts! thing)
+  (set-diagram-parts! thing '()))
+
 (define (diagram-promises thing)
   (if (%diagram? thing)
       (%diagram-promises thing)
@@ -59,6 +62,9 @@
       (set-%diagram-promises! thing new-promises)
       (eq-put! thing 'promises new-promises)))
 
+(define (clear-diagram-promises! thing)
+  (set-diagram-promises! thing '()))
+
 (define (diagram-clubs thing)
   (if (%diagram? thing)
       (%diagram-clubs thing)
@@ -68,6 +74,9 @@
   (if (%diagram? thing)
       (set-%diagram-clubs! thing new-clubs)
       (eq-put! thing 'clubs new-clubs)))
+
+(define (clear-diagram-clubs! thing)
+  (set-diagram-clubs! thing '()))
 
 (define (add-diagram-club! thing club)
   (diagram-set-clubs! thing (lset-adjoin eq? club (diagram-clubs thing))))
@@ -80,6 +89,16 @@
 	      (map cdr parts))
     answer))
 
+(define (make-compound-diagram identity parts)
+  (make-%diagram identity parts (compute-derived-promises parts)))
+
+(define (compute-derived-promises parts)
+  ;; TODO For every part that's a cell, I can promise not to read
+  ;; (resp. write) it if every part either doesn't mention it or
+  ;; promises not to read (resp. write) it.  See
+  ;; DO-COMPUTE-AGGREGATE-METADATA.  I just have to take due care to
+  ;; make sure that recursive parts are properly taken care of.
+  '())
 
 (define (make-anonymous-i/o-diagram identity inputs outputs)
   (define (with-synthetic-names lst base)
@@ -97,12 +116,80 @@
      parts
      (append (map promise-not-to-write un-written)
 	     (map promise-not-to-read un-read)))))
+
+;;;; Implicit diagram production
 
-;; In propagators.scm
+(define (fresh-diagram)
+  (make-%diagram #f '() '()))
+
+(define *current-diagram* (fresh-diagram))
+
+(define (add-diagram-named-part! diagram name part)
+  (set-diagram-parts!
+   diagram
+   (lset-adjoin equal? (cons name part) (diagram-parts diagram)))
+  (add-diagram-club! part diagram))
+
+(define (note-diagram-part! diagram part)
+  (if (memq part (map cdr (diagram-parts diagram)))
+      'ok
+      (begin
+	(set-diagram-parts! diagram
+	 (cons ((gensym) part) (diagram-parts diagram)))
+	(add-diagram-club! part diagram))))
+
+(define (network-register thing)
+  (note-diagram-part! *current-diagram* thing))
+
+(define (in-diagram diagram thunk)
+  (if diagram
+      (fluid-let ((*current-diagram* diagram))
+	(thunk))
+      (thunk))) ;; TODO What should I really do if there is no diagram?
+
+(define (with-diagram diagram thunk)
+  (network-register diagram)
+  (in-diagram diagram thunk))
+
+(define (name-in-current-diagram! name part)
+  (add-diagram-named-part! *current-diagram* name part))
+
+;; TODO network-unregister
+
+;;; Getting rid of diagrams when they are no longer needed requires
+;;; eliminating appropriate entries in the eq-properties table,
+;;; because those values would otherwise point back to themselves.
+
+(define (destroy-diagram! diagram)
+  (clear-diagram-clubs! diagram)
+  (clear-diagram-promises! diagram)
+  (for-each destroy-diagram! (map cdr (diagram-parts diagram)))
+  (clear-diagram-parts! diagram))
+
+(define (reset-diagrams!)
+  (destroy-diagram! *current-diagram*)
+  (set! *current-diagram* (fresh-diagram)))
+
+;;; Restarting requires resetting the toplevel diagram
+(define initialize-scheduler
+  (let ((initialize-scheduler initialize-scheduler))
+    (lambda ()
+      (initialize-scheduler)
+      (reset-diagrams!))))
+
+(define with-independent-scheduler
+  (let ((with-independent-scheduler with-independent-scheduler))
+    (lambda args
+      (fluid-let ((*current-diagram* #f))
+	(apply with-independent-scheduler args)))))
+
+;;;; New transmitters at the primitive-diagram level
+
+;;; In propagators.scm
 (define (function->propagator-constructor f)
   (let ((n (name f)))
     (define (the-constructor . cells)
-      (let ((output (ensure-cell (car (last-pair cells))))
+      (let ((output (ensure-cell (last cells)))
 	    (inputs (map ensure-cell (except-last-pair cells))))
 	(define (the-propagator)
 	  (fluid-let ((*active-propagator* the-propagator))
@@ -117,9 +204,86 @@
     (if (symbol? n) (name! the-constructor (symbol 'p: n)))
     (propagator-constructor! the-constructor)))
 
+(define (delayed-propagator-constructor prop-ctor)
+  (eq-clone! prop-ctor
+   (lambda args
+     ;; TODO Can I autodetect "inputs" that should not trigger
+     ;; construction?
+     (let ((args (map ensure-cell args)))
+       (define the-propagator
+	 (one-shot-propagator args
+	  (lambda ()
+	    (apply prop-ctor args))))
+       ;; This is the analogue of (compute-aggregate-metadata prop-ctor args)
+       ;; TODO much work can be saved by use of the diagram made by
+       ;; MAKE-COMPOUND-DIAGRAM.
+       (make-diagram-for-compound-constructor
+	the-propagator prop-ctor arg-cells)))))
+
+;; This is a peer of PROPAGATOR
+(define (one-shot-propagator neighbors action)
+  (let ((done? #f) (neighbors (map ensure-cell (listify neighbors))))
+    (define (test)
+      (if done?
+          'ok
+          (if (every nothing? (map content neighbors))
+              'ok
+              (begin (set! done? #t)
+		     (in-network-group (network-group-of test)
+		      (lambda ()
+			;; The act of expansion makes the compound
+			;; itself uninteresting
+			(network-unregister test)
+			(action)))))))
+    (propagator neighbors test)))
+
+;;; In application.scm
+(let ((the-propagator
+       (lambda ()
+	 ((unary-mapping
+	   (lambda (prop)
+	     (if (done? prop)
+		 unspecific
+		 (attach prop))))
+	  (content prop-cell)))))
+  (name! the-propagator 'application)
+  (propagator prop-cell the-propagator)
+  (make-anonymous-i/o-diagram the-propagator (list prop-cell) arg-cells))
+
+;;; In search.scm
+(name! amb-choose 'amb-choose)
+(propagator cell amb-choose) ; <-- No neighbors?
+(make-anonymous-i/o-diagram amb-choose '() (list cell))
+
+
+
 ;; Various inspectors should use the diagram-clubs facility instead of
 ;; the cell neighbors field, which, though somewhat redundant, is used
 ;; for the scheduler and for a different purpose.
 
 ;; Also, all analogues of function->propagator-constructor should be
 ;; adjusted, and a new one made for compound propagators.
+
+;; ./core/propagators.scm:(define (propagator neighbors to-do)  
+;; ./core/propagators.scm:       (propagator inputs                ; The output isn't a neighbor!
+;; ./core/propagators.scm:	(propagator inputs the-propagator)))
+;; ./core/propagators.scm:    (propagator neighbors test)))
+;; ./core/application.scm:    (propagator prop-cell the-propagator)))
+;; ./core/search.scm:    (propagator cell amb-choose)))
+
+;; ./extensions/virtual-environments.scm:      (propagator cells
+;; ./extensions/virtual-environments.scm:      (propagator cells
+;; ./extensions/virtual-closures.scm:  (propagator outside
+;; ./extensions/virtual-closures.scm:  (propagator (cons frame-map-cell outside)
+;; ./extensions/virtual-closures.scm:  (propagator (list frame-map-cell outside)
+;; ./extensions/virtual-closures.scm:  (propagator (list frame-map-cell inside outside)
+;; ./extensions/virtual-closures.scm:    (propagator (cons* frame-map-cell closure-cell outside-cells)
+;; ./extensions/virtual-closures.scm:  (propagator output
+
+;; ./examples/masyu.scm:  (propagator neighbors
+;; ./examples/masyu.scm:  (propagator cells
+;; ./examples/masyu.scm:  (propagator (list far-left left right far-right)
+;; ./examples/masyu.scm:  (propagator (list far-left left right far-right)
+;; ./examples/selectors/selectors.scm:    (propagator inputs the-propagator)))
+;; ./examples/selectors/selectors.scm:    (propagator inputs the-propagator)))
+;; ./examples/selectors/selectors.scm:    (propagator inputs the-propagator)))
