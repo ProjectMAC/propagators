@@ -81,6 +81,19 @@
 (define (add-diagram-club! thing club)
   (diagram-set-clubs! thing (lset-adjoin eq? club (diagram-clubs thing))))
 
+(define (remove-diagram-club! thing club)
+  ;; delq == lset-delete eq?
+  (diagram-set-clubs! thing (delq club (diagram-clubs thing))))
+
+;;; Abstraction barrier
+
+;;; Invariants:
+;;; - Every part of a diagram should be a (possibly implicit) diagram.
+;;; - Every club a diagram particiaptes in should be a (possibly
+;;;   implicit) diagram.
+;;; - The clubs list of a diagram X should always contain exactly the
+;;;   diagrams that contain X as a part.
+
 (define (make-%diagram identity parts promises)
   (let ((answer (%make-%diagram identity parts promises '())))
     ;; produces (eq-adjoin! output 'shadow-connections the-propagator)
@@ -88,6 +101,9 @@
 		(add-diagram-club! part answer))
 	      (map cdr parts))
     answer))
+
+(define (empty-diagram identity)
+  (make-%diagram identity '() '()))
 
 (define (make-compound-diagram identity parts)
   (make-%diagram identity parts (compute-derived-promises parts)))
@@ -99,6 +115,20 @@
   ;; DO-COMPUTE-AGGREGATE-METADATA.  I just have to take due care to
   ;; make sure that recursive parts are properly taken care of.
   '())
+
+(define (add-diagram-named-part! diagram name part)
+  (set-diagram-parts!
+   diagram
+   (lset-adjoin equal? (cons name part) (diagram-parts diagram)))
+  (add-diagram-club! part diagram))
+
+(define (delete-diagram-part! diagram part)
+  (set-diagram-parts!
+   diagram
+   (filter (lambda (name.part)
+	     (not (eq? (cdr name.part) part)))
+	   (diagram-parts diagram)))
+  (remove-diagram-club! part diagram))
 
 (define (make-anonymous-i/o-diagram identity inputs outputs)
   (define (with-synthetic-names lst base)
@@ -119,27 +149,27 @@
 
 ;;;; Implicit diagram production
 
-(define (empty-diagram identity)
-  (make-%diagram identity '() '()))
-
 (define *current-diagram* (empty-diagram 'toplevel))
-
-(define (add-diagram-named-part! diagram name part)
-  (set-diagram-parts!
-   diagram
-   (lset-adjoin equal? (cons name part) (diagram-parts diagram)))
-  (add-diagram-club! part diagram))
 
 (define (note-diagram-part! diagram part)
   (if (memq part (map cdr (diagram-parts diagram)))
       'ok
-      (begin
-	(set-diagram-parts! diagram
-	 (cons ((gensym) part) (diagram-parts diagram)))
-	(add-diagram-club! part diagram))))
+      (add-diagram-named-part! diagram (gensym) part)))
 
 (define (network-register thing)
   (note-diagram-part! *current-diagram* thing))
+
+(define (network-unregister thing)
+  (for-each
+   (lambda (club)
+     (delete-diagram-part! club thing))
+   (diagram-clubs thing))
+  (for-each
+   (lambda (part)
+     (delete-diagram-part! thing part)
+     (if (null? (diagram-clubs part))
+	 (network-unregister part)))
+   (map cdr (diagram-parts thing))))
 
 (define (in-diagram diagram thunk)
   (if diagram
@@ -153,8 +183,6 @@
 
 (define (name-in-current-diagram! name part)
   (add-diagram-named-part! *current-diagram* name part))
-
-;; TODO network-unregister
 
 ;;; Getting rid of diagrams when they are no longer needed requires
 ;;; eliminating appropriate entries in the eq-properties table,
