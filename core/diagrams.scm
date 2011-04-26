@@ -42,7 +42,7 @@
 (define (diagram-parts thing)
   (if (%diagram? thing)
       (%diagram-parts thing)
-      (eq-get thing 'parts '())))
+      (or (eq-get thing 'parts) '())))
 
 (define (set-diagram-parts! thing new-parts)
   (if (%diagram? thing)
@@ -55,7 +55,7 @@
 (define (diagram-promises thing)
   (if (%diagram? thing)
       (%diagram-promises thing)
-      (eq-get thing 'promises '())))
+      (or (eq-get thing 'promises) '())))
 
 (define (set-diagram-promises! thing new-promises)
   (if (%diagram? thing)
@@ -68,7 +68,7 @@
 (define (diagram-clubs thing)
   (if (%diagram? thing)
       (%diagram-clubs thing)
-      (eq-get thing 'clubs '())))
+      (or (eq-get thing 'clubs) '())))
 
 (define (set-diagram-clubs! thing new-clubs)
   (if (%diagram? thing)
@@ -79,11 +79,11 @@
   (set-diagram-clubs! thing '()))
 
 (define (add-diagram-club! thing club)
-  (diagram-set-clubs! thing (lset-adjoin eq? club (diagram-clubs thing))))
+  (set-diagram-clubs! thing (lset-adjoin eq? (diagram-clubs thing) club)))
 
 (define (remove-diagram-club! thing club)
   ;; delq == lset-delete eq?
-  (diagram-set-clubs! thing (delq club (diagram-clubs thing))))
+  (set-diagram-clubs! thing (delq club (diagram-clubs thing))))
 
 ;;; Abstraction barrier
 
@@ -93,6 +93,17 @@
 ;;;   implicit) diagram.
 ;;; - The clubs list of a diagram X should always contain exactly the
 ;;;   diagrams that contain X as a part.
+
+;;; Every propagator constructor is expected to call the procedure
+;;; REGISTER-DIAGRAM exactly once on a diagram describing the network
+;;; it just constructed.  This procedure is a fluid-bindable hook.  In
+;;; addition, a diagram-style propagator constructor is expected to
+;;; return that same diagram, whereas an expression-style propagator
+;;; constructor is expected to return the cell containing its return
+;;; value.
+
+(define (register-diagram diagram #!optional name)
+  diagram)
 
 (define (make-%diagram identity parts promises)
   (let ((answer (%make-%diagram identity parts promises '())))
@@ -116,10 +127,12 @@
   ;; make sure that recursive parts are properly taken care of.
   '())
 
+(define diagram make-compound-diagram)
+
 (define (add-diagram-named-part! diagram name part)
   (set-diagram-parts!
    diagram
-   (lset-adjoin equal? (cons name part) (diagram-parts diagram)))
+   (lset-adjoin equal? (diagram-parts diagram) (cons name part)))
   (add-diagram-club! part diagram))
 
 (define (delete-diagram-part! diagram part)
@@ -137,32 +150,36 @@
 (define (note-diagram-part! diagram part)
   (if (memq part (map cdr (diagram-parts diagram)))
       'ok
-      (add-diagram-named-part! diagram (gensym) part)))
+      (add-diagram-named-part! diagram (generate-uninterned-symbol) part)))
 
-(define (network-register thing)
-  (note-diagram-part! *current-diagram* thing))
+(define (delete-diagram-parts! diagram)
+  (for-each
+   (lambda (part)
+     (delete-diagram-part! diagram part)
+     (if (null? (diagram-clubs part))
+	 (network-unregister part)))
+   (map cdr (diagram-parts diagram))))
 
 (define (network-unregister thing)
   (for-each
    (lambda (club)
      (delete-diagram-part! club thing))
    (diagram-clubs thing))
+  (delete-diagram-parts! thing))
+
+(define (replace-diagram! diagram new-diagram)
+  (delete-diagram-parts! diagram)
   (for-each
-   (lambda (part)
-     (delete-diagram-part! thing part)
-     (if (null? (diagram-clubs part))
-	 (network-unregister part)))
-   (map cdr (diagram-parts thing))))
+   (lambda (name.part)
+     (add-diagram-named-part! diagram (car name.part) (cdr name.part)))
+   (diagram-parts new-diagram))
+  (network-unregister new-diagram))
 
 (define (in-diagram diagram thunk)
   (if diagram
       (fluid-let ((*current-diagram* diagram))
 	(thunk))
       (thunk))) ;; TODO What should I really do if there is no diagram?
-
-(define (with-diagram diagram thunk)
-  (network-register diagram)
-  (in-diagram diagram thunk))
 
 (define (name-in-current-diagram! name part)
   (add-diagram-named-part! *current-diagram* name part))
@@ -196,6 +213,10 @@
 
 ;;;; New transmitters at the primitive-diagram level
 
+;; Stubs:
+(define (promise-not-to-write thing) #f)
+(define (promise-not-to-read thing) #f)
+
 (define (make-anonymous-i/o-diagram identity inputs outputs)
   (define (with-synthetic-names lst base)
     (map cons
@@ -212,76 +233,6 @@
      parts
      (append (map promise-not-to-write un-written)
 	     (map promise-not-to-read un-read)))))
-
-;;; In propagators.scm
-(define (function->propagator-constructor f)
-  (let ((n (name f)))
-    (define (the-constructor . cells)
-      (let ((output (ensure-cell (last cells)))
-	    (inputs (map ensure-cell (except-last-pair cells))))
-	(define (the-propagator)
-	  (fluid-let ((*active-propagator* the-propagator))
-	    (add-content output
-			 (apply f (map content inputs))
-			 the-propagator)))
-	(name! the-propagator (if (symbol? n)
-				  (symbol n ':p)
-				  f))
-	(propagator inputs the-propagator)
-	(make-anonymous-i/o-diagram propagator inputs (list output))))
-    (if (symbol? n) (name! the-constructor (symbol 'p: n)))
-    (propagator-constructor! the-constructor)))
-
-(define (delayed-propagator-constructor prop-ctor)
-  (eq-clone! prop-ctor
-   (lambda args
-     ;; TODO Can I autodetect "inputs" that should not trigger
-     ;; construction?
-     (let ((args (map ensure-cell args)))
-       (define the-propagator
-	 (one-shot-propagator args
-	  (lambda ()
-	    (apply prop-ctor args))))
-       ;; This is the analogue of (compute-aggregate-metadata prop-ctor args)
-       ;; TODO much work can be saved by use of the diagram made by
-       ;; MAKE-COMPOUND-DIAGRAM.
-       (make-diagram-for-compound-constructor
-	the-propagator prop-ctor arg-cells)))))
-
-;; This is a peer of PROPAGATOR
-(define (one-shot-propagator neighbors action)
-  (let ((done? #f) (neighbors (map ensure-cell (listify neighbors))))
-    (define (test)
-      (if done?
-          'ok
-          (if (every nothing? (map content neighbors))
-              'ok
-              (begin (set! done? #t)
-		     (in-network-group (network-group-of test)
-		      (lambda ()
-			;; The act of expansion makes the compound
-			;; itself uninteresting
-			(network-unregister test)
-			(action)))))))
-    (propagator neighbors test)))
-
-;;; In application.scm
-(let ((the-propagator
-       (lambda ()
-	 ((unary-mapping
-	   (lambda (prop)
-	     (if (done? prop)
-		 unspecific
-		 (attach prop))))
-	  (content prop-cell)))))
-  (name! the-propagator 'application)
-  (propagator prop-cell the-propagator)
-  (make-anonymous-i/o-diagram the-propagator (list prop-cell) arg-cells))
-
-;;; In search.scm
-(name! amb-choose 'amb-choose)
-(propagator cell amb-choose) ; <-- No neighbors?
-(make-anonymous-i/o-diagram amb-choose '() (list cell))
 
 
 

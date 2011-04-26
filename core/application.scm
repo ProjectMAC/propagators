@@ -115,16 +115,13 @@
 	  prop (map (arg-copier pass?) input-cells))))))
   (define (attach prop)
     (set! done-props (cons prop done-props))
-    (with-network-group
-     (network-group-named `(attachment ,(name prop)))
-     (lambda ()
-       (let-cells (pass? key)
-	 (add-content key prop)
-	 (p:equivalent-closures? prop-cell key pass?)
-	 (if (diagram-style? prop)
-	     (apply-diagram-style prop pass? arg-cells)
-	     (apply-expression-style prop pass? arg-cells))
-	 unspecific))))
+    (let-cells (pass? key)
+      (add-content key prop)
+      (p:equivalent-closures? prop-cell key pass?)
+      (if (diagram-style? prop)
+	  (apply-diagram-style prop pass? arg-cells)
+	  (apply-expression-style prop pass? arg-cells))
+      unspecific))
   (let ((the-propagator
 	 (lambda ()
 	   ((unary-mapping
@@ -133,9 +130,11 @@
 		   unspecific
 		   (attach prop))))
 	    (content prop-cell)))))
-    (eq-label! the-propagator
-     'name 'application 'inputs (list prop-cell) 'outputs arg-cells)
-    (propagator prop-cell the-propagator)))
+    (name! the-propagator 'application)
+    (propagator prop-cell the-propagator)
+    (register-diagram
+     (make-anonymous-i/o-diagram
+      the-propagator (list prop-cell) arg-cells))))
 
 ;;; Eager application of objects that are fully known at network
 ;;; construction time.
@@ -263,12 +262,45 @@
 (define (do-apply-prop prop real-args)
   (let ((real-args (map ensure-cell real-args)))
     (cond ((closure? prop)
-	   (with-network-group (network-group-named (name prop))
-	     (lambda ()
-	       (apply (closure-code prop) real-args))))
+	   ((if (diagram-style? prop)
+		diagram-style-with-diagram
+		expression-style-with-diagram)
+	    (empty-diagram prop)
+	    (lambda ()
+	      (apply (closure-code prop) real-args))))
 	  ((propagator-constructor? prop)
 	   (apply prop real-args))
 	  (else (error "Not an applicable propagator" thing)))))
+
+(define (diagram-style-with-diagram target-diagram thunk)
+  (let ((explicit-diagram #f))
+    (register-diagram
+     (fluid-let
+	 ((register-diagram
+	   (lambda (subdiagram #!optional name)
+	     (if (default-object? name)
+		 (note-diagram-part! target-diagram subdiagram)
+		 (add-diagram-named-part! target-diagram name subdiagram))
+	     subdiagram))
+	  (diagram
+	   (lambda args
+	     (let ((answer (apply make-compound-diagram args)))
+	       (set! explicit-diagram answer)
+	       answer))))
+       (thunk))
+     (or explicit-diagram target-diagram))))
+
+(define (expression-style-with-diagram target-diagram thunk)
+  (fluid-let
+      ((register-diagram
+	(lambda (subdiagram #!optional name)
+	  (if (default-object? name)
+	      (note-diagram-part! target-diagram subdiagram)
+	      (add-diagram-named-part! target-diagram name subdiagram))
+	  subdiagram)))
+    (let ((answer (thunk)))
+      (register-diagram target-diagram)
+      answer)))
 
 (define (diagram-style? thing)
   (cond ((closure? thing)

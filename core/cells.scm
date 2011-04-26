@@ -127,7 +127,7 @@
      (%make-cell)))
   (eq-put! me 'cell #t)
   (((entity-extra me) 'iam!) me)
-  (network-register me)
+  (register-diagram me)
   me)
 
 (define (content cell)

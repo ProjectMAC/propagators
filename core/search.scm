@@ -51,7 +51,7 @@
 		    (pairwise-resolve reasons-against-true
 				      reasons-against-false)))))))
 
-    (eq-label! amb-choose 'name 'amb-choose 'inputs '() 'outputs (list cell))
+    (name! amb-choose 'amb-choose)
     ;; This only affects run order, and only in some experimental
     ;; schedulers
     (tag-slow! amb-choose)
@@ -63,7 +63,8 @@
                       (supported #f (list false-premise) (list amb-choose)))))
      cell)
     ;; The cell is a spiritual neighbor...
-    (propagator cell amb-choose)))
+    (propagator cell amb-choose)
+    (make-anonymous-i/o-diagram amb-choose '() (list cell))))
 
 (define (pairwise-resolve nogoods1 nogoods2)
   (append-map (lambda (nogood1)
