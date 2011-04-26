@@ -129,23 +129,6 @@
 	     (not (eq? (cdr name.part) part)))
 	   (diagram-parts diagram)))
   (remove-diagram-club! part diagram))
-
-(define (make-anonymous-i/o-diagram identity inputs outputs)
-  (define (with-synthetic-names lst base)
-    (map cons
-	 (map symbol (make-list (length lst) base)
-	      (iota (length lst)))
-	 lst))
-  (let* ((parts (append (with-synthetic-names inputs 'input)
-			(with-synthetic-names outputs 'output)))
-	 (boundary (append inputs outputs))
-	 (un-read (lset-difference eq? boundary inputs))
-	 (un-written (lset-difference eq? boundary outputs)))
-    (make-%diagram
-     identity
-     parts
-     (append (map promise-not-to-write un-written)
-	     (map promise-not-to-read un-read)))))
 
 ;;;; Implicit diagram production
 
@@ -212,6 +195,23 @@
 	(apply with-independent-scheduler args)))))
 
 ;;;; New transmitters at the primitive-diagram level
+
+(define (make-anonymous-i/o-diagram identity inputs outputs)
+  (define (with-synthetic-names lst base)
+    (map cons
+	 (map symbol (make-list (length lst) base)
+	      (iota (length lst)))
+	 lst))
+  (let* ((parts (append (with-synthetic-names inputs 'input)
+			(with-synthetic-names outputs 'output)))
+	 (boundary (append inputs outputs))
+	 (un-read (lset-difference eq? boundary inputs))
+	 (un-written (lset-difference eq? boundary outputs)))
+    (make-%diagram
+     identity
+     parts
+     (append (map promise-not-to-write un-written)
+	     (map promise-not-to-read un-read)))))
 
 ;;; In propagators.scm
 (define (function->propagator-constructor f)
