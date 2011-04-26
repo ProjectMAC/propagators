@@ -64,7 +64,7 @@
 
 (define (clear-diagram-promises! thing)
   (set-diagram-promises! thing '()))
-
+
 (define (diagram-clubs thing)
   (if (%diagram? thing)
       (%diagram-clubs thing)
@@ -80,7 +80,7 @@
 
 (define (add-diagram-club! thing club)
   (diagram-set-clubs! thing (lset-adjoin eq? club (diagram-clubs thing))))
-
+
 (define (make-%diagram identity parts promises)
   (let ((answer (%make-%diagram identity parts promises '())))
     ;; produces (eq-adjoin! output 'shadow-connections the-propagator)
@@ -119,10 +119,10 @@
 
 ;;;; Implicit diagram production
 
-(define (fresh-diagram)
-  (make-%diagram #f '() '()))
+(define (empty-diagram identity)
+  (make-%diagram identity '() '()))
 
-(define *current-diagram* (fresh-diagram))
+(define *current-diagram* (empty-diagram 'toplevel))
 
 (define (add-diagram-named-part! diagram name part)
   (set-diagram-parts!
@@ -168,7 +168,7 @@
 
 (define (reset-diagrams!)
   (destroy-diagram! *current-diagram*)
-  (set! *current-diagram* (fresh-diagram)))
+  (set! *current-diagram* (empty-diagram 'toplevel)))
 
 ;;; Restarting requires resetting the toplevel diagram
 (define initialize-scheduler
@@ -182,7 +182,7 @@
     (lambda args
       (fluid-let ((*current-diagram* #f))
 	(apply with-independent-scheduler args)))))
-
+
 ;;;; New transmitters at the primitive-diagram level
 
 ;;; In propagators.scm
@@ -203,7 +203,7 @@
 	(make-anonymous-i/o-diagram propagator inputs (list output))))
     (if (symbol? n) (name! the-constructor (symbol 'p: n)))
     (propagator-constructor! the-constructor)))
-
+
 (define (delayed-propagator-constructor prop-ctor)
   (eq-clone! prop-ctor
    (lambda args
