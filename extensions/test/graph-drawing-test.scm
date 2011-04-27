@@ -146,19 +146,6 @@
 }
 " (out)))))
 
- (define-test (macrology-smoke)
-   (initialize-scheduler)
-   (let-cells ((foo (make-cell))
-	       bar
-	       (baz (make-cell)))
-     (check (eq? 'foo (name foo)))
-     (check (not (eq-get foo 'name)))
-     (check (eq? 'bar (name bar)))
-     (check (eq? 'bar (eq-get bar 'name)))
-     (check (eq? 'baz (name baz)))
-     (check (not (eq-get baz 'name)))
-     ))
-
 ;;; TODO more-macrology-smoke-2 and expression-substructure-test fail
 ;;; to syntax in at least some versions of mechanics because of a
 ;;; macro-expander bug.
