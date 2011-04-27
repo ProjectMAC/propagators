@@ -25,28 +25,6 @@
  (define-each-check
    (equal? '+ (name generic-+)))
 
- (define-test (naming-smoke)
-   (initialize-scheduler)
-   (define-cell foo)
-   (define-cell bar)
-   (define-cell baz)
-   (p:+ foo bar baz)
-   (check (= 1 (length (neighbors foo))))
-   (check (= 1 (length (neighbors bar))))
-   (check (= 0 (length (neighbors baz))))
-   (check (eq? 'foo (name foo)))
-   (check (eq? 'bar (name bar)))
-   (check (eq? 'baz (name baz)))
-   (define the-adder (car (neighbors foo)))
-   (check (eq? the-adder (car (neighbors bar))))
-   (check (equal? (list foo bar) (propagator-inputs the-adder)))
-   (check (equal? (list baz) (propagator-outputs the-adder)))
-   (check (eq? '+:p (name the-adder)))
-   (check (propagator? the-adder))
-   (check (cell? foo))
-   (check (cell? bar))
-   (check (cell? baz)))
-
  (define-test (drawing-smoke)
    (interaction
     (force-hash-number 200)
@@ -54,7 +32,7 @@
     (define-cell foo)
     (define-cell bar)
     (p:id foo bar)
-    (draw:write-graph-to-string foo)
+    (draw:write-graph-to-string *toplevel-diagram*)
     (check (equal?
 "digraph G {
   ratio=fill;
@@ -64,9 +42,7 @@
   \"prop-202\" -> \"cell-203\" [label=\"\" ];
   \"cell-203\" [label=\"bar\", shape=\"ellipse\" ];
 }
-" (out)))
-    (check (equal? (draw:write-graph-to-string foo)
-		   (draw:write-graph-to-string (list foo bar))))))
+" (out)))))
 #|
  ;;; These tests are slow (because they ask for lots of GC) but they
  ;;; don't test much when things are working, because the following
@@ -100,11 +76,11 @@
     (force-hash-number 214)
     (initialize-scheduler)
     (define-cell foo)
-    (with-network-group (network-group-named 'subgroup)
+    (diagram-style-with-diagram (empty-diagram 'subgroup)
       (lambda ()
 	(define-cell bar)
 	(p:id foo bar)))
-    (draw:write-graph-to-string *current-network-group*)
+    (draw:write-graph-to-string *toplevel-diagram*)
     (check (equal?
 "digraph G {
   ratio=fill;

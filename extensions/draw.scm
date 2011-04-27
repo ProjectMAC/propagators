@@ -161,12 +161,10 @@
    output-port))
 
 (define (draw:walk-graph writer #!optional start)
-  (let ((visited (make-eq-hash-table))
-	(defer-edges? #f)
+  (let ((defer-edges? #f)
 	(deferred-edges '()))
-
-    (define (node? thing)
-      (or (cell? thing) (propagator? thing)))
+    ;; TODO Handle circumstances when the same diagram is a part of
+    ;; several clubs.
 
     (define write-node (writer 'write-node))
 
@@ -183,53 +181,35 @@
     (define (write-output-edge output name index)
       (write-edge name output index))
 
-    (define (write-edges propagator accessor write-edge)
-      (let ((name (draw:node-id propagator))
-	    (number-edges? (< 1 (length (accessor propagator)))))
-        (let loop ((cells (accessor propagator)) (index 0))
+    (define (write-edges diagram accessor write-edge)
+      (let ((name (draw:node-id diagram))
+	    (number-edges? (< 1 (length (accessor diagram)))))
+        (let loop ((cells (accessor diagram)) (index 0))
           (if (pair? cells)
               (let ((cell (car cells)))
                 (write-edge (draw:node-id cell) name (if number-edges? index ""))
                 (loop (cdr cells) (+ index 1)))))))
 
-    (define (write-propagator-apex propagator)
-      (write-node propagator)
-      (write-edges propagator propagator-inputs write-input-edge)
-      (write-edges propagator propagator-outputs write-output-edge))
-
-    (define (visit node)
-      (if (not (hash-table/get visited node #f))
-          (begin (hash-table/put! visited node #t)
-                 (cond ((cell? node) (visit-cell node))
-		       ((propagator? node) (visit-propagator node))
-		       (else
-			(error "Unknown node type" node))))))
-
-    (define (visit-propagator propagator)
-      (write-propagator-apex propagator)
-      (for-each visit
-		(append (propagator-inputs propagator)
-			(propagator-outputs propagator))))
-    
-    (define (visit-cell cell)
-      (write-node cell)
-      (for-each visit (cell-connections cell)))
+    (define (write-apex diagram)
+      (write-node diagram)
+      (write-edges diagram diagram-inputs write-input-edge)
+      (write-edges diagram diagram-outputs write-output-edge))
 
     (define (traverse-group group)
       (fluid-let ((defer-edges? #t))
 	((writer 'write-cluster) (hash group) (name group)
 	 (lambda ()
-	   (for-each traverse (network-group-expression-substructure group)))))
+	   (for-each traverse (diagram-expression-substructure group)))))
       (if (not defer-edges?)
 	  (dump-deferred-edges)))
 
     (define (traverse thing)
-      (cond ((network-group? thing)
-	     (traverse-group thing))
-	    ((cell? thing)
+      (cond ((cell? thing)
 	     (write-node thing))
-	    ((propagator? thing)
-	     (write-propagator-apex thing))
+	    ((primitive-diagram? thing)
+	     (write-apex thing))
+	    ((diagram? thing)
+	     (traverse-group thing))
 	    (else
 	     'ok)))
 
@@ -239,9 +219,8 @@
       (set! deferred-edges '()))
 
     (define (dispatch start)
-      (cond ((default-object? start) (traverse-group *current-network-group*))
-	    ((network-group? start) (traverse-group start))
-	    ((node? start) (visit start))
+      (cond ((default-object? start) (traverse-group *toplevel-diagram*))
+	    ((diagram? start) (traverse start))
 	    ((pair? start) (for-each dispatch start))
 	    (else
 	     (error "Unknown entry point" start))))
@@ -251,7 +230,7 @@
 (define (draw:node-id node)
   (define (node-type-string node)
     (cond ((cell? node) "cell-")
-	  ((propagator? node) "prop-")
+	  ((diagram? node) "prop-")
 	  (else
 	   (error "Unknown node type" node))))
   (string-append (node-type-string node) (write-to-string (hash node))))
@@ -259,7 +238,7 @@
 (define (draw:node-label node)
   (write-to-string
    (cond ((cell? node) (draw:cell-label node))
-	 ((propagator? node) (draw:propagator-label node))
+	 ((diagram? node) (draw:diagram-label node))
 	 (else
 	  (error "Unnameable node type" node)))))
 
@@ -270,5 +249,5 @@
 	       (+ draw:indentation-level 1)))
     (thunk)))
 
-(define draw:propagator-label name)
+(define draw:diagram-label name)
 (define draw:cell-label name)

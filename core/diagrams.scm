@@ -156,7 +156,8 @@
 ;;; constructor is expected to return the cell containing its return
 ;;; value.
 
-(define register-diagram (diagram-inserter *toplevel-diagram*))
+(define (register-diagram subdiagram #!optional name)
+  ((diagram-inserter *toplevel-diagram*) subdiagram name))
 
 (define (note-diagram-part! diagram part)
   (if (memq part (map cdr (diagram-parts diagram)))
@@ -271,7 +272,7 @@
 
 (defhandler name
   (lambda (diagram)
-    (let ((own-name (default-name diagram)))
+    (let ((own-name (default-name (diagram-identity diagram))))
       (if (not (eq? own-name diagram))
 	  own-name
 	  (let ((my-names
@@ -286,3 +287,26 @@
 		diagram
 		(last my-names))))))
   diagram?)
+
+(define (promises-not-to-read? diagram part)
+  #f)
+
+(define (promises-not-to-write? diagram part)
+  #f)
+
+(define (diagram-inputs diagram)
+  (filter (lambda (part)
+	    (not (promises-not-to-read? diagram part)))
+	  (map cdr (diagram-parts diagram))))
+
+(define (diagram-outputs diagram)
+  (filter (lambda (part)
+	    (not (promises-not-to-write? diagram part)))
+	  (map cdr (diagram-parts diagram))))
+
+(define (diagram-expression-substructure diagram)
+  ;; TODO Stub
+  (map cdr (diagram-parts diagram)))
+
+(define (primitive-diagram? diagram)
+  (every cell? (map cdr (diagram-parts diagram))))
