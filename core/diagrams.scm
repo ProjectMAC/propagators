@@ -217,8 +217,15 @@
 ;;;; New transmitters at the primitive-diagram level
 
 ;; Stubs:
-(define (promise-not-to-write thing) #f)
-(define (promise-not-to-read thing) #f)
+(define-structure diagram-promise
+  type
+  target)
+
+(define (promise-not-to-write thing)
+  (make-diagram-promise 'no-write thing))
+
+(define (promise-not-to-read thing)
+  (make-diagram-promise 'no-read thing))
 
 (define (make-anonymous-i/o-diagram identity inputs outputs)
   (define (with-synthetic-names lst base)
@@ -289,10 +296,16 @@
   diagram?)
 
 (define (promises-not-to-read? diagram part)
-  #f)
+  (any (lambda (promise)
+	 (and (eq? part (diagram-promise-target promise))
+	      (eq? 'no-read (diagram-promise-type promise))))
+       (diagram-promises diagram)))
 
 (define (promises-not-to-write? diagram part)
-  #f)
+  (any (lambda (promise)
+	 (and (eq? part (diagram-promise-target promise))
+	      (eq? 'no-write (diagram-promise-type promise))))
+       (diagram-promises diagram)))
 
 (define (diagram-inputs diagram)
   (filter (lambda (part)
