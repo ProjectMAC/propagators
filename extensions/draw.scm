@@ -161,7 +161,8 @@
    output-port))
 
 (define (draw:walk-graph writer #!optional start)
-  (let ((defer-edges? #f)
+  (let ((traversed (make-eq-hash-table))
+	(defer-edges? #f)
 	(deferred-edges '()))
     ;; TODO Handle circumstances when the same diagram is a part of
     ;; several clubs.
@@ -204,14 +205,18 @@
 	  (dump-deferred-edges)))
 
     (define (traverse thing)
-      (cond ((cell? thing)
-	     (write-node thing))
-	    ((primitive-diagram? thing)
-	     (write-apex thing))
-	    ((diagram? thing)
-	     (traverse-group thing))
-	    (else
-	     'ok)))
+      (if (hash-table/get traversed thing #f)
+	  'ok
+	  (begin
+	    (hash-table/put! traversed thing #t)
+	    (cond ((cell? thing)
+		  (write-node thing))
+		 ((primitive-diagram? thing)
+		  (write-apex thing))
+		 ((diagram? thing)
+		  (traverse-group thing))
+		 (else
+		  'ok)))))
 
     (define (dump-deferred-edges)
       (for-each (lambda (edge-writer) (edge-writer))
