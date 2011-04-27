@@ -222,7 +222,7 @@
     ;; N.B. This is the clause that will match dot-notation argument lists
     ((define-propagator-syntax name body-form ...)
      (define name
-       (diagram-style-with-diagram (empty-diagram 'name)
+       (expression-style-with-diagram (empty-diagram 'name)
 	 (lambda ()
 	   body-form ...))))))
 
@@ -232,7 +232,7 @@
     ((named-propagator-syntax (name arg-form ...) body-form ...)
      (propagator-constructor!
       (named-lambda (name arg-form ...)
-	(diagram-style-with-diagram (empty-diagram 'name)
+	(expression-style-with-diagram (empty-diagram 'name)
 	 (lambda ()
 	   (register-diagram arg-form 'arg-form) ...
 	   body-form ...)))))))
