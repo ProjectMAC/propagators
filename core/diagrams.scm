@@ -208,7 +208,8 @@
 
 (define (reset-diagrams!)
   (destroy-diagram! *toplevel-diagram*)
-  (set! *toplevel-diagram* (empty-diagram 'toplevel)))
+  (set! *toplevel-diagram* (empty-diagram 'toplevel))
+  (set! register-diagram (diagram-inserter *toplevel-diagram*)))
 
 ;;; Restarting requires resetting the toplevel diagram
 (define initialize-scheduler
@@ -220,7 +221,8 @@
 (define with-independent-scheduler
   (let ((with-independent-scheduler with-independent-scheduler))
     (lambda args
-      (fluid-let ((*toplevel-diagram* #f))
+      (fluid-let ((*toplevel-diagram* #f)
+		  (register-diagram #f))
 	(apply with-independent-scheduler args)))))
 
 ;;;; New transmitters at the primitive-diagram level
