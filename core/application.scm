@@ -283,13 +283,15 @@
 	       (set! explicit-diagram answer)
 	       answer))))
        (thunk)
-       (or explicit-diagram target-diagram)))))
+       (or explicit-diagram
+	   (compute-derived-promises! target-diagram))))))
 
 (define (expression-style-with-diagram target-diagram thunk)
   (fluid-let
       ((register-diagram (diagram-inserter target-diagram)))
     (let ((answer (thunk)))
-      (register-diagram target-diagram)
+      (register-diagram
+       (compute-derived-promises! target-diagram))
       answer)))
 
 (define (diagram-style? thing)

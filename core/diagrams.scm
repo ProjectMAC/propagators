@@ -108,6 +108,15 @@
 (define (make-compound-diagram identity parts)
   (make-%diagram identity parts (compute-derived-promises parts)))
 
+(define (compute-derived-promises! diagram)
+  (set-diagram-promises!
+   diagram
+   (lset-union
+    diagram-promise-equal?
+    (diagram-promises diagram)
+    (compute-derived-promises (diagram-parts diagram))))
+  diagram)
+
 (define (compute-derived-promises parts)
   ;; TODO For every part that's a cell, I can promise not to read
   ;; (resp. write) it if every part either doesn't mention it or
