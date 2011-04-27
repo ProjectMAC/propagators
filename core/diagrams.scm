@@ -142,6 +142,11 @@
 	     (not (eq? (cdr name.part) part)))
 	   (diagram-parts diagram)))
   (remove-diagram-club! part diagram))
+
+(define (names-in-diagram diagram part)
+  (map car (filter (lambda (name.part)
+		     (eq? part (cdr name.part)))
+		   (diagram-parts diagram))))
 
 ;;;; Implicit diagram production
 
@@ -266,3 +271,18 @@
 ;; ./examples/selectors/selectors.scm:    (propagator inputs the-propagator)))
 ;; ./examples/selectors/selectors.scm:    (propagator inputs the-propagator)))
 ;; ./examples/selectors/selectors.scm:    (propagator inputs the-propagator)))
+
+(defhandler name
+  (lambda (diagram)
+    (let ((own-name (default-name diagram)))
+      (if (not (eq? own-name diagram))
+	  own-name
+	  (let ((my-names
+		 (append-map
+		  (lambda (club)
+		    (names-in-diagram club diagram))
+		  (diagram-clubs diagram))))
+	    (if (null? my-names)
+		diagram
+		(last my-names))))))
+  diagram?)
