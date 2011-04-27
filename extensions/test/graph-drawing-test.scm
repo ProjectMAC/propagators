@@ -124,21 +124,11 @@
 }
 " (out)))))
 
-;;; TODO more-macrology-smoke-2 and expression-substructure-test fail
-;;; to syntax in at least some versions of mechanics because of a
-;;; macro-expander bug.
-#;
- (define-test (more-macrology-smoke-2)
-   (initialize-scheduler)
-   (define-propagator (frobnicate frob)
-     (check (not (network-group-contains? *current-network-group* frob)))
-     (check (eq? 'frob (local-name frob)))
-     (check (eq? 'foo (name frob))))
-   (define-cell foo)
-   (check (network-group-contains? *current-network-group* foo))
-   (check (eq? 'foo (name foo)))
-   (check (eq? 'foo (local-name foo)))
-   (p:frobnicate foo))
+;;; TODO expression-substructure-test fails to syntax in at least some
+;;; versions of mechanics because of a macro-expander bug.  It is also
+;;; outdated, in that it relies on old network-group technology rather
+;;; than the new diagram technology.
+
 #;
  (define-test (expression-substructure-test)
    (initialize-scheduler)
