@@ -237,6 +237,10 @@
        (eq? (diagram-promise-target prom1)
 	    (diagram-promise-target prom2))))
 
+(define (retarget-promise promise new-target)
+  (make-diagram-promise (diagram-promise-type promise)
+			new-target))
+
 (define (promise-not-to-write thing)
   (make-diagram-promise 'no-write thing))
 
