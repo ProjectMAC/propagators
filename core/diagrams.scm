@@ -230,6 +230,12 @@
   type
   target)
 
+(define (diagram-promise-equal? prom1 prom2)
+  (and (eq? (diagram-promise-type prom1)
+	    (diagram-promise-type prom2))
+       (eq? (diagram-promise-target prom1)
+	    (diagram-promise-target prom2))))
+
 (define (promise-not-to-write thing)
   (make-diagram-promise 'no-write thing))
 
