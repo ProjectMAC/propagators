@@ -282,8 +282,8 @@
 	     (let ((answer (apply make-compound-diagram args)))
 	       (set! explicit-diagram answer)
 	       answer))))
-       (thunk))
-     (or explicit-diagram target-diagram))))
+       (thunk)
+       (or explicit-diagram target-diagram)))))
 
 (define (expression-style-with-diagram target-diagram thunk)
   (fluid-let
