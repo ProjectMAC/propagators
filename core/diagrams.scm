@@ -275,10 +275,13 @@
       (if (not (eq? own-name diagram))
 	  own-name
 	  (let ((my-names
-		 (append-map
-		  (lambda (club)
-		    (names-in-diagram club diagram))
-		  (diagram-clubs diagram))))
+		 (filter
+		  (lambda (x)
+		    (not (uninterned-symbol? x)))
+		  (append-map
+		   (lambda (club)
+		     (names-in-diagram club diagram))
+		   (diagram-clubs diagram)))))
 	    (if (null? my-names)
 		diagram
 		(last my-names))))))
