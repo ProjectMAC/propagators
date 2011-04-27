@@ -94,17 +94,6 @@
 ;;; - The clubs list of a diagram X should always contain exactly the
 ;;;   diagrams that contain X as a part.
 
-;;; Every propagator constructor is expected to call the procedure
-;;; REGISTER-DIAGRAM exactly once on a diagram describing the network
-;;; it just constructed.  This procedure is a fluid-bindable hook.  In
-;;; addition, a diagram-style propagator constructor is expected to
-;;; return that same diagram, whereas an expression-style propagator
-;;; constructor is expected to return the cell containing its return
-;;; value.
-
-(define (register-diagram diagram #!optional name)
-  diagram)
-
 (define (make-%diagram identity parts promises)
   (let ((answer (%make-%diagram identity parts promises '())))
     ;; produces (eq-adjoin! output 'shadow-connections the-propagator)
@@ -150,7 +139,24 @@
 
 ;;;; Implicit diagram production
 
-(define *current-diagram* (empty-diagram 'toplevel))
+(define *toplevel-diagram* (empty-diagram 'toplevel))
+
+(define (diagram-inserter target-diagram)
+  (lambda (subdiagram #!optional name)
+    (if (default-object? name)
+	(note-diagram-part! target-diagram subdiagram)
+	(add-diagram-named-part! target-diagram name subdiagram))
+    subdiagram))
+
+;;; Every propagator constructor is expected to call the procedure
+;;; REGISTER-DIAGRAM exactly once on a diagram describing the network
+;;; it just constructed.  This procedure is a fluid-bindable hook.  In
+;;; addition, a diagram-style propagator constructor is expected to
+;;; return that same diagram, whereas an expression-style propagator
+;;; constructor is expected to return the cell containing its return
+;;; value.
+
+(define register-diagram (diagram-inserter *toplevel-diagram*))
 
 (define (note-diagram-part! diagram part)
   (if (memq part (map cdr (diagram-parts diagram)))
@@ -182,12 +188,12 @@
 
 (define (in-diagram diagram thunk)
   (if diagram
-      (fluid-let ((*current-diagram* diagram))
+      (fluid-let ((*toplevel-diagram* diagram))
 	(thunk))
       (thunk))) ;; TODO What should I really do if there is no diagram?
 
 (define (name-in-current-diagram! name part)
-  (add-diagram-named-part! *current-diagram* name part))
+  (add-diagram-named-part! *toplevel-diagram* name part))
 
 ;;; Getting rid of diagrams when they are no longer needed requires
 ;;; eliminating appropriate entries in the eq-properties table,
@@ -200,8 +206,8 @@
   (clear-diagram-parts! diagram))
 
 (define (reset-diagrams!)
-  (destroy-diagram! *current-diagram*)
-  (set! *current-diagram* (empty-diagram 'toplevel)))
+  (destroy-diagram! *toplevel-diagram*)
+  (set! *toplevel-diagram* (empty-diagram 'toplevel)))
 
 ;;; Restarting requires resetting the toplevel diagram
 (define initialize-scheduler
@@ -213,7 +219,7 @@
 (define with-independent-scheduler
   (let ((with-independent-scheduler with-independent-scheduler))
     (lambda args
-      (fluid-let ((*current-diagram* #f))
+      (fluid-let ((*toplevel-diagram* #f))
 	(apply with-independent-scheduler args)))))
 
 ;;;; New transmitters at the primitive-diagram level

@@ -276,12 +276,7 @@
   (let ((explicit-diagram #f))
     (register-diagram
      (fluid-let
-	 ((register-diagram
-	   (lambda (subdiagram #!optional name)
-	     (if (default-object? name)
-		 (note-diagram-part! target-diagram subdiagram)
-		 (add-diagram-named-part! target-diagram name subdiagram))
-	     subdiagram))
+	 ((register-diagram (diagram-inserter target-diagram))
 	  (diagram
 	   (lambda args
 	     (let ((answer (apply make-compound-diagram args)))
@@ -292,12 +287,7 @@
 
 (define (expression-style-with-diagram target-diagram thunk)
   (fluid-let
-      ((register-diagram
-	(lambda (subdiagram #!optional name)
-	  (if (default-object? name)
-	      (note-diagram-part! target-diagram subdiagram)
-	      (add-diagram-named-part! target-diagram name subdiagram))
-	  subdiagram)))
+      ((register-diagram (diagram-inserter target-diagram)))
     (let ((answer (thunk)))
       (register-diagram target-diagram)
       answer)))
