@@ -127,7 +127,7 @@
        ;; diagram made by MAKE-COMPOUND-DIAGRAM.
        (set! answer-diagram
 	     (make-diagram-for-compound-constructor
-	      the-propagator prop-ctor arg-cells))
+	      the-propagator prop-ctor args))
        (register-diagram answer-diagram)))))
 
 ;; This is a peer of PROPAGATOR

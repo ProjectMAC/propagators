@@ -225,7 +225,6 @@
 
 ;;;; New transmitters at the primitive-diagram level
 
-;; Stubs:
 (define-structure diagram-promise
   type
   target)
@@ -259,7 +258,54 @@
      (append (map promise-not-to-write un-written)
 	     (map promise-not-to-read un-read)))))
 
+;;; Stuff for automatically determining the i/o characteristics of a
+;;; compound box by expanding it out (in a sandbox) and looking at the
+;;; i/o characteristics of its structure.
 
+(define *interesting-cells* #f)
+
+(define (make-diagram-for-compound-constructor identity prop-ctor args)
+  ;; This check is here to keep recursive compounds from computing
+  ;; their internal metadata forever.  The reason this is ok is that
+  ;; to learn the metadata of an unexpanded box, I only need to
+  ;; observe what propagators want to attach to its interior boundary,
+  ;; not to the entire interior.
+  (if (or (not *interesting-cells*)
+	  (not (null? (lset-intersection eq?
+                       *interesting-cells* args))))
+      (do-make-diagram-for-compound-constructor identity prop-ctor args)
+      (empty-diagram identity)))
+
+(define (do-make-diagram-for-compound-constructor identity prop-ctor args)
+  (with-independent-scheduler
+   (lambda ()
+     (let ((test-cell-map (map (lambda (arg)
+				 (cons (make-cell) arg))
+			       args)))
+       (fluid-let ((*interesting-cells* (map car test-cell-map)))
+	 (apply prop-ctor (map car test-cell-map)))
+       (let ((prop-ctor-diagram
+	      (car
+	       ;; There should only be one of these
+	       (filter (lambda (x) (not (cell? x)))
+		       (map cdr (diagram-parts *toplevel-diagram*))))))
+	 (make-%diagram
+	  identity
+	  (map (lambda (name.part)
+		 (cons (car name.part)
+		       (cdr (assq (cdr name.part) test-cell-map))))
+	       (filter (lambda (name.part)
+			 (assq (cdr name.part) test-cell-map))
+		       (diagram-parts prop-ctor-diagram)))
+	  (map (lambda (promise)
+		 (retarget-promise
+		  promise
+		  (cdr (assq (diagram-promise-target promise)
+			     test-cell-map))))
+	       (filter (lambda (promise)
+			 (assq (diagram-promise-target promise)
+			       test-cell-map))
+		       (diagram-promises prop-ctor-diagram)))))))))
 
 ;; Various inspectors should use the diagram-clubs facility instead of
 ;; the cell neighbors field, which, though somewhat redundant, is used
