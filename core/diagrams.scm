@@ -319,7 +319,10 @@
 
 (define (diagram-expression-substructure diagram)
   ;; TODO Stub
-  (map cdr (diagram-parts diagram)))
+  (append
+   (filter cell? (map cdr (diagram-parts diagram)))
+   (filter (lambda (x) (not (cell? x)))
+	   (map cdr (diagram-parts diagram)))))
 
 (define (primitive-diagram? diagram)
   (every cell? (map cdr (diagram-parts diagram))))

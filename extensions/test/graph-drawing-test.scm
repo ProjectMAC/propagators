@@ -36,11 +36,13 @@
     (check (equal?
 "digraph G {
   ratio=fill;
-  \"cell-201\" [label=\"foo\", shape=\"ellipse\" ];
-  \"prop-202\" [label=\"identity:p\", shape=\"box\" ];
-  \"cell-201\" -> \"prop-202\" [label=\"\" ];
-  \"prop-202\" -> \"cell-203\" [label=\"\" ];
-  \"cell-203\" [label=\"bar\", shape=\"ellipse\" ];
+  subgraph cluster_201 { label=\"toplevel\"; 
+    \"cell-202\" [label=\"bar\", shape=\"ellipse\" ];
+    \"cell-203\" [label=\"foo\", shape=\"ellipse\" ];
+    \"prop-204\" [label=\"identity:p\", shape=\"box\" ];
+  }
+  \"cell-203\" -> \"prop-204\" [label=\"\" ];
+  \"prop-204\" -> \"cell-202\" [label=\"\" ];
 }
 " (out)))))
 #|
@@ -84,15 +86,15 @@
     (check (equal?
 "digraph G {
   ratio=fill;
-  subgraph cluster_215 { label=\"top-group\"; 
-    subgraph cluster_216 { label=\"subgroup\"; 
-      \"prop-217\" [label=\"identity:p\", shape=\"box\" ];
-      \"cell-219\" [label=\"bar\", shape=\"ellipse\" ];
+  subgraph cluster_215 { label=\"toplevel\"; 
+    \"cell-216\" [label=\"foo\", shape=\"ellipse\" ];
+    subgraph cluster_217 { label=\"subgroup\"; 
+      \"cell-218\" [label=\"bar\", shape=\"ellipse\" ];
+      \"prop-219\" [label=\"identity:p\", shape=\"box\" ];
     }
-    \"cell-218\" [label=\"foo\", shape=\"ellipse\" ];
   }
-  \"cell-218\" -> \"prop-217\" [label=\"\" ];
-  \"prop-217\" -> \"cell-219\" [label=\"\" ];
+  \"cell-216\" -> \"prop-219\" [label=\"\" ];
+  \"prop-219\" -> \"cell-218\" [label=\"\" ];
 }
 " (out)))))
 
@@ -107,18 +109,18 @@
     (check (equal?
 "digraph G {
   ratio=fill;
-  subgraph cluster_240 { label=\"top-group\"; 
-    subgraph cluster_241 { label=\"c:id\"; 
-      \"prop-242\" [label=\"identity:p\", shape=\"box\" ];
+  subgraph cluster_240 { label=\"toplevel\"; 
+    \"cell-241\" [label=\"bar\", shape=\"ellipse\" ];
+    \"cell-242\" [label=\"foo\", shape=\"ellipse\" ];
+    subgraph cluster_243 { label=\"c:id\"; 
+      \"prop-244\" [label=\"identity:p\", shape=\"box\" ];
       \"prop-245\" [label=\"identity:p\", shape=\"box\" ];
     }
-    \"cell-243\" [label=\"bar\", shape=\"ellipse\" ];
-    \"cell-244\" [label=\"foo\", shape=\"ellipse\" ];
   }
-  \"cell-243\" -> \"prop-242\" [label=\"\" ];
-  \"prop-242\" -> \"cell-244\" [label=\"\" ];
-  \"cell-244\" -> \"prop-245\" [label=\"\" ];
-  \"prop-245\" -> \"cell-243\" [label=\"\" ];
+  \"cell-241\" -> \"prop-244\" [label=\"\" ];
+  \"prop-244\" -> \"cell-242\" [label=\"\" ];
+  \"cell-242\" -> \"prop-245\" [label=\"\" ];
+  \"prop-245\" -> \"cell-241\" [label=\"\" ];
 }
 " (out)))))
 
