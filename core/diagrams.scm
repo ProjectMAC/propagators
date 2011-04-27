@@ -185,15 +185,6 @@
      (add-diagram-named-part! diagram (car name.part) (cdr name.part)))
    (diagram-parts new-diagram))
   (network-unregister new-diagram))
-
-(define (in-diagram diagram thunk)
-  (if diagram
-      (fluid-let ((*toplevel-diagram* diagram))
-	(thunk))
-      (thunk))) ;; TODO What should I really do if there is no diagram?
-
-(define (name-in-current-diagram! name part)
-  (add-diagram-named-part! *toplevel-diagram* name part))
 
 ;;; Getting rid of diagrams when they are no longer needed requires
 ;;; eliminating appropriate entries in the eq-properties table,
