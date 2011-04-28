@@ -26,27 +26,20 @@
 (define (explain cell #!optional depth)
   (assert (cell? cell) "Can only explain a cell.")
   (if (default-object? depth) (set! depth 100))
-  (let ((n (+ (network-group-level cell) depth))
+  (let ((n (+ (diagram-depth cell) depth))
 	(mark (make-eq-hash-table)))
-    (define (reason inf)
-      (cond  ((symbol? inf) (list inf))
-	     ((propagator? inf)
-	      (let ((eainf (explanation-ancestor inf depth)))
-		(if (network-group? eainf)
-		    (cons (name-of eainf)
-			  (map name-of
-			       (network-group-externals eainf cell)))
-		    (cons (name-of eainf)
-			  (map (lambda (i)
-				 (name-of
-				  (explanation-ancestor i depth)))
-			       (or (eq-get inf 'inputs)
-				   '()))))))
+    (define (reason diagram)
+      (cond  ((symbol? diagram) (list diagram))
+	     ((diagram? diagram)
+	      (let ((eadiagram (explanation-ancestor diagram depth)))
+		(cons (name-of eadiagram)
+		      (map name-of
+			   (diagram-inputs eadiagram)))))
 	     (else
 	      (error "Unknown informant type -- EXPLAIN"
 		     (name cell)))))
     (define (explain-cell cell c)
-      (if (and (< (network-group-level cell) n)
+      (if (and (< (diagram-depth cell) n)
 	       (or (not (= (length (name-of cell)) 1))
 		   (not (number? (car (name-of cell))))))
 	  `(,(name-of cell)
@@ -72,33 +65,23 @@
 			  (if (symbol? inf)
 			      '()
 			      (append-map explain
-					  (eq-get inf 'inputs))))
+					  (diagram-inputs inf))))
 			infs)))
 		(if e (cons e r) r)))
 	    '())))
     (explain cell)))
 
-(define (network-group-level thing)
-  (cond ((eq-get thing 'network-group)
-	 => (lambda (ng)
-	      (+ 1 (network-group-level ng))))
+(define (diagram-depth thing)
+  (cond ((diagram-creator thing)
+	 => (lambda (d)
+	      (+ 1 (diagram-depth d))))
 	(else 0)))
     
 (define (explanation-ancestor thing n)
-  (let lp ((thing thing) (m (- (network-group-level thing) n)))
+  (let lp ((thing thing) (m (- (diagram-depth thing) n)))
     (if (<= m 0)
 	thing
-	(lp (eq-get thing 'network-group)
-	    (- m 1)))))
-
-(define (network-group-externals thing except)
-  (let ((elements (network-group-elements thing)))
-    (filter (lambda (x)
-	      (and (not (eq? x except))
-		   (not (memq x elements))))
-	    (map car
-		 (hash-table->alist
-		  (network-group-names thing))))))
+	(lp (diagram-creator thing) (- m 1)))))
 
 #|
 ;;; Here is an example:
