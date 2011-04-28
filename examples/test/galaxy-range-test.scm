@@ -8,9 +8,31 @@
 	    (delta- (if (default-object? delta-) delta delta-)))
 	(make-interval (- value delta-) (+ value delta+))))
 
-    (define (depends-on value premises)
+    (define (depends-on value . premises)
       (make-tms (contingent value premises)))
 
+    (define (what-is cell)
+      (let ((q (tms-query (content cell))))
+	(cond ((vector? q)
+	       (cond ((interval? (vector-ref q 1))
+		      (if *center-difference-mode*
+			  (let* ((value
+				  (average (interval-low (vector-ref q 1))
+					   (interval-high (vector-ref q 1))))
+				 (delta
+				  (- (interval-high (vector-ref q 1)) value)))
+			    `(,(vector-ref q 0)
+			      (+- ,value ,delta)
+			      ,@(vector-ref q 2)))
+			  `(,(vector-ref q 0)
+			    (interval ,(interval-low (vector-ref q 1))
+				      ,(interval-high (vector-ref q 1)))
+			    ,@(vector-ref q 2))))
+		     (else q)))
+	      (else q))))
+
+    (define *center-difference-mode* #f)
+    
     (initialize-scheduler)
 
 
@@ -32,13 +54,19 @@
       (p:mu->d mu d)
       (p:d->mu d mu))
 
-    (define-cell M87:distance-modulus
-      (depends-on (+- 31.43 0.3)
-		  (list 'VanDenBergh1985)))
+    ;;; M87 = NGC4486 -- The giant elliptical in Virgo Cluster
+
+    (define-cell M87:distance-modulus)
 
     (define-cell M87:distance)
 
     (c:mu<->d M87:distance-modulus M87:distance)
+
+    (add-content M87:distance-modulus
+		 (depends-on (+- 31.43 0.3) 'VanDenBergh1985))
+
+    (what-is M87:distance-modulus)
+    (produces '(supported (interval 31.13 31.73) VanDenBergh1985))
 
     (run)
 
@@ -50,12 +78,13 @@
 	  #(interval 16.826740610704718 22.181964198002227)
 	  (VanDenBergh1985)))))
 
+    (what-is M87:distance)
+    (produces '(supported (interval 16.827 22.182) VanDenBergh1985))
 
     ;;; Surface-Brightness Fluctuation survey
 
     (add-content M87:distance
-     (depends-on (+- 17 0.31)
-		 (list 'Tonry-etal:SBFsurveyIV)))
+     (depends-on (+- 17 0.31) 'Tonry:SBF-IV))
 
     (run)
 
@@ -64,14 +93,19 @@
      #(tms
        (#(supported
 	  #(interval 16.826740610704718 17.30999999999999)
-	  (VanDenBergh1985 Tonry-etal:SBFsurveyIV))
+	  (VanDenBergh1985 Tonry:SBF-IV))
 	#(supported
 	  #(interval 16.69 17.31)
-	  (Tonry-etal:SBFsurveyIV))
+	  (Tonry:SBF-IV))
 	#(supported
 	  #(interval 16.826740610704718 22.181964198002227)
 	  (VanDenBergh1985)))))
     ;;; The two measurements give a better intersection
+
+    (what-is M87:distance)
+    (produces '(supported (interval 16.827 17.31)
+			  VanDenBergh1985
+			  Tonry:SBF-IV))
 
     ;;; But note that the original measure is improved
     (content M87:distance-modulus)
@@ -80,11 +114,15 @@
      #(tms
        (#(supported
 	  #(interval 31.13 31.191485339376964)
-	  (VanDenBergh1985 Tonry-etal:SBFsurveyIV))
+	  (VanDenBergh1985 Tonry:SBF-IV))
 	#(supported
 	  #(interval 31.13 31.729999999999997)
 	  (VanDenBergh1985)))))
    
+    (what-is M87:distance-modulus)
+    (produces '(supported (interval 31.13 31.191)
+			  VanDenBergh1985
+			  Tonry:SBF-IV))
 
     ;;; By redshift and Hubble law
 
@@ -110,9 +148,10 @@
 
 
     (define-cell M87:redshift
-      (depends-on (+- 0.004360 0.000022)
-		  (list 'NASA:IPAC)))
+      (depends-on (+- 0.004360 0.000022) 'Smith2000))
 
+    (what-is M87:redshift)
+    (produces '(supported (interval .004338 .004382) Smith2000))
 
     (define-cell M87:radial-velocity)
 
@@ -124,110 +163,165 @@
     (define-propagator (c:HubbleLaw d v)
       (c:* H0 d v))
 
+    ;;; Early estimates of the Hubble constant were quite wild.
+    (add-content H0
+      (depends-on (+- 70 20) 'deVaucouleurs 'Sandage))
+
+    (what-is H0)
+    (produces '(supported (interval 50 90) deVaucouleurs Sandage))
+
     (c:HubbleLaw M87:distance M87:radial-velocity)
 
     (run)
 
-    (content H0)
+    (what-is H0)
+    (produces '(supported (interval 74.964 77.904)
+			  Tonry:SBF-IV
+			  VanDenBergh1985
+			  Smith2000))
    
-    (produces
-     #(tms
-       (#(supported
-	  #(interval 74.96371053390713 77.90397375603429)
-	  (Tonry-etal:SBFsurveyIV VanDenBergh1985 NASA:IPAC)))))
-   
-
-    (content M87:radial-velocity)
-   
-    (produces
-     #(tms
-       (#(supported
-	  #(interval 1297.6218293419317 1310.8699589359367)
-	  (NASA:IPAC)))))
-   
+    (what-is M87:radial-velocity)
+    (produces '(supported (interval 1297.6 1310.9) Smith2000))
 
     (add-content H0
      (depends-on (+- 73.5 3.2)		;km/sec/Mpc
-		 (list 'NASA:WmapsUniverse)))
+		 'WMAP3))
 
     (run)
+   
+    (what-is M87:distance)
+    (produces '(supported (interval 16.918 17.31)
+			  WMAP3
+			  Tonry:SBF-IV
+			  VanDenBergh1985
+			  Smith2000))
 
-    (content M87:distance)
-   
-    (produces
-     #(tms
-       (#(supported
-	  #(interval 16.918146406022597 17.30999999999999)
-	  (NASA:WmapsUniverse Tonry-etal:SBFsurveyIV VanDenBergh1985 NASA:IPAC))
-	#(supported
-	  #(interval 16.826740610704718 17.30999999999999)
-	  (VanDenBergh1985 Tonry-etal:SBFsurveyIV))
-	#(supported
-	  #(interval 16.69 17.31)
-	  (Tonry-etal:SBFsurveyIV))
-	#(supported
-	  #(interval 16.826740610704718 22.181964198002227)
-	  (VanDenBergh1985)))))
-   
-
-    (tms-query (content M87:distance))
-   
-    (produces
-     #(supported
-       #(interval 16.918146406022597 17.30999999999999)
-       (NASA:WmapsUniverse Tonry-etal:SBFsurveyIV VanDenBergh1985 NASA:IPAC)))
-   
 
     (add-content H0
      (depends-on (+- 70.8 4)		;km/sec/Mpc
-		 (list 'NASA:WmapsUniverse 'cosmology)))
+		 'WMAP:lCDM))
 
     (run)
     (produces
      '(contradiction
-       (Tonry-etal:SBFsurveyIV
+       (WMAP3
+	Tonry:SBF-IV
 	VanDenBergh1985
-	NASA:IPAC
-	NASA:WmapsUniverse
-	cosmology)))
+	Smith2000
+	WMAP:lCDM)))
    
 
-    (kick-out! 'Tonry-etal:SBFsurveyIV)
+    (kick-out! 'Tonry:SBF-IV)
+
+    (run)
+   
+    (what-is M87:distance)
+    (produces '(supported (interval 17.348 18.647)
+			  WMAP:lCDM
+			  WMAP3
+			  Smith2000))
+
+    (what-is H0)
+    (produces '(supported (interval 70.3 74.8)
+			  WMAP3
+			  WMAP:lCDM))
+
+    (bring-in! 'Tonry:SBF-IV)
+    (kick-out! 'WMAP:lCDM)
 
     (run)
 
-    (tms-query (content M87:distance))
+    (what-is M87:distance)
+    (produces '(supported (interval 16.918 17.31)
+			  WMAP3
+			  Tonry:SBF-IV
+			  VanDenBergh1985
+			  Smith2000))
    
-    (produces
-     #(supported
-       #(interval 17.34788541900978 18.64679884688385)
-       (cosmology NASA:WmapsUniverse NASA:IPAC)))
-   
+    (what-is H0)
+    (produces '(supported (interval 74.964 76.7)
+			  Smith2000
+			  VanDenBergh1985
+			  Tonry:SBF-IV
+			  WMAP3))
 
-    (bring-in! 'Tonry-etal:SBFsurveyIV)
-    (kick-out! 'cosmology)
+    ;; Consider another galaxy, NGC4889, the giant elliptical in the Coma
+    ;; cluster, is well studied.
+
+    ;; Here is the propagator network
+    (define-cell NGC4889:distance)
+
+    (define-cell NGC4889:distance-modulus)
+
+    (define-cell NGC4889:redshift)
+
+    (define-cell NGC4889:radial-velocity)
+
+    (c:mu<->d NGC4889:distance-modulus NGC4889:distance)
+
+    (c:v<->z NGC4889:radial-velocity NGC4889:redshift)
+
+    (c:HubbleLaw NGC4889:distance NGC4889:radial-velocity)
+
+    ;; Now for some data:
+
+
+    (add-content NGC4889:distance-modulus
+		 (depends-on (+- 34.875 0.015) 'Willick1997))
 
     (run)
 
-    (tms-query (content M87:distance))
+    (add-content NGC4889:redshift
+		 (depends-on (+- 0.021665 0.000043) 'Moore2002))
+
+    (run)
+
     (produces
-     #(supported
-       #(interval 16.918146406022597 17.30999999999999)
-       (NASA:WmapsUniverse Tonry-etal:SBFsurveyIV VanDenBergh1985 NASA:IPAC)))
+     '(contradiction (WMAP3 Tonry:SBF-IV VanDenBergh1985 Smith2000 Willick1997 Moore2002)))
 
-    (tms-query (content H0))
-   
+    (kick-out! 'Tonry:SBF-IV)
+    (run)
+
     (produces
-     #(supported
-       #(interval 74.96371053390713 76.7)
-       (NASA:IPAC VanDenBergh1985 Tonry-etal:SBFsurveyIV NASA:WmapsUniverse)))
-   
+     '(contradiction (Moore2002 Willick1997 WMAP3)))
 
 
+    (bring-in! 'Tonry:SBF-IV)
+    (kick-out! 'WMAP3)
+    (run)
+    (produces
+     '(contradiction (Moore2002 Willick1997 Tonry:SBF-IV VanDenBergh1985 Smith2000)))
 
-   ;; Even tighter
-    (add-content H0
-     (depends-on (+- 70.8 1.6)
-		 (list 'NASA:WmapsUniverse 'cosmology 'flat-cosmology))))
+
+    (bring-in! 'WMAP3)
+    (kick-out! 'Moore2002)
+    (run)
+
+    (what-is NGC4889:redshift)
+    (produces
+     '(supported (interval .023725 .024624)
+		 Willick1997 Smith2000 VanDenBergh1985 Tonry:SBF-IV WMAP3))
+
+    (what-is NGC4889:distance)
+    (produces '(supported (interval 93.756 95.06) Willick1997))
+
+    (what-is H0)
+    (produces
+     '(supported (interval 74.964 76.7) Smith2000 VanDenBergh1985 Tonry:SBF-IV WMAP3))
+
+    (bring-in! 'Moore2002)
+    (kick-out! 'Willick1997)
+    (run)
+
+    (what-is NGC4889:distance)
+    (produces
+     '(supported (interval 83.592 85.879) WMAP3 Tonry:SBF-IV VanDenBergh1985 Smith2000 Moore2002))
+
+    (what-is H0)
+    (produces
+     '(supported (interval 74.964 76.7) Smith2000 VanDenBergh1985 Tonry:SBF-IV WMAP3))
+
+
+    )
 
 ))
