@@ -103,28 +103,25 @@
       by (user)
       with-premises vandenbergh1985)))
 
-#|
-    ;;; Ask Alexey about the right way to standardize cell numbers
-
-    (cpp (explain m87:distance 3))
+    (explain m87:distance 3)
     (produces
      '(((m87:distance)
 	has-value #(interval 16.827 22.182)
-	by ((p:/) (1000000.) (cell10))
+	by ((p:/) (1000000.) (cell1813))
 	with-premises vandenbergh1985)
-       ((cell10) 
+       ((cell1813) 
 	has-value #(interval 16827000.0 22182000.0)
-	by ((exp:p) (cell7))
+	by ((exp:p) (cell1810))
 	with-premises vandenbergh1985)
-       ((cell7)
+       ((cell1810)
 	has-value #(interval 16.638 16.915)
-	by ((p:*) (2.303) (cell6))
+	by ((p:*) (2.3026) (cell1809))
 	with-premises vandenbergh1985)
-       ((cell6)
+       ((cell1809)
 	has-value #(interval 7.226 7.346)
-	by ((+:p) (cell1) (1))
+	by ((+:p) (cell1804) (1))
 	with-premises vandenbergh1985)
-       ((cell1)
+       ((cell1804)
 	has-value #(interval 6.226 6.346)
 	by ((p:/) (5) (m87:distance-modulus))
 	with-premises vandenbergh1985)
@@ -132,7 +129,7 @@
 	has-value #(interval 31.13 31.73)
 	by (user)
 	with-premises vandenbergh1985)))
-|#
+
 
     ;;; Surface-Brightness Fluctuation survey
 
