@@ -27,19 +27,21 @@
   (with-current-unparser-state state
     (lambda (port)
       (display "#(value=" port)
-      (write (v&s-value object) port)
+      (write (vector-ref object 1) port) ; Avoid checking the length
       (display ",\n   premises=" port)
-      (write (v&s-support object) port)
-      (display ",\n   informants=" port)
-      (write
-       (map (lambda (inf)
-	      (if (symbol? inf)
-		  inf
-		  (cons (name inf)
-			(map name
-			     (eq-get inf 'inputs)))))
-	    (v&s-informants object))
-       port)
+      (write (vector-ref object 2) port)
+      (if (>= (vector-length object) 4)
+	  (begin
+	    (display ",\n   informants=" port)
+	    (write
+	     (map (lambda (inf)
+		    (if (symbol? inf)
+			inf
+			(cons (name inf)
+			      (map name
+				   (diagram-inputs inf)))))
+		  (vector-ref object 3))
+	     port)))
       (display ")" port))))
 
 (define-structure
@@ -49,12 +51,12 @@
       (safe-accessors #t))
  value support informants)
 
-(define *active-propagator* 'user)
+(define *active-diagram* 'user)
 
 (define (supported value depends #!optional informants)
   (%supported value depends
 	      (if (default-object? informants)
-		  (list *active-propagator*)
+		  (list *active-diagram*)
 		  informants)))
 
 ;;; Aliases

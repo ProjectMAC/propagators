@@ -87,9 +87,10 @@
   (let ((n (name f)))
     (define (the-constructor . cells)
       (let ((output (ensure-cell (last cells)))
-	    (inputs (map ensure-cell (except-last-pair cells))))
+	    (inputs (map ensure-cell (except-last-pair cells)))
+	    (the-diagram #f))
 	(define (the-propagator)
-	  (fluid-let ((*active-propagator* the-propagator))
+	  (fluid-let ((*active-diagram* the-diagram))
 	    (add-content output
 			 (apply f (map content inputs))
 			 the-propagator)))
@@ -97,8 +98,9 @@
 				  (symbol n ':p)
 				  f))
 	(propagator inputs the-propagator)
-	(register-diagram
-	 (make-anonymous-i/o-diagram the-propagator inputs (list output)))))
+	(set! the-diagram (make-anonymous-i/o-diagram
+			   the-propagator inputs (list output)))
+	(register-diagram the-diagram)))
     (if (symbol? n) (name! the-constructor (symbol 'p: n)))
     (propagator-constructor! the-constructor)))
 
