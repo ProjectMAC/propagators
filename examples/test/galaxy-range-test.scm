@@ -80,18 +80,59 @@
 
     (what-is M87:distance)
     (produces '(supported (interval 16.827 22.182) VanDenBergh1985))
-#;
+
     (explain M87:distance 1)
-#;
     (produces
      '(((m87:distance)
 	has-value #(interval 16.827 22.182)
-	by ((c:mu<->d) (m87:distance-modulus))
+	by ((c:mu<->d) (m87:distance) (m87:distance-modulus))
 	with-premises vandenbergh1985)
        ((m87:distance-modulus)
 	has-value #(interval 31.13 31.73)
 	by (user)
 	with-premises vandenbergh1985)))
+
+    (explain m87:distance 2)
+    (produces
+     '(((m87:distance)
+	has-value #(interval 16.827 22.182)
+	by ((p:mu->d) (m87:distance-modulus))
+	with-premises vandenbergh1985)
+     ((m87:distance-modulus)
+      has-value #(interval 31.13 31.73)
+      by (user)
+      with-premises vandenbergh1985)))
+
+#|
+    ;;; Ask Alexey about the right way to standardize cell numbers
+
+    (cpp (explain m87:distance 3))
+    (produces
+     '(((m87:distance)
+	has-value #(interval 16.827 22.182)
+	by ((p:/) (1000000.) (cell10))
+	with-premises vandenbergh1985)
+       ((cell10) 
+	has-value #(interval 16827000.0 22182000.0)
+	by ((exp:p) (cell7))
+	with-premises vandenbergh1985)
+       ((cell7)
+	has-value #(interval 16.638 16.915)
+	by ((p:*) (2.303) (cell6))
+	with-premises vandenbergh1985)
+       ((cell6)
+	has-value #(interval 7.226 7.346)
+	by ((+:p) (cell1) (1))
+	with-premises vandenbergh1985)
+       ((cell1)
+	has-value #(interval 6.226 6.346)
+	by ((p:/) (5) (m87:distance-modulus))
+	with-premises vandenbergh1985)
+       ((m87:distance-modulus)
+	has-value #(interval 31.13 31.73)
+	by (user)
+	with-premises vandenbergh1985)))
+|#
 
     ;;; Surface-Brightness Fluctuation survey
 
