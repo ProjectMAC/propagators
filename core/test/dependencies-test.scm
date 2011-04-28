@@ -50,6 +50,14 @@
     (run)
     (content building-height)
     (produces #(supported #(interval 44.514 48.978) (shadows)))
+    ;; Test that writing a v&s doesn't break:
+    (check (equal?
+	    (with-output-to-string
+	      (lambda ()
+		(write (content building-height))))
+	    "#(value=#[interval 44.51351351351351 48.977777777777774],
+   premises=(shadows),
+   informants=((*:p building-shadow cell125)))"))
 
     (define-cell fall-time)
     (c:fall-duration fall-time building-height)
