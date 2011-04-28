@@ -125,12 +125,22 @@
   diagram)
 
 (define (compute-derived-promises parts)
-  ;; TODO For every part that's a cell, I can promise not to read
+  ;; For every part that's a cell, I can promise not to read
   ;; (resp. write) it if every part either doesn't mention it or
-  ;; promises not to read (resp. write) it.  See
-  ;; DO-COMPUTE-AGGREGATE-METADATA.  I just have to take due care to
-  ;; make sure that recursive parts are properly taken care of.
-  '())
+  ;; promises not to read (resp. write) it.  I just have to take due
+  ;; care to make sure that recursive parts are properly taken care
+  ;; of.
+  (append-map
+   (lambda (promised? make-promise)
+     (map make-promise
+	  (filter
+	   (lambda (cell)
+	     (every (lambda (part)
+		      (recursively-promises? promised? part cell))
+		    (map cdr parts)))
+	   (filter cell? (map cdr parts)))))
+   (list promises-not-to-read? promises-not-to-write?)
+   (list promise-not-to-read promise-not-to-write)))
 
 (define diagram make-compound-diagram)
 
@@ -386,6 +396,16 @@
 	 (and (eq? part (diagram-promise-target promise))
 	      (eq? 'no-write (diagram-promise-type promise))))
        (diagram-promises diagram)))
+
+(define (recursively-promises? direct-promise? diagram part)
+  (cond ((direct-promise? diagram part)
+	 #t)
+	((memq part (map cdr (diagram-parts diagram)))
+	 #f)
+	(else
+	 (every (lambda (subdiagram)
+		  (recursively-promises? direct-promise? subdiagram part))
+		(map cdr (diagram-parts diagram))))))
 
 ;;; The inputs of a diagram X, really, are cells Y that X may read
 ;;; such that there is a clubs-path from Y to the top that does not go
