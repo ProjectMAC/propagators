@@ -84,8 +84,14 @@
     (explain M87:distance 1)
 #;
     (produces
-     '(((m87:distance) has-value #(interval 16.83 22.18) by ((c:mu<->d) (m87:distance-modulus)) with-premises vandenbergh1985)
-       ((m87:distance-modulus) has-value #(interval 31.13 31.73) by (user) with-premises vandenbergh1985)))
+     '(((m87:distance)
+	has-value #(interval 16.827 22.182)
+	by ((c:mu<->d) (m87:distance-modulus))
+	with-premises vandenbergh1985)
+       ((m87:distance-modulus)
+	has-value #(interval 31.13 31.73)
+	by (user)
+	with-premises vandenbergh1985)))
 
     ;;; Surface-Brightness Fluctuation survey
 
