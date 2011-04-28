@@ -380,6 +380,9 @@
 	      (eq? 'no-write (diagram-promise-type promise))))
        (diagram-promises diagram)))
 
+;;; TODO The inputs of a diagram X, really, are cells Y that X may
+;;; read such that there is a clubs-path from Y to the top that does
+;;; not go through X.
 (define (diagram-inputs diagram)
   (filter (lambda (part)
 	    (not (promises-not-to-read? diagram part)))
