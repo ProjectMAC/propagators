@@ -196,6 +196,9 @@
       (write-edges diagram diagram-inputs write-input-edge)
       (write-edges diagram diagram-outputs write-output-edge))
 
+    ;; TODO Implement levels of detail in the graph drawing.  An
+    ;; unexpanded compound should have good arrows to its external
+    ;; parts.
     (define (traverse-group group)
       (fluid-let ((defer-edges? #t))
 	((writer 'write-cluster) (hash group) (name group)
