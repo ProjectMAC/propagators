@@ -21,7 +21,14 @@
 
 (declare (usual-integrations make-cell cell?))
 
-(define-structure (%diagram safe-accessors (constructor %make-%diagram))
+(define-structure
+  (%diagram
+   safe-accessors
+   (constructor %make-%diagram)
+   (print-procedure
+    (simple-unparser-method '%diagram
+     (lambda (object)
+       (list (name (diagram-identity object)))))))
   identity
   parts
   promises
