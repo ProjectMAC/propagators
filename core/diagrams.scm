@@ -145,6 +145,12 @@
   (map car (filter (lambda (name.part)
 		     (eq? part (cdr name.part)))
 		   (diagram-parts diagram))))
+
+(define (diagram-creator diagram)
+  ;; The creator is the oldest club membership.
+  (if (null? (diagram-clubs diagram))
+      #f
+      (last (diagram-clubs diagram))))
 
 ;;;; Implicit diagram production
 
