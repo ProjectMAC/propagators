@@ -380,18 +380,34 @@
 	      (eq? 'no-write (diagram-promise-type promise))))
        (diagram-promises diagram)))
 
-;;; TODO The inputs of a diagram X, really, are cells Y that X may
-;;; read such that there is a clubs-path from Y to the top that does
-;;; not go through X.
+;;; The inputs of a diagram X, really, are cells Y that X may read
+;;; such that there is a clubs-path from Y to the top that does not go
+;;; through X.
+(define (internal-to-diagram? diagram subdiagram)
+  ;; TODO Avoid losing via loops in the clubs graph
+  (cond ((eq? diagram subdiagram)
+	 #t)
+	((null? (diagram-clubs subdiagram))
+	 #f)
+	(else
+	 (every (lambda (club)
+		  (internal-to-diagram? diagram club))
+		(diagram-clubs subdiagram)))))
+
+(define (diagram-external-parts diagram)
+  (filter (lambda (name.part)
+	    (not (internal-to-diagram? diagram (cdr name.part))))
+	  (diagram-parts diagram)))
+
 (define (diagram-inputs diagram)
   (filter (lambda (part)
 	    (not (promises-not-to-read? diagram part)))
-	  (map cdr (diagram-parts diagram))))
+	  (map cdr (diagram-external-parts diagram))))
 
 (define (diagram-outputs diagram)
   (filter (lambda (part)
 	    (not (promises-not-to-write? diagram part)))
-	  (map cdr (diagram-parts diagram))))
+	  (map cdr (diagram-external-parts diagram))))
 
 (define (diagram-expression-substructure diagram)
   ;; TODO Stub
