@@ -286,6 +286,7 @@
        (or explicit-diagram
 	   (compute-derived-promises! target-diagram))))))
 
+#|
 (define (expression-style-with-diagram target-diagram thunk)
   (fluid-let
       ((register-diagram (diagram-inserter target-diagram)))
@@ -293,6 +294,20 @@
       (register-diagram
        (compute-derived-promises! target-diagram))
       answer)))
+|#
+
+;;; Previous version led to circular structure.
+
+(define (expression-style-with-diagram target-diagram thunk)
+  (let ((answer 
+	 (fluid-let
+	     ((register-diagram (diagram-inserter target-diagram)))
+	   (let ((answer (thunk)))
+	     (compute-derived-promises! target-diagram)
+	     answer))))
+    (register-diagram target-diagram)
+    answer))
+
 
 (define (diagram-style? thing)
   (cond ((closure? thing)
