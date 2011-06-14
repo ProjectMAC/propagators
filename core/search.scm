@@ -58,13 +58,18 @@
     (if *false-premise-starts-out*
 	;; Let's have the false premise start unbelieved.
 	(mark-premise-out! false-premise))
-    ((constant (make-tms
-                (list (supported #t (list true-premise) (list amb-choose))
-                      (supported #f (list false-premise) (list amb-choose)))))
-     cell)
+    
     ;; The cell is a spiritual neighbor...
     (propagator cell amb-choose)
-    (make-anonymous-i/o-diagram amb-choose '() (list cell))))
+
+    (let ((diagram
+	   (make-anonymous-i/o-diagram amb-choose '() (list cell))))
+      ((constant (make-tms
+		  (list (supported #t (list true-premise) (list diagram))
+			(supported #f (list false-premise) (list diagram)))))
+       cell)
+      (register-diagram diagram)
+      diagram)))
 
 (define (pairwise-resolve nogoods1 nogoods2)
   (append-map (lambda (nogood1)
