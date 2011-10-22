@@ -261,17 +261,19 @@
     (produces '(contradiction (superintendent pressure)))
 
     (tms-query (content building-height))
+
     ;; I don't like this answer... It should show the contradiction if
     ;; it is there.
-    ;; (produces #(supported #(interval 46. 45) (superintendent pressure)))
+    (produces #(supported #(interval 46. 45) (superintendent pressure)))
 
-    ;; from AXCH thesis -- I (GJS) think that the following is really
-    ;; the right answer, but then something has to prevent this from
-    ;; getting into propagators.
+    ;; From AXCH thesis -- I (GJS) think that the following is really
+    ;; the right answer.
     ;; (produces #(supported *the-contradiction* (superintendent pressure)))
+    ;; but then something has to prevent contradictions from getting
+    ;; into propagators.  This is done in generic definitions.
     
-    ;; I changed tms-query to fix Micah's bug, but this may not be the best patch
-    (produces #(*the-nothing*))		
+    ;; I tried to change tms-query to fix Micah's bug, but this was
+    ;; not the best patch (produces #(*the-nothing*))
 
     (tms-query (content barometer-height))
     (produces #(supported #(interval .3 .30328) (superintendent shadows)))
