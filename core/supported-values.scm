@@ -182,7 +182,8 @@
 (defhandler generic-flatten
   (lambda (v&s) nothing)
   (lambda (thing)
-    (and (v&s? thing) (nothing? (v&s-value thing)))))
+    (and (v&s? thing)
+	 (nothing? (v&s-value thing)))))
 
 (defhandler generic-flatten
   (lambda (v&s)
