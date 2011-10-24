@@ -445,3 +445,88 @@
 
 (define (primitive-diagram? diagram)
   (every cell? (map cdr (diagram-parts diagram))))
+
+;;; What does it mean to merge a diagram into another diagram?
+
+;;; The identity (name) of the merged diagram is that of the target
+;;;
+;;; The parts of the merged diagram is the set-union of the parts of
+;;; the target and increment.
+;;;
+;;; If a promise is present and the same in both the target and
+;;; increment, then keep the promise.
+;;;
+;;; If a promise is present in either the target or the increment but
+;;; not both, and the part to which the promise applies is present
+;;; only in the diagram in which the promise is made, keep the
+;;; promise.
+
+;;; QUESTIONS:
+;;;
+;;; - Should the existence of the previous diagrams be removed?
+;;;   (i.e. should parts replace their membership in the clubs of the
+;;;   target and increment with membership in the merge?)
+;;;   [CURRENTLY: YES]
+;;; - Should it be possible to merge cells? [CURRENTLY: NO]
+(define (merge-diagram target increment)
+  (let ((merged (empty-diagram (diagram-identity target))))
+    ;; Merge parts/clubs
+    (for-each (lambda (part)
+		;; Is the position of the club significant?
+		(remove-diagram-club! (cdr part) target)
+		(add-diagram-named-part (car part) (cdr part) merged))
+	      (diagram-parts target))
+    ;; What if the name is the same?
+    (for-each (lambda (part)
+		;; Is the position of the club significant?
+		(remove-diagram-club! (cdr part) increment)
+		(add-diagram-named-part (car part) (cdr part) merged))
+	      (diagram-parts increment))
+    
+    ;; Merge promises
+    (let ((merged-promises
+	   (lset-union
+	    ;; Can parts ever be equal? but not eq?
+	    (lset-intersection diagram-promise-equal?
+			       (diagram-promises target)
+			       (diagram-promises increment))
+	    (filter (lambda (promise)
+		      (not (eq? (memq (diagram-promise-target promise)
+				      (map cdr (diagram-parts increment)))
+				#f)))
+		    (diagram-promises target))
+	    (filter (lambda (promise)
+		      (not (eq? (memq (diagram-promise-target promise)
+				      (map cdr (diagram-parts target)))
+				#f)))
+		    (diagram-promises increment)))))
+      (set-diagram-promises! merged merged-promises))
+    
+    ;; Finish unregistering the target and increment.
+    (clear-diagram-parts! target)
+    (network-unregister target)
+    (clear-diagram-promises! target)
+    (clear-diagram-parts! increment)
+    (network-unregister increment)
+    (clear-diagram-promises! increment)
+    
+    merged))
+
+(define (diagram-equivalent? target increment)
+  (and (= (length (lset-difference diagram-promise-equal?
+				   (diagram-promises target)
+				   (diagram-promises increment)))
+	  0)
+       (= (length (lset-difference eq?
+				   ;; We just need parts, not names to
+				   ;; be the same.
+				   (map cdr (diagram-parts target))
+				   (map cdr (diagram-parts increment))))
+	  0)
+       (= (length (lset-difference eq?
+				   (diagram-clubs target)
+				   (diagram-clubs increment)))
+	  0)))
+
+(defhandler merge merge-diagram %diagram? %diagram?)
+(defhandler equivalent? diagram-equivalent? %diagram? %diagram?)
