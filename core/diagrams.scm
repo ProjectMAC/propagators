@@ -527,6 +527,3 @@
 				   (diagram-clubs target)
 				   (diagram-clubs increment)))
 	  0)))
-
-(defhandler merge merge-diagram %diagram? %diagram?)
-(defhandler equivalent? diagram-equivalent? %diagram? %diagram?)
