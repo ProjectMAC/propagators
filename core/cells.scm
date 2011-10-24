@@ -73,7 +73,7 @@
 
 ;;;; Propagator cells
 
-(define (%make-cell)			; message-accepter style
+(define (%make-cell merge)		; message-accepter style
   (let ((neighbors '()) (content nothing)
 	(whoiam #f) (history '())
 	(probe #f))
@@ -119,12 +119,15 @@
             (else (error "Unknown message" message))))
     me))
 
-(define (make-cell)
+(define (make-cell #!optional merger)
   (define me
     (make-entity
      (lambda (self . args)
        (apply application self args))
-     (%make-cell)))
+     (%make-cell
+      (if (default-object? merger)	;Sussman's crock escape hatch. 
+	  merge
+	  merger))))
   (eq-put! me 'cell #t)
   (((entity-extra me) 'iam!) me)
   (register-diagram me)
