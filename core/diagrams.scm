@@ -469,18 +469,14 @@
 ;;;   [CURRENTLY: YES]
 ;;; - Should it be possible to merge cells? [CURRENTLY: NO]
 (define (merge-diagram target increment)
-  (let ((merged (empty-diagram (diagram-identity target))))
+  (let ((merged target))
     ;; Merge parts/clubs
-    (for-each (lambda (part)
-		;; Is the position of the club significant?
-		(remove-diagram-club! (cdr part) target)
-		(add-diagram-named-part (car part) (cdr part) merged))
-	      (diagram-parts target))
     ;; What if the name is the same?
     (for-each (lambda (part)
-		;; Is the position of the club significant?
-		(remove-diagram-club! (cdr part) increment)
-		(add-diagram-named-part (car part) (cdr part) merged))
+		;; The position of the club is significant
+		(let ((club.clubs (memq increment (diagram-clubs (cdr part)))))
+		  (set-car! club.clubs merged))
+		(add-diagram-named-part! merged (car part) (cdr part)))
 	      (diagram-parts increment))
     
     ;; Merge promises
@@ -503,9 +499,6 @@
       (set-diagram-promises! merged merged-promises))
     
     ;; Finish unregistering the target and increment.
-    (clear-diagram-parts! target)
-    (network-unregister target)
-    (clear-diagram-promises! target)
     (clear-diagram-parts! increment)
     (network-unregister increment)
     (clear-diagram-promises! increment)
@@ -513,17 +506,17 @@
     merged))
 
 (define (diagram-equivalent? target increment)
-  (and (= (length (lset-difference diagram-promise-equal?
-				   (diagram-promises target)
-				   (diagram-promises increment)))
+  (and (= (length (lset-xor diagram-promise-equal?
+			    (diagram-promises target)
+			    (diagram-promises increment)))
 	  0)
-       (= (length (lset-difference eq?
-				   ;; We just need parts, not names to
-				   ;; be the same.
-				   (map cdr (diagram-parts target))
-				   (map cdr (diagram-parts increment))))
+       (= (length (lset-xor eq?
+			    ;; We just need parts, not names to be the
+			    ;; same.
+			    (map cdr (diagram-parts target))
+			    (map cdr (diagram-parts increment))))
 	  0)
-       (= (length (lset-difference eq?
-				   (diagram-clubs target)
-				   (diagram-clubs increment)))
+       (= (length (lset-xor eq?
+			    (diagram-clubs target)
+			    (diagram-clubs increment)))
 	  0)))

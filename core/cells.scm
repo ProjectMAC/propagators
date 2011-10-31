@@ -293,3 +293,106 @@
 			 control-info))))))
 
 (defhandler redundant-effect? boring-cell-join? cell-join-effect?)
+
+;;; Diagram merging
+
+(defhandler merge merge-diagram %diagram? %diagram?)
+(defhandler equivalent? diagram-equivalent? %diagram? %diagram?)
+
+;;; *toplevel-diagram-cell* is the cell containing the toplevel-diagram.
+(define *toplevel-diagram-cell* (make-cell))
+(add-content *toplevel-diagram-cell* *toplevel-diagram*)
+
+;;; Redefine diagram insertion in terms of operations on the
+;;; *toplevel-diagram-cell*
+(define (diagram-cell-inserter target-diagram-cell)
+  (lambda (subdiagram #!optional name)
+    ;;; Wrap the subdiagram in a diagram in a cell.
+    (let ((subdiagram-wrapper (empty-diagram 'wrapper)))
+      (if (default-object? name)
+	  (note-diagram-part! subdiagram-wrapper subdiagram)
+	  (add-diagram-named-part! subdiagram-wrapper name subdiagram))
+      (add-content target-diagram-cell subdiagram-wrapper))
+    subdiagram))
+
+(define (register-diagram subdiagram #!optional name)
+  ((diagram-cell-inserter *toplevel-diagram-cell*) subdiagram name))
+
+(define (reset-diagrams!)
+  ;; Create the toplevel-diagram-cell OUTSIDE of the new toplevel
+  ;; diagram (like the propagatified standard propagators)
+
+  ;; Will this cause scheduling problems though??
+  (if (eq? #f *toplevel-diagram*)
+      ;; When running with-independent-scheduler,
+      ;; (initialize-scheduler) will run with an unset
+      ;; *toplevel-diagram*, which will break (make-cell).
+      ;;
+      ;; Thus, we need to temporarily instantiate a dummy
+      ;; toplevel-diagram in which to create the
+      ;; *toplevel-diagram-cell* before we can make the one
+      ;; with-independent-schedule assumes will be created ex nihilo
+      (fluid-let ((*toplevel-diagram* (empty-diagram 'toplevel)))
+	(fluid-let ((register-diagram (diagram-inserter *toplevel-diagram*)))
+	  (set! *toplevel-diagram-cell* (make-cell)))
+	(destroy-diagram! *toplevel-diagram*))
+      ;; The previous formality is un-needed for the standard
+      ;; initialize-scheduler, because the *toplevel-diagram* we
+      ;; create *toplevel-diagram-cell* in is going to be destroyed in
+      ;; the very next function call.
+      ;;
+      ;; In short, within this universe will always be made the seed
+      ;; of the next.
+      (set! *toplevel-diagram-cell* (make-cell)))
+  ;; Hmmm...  This doesn't look monotonic.
+  (destroy-diagram! *toplevel-diagram*)
+  (set! *toplevel-diagram* (empty-diagram 'toplevel))
+  (set! register-diagram (diagram-cell-inserter *toplevel-diagram-cell*))
+  (add-content *toplevel-diagram-cell* *toplevel-diagram*))
+
+(define (empty-diagram-cell identity)
+  (let ((diagram-cell (make-cell)))
+    (add-content diagram-cell (make-%diagram identity '() '()))
+    diagram-cell))
+
+(define (do-make-diagram-for-compound-constructor identity prop-ctor args)
+  (with-independent-scheduler
+   (lambda ()
+     (let ((test-cell-map (map (lambda (arg)
+				 (cons (make-cell) arg))
+			       args)))
+       (fluid-let ((*interesting-cells* (map car test-cell-map)))
+	 (apply prop-ctor (map car test-cell-map)))
+       ;; The following code shouldn't execute until the diagram
+       ;; registrations from prop-ctor are reflected in the
+       ;; *toplevel-diagram-cell*
+       (propagator *toplevel-diagram-cell*
+	 (lambda ()
+	   ;; Specifically, we assume that there are parts to the
+	   ;; *toplevel-diagram*, so we need to wait until this is
+	   ;; true.
+	   (if (null? (diagram-parts (contents *toplevel-diagram-cell*)))
+	       'ok
+	       (let ((prop-ctor-diagram
+		      (car
+		       ;; There should only be one of these
+		       (filter (lambda (x) (not (cell? x)))
+			       (map cdr (diagram-parts
+					 (contents *toplevel-diagram-cell*)))))))
+		 (make-%diagram
+		  identity
+		  (map (lambda (name.part)
+			 (cons (car name.part)
+			       (cdr (assq (cdr name.part) test-cell-map))))
+		       (filter (lambda (name.part)
+				 (assq (cdr name.part) test-cell-map))
+			       (diagram-parts prop-ctor-diagram)))
+		  (map (lambda (promise)
+			 (retarget-promise
+			  promise
+			  (cdr (assq (diagram-promise-target promise)
+				     test-cell-map))))
+		       (filter (lambda (promise)
+				 (assq (diagram-promise-target promise)
+				       test-cell-map))
+			       (diagram-promises prop-ctor-diagram))))))))))))

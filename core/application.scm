@@ -265,18 +265,19 @@
 	   ((if (diagram-style? prop)
 		diagram-style-with-diagram
 		expression-style-with-diagram)
-	    (empty-diagram prop)
+	    (empty-diagram-cell prop)
 	    (lambda ()
 	      (apply (closure-code prop) real-args))))
 	  ((propagator-constructor? prop)
 	   (apply prop real-args))
 	  (else (error "Not an applicable propagator" thing)))))
 
-(define (diagram-style-with-diagram target-diagram thunk)
-  (let ((explicit-diagram #f))
+(define (diagram-style-with-diagram target-diagram-cell thunk)
+  (let ((explicit-diagram #f)
+	(target-diagram-cell (ensure-cell target-diagram-cell)))
     (register-diagram
      (fluid-let
-	 ((register-diagram (diagram-inserter target-diagram))
+	 ((register-diagram (diagram-cell-inserter target-diagram-cell))
 	  (diagram
 	   (lambda args
 	     (let ((answer (apply make-compound-diagram args)))
@@ -284,28 +285,30 @@
 	       answer))))
        (thunk)
        (or explicit-diagram
-	   (compute-derived-promises! target-diagram))))))
+	   ;; But the content hasn't updated yet!
+	   (compute-derived-promises! (content target-diagram-cell)))))))
 
 #|
-(define (expression-style-with-diagram target-diagram thunk)
+(define (expression-style-with-diagram target-diagram-cell thunk)
   (fluid-let
-      ((register-diagram (diagram-inserter target-diagram)))
+      ((register-diagram (diagram-cell-inserter target-diagram-cell)))
     (let ((answer (thunk)))
       (register-diagram
-       (compute-derived-promises! target-diagram))
+       (compute-derived-promises! (content target-diagram-cell)))
       answer)))
 |#
 
 ;;; Previous version led to circular structure.
 
-(define (expression-style-with-diagram target-diagram thunk)
+(define (expression-style-with-diagram target-diagram-cell thunk)
   (let ((answer 
 	 (fluid-let
-	     ((register-diagram (diagram-inserter target-diagram)))
+	     ((register-diagram (diagram-cell-inserter target-diagram-cell)))
 	   (let ((answer (thunk)))
-	     (compute-derived-promises! target-diagram)
+	     ;; But the content hasn't updated yet!
+	     (compute-derived-promises! (content target-diagram-cell))
 	     answer))))
-    (register-diagram target-diagram)
+    (register-diagram (content target-diagram-cell))
     answer))
 
 
