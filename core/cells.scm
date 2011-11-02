@@ -299,8 +299,17 @@
 (defhandler merge merge-diagram %diagram? %diagram?)
 (defhandler equivalent? diagram-equivalent? %diagram? %diagram?)
 
-;;; *toplevel-diagram-cell* is the cell containing the toplevel-diagram.
-(define *toplevel-diagram-cell* (make-cell))
+;;; *metadiagram* is the toplevel-diagram for diagram cells.  It is
+;;; the only diagram that is not in a cell, and its only purpose is to
+;;; hold cells in which diagrams are contained to keep them out of
+;;; visualizations of the toplevel-diagram.
+(define *metadiagram* (empty-diagram 'metadiagram))
+
+;;; *toplevel-diagram-cell* is the cell containing the
+;;; toplevel-diagram.  It belongs to the *metadiagram*
+(define *toplevel-diagram-cell*
+  (fluid-let ((register-diagram (diagram-inserter *metadiagram*)))
+    (make-cell)))
 (add-content *toplevel-diagram-cell* *toplevel-diagram*)
 
 ;;; Redefine diagram insertion in terms of operations on the
@@ -319,31 +328,12 @@
   ((diagram-cell-inserter *toplevel-diagram-cell*) subdiagram name))
 
 (define (reset-diagrams!)
-  ;; Create the toplevel-diagram-cell OUTSIDE of the new toplevel
-  ;; diagram (like the propagatified standard propagators)
-
-  ;; Will this cause scheduling problems though??
-  (if (eq? #f *toplevel-diagram*)
-      ;; When running with-independent-scheduler,
-      ;; (initialize-scheduler) will run with an unset
-      ;; *toplevel-diagram*, which will break (make-cell).
-      ;;
-      ;; Thus, we need to temporarily instantiate a dummy
-      ;; toplevel-diagram in which to create the
-      ;; *toplevel-diagram-cell* before we can make the one
-      ;; with-independent-schedule assumes will be created ex nihilo
-      (fluid-let ((*toplevel-diagram* (empty-diagram 'toplevel)))
-	(fluid-let ((register-diagram (diagram-inserter *toplevel-diagram*)))
-	  (set! *toplevel-diagram-cell* (make-cell)))
-	(destroy-diagram! *toplevel-diagram*))
-      ;; The previous formality is un-needed for the standard
-      ;; initialize-scheduler, because the *toplevel-diagram* we
-      ;; create *toplevel-diagram-cell* in is going to be destroyed in
-      ;; the very next function call.
-      ;;
-      ;; In short, within this universe will always be made the seed
-      ;; of the next.
-      (set! *toplevel-diagram-cell* (make-cell)))
+  ;; Clean out the metadiagram.
+  (destroy-diagram! *metadiagram*)
+  (set! *metadiagram* (empty-diagram 'metadiagram))
+  (fluid-let ((register-diagram (diagram-inserter *metadiagram*)))
+    ;; And then, reset the toplevel diagram.
+    (set! *toplevel-diagram-cell* (make-cell)))
   ;; Hmmm...  This doesn't look monotonic.
   (destroy-diagram! *toplevel-diagram*)
   (set! *toplevel-diagram* (empty-diagram 'toplevel))
@@ -351,7 +341,9 @@
   (add-content *toplevel-diagram-cell* *toplevel-diagram*))
 
 (define (empty-diagram-cell identity)
-  (let ((diagram-cell (make-cell)))
+  (let ((diagram-cell
+	 (fluid-let ((register-diagram (diagram-inserter *metadiagram*)))
+	   (make-cell))))
     (add-content diagram-cell (make-%diagram identity '() '()))
     diagram-cell))
 

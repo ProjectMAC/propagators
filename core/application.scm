@@ -274,7 +274,9 @@
 
 (define (diagram-style-with-diagram target-diagram-cell thunk)
   (let ((explicit-diagram #f)
-	(target-diagram-cell (ensure-cell target-diagram-cell)))
+	(target-diagram-cell
+	 (fluid-let ((register-diagram (diagram-inserter *metadiagram*)))
+	   (ensure-cell target-diagram-cell))))
     (register-diagram
      (fluid-let
 	 ((register-diagram (diagram-cell-inserter target-diagram-cell))
@@ -290,26 +292,32 @@
 
 #|
 (define (expression-style-with-diagram target-diagram-cell thunk)
-  (fluid-let
-      ((register-diagram (diagram-cell-inserter target-diagram-cell)))
-    (let ((answer (thunk)))
-      (register-diagram
-       (compute-derived-promises! (content target-diagram-cell)))
-      answer)))
+  (let ((target-diagram-cell
+	 (let ((register-diagram (diagram-inserter *metadiagram*)))
+	   (ensure-cell target-diagram-cell))))
+    (fluid-let
+	((register-diagram (diagram-cell-inserter target-diagram-cell)))
+      (let ((answer (thunk)))
+	(register-diagram
+	 (compute-derived-promises! (content target-diagram-cell)))
+	answer))))
 |#
 
 ;;; Previous version led to circular structure.
 
 (define (expression-style-with-diagram target-diagram-cell thunk)
-  (let ((answer 
-	 (fluid-let
-	     ((register-diagram (diagram-cell-inserter target-diagram-cell)))
-	   (let ((answer (thunk)))
-	     ;; But the content hasn't updated yet!
-	     (compute-derived-promises! (content target-diagram-cell))
-	     answer))))
-    (register-diagram (content target-diagram-cell))
-    answer))
+  (let ((target-diagram-cell
+	 (fluid-let ((register-diagram (diagram-inserter *metadiagram*)))
+	   (ensure-cell target-diagram-cell))))
+    (let ((answer 
+	   (fluid-let
+	       ((register-diagram (diagram-cell-inserter target-diagram-cell)))
+	     (let ((answer (thunk)))
+	       ;; But the content hasn't updated yet!
+	       (compute-derived-promises! (content target-diagram-cell))
+	       answer))))
+      (register-diagram (content target-diagram-cell))
+      answer)))
 
 
 (define (diagram-style? thing)
