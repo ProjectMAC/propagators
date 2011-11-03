@@ -22,7 +22,7 @@
 (declare (usual-integrations make-cell cell?))
 
 (define *false-premise-starts-out* #t)
-(define *avoid-false-true-flips* #t)
+(define *avoid-false-true-flips* #f)
 
 (define (binary-amb cell)
   (let ((true-premise (make-hypothetical 'true cell))
@@ -33,18 +33,32 @@
 		   (premise-in? false-premise)))
 	  'ok ; the some-premise-is-in invariant holds
 	  (let ((reasons-against-true
-		 (filter all-premises-in?
+		 (filter (lambda (nogood)
+			   (and (all-premises-in? nogood)
+				(not (member false-premise nogood))))
 			 (premise-nogoods true-premise)))
 		(reasons-against-false
-		 (filter all-premises-in?
+		 (filter (lambda (nogood)
+			   (and (all-premises-in? nogood)
+				(not (member true-premise nogood))))
 			 (premise-nogoods false-premise))))
 	    (cond ((null? reasons-against-true)
+		   (if *contradiction-wallp* 
+		       (pp `(asserting-true ,true-premise
+					    ,false-premise
+					    ,cell)))
 		   (kick-out! false-premise)
 		   (bring-in! true-premise))
 		  ((null? reasons-against-false)
+		   (if *contradiction-wallp* 
+		       (pp `(asserting-false ,true-premise
+					     ,false-premise
+					     ,cell)))
 		   (kick-out! true-premise)
 		   (bring-in! false-premise))
 		  (else			; this amb must fail.
+		   (if *contradiction-wallp* 
+		       (pp `(amb-fail ,true-premise ,false-premise ,cell)))
 		   (kick-out! true-premise)
 		   (kick-out! false-premise)
 		   (process-contradictions
@@ -85,10 +99,15 @@
             (length (filter hypothetical? nogood)))))))
 
 (define (process-one-contradiction nogood)
+  (if *contradiction-wallp* (pp `(nogood ,@nogood)))
   (let ((hyps (filter hypothetical? nogood)))
     (if (null? hyps)
-        (abort-process `(contradiction ,nogood))
+	(begin
+	  (if *contradiction-wallp* (pp 'nogood-aborted))
+	  (abort-process `(contradiction ,nogood)))
         (begin
+	  (if *contradiction-wallp*
+	      (pp `(kicking-out ,(car hyps))))
           (kick-out! (car hyps))
           (for-each (lambda (premise)
                       (assimilate-nogood! premise nogood))
@@ -126,5 +145,4 @@
 (define (process-nogood! nogood)
   (set! *number-of-calls-to-fail*
         (+ *number-of-calls-to-fail* 1))
-  (if *contradiction-wallp* (pp `(nogood ,@nogood)))
   (process-one-contradiction nogood))
