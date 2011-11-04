@@ -89,8 +89,7 @@
 		 'this-is-not-a-tail-call)
 		(else 
 		 (set! content new-content)
-		 ;; Two debugging aids.
-		 (eq-adjoin! content 'visited-cells me)
+		 ;; A debugging aid.
 		 (augment-history! whoiam informant new-content
 				   history
 				   (lambda (new)
