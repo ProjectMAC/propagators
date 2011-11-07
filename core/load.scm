@@ -38,6 +38,7 @@
     "diagrams"
     "merge-effects"
     "cells"
+    "diagram-cells"
     "cell-sugar"
     "propagators"
     "application"
