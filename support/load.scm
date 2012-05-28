@@ -38,7 +38,7 @@
 
 (for-each load-relative-compiled
   '("profiler"
-    "mit-profile"
+;    "mit-profile"
     "eq-properties"
     "generics-again"
     "coercions"
