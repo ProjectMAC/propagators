@@ -297,4 +297,15 @@
     (produces #(supported #(interval .3 .30328) (superintendent shadows)))
     ))
 
+ (define-test (ternary-generic)
+   (interaction
+    (define (boolean/ro3 or-result i1 i2)
+      (if (and or-result (not i1) (not i2)) #t nothing))
+    (define generic-ro3 (make-generic-operator 3 'ro3 boolean/ro3))
+    ((nary-mapping generic-ro3)
+     (make-tms (contingent #t '(a)))
+     (make-tms (contingent #f '(not-b)))
+     (make-tms (contingent #f '(not-c))))
+    (produces #(tms (#(supported #t (not-c a not-b)))))))
+
  )

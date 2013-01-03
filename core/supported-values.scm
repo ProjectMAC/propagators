@@ -84,6 +84,7 @@
 (declare-coercion propagator-constructor? ->contingent)
 (declare-coercion closure? ->contingent)
 (declare-coercion pair? ->contingent)
+(declare-coercion null? ->contingent)
 
 (define (more-informative-support? v&s1 v&s2)
   (and (not (lset= eq? (v&s-support v&s1) (v&s-support v&s2)))
