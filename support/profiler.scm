@@ -325,3 +325,11 @@
   (set-car! (cddr node) (make-vector *prof:vector-size* #f)))
 
 ;;; TODO prof:remove-node!
+
+(define (prof:histogram path #!optional binsize)
+  (gnuplot-histogram-alist
+   (map (lambda (lst)
+          (cons (car lst) (cadr lst)))
+        (prof:node-clean-copy (prof:stats path)))
+   (with-output-to-string (lambda () (write path)))
+   binsize))
