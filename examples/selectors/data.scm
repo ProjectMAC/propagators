@@ -82,7 +82,7 @@
 	     ((kilogram) `(& ,(cadr val) crap))
 	     ((second) (if (> (cadr val) (expt 10 9))
 			   'eternity
-			   `(& ,(/ (cadr val) 3600) hour)))
+			   `(& ,(/ (cadr val) 3600) &hour)))
 	     (else val))))
 	(else thing)))
 
@@ -124,39 +124,39 @@
   ;;; Ha!
   (if (eq? (trip-segment-start trip-segment)
 	   (trip-segment-end trip-segment))
-      (& 0 meter)
+      (& 0 &meter)
       (force-assoc (list (trip-segment-start trip-segment)
 			 (trip-segment-end   trip-segment))
-		   `(((home met) . ,(& 400 kilo meter))
-		     ((met home) . ,(& 400 kilo meter))
-		     ((home logan) . ,(& 8 kilo meter))
-		     ((logan home) . ,(& 8 kilo meter))
-		     ((logan laguardia) . ,(& 400 kilo meter))
-		     ((laguardia logan) . ,(& 400 kilo meter))
-		     ((laguardia met) . ,(& 5 kilo meter))
-		     ((met laguardia) . ,(& 5 kilo meter))
-		     ((home south-station) . ,(& 6 kilo meter))
-		     ((south-station home) . ,(& 6 kilo meter))
-		     ((south-station-under south-station) . ,(& 100 meter))
-		     ((south-station south-station-under) . ,(& 100 meter))
-		     ((south-station penn-station) . ,(& 400 kilo meter))
-		     ((penn-station south-station) . ,(& 400 kilo meter))
-		     ((penn-station met) . ,(& 1 kilo meter))
-		     ((met penn-station) . ,(& 1 kilo meter))
-		     ((penn-station 34th-street) . ,(& 100 meter))
-		     ((34th-street penn-station) . ,(& 100 meter))
-		     ((home beaconsfield) . ,(& 100 meter))
-		     ((beaconsfield home) . ,(& 100 meter))
-		     ((beaconsfield airport) . ,(& 8 kilo meter))
-		     ((airport beaconsfield) . ,(& 8 kilo meter))
-		     ((airport logan) . ,(& 500 meter))
-		     ((logan airport) . ,(& 500 meter))
-		     ((laguardia laguardia-airport) . ,(& 500 meter))
-		     ((laguardia-airport laguardia) . ,(& 500 meter))
-		     ((laguardia-airport 57th-street) . ,(& 5 kilo meter))
-		     ((57th-street laguardia-airport) . ,(& 5 kilo meter))
-		     ((57th-street met) . ,(& 1 kilo meter))
-		     ((met 57th-street) . ,(& 1 kilo meter))
+		   `(((home met) . ,(& 400 &kilo &meter))
+		     ((met home) . ,(& 400 &kilo &meter))
+		     ((home logan) . ,(& 8 &kilo &meter))
+		     ((logan home) . ,(& 8 &kilo &meter))
+		     ((logan laguardia) . ,(& 400 &kilo &meter))
+		     ((laguardia logan) . ,(& 400 &kilo &meter))
+		     ((laguardia met) . ,(& 5 &kilo &meter))
+		     ((met laguardia) . ,(& 5 &kilo &meter))
+		     ((home south-station) . ,(& 6 &kilo &meter))
+		     ((south-station home) . ,(& 6 &kilo &meter))
+		     ((south-station-under south-station) . ,(& 100 &meter))
+		     ((south-station south-station-under) . ,(& 100 &meter))
+		     ((south-station penn-station) . ,(& 400 &kilo &meter))
+		     ((penn-station south-station) . ,(& 400 &kilo &meter))
+		     ((penn-station met) . ,(& 1 &kilo &meter))
+		     ((met penn-station) . ,(& 1 &kilo &meter))
+		     ((penn-station 34th-street) . ,(& 100 &meter))
+		     ((34th-street penn-station) . ,(& 100 &meter))
+		     ((home beaconsfield) . ,(& 100 &meter))
+		     ((beaconsfield home) . ,(& 100 &meter))
+		     ((beaconsfield airport) . ,(& 8 &kilo &meter))
+		     ((airport beaconsfield) . ,(& 8 &kilo &meter))
+		     ((airport logan) . ,(& 500 &meter))
+		     ((logan airport) . ,(& 500 &meter))
+		     ((laguardia laguardia-airport) . ,(& 500 &meter))
+		     ((laguardia-airport laguardia) . ,(& 500 &meter))
+		     ((laguardia-airport 57th-street) . ,(& 5 &kilo &meter))
+		     ((57th-street laguardia-airport) . ,(& 5 &kilo &meter))
+		     ((57th-street met) . ,(& 1 &kilo &meter))
+		     ((met 57th-street) . ,(& 1 &kilo &meter))
 		     )))
   )
 
@@ -198,7 +198,7 @@
 	 (trip-segment-end segment))
    `(((logan . laguardia) .
       ,(make-trip-segment 'logan 'laguardia
-	(& 4 hour) (& 432 dollar) (& 215 crap) 'fly))
+	(& 4 &hour) (& 432 dollar) (& 215 crap) 'fly))
      )))
 (propagatify airport-lookup)
 
@@ -222,7 +222,7 @@
 	 (trip-segment-end segment))
    `(((south-station . penn-station) .
       ,(make-trip-segment 'south-station 'penn-station
-	(& 5 hour) (& 80 dollar) (& 25 crap) 'take-the-train))
+	(& 5 &hour) (& 80 dollar) (& 25 crap) 'take-the-train))
      )))
 (propagatify station-lookup)
 
@@ -248,42 +248,42 @@
 	 (trip-segment-end segment))
    `(((beaconsfield . airport) .
       ,(make-trip-segment 'beaconsfield 'airport
-	(& 2 hour) (& 1.70 dollar) (& 15 crap) 'subway))
+	(& 2 &hour) (& 1.70 dollar) (& 15 crap) 'subway))
      ((beaconsfield . south-station-under) .
       ,(make-trip-segment 'beaconsfield 'south-station-under
-	(& 1 hour) (& 1.70 dollar) (& 15 crap) 'subway))
+	(& 1 &hour) (& 1.70 dollar) (& 15 crap) 'subway))
      ((laguardia-airport . 57th-street) .
       ,(make-trip-segment 'laguardia-airport '57th-street
-	(& 1 hour) (& 5 dollar) (& 20 crap) 'subway))
+	(& 1 &hour) (& 5 dollar) (& 20 crap) 'subway))
      ((34th-street . 57th-street) .
       ,(make-trip-segment '34th-street '57th-street
-	(& 0.5 hour) (& 5 dollar) (& 10 crap) 'subway))
+	(& 0.5 &hour) (& 5 dollar) (& 10 crap) 'subway))
      ;; TODO How do I represent impossibility?
      ((beaconsfield . 57th-street) . 
       ,(make-trip-segment 'beaconsfield '57th-street
-        (& (expt 10 10) hour) (& 0 dollar) (& 0 crap) 'subway))
+        (& (expt 10 10) &hour) (& 0 dollar) (& 0 crap) 'subway))
      ((beaconsfield . 34th-street) . 
       ,(make-trip-segment 'beaconsfield '34th-street
-        (& (expt 10 10) hour) (& 0 dollar) (& 0 crap) 'subway))
+        (& (expt 10 10) &hour) (& 0 dollar) (& 0 crap) 'subway))
      ;; TODO How do I represent stupidity?
      ((beaconsfield . beaconsfield) .
       ,(make-trip-segment 'beaconsfield 'beaconsfield
-	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
+	(& 1 &hour) (& 0 dollar) (& 0 crap) 'subway))
      ((airport . airport) .
       ,(make-trip-segment 'airport 'airport
-	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
+	(& 1 &hour) (& 0 dollar) (& 0 crap) 'subway))
      ((south-station-under . south-station-under) .
       ,(make-trip-segment 'south-station-under 'south-station-under
-	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
+	(& 1 &hour) (& 0 dollar) (& 0 crap) 'subway))
      ((laguardia-airport . laguardia-airport) .
       ,(make-trip-segment 'laguardia-airport 'laguardia-airport
-	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
+	(& 1 &hour) (& 0 dollar) (& 0 crap) 'subway))
      ((57th-street . 57th-street) .
       ,(make-trip-segment '57th-street '57th-street
-	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
+	(& 1 &hour) (& 0 dollar) (& 0 crap) 'subway))
      ((34th-street . 34th-street) .
       ,(make-trip-segment '34th-street '34th-street
-	(& 1 hour) (& 0 dollar) (& 0 crap) 'subway))
+	(& 1 &hour) (& 0 dollar) (& 0 crap) 'subway))
      )))
 (propagatify stop-lookup)
 

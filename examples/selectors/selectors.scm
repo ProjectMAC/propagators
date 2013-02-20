@@ -164,7 +164,7 @@
 	 (lambda ()
 	   ((constant (make-trip-segment-by-method 'just-walk)) segment)
 	   (p:make-trip-segment-by-time
-	    (e:time-est segment (& 3 (/ mile hour)))
+	    (e:time-est segment (& 3 (/ &mile &hour)))
 	    segment)
 	   ;; TODO Fix this hack
 	   (p:tag-not-estimate segment segment)
@@ -189,7 +189,7 @@
    segment)
   ;; TODO notate impossibility
   ((constant (make-trip-segment-by-time
-	      (make-estimate (& (expt 10 10) hour))))
+	      (make-estimate (& (expt 10 10) &hour))))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 500 dollar))))
    segment)
@@ -199,7 +199,7 @@
 (define-propagator (p:fast-intercity-air-estimate segment)
   ((constant (make-trip-segment-by-method 'fly))
    segment)
-  ((constant (make-trip-segment-by-time (make-estimate (& 7 hour))))
+  ((constant (make-trip-segment-by-time (make-estimate (& 7 &hour))))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 500 dollar))))
    segment)
@@ -246,7 +246,7 @@
    segment)
   ;; TODO notate impossibility
   ((constant (make-trip-segment-by-time
-	      (make-estimate (& (expt 10 10) hour))))
+	      (make-estimate (& (expt 10 10) &hour))))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 50 dollar))))
    segment)
@@ -259,7 +259,7 @@
   ;; TODO Clean up which uses of time-est are actually estimates
   ;; and which are "hard"
   (p:make-trip-segment-by-time
-   (e:+ (e:time-est segment (& 50 (/ mile hour))) (& 2 hour))
+   (e:+ (e:time-est segment (& 50 (/ &mile &hour))) (& 2 &hour))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 50 dollar))))
    segment)
@@ -292,7 +292,7 @@
 (define-propagator (p:fast-incity-subway-estimate segment)
   ((constant (make-trip-segment-by-method 'subway))
    segment)
-  ((constant (make-trip-segment-by-time (make-estimate (& 1 hour))))
+  ((constant (make-trip-segment-by-time (make-estimate (& 1 &hour))))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 2 dollar))))
    segment)
@@ -304,7 +304,7 @@
    segment)
   ;; TODO notate impossibility
   ((constant (make-trip-segment-by-time
-	      (make-estimate (& (expt 10 10) hour))))
+	      (make-estimate (& (expt 10 10) &hour))))
    segment)
   ((constant (make-trip-segment-by-cost (make-estimate (& 2 dollar))))
    segment)
@@ -330,10 +330,10 @@
 
 ;;; Unit system hacking
 (define dollar
-  (if (lexical-unbound? (the-environment) 'ampere)
+  (if (lexical-unbound? (the-environment) '&ampere)
       'units-not-available
-      ampere))
+      &ampere))
 (define crap 
-  (if (lexical-unbound? (the-environment) 'kilogram)
+  (if (lexical-unbound? (the-environment) '&kilogram)
       'units-not-available
-      kilogram))
+      &kilogram))
