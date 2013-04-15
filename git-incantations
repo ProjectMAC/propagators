@@ -1,0 +1,14 @@
+To get a checkout
+
+cd to a random directory
+
+git clone git@github.com:ProjectMAC/propagators.git
+
+this will create a directory called propagators
+
+to get testing stuff
+
+cd propagators
+git submodule init
+git submodule update
+
