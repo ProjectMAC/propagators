@@ -12,3 +12,13 @@ cd propagators
 git submodule init
 git submodule update
 
+to update from repository
+
+git pull
+
+to modify a file and put in repository
+
+git add <file>
+git commit -m <message>
+git push
+
