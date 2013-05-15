@@ -22,7 +22,7 @@
 (declare (usual-integrations make-cell cell?))
 
 (define *false-premise-starts-out* #t)
-(define *avoid-false-true-flips* #f)
+(define *avoid-false-true-flips* #t)
 
 (define (binary-amb cell)
   (let ((true-premise (make-hypothetical 'true cell))
