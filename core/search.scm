@@ -123,7 +123,8 @@
                        set)))
           (set-premise-nogoods! premise
             (lset-adjoin eq?
-              (lset-difference eq? set subsumed) item))))))
+              (lset-difference eq? set subsumed)
+	      item))))))
 
 (define *number-of-calls-to-fail* 0)
 
