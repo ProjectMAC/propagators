@@ -22,11 +22,27 @@
 (declare (usual-integrations make-cell cell?))
 
 (define *false-premise-starts-out* #t)
+
+;;; If *avoid-false-true-flips* is set to #f, amb-choose maintains a
+;;; stronger invariant than the one it is meant to maintain; namely,
+;;; that the true-premise is always in if it can be, and the
+;;; false-premise is in only if the true-premise is contradicted.
+;;; Enforcing this stronger invariant has the disadvantage that it may
+;;; cause additional flipping of the states of hypotheticals, which in
+;;; turn is likely to cause significant additional (re-)computation.
 (define *avoid-false-true-flips* #t)
 
 (define (binary-amb cell)
   (let ((true-premise (make-hypothetical 'true cell))
         (false-premise (make-hypothetical 'false cell)))
+    ;; The job of amb-choose is to maintain the invariant that at
+    ;; least one of true-premise and false-premise is in.  This
+    ;; invariant may be broken because the rest of the system very
+    ;; vigorously maintains the invariant that no known nogood set is
+    ;; ever fully in.  This is done by kicking some offending
+    ;; hypothetical out, possibly breaking amb-choose's invariant.
+    ;; (Note: true-premise and false-premise support contradictory
+    ;; conclusions, so they will not both be in except momentarily).
     (define (amb-choose)
       (if (and *avoid-false-true-flips*
 	       (or (premise-in? true-premise)
