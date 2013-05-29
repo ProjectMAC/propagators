@@ -132,6 +132,8 @@
 (in-test-group
  riddle-of-the-knights
  (define-test (correct-solution)
+   (define answer (map v&s-value (map tms-query (show-time find-solution))))
+;   (pp answer)
    (check
     (generic-match
      `(#(knight sir-sigismund ,s1 ,h4)
@@ -144,7 +146,7 @@
        #(knight sir-caspar    ,s6 ,h0)
        #(knight sir-jules     ,s8 ,h8)
        #(knight sir-balthus   ,s9 ,h9))
-     (map v&s-value (map tms-query (show-time find-solution)))))
+     answer))
    (check (= *number-of-calls-to-fail* 488))
    (check (= *worldview-number* 2410))))
 
@@ -153,6 +155,7 @@
  (define-test (correct-solution)
    (let ((answer (map v&s-value (map tms-query (show-time
 						find-albatross-solution)))))
+;     (pp answer)
      (check
       ;; The puzzle has two consistent assignments, and which one is
       ;; found depends on propagator firing order.
