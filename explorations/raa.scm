@@ -27,7 +27,7 @@
     (eq-put! contrary-premise 'hypothetical-premise hypothetical-premise)
     (eq-put! hypothetical-premise 'contrary-premise contrary-premise)
     ;; Interlock for reader-writer
-    (set-premise-nogoods!
+    (set-premise-nogoods! hypothetical-premise
      (lset-adjoin eq?
 		  (premise-nogoods hypothetical-premise)
 		  (list contrary-premise)))
