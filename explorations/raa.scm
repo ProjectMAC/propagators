@@ -1,14 +1,5 @@
 ;;;; RAA 
 ;;; Idea is to dismiss a hypothetical by denying the contrary...
-;;; Problem is that global worldview prevents also using the 
-;;; hypothetical if the contradiction is not forthcoming.
-
-;;; Really want worldview associated with processes.  
-;;; Split worldviews, *premise-outness* table should be allocated for
-;;; each process, as a clone of the parent.
-
-;;; So want to split the worldview rather than BRING-IN and KICK-OUT
-;;; stuff.  Also want to avoid RUN.
 
 ;;; Want to stop worldview associated with contrary-premise
 ;;; if contrary premise finds a contradiction.  Then want to 
@@ -16,23 +7,30 @@
 ;;; reason for the contradiction is lost.
 
 (define (to-dismiss-hypothetical hypothetical-premise)
-  (let ((hcell (hypothetical-cell hypothetical-premise))
+  (let ((principal (the-current-principal)) ; worldview and schedule
+        (hcell (hypothetical-cell hypothetical-premise))
 	(sign
 	 (case (hypothetical-sign hypothetical-premise)	;stupid!
 	   ((true) #t)
 	   ((false) #f)
 	   (else (error "Bad hypothetical sign"))))
-	(state (premise-in? hypothetical-premise))
-	(contrary-premise (generate-uninterned-symbol 'contrary)))
-    (eq-put! contrary-premise 'hypothetical-premise hypothetical-premise)
-    (eq-put! hypothetical-premise 'contrary-premise contrary-premise)
-    ;; Interlock for reader-writer
+	(state (premise-in? hypothetical-premise)) ; unused? bad!
+	(contrary-premise
+         (or (eq-get hypothetical-premise 'contrary-premise)
+             (let ((cp (generate-uninterned-symbol 'contrary)))
+               (eq-put! cp 'hypothetical-premise hypothetical-premise)
+               (eq-put! hypothetical-premise 'contrary-premise cp)
+               cp))))
+    ;; Kick out the hypothetical and add the contrary premise to the
+    ;; reasons why it should be out.
     (set-premise-nogoods! hypothetical-premise
      (lset-adjoin eq?
 		  (premise-nogoods hypothetical-premise)
 		  (list contrary-premise)))
     (kick-out! hypothetical-premise)
-    ;; Interlock for reader-writer
+
+    ;; Assert the contrary premise, and use it to support the opposite
+    ;; of the hypothetical being tested.
     (add-content hcell
 		 (make-tms
 		  (contingent (not sign)
@@ -51,10 +49,15 @@
 		 'too-complicated
 		 (begin
 		   (kick-out! contrary-premise)
-		   ;; Interlock for reader-writer
 		   (add-content hcell
 				(make-tms (contingent sign reasons)))
 		   ;; deactivate unless a reason is retracted.
 		   )))
 	   'nothing-to-do)))
-    (run)))
+
+    (on-quiescence principal
+     (lambda ()
+       (if (premise-in? contrary-premise) ;could not find contradiction
+           (kick-out! contrary-premise))  ;restore original situation
+       ))
+     )))
