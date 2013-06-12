@@ -104,7 +104,7 @@
      (oset-insert *propagators-ever-alerted* propagator)
      ((*scheduler* 'alert-one) propagator))
    (listify propagators))
-  #f)
+  #!unspecific)		; no one cares about this value.
 (define alert-propagator alert-propagators)
 
 (define (all-propagators)
@@ -126,10 +126,10 @@
       (ppc `(calling abort-process with ,value and ,*abort-process*)))
   (if *abort-process*
       ;; if the propagator is running
-      (begin (*scheduler* 'clear!)
+      (begin ;;(*scheduler* 'clear!) ; Not sure it is ever necessary to clear.
              (*abort-process* value))
       ;; if the user is setting up state
-      (begin (*scheduler* 'clear!)
+      (begin ;;(*scheduler* 'clear!)
              (set! *last-value-of-run* value))))
 
 (define (run)
@@ -139,6 +139,8 @@
       (set! *last-value-of-run* (with-process-abortion do-run)))
   *last-value-of-run*)
 
+;;; A simple scheduler
+
 (define (make-oset-scheduler policy)
   (let ((propagators-left (make-eq-oset)))
     (define (run-alerted)
@@ -163,6 +165,8 @@
 	    ((eq? message 'clear!) (clear!))
 	    ((eq? message 'done?) (not (any-alerted?)))))
     me))
+
+;;; Policies
 
 (define (round-robin-policy propagators-left)
   (let ((temp (oset-members propagators-left)))
@@ -174,12 +178,17 @@
 (define (stack-policy propagators-left)
   (execute-propagator (oset-pop! propagators-left)))
 
+
+;;; Schedulers
+
 (define (make-round-robin-scheduler)
   (make-oset-scheduler round-robin-policy))
 
 (define (make-stack-scheduler)
   (make-oset-scheduler stack-policy))
 
+;;; A fancy two-policy scheduler...
+
 (define (make-fast-slow-scheduler fast-policy slow-policy)
   (let ((propagators-left (make-eq-oset))
 	(slow-propagators (make-eq-oset)))

@@ -1,0 +1,68 @@
+;;; Client:
+
+(define propagators-port 5390)
+
+(define (client-connect password #!optional host port)
+  (let ((client (create-rpc-client))
+	(port (if (default-object? port) propagators-port port))
+	(address (if (default-object? host) "localhost" host)))
+    (connect-rpc-client client port address)
+    (list 'propclient client password)))
+
+(define (client-disconnect client)
+  (disconnect-rpc-client (cadr client)))
+
+(define (client-access-service client service-id #!optional password)
+  ((bind-rpc-call (cadr client) "access-thing")
+   service-id 
+   (if (default-object? password) (caddr client)
+       password)))
+
+(define (get-remote-cell client cell-name)
+  (let ((remote-entity
+         ((client-access-service client 'get-cell)
+          cell-name))
+        (remote-invoker
+         (client-access-service client 'cell-invoke)))
+    (make-entity
+     (lambda args
+       (error "don't apply a remote cell!"))
+     (lambda args
+       (remote-invoker remote-entity args)))))
+
+; FIXME: neighbors, etc don't behave reasonably as they do not proxy
+; cells as above. also cells contaning cells aren't handled either.
+        
+
+(attach-special-object-id nothing "csail.mit.edu/ProjectMAC/Propagators/Nothing")
+
+
+#|
+;;;;  Demo
+;;; Assume that the password is "foo".
+
+(define client (client-connect "<password>" "127.0.0.1" propagators-port))
+;Value: client
+
+(define testcell
+  (get-remote-cell client 'testcell))
+;Value: testcell
+
+(content testcell)
+;Value: #(*the-nothing*)
+
+(nothing? (content testcell))
+;Value: #t
+
+(add-content testcell 123)
+;Unspecified return value
+
+(content testcell)
+;Value: 123
+
+...
+
+
+
+(client-disconnect client)
+|#

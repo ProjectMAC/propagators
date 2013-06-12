@@ -36,7 +36,7 @@
 ;; infrastructure.  The chaotic variation also causes variations in the 
 ;; *number-of-calls-to-fail* when doing dependency directed backtracking.
 (define *reproducible-order* #t)
-
+
 (define (oset-insert oset thing)
   (hash-table/lookup
    (oset-table oset)
