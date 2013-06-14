@@ -57,7 +57,7 @@
   (deque:last (oset-deque oset)))
 
 (define (oset-pop-tail! oset)
-  (let ((answer (oset-peek oset)))
+  (let ((answer (oset-peek-tail oset)))
     (hash-table/remove! (oset-table oset) answer)
     (deque:remove-last! (oset-deque oset))
     answer))

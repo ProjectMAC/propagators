@@ -1,5 +1,5 @@
 ;;; A more general scheduler that allows multiple agendas which may be
-;;; arranged in priority order.  The identity of an agenda is its oset.
+;;; arranged in priority order.  The agenda identity is its oset.
 
 (define (make-general-scheduler starting-policy)
 
@@ -33,23 +33,18 @@
 
     (define (alert-one propagator #!optional agenda)
       (let ((ca
-	     (if (default-object? agenda)
-		 current-agenda
-		 agenda)))
+	     (if (default-object? agenda) current-agenda agenda)))
 	(if ca
 	    (oset-insert (agenda-oset ca) propagator)
 	    (oset-insert starting-oset propagator))))
 
 
     (define (clear! #!optional agenda)
-      (let ((ca
-	     (if (default-object? agenda)
-		 current-agenda
-		 agenda)))
+      (let ((ca (if (default-object? agenda) current-agenda agenda)))
 	(if ca (oset-clear! (agenda-oset ca)))))
 
     (define (any-alerted?)
-      (not (next-agenda)))
+      (next-agenda))
 
     (define (create-agenda policy direction base-agenda)
       (let ((split
@@ -80,7 +75,8 @@
 	    ((eq? message 'done?) (not (any-alerted?)))
 	    ((eq? message 'create-agenda) create-agenda)
 	    ((eq? message 'current-agenda) current-agenda)
-	    (else (error "Bad message -- MAKE-GENERAL-SCHEDULER"))))
+	    (else
+             (error "Bad message -- MAKE-GENERAL-SCHEDULER"))))
 
     me))
 
