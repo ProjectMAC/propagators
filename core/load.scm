@@ -34,6 +34,7 @@
 
 (for-each load-relative-compiled
   '("scheduler"
+    ;"general-scheduler"
     ;"metadata"
     "diagrams"
     "merge-effects"
