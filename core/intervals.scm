@@ -117,6 +117,15 @@
   (make-interval (sqrt (interval-low x))
                  (sqrt (interval-high x))))
 
+(define (negate-interval x)
+  (make-interval (negate (interval-high x))
+		 (negate (interval-low x))))
+
+(define (invert-interval x)
+  (make-interval (invert (interval-high x))
+		 (invert (interval-low x))))
+
+
 (define (log-interval x)
   (make-interval (log (interval-low x))
                  (log (interval-high x))))
@@ -192,6 +201,9 @@
 
 (defhandler generic-square square-interval %interval?)
 (defhandler generic-sqrt sqrt-interval %interval?)
+
+(defhandler generic-negate negate-interval %interval?)
+(defhandler generic-invert invert-interval %interval?)
 
 (defhandler generic-log log-interval %interval?)
 (defhandler generic-exp exp-interval %interval?)

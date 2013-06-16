@@ -29,7 +29,8 @@
     (define-cell maybe-frob (e:switch (make-tms (contingent #t '(fred))) frob))
     (run)
     (tms-query (content maybe-frob))
-    (produces #(supported 4 (bill fred)))))
+    (produces #(supported 4 (bill fred)))
+    ))
 
  (define-test (supported-barometer)
    (interaction
