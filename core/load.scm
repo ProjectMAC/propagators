@@ -33,8 +33,9 @@
 (load-relative "../support/load")
 
 (for-each load-relative-compiled
-  '("scheduler"
-    ;;"general-scheduler"
+  '("agent"
+    "scheduler"
+    "general-scheduler"
     ;;"metadata"
     "diagrams"
     "merge-effects"

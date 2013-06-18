@@ -40,7 +40,9 @@
   cell)
 
 (define *worldview-number* 0)
-(define *premise-outness* (make-eq-hash-table))
+
+;; Made by initial agent.
+;;(define *premise-outness* (make-eq-hash-table))  
 
 (define (premise-in? premise)
   (not (hash-table/get *premise-outness* premise #f)))
@@ -61,7 +63,7 @@
 
 (define (reset-premise-info!)
   (set! *worldview-number* 0)
-  (set! *premise-outness* (make-eq-hash-table))
+  ;; (set! *premise-outness* (make-eq-hash-table))
   (set! *premise-nogoods* (make-eq-hash-table)))
 
 ;;; We also need to arrange for the premise states to be reset for

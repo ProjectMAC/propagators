@@ -75,11 +75,17 @@
 (define *propagators-ever-alerted*)
 
 ;; This is a mutation point, if one wants to play with different kinds
-;; of schedulers.  The default is round-robin, below.
+;; of schedulers.  The Alexey default is round-robin, below.
+
 (define (make-scheduler) (make-round-robin-scheduler))
 
+;;; but see general-scheduler.scm -- GJS
+
+(define *current-agent*)
+
 (define (initialize-scheduler)
-  (set! *scheduler* (make-scheduler))
+  ;;(set! *scheduler* (make-scheduler))
+  (install-agent! (agent:make-initial))
   (set! *abort-process* #f)
   (set! *last-value-of-run* 'done)
   (set! *propagators-ever-alerted* (make-eq-oset))
