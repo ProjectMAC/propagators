@@ -39,8 +39,6 @@
   sign
   cell)
 
-(define *worldview-number* 0)
-
 ;; Made by initial agent.
 ;;(define *premise-outness* (make-eq-hash-table))  
 
@@ -53,6 +51,8 @@
 (define (mark-premise-out! premise)
   (hash-table/put! *premise-outness* premise #t))
 
+
+
 (define *premise-nogoods* (make-eq-hash-table))
 
 (define (premise-nogoods premise)
@@ -60,6 +60,9 @@
 
 (define (set-premise-nogoods! premise nogoods)
   (hash-table/put! *premise-nogoods* premise nogoods))
+
+
+(define *worldview-number* 0)
 
 (define (reset-premise-info!)
   (set! *worldview-number* 0)

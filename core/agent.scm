@@ -18,6 +18,7 @@
              name)))
     (let ((agent (agent:make-record new-worldview
                                     (make-scheduler))))
+      (name! agent name)
       (for-each ((agent:scheduler agent) 'alert-one)
                 (all-propagators))
       agent)))
@@ -31,6 +32,7 @@
     (let ((agent
            (agent:make-record (make-worldview)
                               (make-scheduler))))
+      (name! agent name)
       agent)))
 
 (define (install-agent! agent)
@@ -41,10 +43,17 @@
   agent)
 
 
+(define (current-agent)
+  *current-agent*)
 
 
+(define *premise-number* 0)
 
-
+(define (agent:make-premise #!optional agent)
+  (if (default-object? agent)
+      (set! agent *current-agent*))
+  (set! *premise-number* (+ *premise-number* 1))
+  (symbol (name agent) "-premise-" *premise-number*))
 
 
 
