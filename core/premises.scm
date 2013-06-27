@@ -42,14 +42,14 @@
 ;; Made by initial agent.
 ;;(define *premise-outness* (make-eq-hash-table))  
 
-(define (premise-in? premise)
-  (not (hash-table/get *premise-outness* premise #f)))
+;; (define (premise-in? premise)
+;;   (not (hash-table/get *premise-outness* premise #f)))
 
-(define (mark-premise-in! premise)
-  (hash-table/remove! *premise-outness* premise))
+;; (define (mark-premise-in! premise)
+;;   (hash-table/remove! *premise-outness* premise))
 
-(define (mark-premise-out! premise)
-  (hash-table/put! *premise-outness* premise #t))
+;; (define (mark-premise-out! premise)
+;;   (hash-table/put! *premise-outness* premise #t))
 
 
 
@@ -83,7 +83,7 @@
   (let ((with-independent-scheduler with-independent-scheduler))
     (lambda args
       (fluid-let ((*worldview-number* #f)
-		  (*premise-outness* #f)
+		  ;;(*premise-outness* #f)
 		  (*premise-nogoods* #f))
 	(apply with-independent-scheduler args)))))
 

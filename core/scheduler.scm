@@ -85,10 +85,10 @@
 
 (define (initialize-scheduler)
   ;;(set! *scheduler* (make-scheduler))
-  (install-agent! (agent:make-initial))
   (set! *abort-process* #f)
   (set! *last-value-of-run* 'done)
   (set! *propagators-ever-alerted* (make-eq-oset))
+  (install-agent! (agent:make-initial))
   'ok)
 
 (define (with-independent-scheduler thunk)
