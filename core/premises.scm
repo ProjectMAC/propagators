@@ -33,11 +33,38 @@
 
 (define-structure
   (hypothetical (type vector) (named 'hypothetical)
+                (constructor %make-hypothetical)
                 ;;(print-procedure #f)
 		(print-procedure hypothetical-printer)
 		(safe-accessors #t))
+  index
   sign
   cell)
+
+(define *hypothetical-count* 0)
+
+(define initialize-scheduler
+  (let ((initialize-scheduler initialize-scheduler))
+    (lambda ()
+      (initialize-scheduler)
+      (set! *hypothetical-count* 0))))
+
+(define with-independent-scheduler
+  (let ((with-independent-scheduler with-independent-scheduler))
+    (lambda args
+      (fluid-let ((*hypothetical-count* 0)) ; TODO Is this right?
+	(apply with-independent-scheduler args)))))
+
+(define (make-hypothetical sign cell)
+  (set! *hypothetical-count* (+ *hypothetical-count* 1))
+  (%make-hypothetical *hypothetical-count* sign cell))
+
+(define (premise<? p1 p2)
+  (cond ((and (symbol? p1) (symbol? p2))
+         (symbol<? p1 p2))
+        ((symbol? p1) p2)
+        ((symbol? p2) p1)
+        (else (< (hypothetical-index p1) (hypothetical-index p2)))))
 
 ;; Made by initial agent.
 ;;(define *premise-outness* (make-eq-hash-table))  

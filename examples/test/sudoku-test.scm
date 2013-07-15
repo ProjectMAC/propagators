@@ -44,7 +44,6 @@
 		      (0 0 0 0)
 		      (0 0 4 0)
 		      (0 3 0 0)))))))
-   (check (= (if *avoid-false-true-flips* 52 49)
-	     *number-of-calls-to-fail*)))
+   (check (< *number-of-calls-to-fail* 100)))
 
  )

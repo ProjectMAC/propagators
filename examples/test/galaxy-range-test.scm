@@ -154,8 +154,8 @@
 
     (what-is M87:distance)
     (produces '(supported (interval 16.827 17.31)
-			  VanDenBergh1985
-			  Tonry:SBF-IV))
+			  Tonry:SBF-IV
+			  VanDenBergh1985))
 
     ;;; But note that the original measure is improved
     (content M87:distance-modulus)
@@ -171,8 +171,8 @@
    
     (what-is M87:distance-modulus)
     (produces '(supported (interval 31.13 31.191)
-			  VanDenBergh1985
-			  Tonry:SBF-IV))
+			  Tonry:SBF-IV
+			  VanDenBergh1985))
 
     ;;; By redshift and Hubble law
 
@@ -226,9 +226,9 @@
 
     (what-is H0)
     (produces '(supported (interval 74.964 77.904)
+			  Smith2000
 			  Tonry:SBF-IV
-			  VanDenBergh1985
-			  Smith2000))
+			  VanDenBergh1985))
    
     (what-is M87:radial-velocity)
     (produces '(supported (interval 1297.6 1310.9) Smith2000))
@@ -241,10 +241,10 @@
    
     (what-is M87:distance)
     (produces '(supported (interval 16.918 17.31)
-			  WMAP3
+			  Smith2000
 			  Tonry:SBF-IV
 			  VanDenBergh1985
-			  Smith2000))
+			  WMAP3))
 
 
     (add-content H0
@@ -254,10 +254,10 @@
     (run)
     (produces
      '(contradiction
-       (WMAP3
+       (Smith2000
 	Tonry:SBF-IV
 	VanDenBergh1985
-	Smith2000
+	WMAP3
 	WMAP:lCDM)))
    
 
@@ -267,9 +267,9 @@
    
     (what-is M87:distance)
     (produces '(supported (interval 17.348 18.647)
-			  WMAP:lCDM
+			  Smith2000
 			  WMAP3
-			  Smith2000))
+			  WMAP:lCDM))
 
     (what-is H0)
     (produces '(supported (interval 70.3 74.8)
@@ -283,16 +283,16 @@
 
     (what-is M87:distance)
     (produces '(supported (interval 16.918 17.31)
-			  WMAP3
+			  Smith2000
 			  Tonry:SBF-IV
 			  VanDenBergh1985
-			  Smith2000))
+			  WMAP3))
    
     (what-is H0)
     (produces '(supported (interval 74.964 76.7)
 			  Smith2000
-			  VanDenBergh1985
 			  Tonry:SBF-IV
+			  VanDenBergh1985
 			  WMAP3))
 
     ;; Consider another galaxy, NGC4889, the giant elliptical in the Coma
@@ -327,7 +327,7 @@
     (run)
 
     (produces
-     '(contradiction (WMAP3 Tonry:SBF-IV VanDenBergh1985 Smith2000 Willick1997 Moore2002)))
+     '(contradiction (Moore2002 Smith2000 Tonry:SBF-IV VanDenBergh1985 Willick1997 WMAP3)))
 
     (kick-out! 'Tonry:SBF-IV)
     (run)
@@ -340,7 +340,7 @@
     (kick-out! 'WMAP3)
     (run)
     (produces
-     '(contradiction (Moore2002 Willick1997 Tonry:SBF-IV VanDenBergh1985 Smith2000)))
+     '(contradiction (Moore2002 Smith2000 Tonry:SBF-IV VanDenBergh1985 Willick1997)))
 
 
     (bring-in! 'WMAP3)
@@ -350,14 +350,14 @@
     (what-is NGC4889:redshift)
     (produces
      '(supported (interval .023725 .024624)
-		 Willick1997 Smith2000 VanDenBergh1985 Tonry:SBF-IV WMAP3))
+		 Smith2000 Tonry:SBF-IV VanDenBergh1985 Willick1997 WMAP3))
 
     (what-is NGC4889:distance)
     (produces '(supported (interval 93.756 95.06) Willick1997))
 
     (what-is H0)
     (produces
-     '(supported (interval 74.964 76.7) Smith2000 VanDenBergh1985 Tonry:SBF-IV WMAP3))
+     '(supported (interval 74.964 76.7) Smith2000 Tonry:SBF-IV VanDenBergh1985 WMAP3))
 
     (bring-in! 'Moore2002)
     (kick-out! 'Willick1997)
@@ -365,11 +365,11 @@
 
     (what-is NGC4889:distance)
     (produces
-     '(supported (interval 83.592 85.879) WMAP3 Tonry:SBF-IV VanDenBergh1985 Smith2000 Moore2002))
+     '(supported (interval 83.592 85.879) Moore2002 Smith2000 Tonry:SBF-IV VanDenBergh1985 WMAP3))
 
     (what-is H0)
     (produces
-     '(supported (interval 74.964 76.7) Smith2000 VanDenBergh1985 Tonry:SBF-IV WMAP3))
+     '(supported (interval 74.964 76.7) Smith2000 Tonry:SBF-IV VanDenBergh1985 WMAP3))
 
 
     )

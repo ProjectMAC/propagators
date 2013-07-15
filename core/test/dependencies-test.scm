@@ -267,7 +267,7 @@
     (add-content building-height
 		 (supported (make-interval 46. 50.) '(pressure)))
     (run)
-    (produces '(contradiction (superintendent pressure)))
+    (produces '(contradiction (pressure superintendent)))
 
     (tms-query (content building-height))
 

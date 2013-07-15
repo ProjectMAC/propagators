@@ -371,7 +371,7 @@
      (switch (make-tms (supported #t '(fred))) fred-op the-op)
      (define-cell output (e:application the-op 3 4))
      (run)
-     (produces '(contradiction (fred bill)))
+     (produces '(contradiction (bill fred)))
      (check (equal? '(application) (map name (neighbors the-op))))
 
      (kick-out! 'bill)

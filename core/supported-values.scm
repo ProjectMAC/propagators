@@ -54,7 +54,7 @@
 (define *active-diagram* 'user)
 
 (define (supported value depends #!optional informants)
-  (%supported value depends
+  (%supported value (sort depends premise<?)
 	      (if (default-object? informants)
 		  (list *active-diagram*)
 		  informants)))
