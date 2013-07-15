@@ -44,6 +44,23 @@
     (content the-cdr)
     (produces #(tms (#(supported 3 (bill)))))))
 
+ (define-test (cell-in-v&s)
+   (interaction
+    (define-cell four 4)
+    (define-cell george-four (supported 4 '(george)))
+    (execute-effect
+     (make-cell-join-effect
+      four
+      george-four
+      (make-tms (supported #t '(george)))))
+    (define v&s1 (supported four '(george)))
+    (define v&s2 (supported george-four '()))
+    ;; Given the way four and george-four are connected, v&s2 is
+    ;; strictly more informative, so merging the twain should produce
+    ;; it.
+    (merge v&s1 v&s2)
+    (produces v&s2)))
+
  (define-test (early-access-test)
    (interaction
     (initialize-scheduler)
