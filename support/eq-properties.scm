@@ -38,7 +38,7 @@
 
 (declare (usual-integrations))
 
-(define eq-properties (make-eq-hash-table))
+(define eq-properties (make-weak-eq-hash-table))
 
 (define (eq-label! node . plist)
   (let loop ((plist plist))

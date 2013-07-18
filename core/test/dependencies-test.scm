@@ -29,7 +29,8 @@
     (define-cell maybe-frob (e:switch (make-tms (contingent #t '(fred))) frob))
     (run)
     (tms-query (content maybe-frob))
-    (produces #(supported 4 (bill fred)))))
+    (produces #(supported 4 (bill fred)))
+    ))
 
  (define-test (supported-barometer)
    (interaction
@@ -121,12 +122,13 @@
     (add-content fall-time
 		 (make-tms (supported (make-interval 2.9 3.1) '(fall-time))))
     (run)
+    #| Not order of events independent -- GJS
     (content building-height)
     (produces #(tms (#(supported #(interval 44.514 47.243)
 				 (fall-time shadows))
 		     #(supported #(interval 44.514 48.978)
 				 (shadows)))))
-
+    |#
     (tms-query (content building-height))
     (produces #(supported #(interval 44.514 47.243) (fall-time shadows)))
 
@@ -145,6 +147,7 @@
     (tms-query (content building-height))
     (produces #(supported #(interval 41.163 47.243) (fall-time)))
 
+    #| Not order of events independent -- GJS
     (content building-height)
     (produces #(tms (#(supported #(interval 41.163 47.243)
 				 (fall-time))
@@ -152,10 +155,12 @@
 				 (fall-time shadows))
 		     #(supported #(interval 44.514 48.978)
 				 (shadows)))))
+    |#
 
     (add-content building-height (supported 45 '(superintendent)))
-
     (run)
+
+    #| Not order of events independent -- GJS
     (content building-height)
     (produces #(tms (#(supported 45 (superintendent))
 		     #(supported #(interval 41.163 47.243)
@@ -164,6 +169,7 @@
 				 (fall-time shadows))
 		     #(supported #(interval 44.514 48.978)
 				 (shadows)))))
+    |#
 
     (tms-query (content building-height))
     (produces #(supported 45 (superintendent)))
@@ -173,6 +179,7 @@
     (tms-query (content building-height))
     (produces #(supported 45 (superintendent)))
 
+    #| Not order of events independent -- GJS
     (content barometer-height)
     (produces #(tms (#(supported #(interval .3 .30328)
 				 (fall-time superintendent shadows))
@@ -181,11 +188,13 @@
 		     #(supported #(interval .3 .31839)
 				 (fall-time shadows))
 		     #(supported #(interval .3 .32) (shadows)))))
+    |#
 
 
     (tms-query (content barometer-height))
     (produces #(supported #(interval .3 .30328)
 			  (fall-time superintendent shadows)))
+    ;;; Fails because of order of premises is different! GJS
 
     (kick-out! 'fall-time)
     (run)
@@ -258,7 +267,7 @@
     (add-content building-height
 		 (supported (make-interval 46. 50.) '(pressure)))
     (run)
-    (produces '(contradiction (superintendent pressure)))
+    (produces '(contradiction (pressure superintendent)))
 
     (tms-query (content building-height))
 

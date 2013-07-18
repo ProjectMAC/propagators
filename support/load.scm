@@ -38,12 +38,14 @@
 
 (for-each load-relative-compiled
   '("profiler"
-;    "mit-profile"
+    ;;"mit-profile"
     "eq-properties"
     "generics-again"
     "coercions"
-    "insertion-order-sets"
+    ;;"insertion-order-sets"  ;deque-sets is better! GJS
     "utils"
+    "deque"
+    "deque-sets"
     "test-utils"))
 
 (maybe-warn-low-memory)

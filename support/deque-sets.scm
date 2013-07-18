@@ -1,5 +1,5 @@
 ;;; ----------------------------------------------------------------------
-;;; Copyright 2009 Massachusetts Institute of Technology.
+;;; Copyright 2013 Massachusetts Institute of Technology.
 ;;; ----------------------------------------------------------------------
 ;;; This file is part of Propagator Network Prototype.
 ;;; 
@@ -24,19 +24,12 @@
 ;;;; Sets that preserve insertion order
 
 (define-structure (insertion-order-set (conc-name oset-))
-  table
-  list)
+  table deque)
 
 (define (make-eq-oset)
-  (make-insertion-order-set (make-strong-eq-hash-table) '()))
+  (make-insertion-order-set (make-strong-eq-hash-table)
+                            (deque:make)))
 
-;; Turning this off makes the order in which propagators are run vary
-;; chaotically.  That is not supposed to cause trouble in principle,
-;; but a reproducible run order can be valuable for debugging the
-;; infrastructure.  The chaotic variation also causes variations in the 
-;; *number-of-calls-to-fail* when doing dependency directed backtracking.
-(define *reproducible-order* #t)
-
 (define (oset-insert oset thing)
   (hash-table/lookup
    (oset-table oset)
@@ -44,29 +37,38 @@
    (lambda (value) 'ok)
    (lambda ()
      (hash-table/put! (oset-table oset) thing #t)
-     (set-oset-list! oset (cons thing (oset-list oset))))))
+     (deque:add-to-front! (oset-deque oset) thing))))
 
 (define (oset-peek oset)
   (if (= 0 (oset-count oset))
       (error "Peeking empty oset" oset))
-  (if *reproducible-order*
-      (car (oset-list oset))
-      (car (hash-table/key-list (oset-table oset)))))
+  (deque:first (oset-deque oset)))
 
 (define (oset-pop! oset)
   (let ((answer (oset-peek oset)))
     (hash-table/remove! (oset-table oset) answer)
-    (set-oset-list! oset (cdr (oset-list oset)))
+    (deque:remove-first! (oset-deque oset))
     answer))
 
+
+(define (oset-peek-tail oset)
+  (if (= 0 (oset-count oset))
+      (error "Peeking empty oset" oset))
+  (deque:last (oset-deque oset)))
+
+(define (oset-pop-tail! oset)
+  (let ((answer (oset-peek-tail oset)))
+    (hash-table/remove! (oset-table oset) answer)
+    (deque:remove-last! (oset-deque oset))
+    answer))
+
+
 (define (oset-members oset)
-  (if *reproducible-order*
-      (list-copy (oset-list oset))
-      (hash-table/key-list (oset-table oset))))
+  (deque:all (oset-deque oset)))
 
 (define (oset-clear! oset)
   (hash-table/clear! (oset-table oset))
-  (set-oset-list! oset '()))
+  (set-oset-deque! oset (deque:make)))
 
 (define (oset-count oset)
   (hash-table/count (oset-table oset)))

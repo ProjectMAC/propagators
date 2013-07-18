@@ -67,7 +67,7 @@
 
 ;; Will be replaced by process-nogood! in search.scm
 (define (process-nogood! nogood)
-  (abort-process `(contradiction ,nogood)))
+  (abort-process `(contradiction ,(sort nogood premise<?))))
 
 (define-structure nogood-effect
   nogood)

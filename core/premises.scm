@@ -33,23 +33,52 @@
 
 (define-structure
   (hypothetical (type vector) (named 'hypothetical)
+                (constructor %make-hypothetical)
                 ;;(print-procedure #f)
 		(print-procedure hypothetical-printer)
 		(safe-accessors #t))
+  index
   sign
   cell)
 
-(define *worldview-number* 0)
-(define *premise-outness* (make-eq-hash-table))
+(define *hypothetical-count* 0)
 
-(define (premise-in? premise)
-  (not (hash-table/get *premise-outness* premise #f)))
+(define initialize-scheduler
+  (let ((initialize-scheduler initialize-scheduler))
+    (lambda ()
+      (initialize-scheduler)
+      (set! *hypothetical-count* 0))))
 
-(define (mark-premise-in! premise)
-  (hash-table/remove! *premise-outness* premise))
+(define with-independent-scheduler
+  (let ((with-independent-scheduler with-independent-scheduler))
+    (lambda args
+      (fluid-let ((*hypothetical-count* 0)) ; TODO Is this right?
+	(apply with-independent-scheduler args)))))
 
-(define (mark-premise-out! premise)
-  (hash-table/put! *premise-outness* premise #t))
+(define (make-hypothetical sign cell)
+  (set! *hypothetical-count* (+ *hypothetical-count* 1))
+  (%make-hypothetical *hypothetical-count* sign cell))
+
+(define (premise<? p1 p2)
+  (cond ((and (symbol? p1) (symbol? p2))
+         (symbol<? p1 p2))
+        ((symbol? p1) p2)
+        ((symbol? p2) p1)
+        (else (< (hypothetical-index p1) (hypothetical-index p2)))))
+
+;; Made by initial agent.
+;;(define *premise-outness* (make-eq-hash-table))  
+
+;; (define (premise-in? premise)
+;;   (not (hash-table/get *premise-outness* premise #f)))
+
+;; (define (mark-premise-in! premise)
+;;   (hash-table/remove! *premise-outness* premise))
+
+;; (define (mark-premise-out! premise)
+;;   (hash-table/put! *premise-outness* premise #t))
+
+
 
 (define *premise-nogoods* (make-eq-hash-table))
 
@@ -59,9 +88,12 @@
 (define (set-premise-nogoods! premise nogoods)
   (hash-table/put! *premise-nogoods* premise nogoods))
 
+
+(define *worldview-number* 0)
+
 (define (reset-premise-info!)
   (set! *worldview-number* 0)
-  (set! *premise-outness* (make-eq-hash-table))
+  ;; (set! *premise-outness* (make-eq-hash-table))
   (set! *premise-nogoods* (make-eq-hash-table)))
 
 ;;; We also need to arrange for the premise states to be reset for
@@ -78,7 +110,7 @@
   (let ((with-independent-scheduler with-independent-scheduler))
     (lambda args
       (fluid-let ((*worldview-number* #f)
-		  (*premise-outness* #f)
+		  ;;(*premise-outness* #f)
 		  (*premise-nogoods* #f))
 	(apply with-independent-scheduler args)))))
 

@@ -171,7 +171,8 @@
 	  (c:id x 4)
 	  (c:id z 7)
 	  (run)
-	  (content y))))
+	  (content y)))
+   )
 
  (define-test (serpent)
    (initialize-scheduler)
@@ -179,7 +180,8 @@
      (run)
      (check (eqv? 1 (content (e:car ones))))
      (check (eqv? 1 (content (e:car (e:cdr ones)))))
-     (check (eqv? 1 (content (e:car (e:cdr (e:cdr ones))))))))
+     (check (eqv? 1 (content (e:car (e:cdr (e:cdr ones)))))))
+   )
 
  (define-test (monotonic-intervals)
    (interaction
@@ -198,9 +200,11 @@
     (content same?)
     (produces #f)
     (content more?)
-    (produces #t)))
+    (produces #t)
+    ))
 
  (define-test (divisible-intervals)
    (check (contradictory? (generic-/ (make-interval 3 4) 0)))
-   (check (contradictory? (generic-/ (make-interval 3 4) (make-interval 0 0)))))
+   (check (contradictory? (generic-/ (make-interval 3 4) (make-interval 0 0))))
+   )
  )

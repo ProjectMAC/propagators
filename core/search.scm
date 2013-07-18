@@ -162,4 +162,4 @@
 (define (process-nogood! nogood)
   (set! *number-of-calls-to-fail*
         (+ *number-of-calls-to-fail* 1))
-  (process-one-contradiction nogood))
+  (process-one-contradiction (sort nogood premise<?)))

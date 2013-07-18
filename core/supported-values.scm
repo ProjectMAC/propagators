@@ -54,7 +54,7 @@
 (define *active-diagram* 'user)
 
 (define (supported value depends #!optional informants)
-  (%supported value depends
+  (%supported value (sort depends premise<?)
 	      (if (default-object? informants)
 		  (list *active-diagram*)
 		  informants)))
@@ -101,7 +101,7 @@
 	  (value-effects (effectful-effects value-merge+effects)))
       (effectful->
        (make-effectful
-	(cond ((eq? value-merge v&s1-value)
+	(cond ((equivalent? value-merge v&s1-value)
 	       (if (implies? v&s2-value value-merge)
 		   ;; Confirmation of existing information
 		   (if (more-informative-support? v&s2 v&s1)
@@ -109,7 +109,7 @@
 		       v&s1)
 		   ;; New information is not interesting
 		   v&s1))
-	      ((eq? value-merge v&s2-value)
+	      ((equivalent? value-merge v&s2-value)
 	       ;; New information overrides old information
 	       v&s2)
 	      (else

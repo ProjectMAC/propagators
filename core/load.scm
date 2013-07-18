@@ -33,8 +33,10 @@
 (load-relative "../support/load")
 
 (for-each load-relative-compiled
-  '("scheduler"
-    ;"metadata"
+  '("agent"
+    "scheduler"
+    "general-scheduler"
+    ;;"metadata"
     "diagrams"
     "merge-effects"
     "cells"

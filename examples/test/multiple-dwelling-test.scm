@@ -30,7 +30,5 @@
     (map v&s-value (map tms-query (map content answers)))
     (produces '(3 2 4 5 1))
 
-    *number-of-calls-to-fail*
-    (produces (if *false-premise-starts-out*
-		  (if *avoid-false-true-flips* 33 51) 63))
+    (check (< *number-of-calls-to-fail* 100))
     )))

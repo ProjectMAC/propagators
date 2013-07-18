@@ -50,3 +50,34 @@
   (generic-match
    pattern
    (vector 'nogood-effect (nogood-effect-nogood object))))
+
+(define-method generic-match ((pattern <vector>) (object <vector>))
+  ;; Account for v&ses and tmses, as well as standard vectors.
+  (define (match-vectors pattern object)
+    (and (= (vector-length pattern) (vector-length object))
+         (reduce boolean/and #t (map generic-match
+				(vector->list pattern)
+				(vector->list object)))))
+  (define (match-v&s pattern object)
+    ;; vector-ref because the patterns are often explicit vectors
+    ;; (rather than v&s objects) which are too short, so they don't
+    ;; pass the checks performed by the safe accessors.
+    (and (generic-match (vector-ref pattern 1) (v&s-value object))
+         (generic-match (sort (vector-ref pattern 2) premise<?)
+                        (v&s-support object))
+         ;; Ignore the informants
+         ))
+  (define (match-tms pattern object)
+    ;; TODO Canonicalize the order of appearance of v&ses.
+    (generic-match (tms-values pattern)
+                   (tms-values object)))
+  (cond ((or (< (vector-length pattern) 1)
+             (< (vector-length object) 1))
+         (match-vectors pattern object))
+        ((and (eq? (vector-ref pattern 0) 'supported)
+              (eq? (vector-ref object 0) 'supported))
+         (match-v&s pattern object))
+        ((and (eq? (vector-ref pattern 0) 'tms)
+              (eq? (vector-ref object 0) 'tms))
+         (match-tms pattern object))
+        (else (match-vectors pattern object))))
