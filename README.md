@@ -1,13 +1,13 @@
 Installation
 ------------
 
-Install MIT/GNU Scheme (required)
-```
-sudo aptitude install mit-scheme mit-scheme-doc mit-scheme-dbg
-```
-or http://www.gnu.org/software/mit-scheme/
+- Install MIT/GNU Scheme (required)
+  ```
+  sudo aptitude install mit-scheme mit-scheme-doc mit-scheme-dbg
+  ```
+  or http://www.gnu.org/software/mit-scheme/
 
-Install Mechanics Scmutils (optional)
+- Install Mechanics Scmutils (optional)
   http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm
 
 
