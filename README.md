@@ -11,6 +11,17 @@ Installation
   http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm
 
 
+Quick Start
+-----------
+
+Execute `git submodule init` to fetch the unit test framework and
+execute `./run-tests` to self-test
+
+Run `(load "load")` in Scheme to grab everything and start playing with it
+
+`core/example-networks.scm` and `examples/*` have usage examples
+
+
 Main Documentation
 ------------------
 
@@ -27,17 +38,6 @@ Main Documentation
     http://hdl.handle.net/1721.1/49525
 
 - Programmer manual: http://groups.csail.mit.edu/mac/users/gjs/propagators/
-
-
-Quick Start
------------
-
-Execute `git submodule init` to fetch the unit test framework and
-execute `./run-tests` to self-test
-
-Run `(load "load")` in Scheme to grab everything and start playing with it
-
-`core/example-networks.scm` and `examples/*` have usage examples
 
 
 Content
