@@ -2,11 +2,31 @@ Installation
 ------------
 
 Install MIT/GNU Scheme (required)
-  sudo aptitude install mit-scheme mit-scheme-doc mit-scheme-dbg or
-  http://www.gnu.org/software/mit-scheme/
+```
+sudo aptitude install mit-scheme mit-scheme-doc mit-scheme-dbg
+```
+or http://www.gnu.org/software/mit-scheme/
 
 Install Mechanics Scmutils (optional)
   http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm
+
+
+Main Documentation
+------------------
+
+- Intellectual foundation
+
+  - Alexey Radul and Gerald Jay Sussman.
+    The Art of the Propagator.
+    CSAIL Tech Report MIT-CSAIL-TR-2009-002, MIT Computer Science and Artificial Intelligence Laboratory, Cambridge, MA, 2009.
+    http://hdl.handle.net/1721.1/44215
+
+  - Alexey Radul.
+    _Propagation Networks: A Flexible and Expressive Substrate for Computation._
+    PhD thesis, Massachusetts Institute of Technology, Cambridge, MA, September 2009. 
+    http://hdl.handle.net/1721.1/49525
+
+- Programmer manual: http://groups.csail.mit.edu/mac/users/gjs/propagators/
 
 
 Quick Start
