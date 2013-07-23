@@ -372,14 +372,16 @@
      (define-cell output (e:application the-op 3 4))
      (run)
      (produces '(contradiction (bill fred)))
-     (check (equal? '(application) (map name (neighbors the-op))))
+     ;; This test is sensitive to order of schedule -- GJS
+     ;; (check (equal? '(application) (map name (neighbors the-op))))
 
      (kick-out! 'bill)
      (run)
      (tms-query (content output))
      (produces #(supported 12 (fred)))
-     (check (equal? '(equivalent-closures?:p application)
-		    (map name (neighbors the-op))))
+
+     ;; This test is sensitive to order of schedule -- GJS
+     ;; (check (equal? '(equivalent-closures?:p application) (map name (neighbors the-op))))
 
      (kick-out! 'fred)
      (bring-in! 'bill)
