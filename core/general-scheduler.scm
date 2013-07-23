@@ -84,7 +84,7 @@
   (let ((the-propagator (oset-pop! oset)))
     (execute-propagator the-propagator)))
 
-(define (make-fifo-scheduler)
+(define (make-lifo-scheduler)
   (make-general-scheduler lifo-policy))
 
 
@@ -111,3 +111,5 @@
 
 
 ;;(set! make-scheduler make-fifo-scheduler)
+
+;;(set! make-scheduler make-lifo-scheduler)
