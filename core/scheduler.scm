@@ -99,8 +99,7 @@
     (initialize-scheduler)
     (thunk)))
 
-(define (execute-propagator propagator)
-  (propagator))
+(define (execute-propagator propagator) (propagator))
 
 (define (alert-propagators propagators)
   (for-each
