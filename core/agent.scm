@@ -40,8 +40,8 @@
   (set! mark-premise-out! ((agent:worldview agent) 'mark-premise-out!))
   ;; *abort-process*, *last-value-of-run* ?
 
-  ;; Probably should go away with good tracking of new stuff.b
-
+  ;; Probably should go away with good tracking of new stuff.
+  (set! *worldview-number* (+ *worldview-number* 1))
   (for-each ((agent:scheduler agent) 'alert-one)
             (all-propagators))
   agent)
@@ -58,18 +58,19 @@
   (if (default-object? description)
       (set! description ""))
   (set! *premise-number* (+ *premise-number* 1))
-  (let ((premise (symbol description "-by-" (name agent) "-premise-" *premise-number*)))
+  (let ((premise
+         (symbol description "-by-" (name agent) 
+                 "-premise-" *premise-number*)))
     ;;this probably breaks garbage collection (make weak ref?)
     (eq-put! premise 'agent agent) ; FIXME 
-
     ;; default is IN within agent's scope.
     (((agent:worldview agent) 'mark-premise-in!) premise)
+    (set! *worldview-number* (+ *worldview-number* 1))
     premise))
 
 (define (premise:creator-agent premise)
   (eq-get premise 'agent))
   
-
 (define (worldview:make parent-agent)
   (let ((pi? (if parent-agent
                  ((agent:worldview parent-agent) 'premise-in?)
@@ -79,19 +80,15 @@
                        #t)))) ; top-level premises assumed in.
         
         (premise-status (make-eq-hash-table)))
-    
     (define (premise-in? premise)
       (let ((status
              (hash-table/get premise-status premise 'unknown)))
         (cond ((eq? status 'unknown) (pi? premise)) ;ask parent
               (else status))))
-        
     (define (mark-premise-in! premise)
       (hash-table/put! premise-status premise #t))
-
     (define (mark-premise-out! premise)
       (hash-table/put! premise-status premise #f))
-
     (define (me message)
       (case message
         ((premise-in?) premise-in?)
