@@ -241,6 +241,11 @@
   (p:pmi p p1)
   (p:pmi p p2))
 
+(define-propagator (c:imp a b)
+  (p:imp a b)
+  (p:pmi b a))
+
+
 (define-propagator (c:id c1 c2)
   (p:id c1 c2) (p:id c2 c1))
 
