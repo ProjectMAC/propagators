@@ -32,6 +32,8 @@
 (define mark-premise-in!)
 (define mark-premise-out!)
 
+(define *worldview-number* 0)
+
 (define (install-agent! agent)
   (set! *scheduler* (agent:scheduler agent))
   (set! *current-agent* agent)

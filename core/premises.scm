@@ -89,7 +89,8 @@
   (hash-table/put! *premise-nogoods* premise nogoods))
 
 
-(define *worldview-number* 0)
+;;; defined in agent.scm
+;;; (define *worldview-number* 0)
 
 (define (reset-premise-info!)
   (set! *worldview-number* 0)
@@ -109,7 +110,7 @@
 (define with-independent-scheduler
   (let ((with-independent-scheduler with-independent-scheduler))
     (lambda args
-      (fluid-let ((*worldview-number* #f)
+      (fluid-let ((*worldview-number* *worldview-number*)
 		  ;;(*premise-outness* #f)
 		  (*premise-nogoods* #f))
 	(apply with-independent-scheduler args)))))
