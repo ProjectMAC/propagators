@@ -211,7 +211,8 @@
 
 (define (implies? v1 v2)
   ;; This is right on the assumption that trivial effects are squeezed
-  ;; out (for example by using effectful->).
+  ;; out (for example by using effectful->), and that nontrivial
+  ;; effects always entail non-implication.  (When would they not?)
   (equivalent? v1 (merge v1 v2)))
 
 ;;; This is the n-ary merge
