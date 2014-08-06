@@ -184,4 +184,13 @@
  ;; TODO Add a test of drawing networks with expanded and unexpanded
  ;; compound propagators.
 
- )
+ (define-test (drawing-with-marcos)
+   (interaction
+    (initialize-scheduler)
+    (define-cell foo)
+    (define-cell bar)
+    (define-cell baz)
+    (require-distinct (list foo bar baz))
+    (draw:write-graph-to-string)
+    ))
+)

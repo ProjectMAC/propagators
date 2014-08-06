@@ -145,10 +145,16 @@
 (define diagram make-compound-diagram)
 
 (define (add-diagram-named-part! diagram name part)
-  (set-diagram-parts!
-   diagram
-   (lset-adjoin equal? (diagram-parts diagram) (cons name part)))
-  (add-diagram-club! part diagram))
+  (if (pair? part)
+      (for-each (lambda (new-name new-part)
+                  (add-diagram-named-part! diagram new-name new-part))
+                (map (lambda (p) (generate-uninterned-symbol name)) part)
+                part)
+      (begin
+        (set-diagram-parts!
+         diagram
+         (lset-adjoin equal? (diagram-parts diagram) (cons name part)))
+        (add-diagram-club! part diagram))))
 
 (define (delete-diagram-part! diagram part)
   (set-diagram-parts!
