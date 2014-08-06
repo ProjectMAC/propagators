@@ -45,12 +45,12 @@
 
 (define-propagator-syntax (quadratic-extend-bijection cell-alist cells1 cells2)
   (for-each (lambda (cell-pair)
-	      (p:id (car cell-pair) (cdr cell-pair))
-	      (p:id (cdr cell-pair) (car cell-pair)))
+	      (p:id (car cell-pair) (cadr cell-pair))
+	      (p:id (cadr cell-pair) (car cell-pair)))
 	    cell-alist)
   (quadratic-guess-bijection
    (lset-difference eq? cells1 (map car cell-alist))
-   (lset-difference eq? cells2 (map cdr cell-alist))))
+   (lset-difference eq? cells2 (map cadr cell-alist))))
 
 (define-structure
   (horse (print-procedure
@@ -241,7 +241,7 @@
     ;; (map length (map tms-values answers)) produces
     ;; (87 16 17 58 17 5 423 83 17 17)
     (define (get-cell-pair key1 key2)
-      (cons (get key1 cell-table)
+      (list (get key1 cell-table)
 	    (get key2 cell-table)))
     (quadratic-extend-bijection
      (map get-cell-pair
