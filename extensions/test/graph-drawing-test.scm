@@ -45,6 +45,18 @@
   \"prop-204\" -> \"cell-202\" [label=\"\" ];
 }
 " (out)))))
+
+(define-test (drawing-smoke-graphml)
+   (interaction
+    (initialize-scheduler)
+    (define-cell foo)
+    (define-cell bar)
+    (p:id foo bar)
+    (fluid-let ((draw:format 'graphml))
+      (draw:write-graph-to-string *toplevel-diagram*))
+    ;; Just make sure it didn't crash.
+    ))
+
 #|
  ;;; These tests are slow (because they ask for lots of GC) but they
  ;;; don't test much when things are working, because the following

@@ -94,7 +94,7 @@
 
   (define (compute-node-shape node)
     (cond ((cell? node) "ellipse")
-	  ((propagator? node) "roundrectangle")
+	  ((diagram? node) "roundrectangle")
 	  (else
 	   (error "Unknown node type" node))))
 
