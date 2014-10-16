@@ -7,7 +7,7 @@
 ;;; reason for the contradiction is lost.
 
 (define (to-dismiss-hypothetical hypothetical-premise)
-  (let ((principal (the-current-principal)) ; worldview and schedule
+  (let ((agent (current-agent)) ; worldview and schedule
         (hcell (hypothetical-cell hypothetical-premise))
 	(sign
 	 (case (hypothetical-sign hypothetical-premise)	;stupid!
@@ -55,7 +55,7 @@
 		   )))
 	   'nothing-to-do)))
 
-    (on-quiescence principal
+    (on-quiescence agent
      (lambda ()
        (if (premise-in? contrary-premise) ;could not find contradiction
            (kick-out! contrary-premise))  ;restore original situation
