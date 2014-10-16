@@ -118,9 +118,13 @@
   (if *contradiction-wallp* (pp `(nogood ,@nogood)))
   (let ((hyps (filter hypothetical? nogood)))
     (if (null? hyps)
-	(begin
-	  (if *contradiction-wallp* (pp 'nogood-aborted))
-	  (abort-process `(contradiction ,nogood)))
+	(if (any (lambda (premise)
+		   (eq-get premise 'default-premise))
+		 nogood)
+	    (pp `(contradiction-with-defaults nogood))
+	    (begin
+	      (if *contradiction-wallp* (pp 'nogood-aborted))
+	      (abort-process `(contradiction ,nogood))))
         (begin
 	  (if *contradiction-wallp*
 	      (pp `(kicking-out ,(car hyps))))
