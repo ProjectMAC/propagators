@@ -44,6 +44,26 @@
     (content the-cdr)
     (produces #(tms (#(supported 3 (bill)))))))
 
+ ;; This test exercises the following situation: v&s-merge is merging
+ ;; v&s1 and v&s2, where the value of v&s1 is more informative than
+ ;; the value of v&s2 when viewed unconditionally; but if one
+ ;; conditions on the premises in the support of v&s1, then the values
+ ;; actually are equivalent.  Further, the support of v&s2 is more
+ ;; informative than the support of v&s1, containing fewer premises.
+ ;; Furthermore, it is true (but possibly not relevant) that merging
+ ;; the values of v&s1 and v&s2 produces whichever is given first
+ ;; (because they are cells) together with an effect which becomes
+ ;; redundant when conditioned on the union of the supports of v&s1
+ ;; and v&s2 (and is duly filtered out).
+
+ ;; In this situation, v&s-merge returns v&s1 because its value is
+ ;; unconditionally more informative than the value of v&s2; but
+ ;; arguably it should return v&s2.  Logically, the situation looks
+ ;; something like this:
+ ;;   A -> () -> X  merge  () -> A -> X
+ ;; which probably ought to emit () -> A -> X.  The analogy is not
+ ;; quite right, because the X's are not actually the same, being
+ ;; merged cells.
  (define-test (cell-in-v&s)
    (interaction
     (define-cell four 4)
