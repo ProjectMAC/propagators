@@ -1,18 +1,24 @@
 #!/bin/bash
 
 cd support
+echo "Support tests"
 ./run-tests
 
 cd ../core
+echo "Core tests"
 ./run-tests
 
 cd ../extensions
+echo "Extensions tests"
 ./run-tests
 
 cd ../examples
+echo "Examples tests"
 ./run-tests
 
+echo "Examples mechanics tests"
 ./run-mechanics-tests
 
 #cd ../explorations/circuits
+#echo "Explorations/circuits tests"
 #./run-tests
