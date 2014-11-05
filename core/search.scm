@@ -32,7 +32,7 @@
 ;;; turn is likely to cause significant additional (re-)computation.
 (define *avoid-false-true-flips* #t)
 
-(define (binary-amb cell)
+(define (binary-amb cell #!optional bias)
   (let ((true-premise (make-hypothetical 'true cell))
         (false-premise (make-hypothetical 'false cell)))
     ;; The job of amb-choose is to maintain the invariant that at
@@ -81,13 +81,22 @@
 		    (pairwise-resolve reasons-against-true
 				      reasons-against-false)))))))
 
+    (eq-put! true-premise 'opposite false-premise)
+    (eq-put! false-premise 'opposite true-premise)
     (name! amb-choose 'amb-choose)
     ;; This only affects run order, and only in some experimental
     ;; schedulers
     (tag-slow! amb-choose)
-    (if *false-premise-starts-out*
-	;; Let's have the false premise start unbelieved.
-	(mark-premise-out! false-premise))
+    
+    (if (default-object? bias)
+        (if *false-premise-starts-out*
+            ;; Let's have the false premise start unbelieved.
+            (mark-premise-out! false-premise))
+        (begin (eq-put! true-premise 'bias bias)
+               (eq-put! false-premise 'bias (- 1.0 bias))
+               (if (> bias 0.5)
+                   (mark-premise-out! false-premise)
+                   (mark-premise-out! true-premise))))
     
     ;; The cell is a spiritual neighbor...
     (propagator cell amb-choose)
@@ -125,13 +134,16 @@
 	    (begin
 	      (if *contradiction-wallp* (pp 'nogood-aborted))
 	      (abort-process `(contradiction ,nogood))))
-        (begin
+        (let ((culprit (choose-culprit hyps)))
 	  (if *contradiction-wallp*
-	      (pp `(kicking-out ,(car hyps))))
-          (kick-out! (car hyps))
+	      (pp `(kicking-out ,culprit)))
+          (kick-out! culprit)
           (for-each (lambda (premise)
                       (assimilate-nogood! premise nogood))
                     nogood)))))
+
+(define choose-culprit car)
+
 
 (define (assimilate-nogood! premise new-nogood)
   (let ((item (delq premise new-nogood))
