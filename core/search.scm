@@ -141,9 +141,19 @@
           (for-each (lambda (premise)
                       (assimilate-nogood! premise nogood))
                     nogood)))))
+
+;;; (define choose-culprit car)
+;;; If no biases are available this defaults to car
 
-(define choose-culprit car)
-
+(define (choose-culprit hyps)
+  (define (get-bias hyp)
+    (or (eq-get hyp 'bias) 0.5))
+  (if (null? hyps)
+      (error "Hard to choose from nothing")
+      (reduce (lambda (hyp1 hyp2)
+                (if (< (get-bias hyp1) (get-bias hyp2))
+                    hyp1 hyp2))
+              #f hyps)))  
 
 (define (assimilate-nogood! premise new-nogood)
   (let ((item (delq premise new-nogood))
@@ -157,7 +167,8 @@
             (lset-adjoin eq?
               (lset-difference eq? set subsumed)
 	      item))))))
-
+
+
 (define *number-of-calls-to-fail* 0)
 
 (define initialize-scheduler
