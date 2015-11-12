@@ -45,41 +45,45 @@
     ;; conclusions, so they will not both be in except momentarily).
     (define (amb-choose)
       (if (and *avoid-false-true-flips*
-	       (or (premise-in? true-premise)
-		   (premise-in? false-premise)))
-	  'ok ; the some-premise-is-in invariant holds
-	  (let ((reasons-against-true
-		 (filter (lambda (nogood)
-			   (and (all-premises-in? nogood)
-				(not (member false-premise nogood))))
-			 (premise-nogoods true-premise)))
-		(reasons-against-false
-		 (filter (lambda (nogood)
-			   (and (all-premises-in? nogood)
-				(not (member true-premise nogood))))
-			 (premise-nogoods false-premise))))
-	    (cond ((null? reasons-against-true)
-		   (if *contradiction-wallp* 
-		       (pp `(asserting-true ,true-premise
-					    ,false-premise
-					    ,cell)))
-		   (kick-out! false-premise)
-		   (bring-in! true-premise))
-		  ((null? reasons-against-false)
-		   (if *contradiction-wallp* 
-		       (pp `(asserting-false ,true-premise
-					     ,false-premise
-					     ,cell)))
-		   (kick-out! true-premise)
-		   (bring-in! false-premise))
-		  (else			; this amb must fail.
-		   (if *contradiction-wallp* 
-		       (pp `(amb-fail ,true-premise ,false-premise ,cell)))
-		   (kick-out! true-premise)
-		   (kick-out! false-premise)
-		   (process-contradictions
-		    (pairwise-resolve reasons-against-true
-				      reasons-against-false)))))))
+           (or (premise-in? true-premise)
+           (premise-in? false-premise)))
+      'ok ; the some-premise-is-in invariant holds
+      (let ((reasons-against-true
+         (filter (lambda (nogood)
+               (and (all-premises-in? nogood)
+                (not (member false-premise nogood))))
+             (premise-nogoods true-premise)))
+        (reasons-against-false
+         (filter (lambda (nogood)
+               (and (all-premises-in? nogood)
+                (not (member true-premise nogood))))
+             (premise-nogoods false-premise))))
+        (cond ((or 
+                (null? reasons-against-true)
+                (not (or
+                      *avoid-false-true-flips*
+                      (ultimately-supported? false-premise)))) ; <-- make contradiction someone else's problem!
+           (if *contradiction-wallp* 
+               (pp `(asserting-true ,true-premise
+                        ,false-premise
+                        ,cell)))
+           (kick-out! false-premise)
+           (bring-in! true-premise))
+          ((null? reasons-against-false)
+           (if *contradiction-wallp* 
+               (pp `(asserting-false ,true-premise
+                         ,false-premise
+                         ,cell)))
+           (kick-out! true-premise)
+           (bring-in! false-premise))
+          (else         ; this amb must fail.
+           (if *contradiction-wallp* 
+               (pp `(amb-fail ,true-premise ,false-premise ,cell)))
+           (kick-out! true-premise)
+           (kick-out! false-premise)
+           (process-contradictions
+            (pairwise-resolve reasons-against-true
+                      reasons-against-false)))))))
 
     (eq-put! true-premise 'opposite false-premise)
     (eq-put! false-premise 'opposite true-premise)
@@ -102,10 +106,10 @@
     (propagator cell amb-choose)
 
     (let ((diagram
-	   (make-anonymous-i/o-diagram amb-choose '() (list cell))))
+           (make-anonymous-i/o-diagram amb-choose '() (list cell))))
       ((constant (make-tms
-		  (list (supported #t (list true-premise) (list diagram))
-			(supported #f (list false-premise) (list diagram)))))
+                  (list (supported #t (list true-premise) (list diagram))
+                        (supported #f (list false-premise) (list diagram)))))
        cell)
       (register-diagram diagram)
       diagram)))
@@ -122,21 +126,63 @@
    (car (sort-by nogoods
           (lambda (nogood)
             (length (filter hypothetical? nogood)))))))
+;;; (... innit odd that the above doesn't sort but process-nogood! does??) ;;;
+
+;;; 
+(define (default-premise? premise) ;;;
+  (eq-get premise 'default-premise))
+
+(define *deferred-contradictions* '()) ;;;
+
+(define (defer-contradiction nogood) ;;;
+  (set! *deferred-contradictions*  
+		(lset-adjoin equal? *deferred-contradictions* nogood)))
+
+(define *defer-all-default-contradictions* #t) ;;;
+(define *default-contradiction-second-pass* #f) ;;;
+
+(define (process-deferred-contradictions) ;;; ; not well tested!
+  (set! *deferred-contradictions*
+        (filter all-premises-in? *deferred-contradictions*))
+  (if (pair? *deferred-contradictions*) ;;; this branch not well tested
+      (let ((nogood (car *deferred-contradictions*)))
+        (if *contradiction-wallp* (pp 'handling-deferred-contradiction))
+        (set! *deferred-contradictions* (cdr *deferred-contradictions*))
+        (fluid-let ((*defer-all-default-contradictions* #f)
+                    (*default-contradiction-second-pass* #t))
+          (process-one-contradiction nogood))
+        (run))
+      *last-value-of-run*))
+;; this may not be the last word? e.g. due to nogoods already
+;; assimilated change of worldview or other effects may trigger amb
+;; recomp which may fix contradictions without having to go through
+;; this path... or may reenter deferral presumably idempotently...
+;; not sure if perhaps the nogood effect alone on amb execution is
+;; enough to drive endless ping-pong. may have such a case.
+;; we shall see.
+
+(define run ;;;
+  (let ((run run))
+    (lambda ()
+      (run)
+      (process-deferred-contradictions))))
+
 
 (define (process-one-contradiction nogood)
   (if *contradiction-wallp* (pp `(nogood ,@nogood)))
-  (let ((hyps (filter hypothetical? nogood)))
-    (if (null? hyps)
-	(if (any (lambda (premise)
-		   (eq-get premise 'default-premise))
-		 nogood)
-	    (pp `(contradiction-with-defaults nogood))
-	    (begin
-	      (if *contradiction-wallp* (pp 'nogood-aborted))
-	      (abort-process `(contradiction ,nogood))))
+  (let ((hyps (filter hypothetical? nogood))
+        (cwd (any default-premise? nogood))) ;;;
+    (if (or (null? hyps) (and cwd *defer-all-default-contradictions*)) ;;
+        (if (and cwd (not *default-contradiction-second-pass*))
+            (begin
+              (if *contradiction-wallp* (pp `(contradiction-with-defaults ,nogood)))
+              (defer-contradiction nogood)) ;;;
+            (begin
+              (if *contradiction-wallp* (pp 'nogood-aborted))
+              (abort-process `(contradiction ,nogood))))
         (let ((culprit (choose-culprit hyps)))
-	  (if *contradiction-wallp*
-	      (pp `(kicking-out ,culprit)))
+          (if *contradiction-wallp*
+              (pp `(kicking-out ,culprit)))
           (kick-out! culprit)
           (for-each (lambda (premise)
                       (assimilate-nogood! premise nogood))
@@ -175,6 +221,7 @@
   (let ((initialize-scheduler initialize-scheduler))
     (lambda ()
       (initialize-scheduler)
+	  (set! *deferred-contradictions* '())
       (set! *number-of-calls-to-fail* 0))))
 
 (define with-independent-scheduler
@@ -190,3 +237,40 @@
   (set! *number-of-calls-to-fail*
         (+ *number-of-calls-to-fail* 1))
   (process-one-contradiction (sort nogood premise<?)))
+
+
+;;;;;;;;;;;;;;;;;;;;;
+
+
+(define (hypothetical-support hyp)
+  (filter all-premises-in?
+          (premise-nogoods (eq-get hyp 'opposite))))
+
+(define (default-hypothetical? hyp)
+  (and 
+   (hypothetical? hyp)
+   (not *avoid-false-true-flips*)
+   (eq? (hypothetical-sign hyp) 'true))) ; <-- hard-coded :P
+
+(define (ultimately-supported? hyp #!optional include-defaults visited-hyps)
+  (if (default-object? visited-hyps)
+      (set! visited-hyps '()))
+
+  (define (visited? hypothetical)
+    (memq hypothetical visited-hyps))
+  (define (visitable? support)
+    (not (any visited? support)))
+
+  (let ((next-support (filter visitable? 
+                              (hypothetical-support hyp)))
+        (self-support (and include-defaults (default-hypothetical? hyp))))
+    (or
+     self-support
+     (any (lambda (support)
+            (every (lambda (premise)
+                     (or (not (hypothetical? premise))
+                         (ultimately-supported? premise include-defaults
+                                                (cons hyp visited-hyps))))
+                   support))
+          next-support))))
+
