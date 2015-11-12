@@ -532,12 +532,12 @@
 (define (with-sane-unparser-config thunk)
   ;; Fix unparser global state. Ugh!
   ;; why isn't it port-associated??
-  (fluid-let *unparser-list-breadth-limit* #f
-             *unparser-list-depth-limit* #f
-             *unparser-string-length-limit* #f
-             *unparse-abbreviate-quotations?* #t
-             *parser-canonicalize-symbols?* #t
-        thunk))
+  (let-fluids *unparser-list-breadth-limit* #f
+              *unparser-list-depth-limit* #f
+              *unparser-string-length-limit* #f
+              *unparse-abbreviate-quotations?* #t
+              *parser-canonicalize-symbols?* #t
+              thunk))
 
 (define (rpcsession-issue-async-command session command)
   ; Exposes errors directly for the client
