@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e  # Stop when any subcommand fails and propagate its exit code
+
 cd support
 echo "Support tests"
 ./run-tests
