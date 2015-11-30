@@ -1,3 +1,10 @@
 #!/bin/sh
 
-mit-scheme --compiler -heap 6000 --batch-mode --no-init-file --eval '(set! load/suppress-loading-message? #t)' --eval '(begin (load "load") (load "test/load") (show-time run-registered-tests) (newline) (flush-output) (%exit 0))'
+exec mit-scheme --compiler -heap 6000 --batch-mode --no-init-file --eval \
+ "(begin
+    (if (lexical-unbound? system-global-environment 'let-fluids)
+      (set! load/suppress-loading-message? #t)
+      (set-fluid! load/suppress-loading-message? #t))
+    (load \"load\")
+    (load \"test/load\")
+    (run-tests-and-exit))"
